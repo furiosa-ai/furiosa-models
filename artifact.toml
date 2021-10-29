@@ -1,8 +1,8 @@
 [[artifacts]]
-name = "mlcommons_resnet50_v1.5_int8"
+name = "mlcommons_resnet50"
 family = "ResNet"
-location = "https://github.com/furiosa-ai/furiosa-models/raw/main/models/mlcommons/mlcommons_resnet50_v1.5_int8.onnx"
-format = "onnx"
+location = "models/mlcommons/models.py"
+format = "code"
 
 [artifacts.metadata]
 description = "ResNet50 v1.5 model for MLCommons v1.1"
@@ -12,10 +12,10 @@ url = "https://arxiv.org/abs/1512.03385.pdf"
 
 
 [[artifacts]]
-name = "mlcommons_ssd_mobilenet_v1_int8"
+name = "mlcommons_ssd_mobilenet"
 family = "MobileNetV1"
-location = "https://github.com/furiosa-ai/furiosa-models/raw/main/models/mlcommons/mlcommons_ssd_mobilenet_v1_int8.onnx"
-format = "onnx"
+location = "models/mlcommons/models.py"
+format = "code"
 
 [artifacts.metadata]
 description = "MobileNet v1 model for MLCommons v1.1"
@@ -25,10 +25,10 @@ url = "https://arxiv.org/abs/1704.04861.pdf"
 
 
 [[artifacts]]
-name = "mlcommons_ssd_resnet34_int8"
+name = "mlcommons_ssd_resnet34"
 family = "ResNet"
-location = "https://github.com/furiosa-ai/furiosa-models/raw/main/models/mlcommons/mlcommons_ssd_resnet34_int8.onnx"
-format = "onnx"
+location = "models/mlcommons/models.py"
+format = "code"
 
 [artifacts.metadata]
 description = "ResNet34 model for MLCommons v1.1"
