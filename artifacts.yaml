@@ -1,7 +1,7 @@
 artifacts:
   - name: mlcommons_resnet50
     family: ResNet
-    location: models/mlcommons/models.py
+    location: furiosa/artifacts/vision/artifacts.py
     format: code
     metadata:
       description: ResNet50 v1.5 model for MLCommons v1.1
@@ -9,7 +9,7 @@ artifacts:
         url: https://arxiv.org/abs/1512.03385.pdf
   - name: mlcommons_ssd_mobilenet
     family: MobileNetV1
-    location: models/mlcommons/models.py
+    location: furiosa/artifacts/vision/artifacts.py
     format: code
     metadata:
       description: MobileNet v1 model for MLCommons v1.1
@@ -17,7 +17,7 @@ artifacts:
         url: https://arxiv.org/abs/1704.04861.pdf
   - name: mlcommons_ssd_resnet34
     family: ResNet
-    location: models/mlcommons/models.py
+    location: furiosa/artifacts/vision/artifacts.py
     format: code
     metadata:
       description: ResNet34 model for MLCommons v1.1
