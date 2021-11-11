@@ -12,7 +12,7 @@ import cv2
 import numpy as np
 import torch
 
-from ...models.ssd_mobilenet import MLCommons_SSDMobileNetV1_legacy
+from ...ssd_mobilenet import MLCommons_SSDMobileNetV1_legacy
 from ..utils.encoder import encoder
 from .dataset import Dataset
 
