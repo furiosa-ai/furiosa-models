@@ -1,0 +1,4 @@
+furiosa-registry
+opencv-python
+pycocotools
+torch
