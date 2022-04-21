@@ -1,4 +1,17 @@
 furiosa-registry
+onnx
+onnxruntime
 opencv-python
 pycocotools
+timm
 torch
+torchvision
+
+# segmentation_models_pytorch: from https://github.com/qubvel/segmentation_models.pytorch
+git+https://github.com/deeplearningfromscratch/segmentation_models.pytorch.git
+
+# pretrained: from https://github.com/cadene/pretrained-models.pytorch
+git+https://github.com/deeplearningfromscratch/pretrained-models.pytorch.git
+
+# effdet: https://github.com/rwightman/efficientdet-pytorch
+git+https://github.com/deeplearningfromscratch/efficientdet-pytorch.git
