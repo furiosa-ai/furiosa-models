@@ -1,7 +1,30 @@
-Furiosa Models
-==============
+Furiosa Artifacts
+=================
 
-This repository provides deep learning models provided by FuriosaAI. Available models are described in `artifact.yaml` which is a descriptor file in the form defined by [furiosa-registry](https://github.com/furiosa-ai/furiosa-sdk/tree/main/python/furiosa-registry/)
+This repository provides deep learning models provided by FuriosaAI. Available models are described in `artifacts.py` which is a descriptor file in the form defined by [furiosa-registry](https://github.com/furiosa-ai/furiosa-sdk/tree/main/python/furiosa-registry/)
+
+## Available models
+
+### Image Classification
+
+Model | Python class name | Pretrained? |
+:------------ | :-------------|:-------------:|
+| ResNet50-v1.5 | `MLCommonsResNet50` | :heavy_check_mark: |
+| EfficientNetV2_S | `EfficientNetV2_S` | :heavy_check_mark: |
+
+### Object detection
+
+Model | Python class name | Pretrained? |
+:------------ | :-------------|:-------------:|
+| SSD-ResNet34 | `MLCommonsSSDResNet34` | :heavy_check_mark: |
+| SSD-MobileNets-v1 | `MLCommonsSSDMobilenet` | :heavy_check_mark: |
+
+See `./artifacts.py` for more detail.
+
+## How to use models in this repository?
+
+See [client side code](https://github.com/furiosa-ai/furiosa-sdk/tree/main/python/furiosa-registry/#getting-started) in furiosa-reigstry.
+
 
 ## License
 
