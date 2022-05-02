@@ -3,28 +3,25 @@ Furiosa Artifacts
 
 This repository provides deep learning models provided by FuriosaAI. Available models are described in `artifacts.py` which is a descriptor file in the form defined by [furiosa-registry](https://github.com/furiosa-ai/furiosa-sdk/tree/main/python/furiosa-registry/)
 
-## Available models
+## Installation
 
-### Image Classification
+Load models via [furiosa-models](https://github.com/furiosa-ai/furiosa-sdk/tree/main/python/furiosa-models).
 
-Model | Python class name | Pretrained? |
-:------------ | :-------------|:-------------:|
-| ResNet50-v1.5 | `MLCommonsResNet50` | :heavy_check_mark: |
-| EfficientNetV2_S | `EfficientNetV2_S` | :heavy_check_mark: |
+```sh
+pip install furiosa-models
+```
 
-### Object detection
+## Example
 
-Model | Python class name | Pretrained? |
-:------------ | :-------------|:-------------:|
-| SSD-ResNet34 | `MLCommonsSSDResNet34` | :heavy_check_mark: |
-| SSD-MobileNets-v1 | `MLCommonsSSDMobilenet` | :heavy_check_mark: |
+```python
+import asyncio
 
-See `./artifacts.py` for more detail.
+from furiosa.registry import Model
+from furiosa.models.vision import MLCommonsResNet50
 
-## How to use models in this repository?
 
-See [client side code](https://github.com/furiosa-ai/furiosa-sdk/tree/main/python/furiosa-registry/#getting-started) in furiosa-reigstry.
-
+model: Model = asyncio.run(MLCommonsResNet50())
+```
 
 ## License
 
