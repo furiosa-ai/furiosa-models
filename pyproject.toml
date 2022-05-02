@@ -1,6 +1,60 @@
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["flit"]
+build-backend = "flit.buildapi"
+
+[project]
+name = "furiosa-artifacts"
+version = "0.0.1"
+authors = [{ name = "FurioaAI Inc.", email = "pkg@furiosa.ai" }]
+readme = "README.md"
+license = { file = "LICENSE" }
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dynamic = ["description"]
+requires-python = "~=3.7"
+dependencies = [
+    "furiosa-registry ~= 0.6.3",
+    "onnx",
+    "onnxruntime",
+    "opencv-python",
+    "pycocotools",
+    "timm",
+    "torch",
+    "torchvision",
+    # segmentation_models_pytorch: from https://github.com/qubvel/segmentation_models.pytorch
+    "segmentation_models_pytorch @ git+https://github.com/deeplearningfromscratch/segmentation_models.pytorch.git",
+    # pretrainedmodels: from https://github.com/cadene/pretrained-models.pytorch
+    "pretrainedmodels @ git+https://github.com/deeplearningfromscratch/pretrained-models.pytorch.git",
+    # effdet: from https://github.com/rwightman/efficientdet-pytorch
+    "effdet @ git+https://github.com/deeplearningfromscratch/efficientdet-pytorch.git",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-asyncio ~= 0.17.2",
+]
+
+[project.urls]
+Home = "https://furiosa.ai"
+Documentation = "https://github.com/furiosa-ai/furiosa-artifacts"
+"Bug Tracker" = "https://github.com/furiosa-ai/furiosa-artifacts/issues"
+"Source Code" = "https://github.com/furiosa-ai/furiosa-artifacts"
+
+[tool.flit.module]
+name = "furiosa.artifacts"
 
 [tool.pytest.ini_options]
 asyncio_mode = "strict"
