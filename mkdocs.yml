@@ -16,13 +16,14 @@ nav:
   - usage/running.md
 - Available models: models.md
 - Model description:
-  - Image classification:
-    - EfficientNet v2 S: 'models/efficientnet_v2_s.md'
-    - EfficientNet v2 M: 'models/efficientnet_v2_m.md'
-    - ResNet50 v1.5: 'models/resnet50_v1.5.md'
-  - Object detection:
-    - SSD ResNet34: 'models/ssd_resnet34.md'
-    - SSD MobileNet v1: 'models/ssd_mobilenet_v1.md'
+  - Vision:
+    - Image classification:
+        - EfficientNet v2 S: 'models/efficientnet_v2_s.md'
+        - EfficientNet v2 M: 'models/efficientnet_v2_m.md'
+        - ResNet50 v1.5: 'models/resnet50_v1.5.md'
+    - Object detection:
+        - SSD ResNet34: 'models/ssd_resnet34.md'
+        - SSD MobileNet v1: 'models/ssd_mobilenet_v1.md'
 
 - changelog.md
 

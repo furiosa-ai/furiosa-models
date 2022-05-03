@@ -65,6 +65,22 @@ class EfficientNetV2_S(EfficientNetModelGenerator):
     ) = EfficientNetModelGenerator.configer(config_key)
 
 
+class EfficientNetV2_M(EfficientNetV2_S):
+    """EfficientNet V2 model
+
+    https://github.com/google/automl/tree/master/efficientnetv2
+    """
+
+    model_name = "efficientnetv2_m"
+    config_key = "tf_efficientnetv2_m"
+    (
+        model_config,
+        model_func,
+        input_shape,
+        has_pretrained,
+    ) = EfficientNetModelGenerator.configer(config_key)
+
+
 class MLCommonsResNet50Model(Model):
     """MLCommons ResNet50 model"""
 

@@ -20,3 +20,8 @@ async def test_mlcommons_ssd_resnet34():
 @pytest.mark.asyncio
 async def test_efficientnetv2_s():
     assert await artifacts.EfficientNetV2_S()
+
+
+@pytest.mark.asyncio
+async def test_efficientnetv2_m():
+    assert await artifacts.EfficientNetV2_M()

@@ -5,6 +5,9 @@ from furiosa.registry import Format, Metadata, Model, Publication
 from furiosa.registry.client.transport import FileTransport
 
 from furiosa.artifacts.vision.models.image_classification import (
+    EfficientNetV2_M as EfficientNetV2_MModel,
+)
+from furiosa.artifacts.vision.models.image_classification import (
     EfficientNetV2_S as EfficientNetV2_SModel,
 )
 from furiosa.artifacts.vision.models.image_classification import MLCommonsResNet50Model
@@ -38,6 +41,21 @@ async def EfficientNetV2_S(*args: Any, **kwargs: Any) -> Model:
     return Model(
         name="EfficientNetV2_S",
         model=EfficientNetV2_SModel().export(io.BytesIO()).getvalue(),
+        format=Format.ONNX,
+        family="EfficientNet",
+        version="v2.0",
+        metadata=Metadata(
+            description="EfficientNetV2 from Google AutoML",
+            publication=Publication(url="https://arxiv.org/abs/2104.00298"),
+        ),
+        **kwargs,
+    )
+
+
+async def EfficientNetV2_M(*args: Any, **kwargs: Any) -> Model:
+    return Model(
+        name="EfficientNetV2_M",
+        model=EfficientNetV2_MModel().export(io.BytesIO()).getvalue(),
         format=Format.ONNX,
         family="EfficientNet",
         version="v2.0",
