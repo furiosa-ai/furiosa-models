@@ -23,15 +23,6 @@ from furiosa.models.vision import MLCommonsResNet50
 model: Model = asyncio.run(MLCommonsResNet50())
 ```
 
-## dvc
-
-Model binary files(e.g. `*.onnx`, `*.tflite`) are managed under [DVC](https://dvc.org/).
-If you use this repository through high-level abstracted library(e.g. [furiosa-models](https://github.com/furiosa-ai/furiosa-sdk/tree/main/python/furiosa-models) you may skip this part.
-
-### dvc installation
-[https://dvc.org/doc/install](https://dvc.org/doc/install)
-You probably need `dvc[s3]` package since this repository uses s3 as dvc's backend.
-
 ## License
 
 ```

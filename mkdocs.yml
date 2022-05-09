@@ -11,9 +11,9 @@ repo_url: https://github.com/furiosa-ai/furiosa-artifacts
 nav:
 - Overview: index.md
 - How it works:
-  - usage/publishing.md
-  - usage/loading.md
-  - usage/running.md
+  - Publishing models: usage/publishing.md
+  - Loading models: usage/loading.md
+  - Running models: usage/running.md
 - Available models: models.md
 - Model description:
   - Vision:

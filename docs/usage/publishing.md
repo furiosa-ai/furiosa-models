@@ -4,6 +4,9 @@ Furiosa Artifacts use model class in [furiosa-registry](https://github.com/furio
 
 To publish models, as a model provider you need to add function entrypoints which returns a model instance in `artifacts.py`
 
+> Since github is not suitable for storing large data files, please use **[DVC](https://dvc.org/)** for such purpose. A detailed description can be found on [this section](#how-to-use-dvc-for-furiosa-artifacts)
+
+
 ## Example
 
 ``` python title="artifacts.py"
@@ -41,3 +44,34 @@ Function entrypoint which will be called from `furiosa-registry`.
 `model=await loader.read("models/resnet18.onnx")`
 
 Loading model binary bytes via `furiosa.registry.client.transport`. You may use different ways to load binary bytes depending on how you maintain your model binary.
+
+## How to use DVC for Furiosa Artifacts
+
+### DVC
+
+Model binary files(e.g. `*.onnx`, `*.tflite`) are usually too large for github to process.
+Therefore we handle these files with [DVC](https://dvc.org/), a version control system specialized for handling ML models and data sets.
+
+### DVC installation
+You can install dvc by following this [instruction](https://dvc.org/doc/install).
+
+You probably need `dvc[s3]` python package since this repository uses s3 as DVC's backend.
+
+### DVC pipeline
+
+- Download model files via DVC
+  ```console
+  # `origin` is specified in [.dvc/config](.dvc/config),
+  # -j option specifies num of parallel downloads
+  $ dvc pull -r origin -j 10
+  ```
+
+- Add a new data via DVC
+  ```console
+  # `origin` is specified in [.dvc/config](.dvc/config),
+  # -j option specifies num of parallel downloads
+  $ touch ./models/example-model
+  $ dvc add -R ./models/example-model
+  $ dvc push -r origin
+  # Please follow DVC's instructions to follow these changes with git
+  ```
