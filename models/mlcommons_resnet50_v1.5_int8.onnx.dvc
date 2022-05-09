@@ -1,0 +1,4 @@
+outs:
+- md5: e1939741c1e9565d8f08c0eacd275f73
+  size: 26088810
+  path: mlcommons_resnet50_v1.5_int8.onnx

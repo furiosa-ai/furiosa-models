@@ -33,6 +33,7 @@ dependencies = [
     "timm",
     "torch",
     "torchvision",
+    "dvc[s3]",
     # segmentation_models_pytorch: from https://github.com/qubvel/segmentation_models.pytorch
     "segmentation_models_pytorch @ git+https://github.com/deeplearningfromscratch/segmentation_models.pytorch.git",
     # pretrainedmodels: from https://github.com/cadene/pretrained-models.pytorch

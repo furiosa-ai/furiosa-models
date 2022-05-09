@@ -1,0 +1,4 @@
+outs:
+- md5: ef38832b195eb90a8eb4009bdad4842e
+  size: 20282796
+  path: mlcommons_ssd_resnet34_int8.onnx
