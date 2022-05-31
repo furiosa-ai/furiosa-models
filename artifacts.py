@@ -1,7 +1,7 @@
 import io
 from typing import Any
-import dvc.api
 
+import dvc.api
 from furiosa.registry import Format, Metadata, Model, Publication
 from furiosa.registry.client.transport import FileTransport
 
@@ -17,23 +17,20 @@ from furiosa.artifacts.vision.models.object_detection import (
     MLCommonsSSDSmallModel,
 )
 
-
-def load_dvc(uri: str):
-    return dvc.api.read(uri)
+def load_dvc(uri: str, mode: str = "r"):
+    return dvc.api.read(uri, mode=mode)
 
 
 # Image classification
-
-
 async def MLCommonsResNet50(*args: Any, **kwargs: Any) -> MLCommonsResNet50Model:
     return MLCommonsResNet50Model(
         name="MLCommonsResNet50",
         model=load_dvc("models/mlcommons_resnet50_v1.5_int8.onnx.dvc"),
         format=Format.ONNX,
         family="ResNet",
-        version="v1.1",
+        version="v1.5",
         metadata=Metadata(
-            description="ResNet50 v1.5 model for MLCommons v1.1",
+            description="ResNet50 v1.5 int8 ImageNet-1K Accuracy 75.982% @ Top1",
             publication=Publication(url="https://arxiv.org/abs/1512.03385.pdf"),
         ),
         **kwargs,
