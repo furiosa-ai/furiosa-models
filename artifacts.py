@@ -36,6 +36,7 @@ async def MLCommonsResNet50(*args: Any, **kwargs: Any) -> MLCommonsResNet50Model
             description="ResNet50 v1.5 int8 ImageNet-1K Accuracy 75.982% @ Top1",
             publication=Publication(url="https://arxiv.org/abs/1512.03385.pdf"),
         ),
+        *args,
         **kwargs,
     )
 
@@ -51,6 +52,7 @@ async def EfficientNetV2_S(*args: Any, **kwargs: Any) -> Model:
             description="EfficientNetV2 from Google AutoML",
             publication=Publication(url="https://arxiv.org/abs/2104.00298"),
         ),
+        *args,
         **kwargs,
     )
 
@@ -66,6 +68,7 @@ async def EfficientNetV2_M(*args: Any, **kwargs: Any) -> Model:
             description="EfficientNetV2 from Google AutoML",
             publication=Publication(url="https://arxiv.org/abs/2104.00298"),
         ),
+        *args,
         **kwargs,
     )
 
@@ -84,6 +87,7 @@ async def MLCommonsSSDMobileNet(*args: Any, **kwargs: Any) -> MLCommonsSSDSmallM
             description="MobileNet v1 model for MLCommons v1.1",
             publication=Publication(url="https://arxiv.org/abs/1704.04861.pdf"),
         ),
+        *args,
         **kwargs,
     )
 
@@ -101,5 +105,6 @@ async def MLCommonsSSDResNet34(*args: Any, **kwargs: Any) -> MLCommonsSSDLargeMo
                 url="https://github.com/mlcommons/inference/tree/master/vision/classification_and_detection"  # noqa: E501
             ),
         ),
+        *args,
         **kwargs,
     )
