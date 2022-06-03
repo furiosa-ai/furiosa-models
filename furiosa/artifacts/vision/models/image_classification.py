@@ -3,6 +3,8 @@ from typing import Any, Callable, List, Optional
 import cv2
 import numpy as np
 import timm
+from pydantic import Field
+
 from furiosa.registry import Model
 
 from .common.base import ImageNetRwightman
@@ -86,7 +88,7 @@ class EfficientNetV2_M(EfficientNetV2_S):
 class MLCommonsResNet50Model(Model):
     """MLCommons ResNet50 model"""
 
-    idx2str: List[str] = imagenet1k.ImageNet1k_Idx2Str
+    idx2str: List[str] = Field(imagenet1k.ImageNet1k_Idx2Str, repr=False)
 
     def center_crop(
         self, image: np.ndarray, cropped_height: int, cropped_width: int
