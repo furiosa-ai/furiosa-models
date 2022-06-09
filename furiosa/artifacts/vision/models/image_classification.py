@@ -28,9 +28,7 @@ def call_model_generator(parent_class) -> Callable:
         def check_validity(self, pretrained):
             if pretrained:
                 if not self.has_pretrained:
-                    raise Exception(
-                        "%s has no trained weights." % self.__class__.__name__
-                    )
+                    raise Exception("%s has no trained weights." % self.__class__.__name__)
 
     return ModelGenerator
 
@@ -90,9 +88,7 @@ class MLCommonsResNet50Model(Model):
 
     idx2str: List[str] = Field(imagenet1k.ImageNet1k_Idx2Str, repr=False)
 
-    def center_crop(
-        self, image: np.ndarray, cropped_height: int, cropped_width: int
-    ) -> np.ndarray:
+    def center_crop(self, image: np.ndarray, cropped_height: int, cropped_width: int) -> np.ndarray:
         """Centrally crop `image` into cropped_width x cropped_height."""
         height, width, _ = image.shape
         top = int((height - cropped_height) / 2)
@@ -141,4 +137,3 @@ class MLCommonsResNet50Model(Model):
 
     def postprocess(self, output: Any) -> str:
         return self.idx2str[int(output[0].numpy()) - 1]
-

@@ -1,4 +1,4 @@
 outs:
-- md5: 8263244bb5ee56fe6ceb01cfa9f4cc3d
-  size: 7114106
+- md5: 485ec1ef5cf0a3989cb0b2fcd45fd58e
+  size: 7504033
   path: mlcommons_ssd_mobilenet_v1_int8.onnx

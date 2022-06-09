@@ -1,10 +1,9 @@
 import io
+import os
 from typing import Any
 
 import aiohttp
 import dvc.api
-from furiosa.registry import Format, Metadata, Model, Publication
-
 from furiosa.artifacts.vision.models.image_classification import (
     EfficientNetV2_M as EfficientNetV2_MModel,
 )
@@ -16,15 +15,22 @@ from furiosa.artifacts.vision.models.object_detection import (
     MLCommonsSSDLargeModel,
     MLCommonsSSDSmallModel,
 )
+from furiosa.registry import Format, Metadata, Model, Publication
 
 
 async def load_dvc(uri: str):
     async with aiohttp.ClientSession() as session:
-        async with session.get(dvc.api.get_url(uri)) as resp:
+        async with session.get(
+            dvc.api.get_url(
+                uri, repo=os.environ.get("DVC_REPO", None), rev=os.environ.get("DVC_REV", None)
+            )
+        ) as resp:
             return await resp.read()
 
 
 # Image classification
+
+
 async def MLCommonsResNet50(*args: Any, **kwargs: Any) -> MLCommonsResNet50Model:
     return MLCommonsResNet50Model(
         name="MLCommonsResNet50",

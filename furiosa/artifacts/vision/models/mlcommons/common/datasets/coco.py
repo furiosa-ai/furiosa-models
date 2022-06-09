@@ -82,9 +82,7 @@ class Coco(Dataset):
             if i is None:
                 continue
             catagory_ids = (
-                label_map[a.get("category_id")]
-                if self.use_label_map
-                else a.get("category_id")
+                label_map[a.get("category_id")] if self.use_label_map else a.get("category_id")
             )
             i["category"].append(catagory_ids)
             i["bbox"].append(a.get("bbox"))
@@ -103,9 +101,7 @@ class Coco(Dataset):
                 )
                 continue
 
-            os.makedirs(
-                os.path.dirname(os.path.join(self.cache_dir, image_name)), exist_ok=True
-            )
+            os.makedirs(os.path.dirname(os.path.join(self.cache_dir, image_name)), exist_ok=True)
             dst = os.path.join(self.cache_dir, image_name)
             if not os.path.exists(dst + ".npy"):
                 # cache a preprocessed version of the image
@@ -356,34 +352,6 @@ class PostProcessCocoTf(PostProcessCoco):
         return processed_results
 
 
-class PostProcessCocoSSDMobileNetORTlegacy(PostProcessCocoPt):
-    """
-    Post processing required by ssd-mobilenet / onnxruntime
-    """
-
-    def __init__(self, use_inv_map, score_threshold):
-        super(PostProcessCocoSSDMobileNetORTlegacy, self).__init__(
-            use_inv_map, score_threshold
-        )
-        self.use_inv_map = use_inv_map
-        self.score_threshold = score_threshold
-
-    def __call__(self, results, ids, expected=None, result_dict=None):
-        # results come as:
-        #   logits, locations
-
-        logits = results[:6]
-        locations = results[6:]
-        logits = [torch.from_numpy(logit) for logit in logits]
-        locations = [torch.from_numpy(loc) for loc in locations]
-        results = MLCommons_SSDMobileNetV1_legacy().postprocess(logits, locations)
-        processed_results = super(PostProcessCocoSSDMobileNetORTlegacy, self).__call__(
-            results, ids, expected, result_dict
-        )
-
-        return processed_results
-
-
 class PostProcessCocoONNXNPlegacy(PostProcessCocoTf):
     """
     Postprocess from tensorflow source code
@@ -402,9 +370,7 @@ class PostProcessCocoONNXNPlegacy(PostProcessCocoTf):
         logits = self.reshape_and_concat(logits, 81)
         locations = self.reshape_and_concat(locations, 4)
 
-        results = encoder.decode_batch(
-            locations, logits, criteria=0.50, max_output=200, device=0
-        )
+        results = encoder.decode_batch(locations, logits, criteria=0.50, max_output=200, device=0)
         processed_results = super(PostProcessCocoONNXNPlegacy, self).__call__(
             results, ids, expected, result_dict
         )
@@ -415,3 +381,9 @@ class PostProcessCocoONNXNPlegacy(PostProcessCocoTf):
         return np.concatenate(
             [np.reshape(arr, [arr.shape[0], num_classes, -1]) for arr in arrays], axis=2
         )
+
+
+MobileNetSSD_CLASSES = [
+    label.strip()
+    for label in open(os.path.join(os.path.dirname(__file__), "coco-label-paper.txt")).readlines()
+]
