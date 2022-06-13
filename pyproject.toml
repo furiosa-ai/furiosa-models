@@ -43,6 +43,8 @@ dependencies = [
     "pretrainedmodels @ git+https://github.com/deeplearningfromscratch/pretrained-models.pytorch.git",
     # effdet: from https://github.com/rwightman/efficientdet-pytorch
     "effdet @ git+https://github.com/deeplearningfromscratch/efficientdet-pytorch.git",
+
+    "cbox_decode @ git+https://github.com/furiosa-ai/furiosa-artifacts.git#subdirectory=furiosa/artifacts/vision/models/yolov5/box_decode/cbox_decode"
 ]
 
 [project.optional-dependencies]
