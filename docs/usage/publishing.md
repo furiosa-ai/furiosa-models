@@ -59,13 +59,14 @@ You probably need `dvc[s3]` python package since this repository uses s3 as DVC'
 
 ### DVC pipelines
 
-Since DVC does not support anonymous logins & downloads for s3 backend ([related issue](https://github.com/iterative/dvc/issues/5797)), we have separated endpoints by purpose. You can also refer to the [actual configuration file](/.dvc/config).
+Since DVC does not support anonymous logins & downloads for s3 backend ([related issue](https://github.com/iterative/dvc/issues/5797)), we have separated endpoints by purpose. You can also refer to the [actual configuration file](https://github.com/furiosa-ai/furiosa-artifacts/blob/main/.dvc/config).
+
 1. `origin` backend
-  - An https endpoint.
-  - We use this endpoint to download files without any AWS credentials.
+    - An https endpoint.
+    - We use this endpoint to download files without any AWS credentials.
 2. `s3origin` backend
-  - An s3 protocol endpoint.
-  - We use this endpoint to upload files to s3 bucket.
+    - An s3 protocol endpoint.
+    - We use this endpoint to upload files to s3 bucket.
 
 ---
 
