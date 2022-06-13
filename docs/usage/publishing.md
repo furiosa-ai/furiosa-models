@@ -53,25 +53,35 @@ Model binary files(e.g. `*.onnx`, `*.tflite`) are usually too large for github t
 Therefore we handle these files with [DVC](https://dvc.org/), a version control system specialized for handling ML models and data sets.
 
 ### DVC installation
-You can install dvc by following this [instruction](https://dvc.org/doc/install).
+You can install DVC by following this [instruction](https://dvc.org/doc/install).
 
 You probably need `dvc[s3]` python package since this repository uses s3 as DVC's backend.
 
-### DVC pipeline
+### DVC pipelines
+
+Since DVC does not support anonymous logins & downloads for s3 backend ([related issue](https://github.com/iterative/dvc/issues/5797)), we have separated endpoints by purpose. You can also refer to the [actual configuration file](/.dvc/config).
+1. `origin` backend
+  - An https endpoint.
+  - We use this endpoint to download files without any AWS credentials.
+2. `s3origin` backend
+  - An s3 protocol endpoint.
+  - We use this endpoint to upload files to s3 bucket.
+
+---
 
 - Download model files via DVC
-  ```console
+  ```bash
   # `origin` is specified in [.dvc/config](.dvc/config),
   # -j option specifies num of parallel downloads
   $ dvc pull -r origin -j 10
   ```
 
 - Add a new data via DVC
-  ```console
-  # `origin` is specified in [.dvc/config](.dvc/config),
-  # -j option specifies num of parallel downloads
+  ```bash
+  # `s3origin` is specified in [.dvc/config](.dvc/config),
+  # We use `s3origin` remote as DVC does not currently support uploading files via https endpoint
   $ touch ./models/example-model
   $ dvc add -R ./models/example-model
-  $ dvc push -r origin
+  $ dvc push -r s3origin
   # Please follow DVC's instructions to follow these changes with git
   ```
