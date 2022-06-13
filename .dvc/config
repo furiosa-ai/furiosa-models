@@ -4,3 +4,4 @@
     url = https://furiosa-public-artifacts.s3.amazonaws.com/furiosa-artifacts
 ['remote "s3origin"']
     url = s3://furiosa-public-artifacts/furiosa-artifacts
+    acl = public-read
