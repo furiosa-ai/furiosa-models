@@ -25,6 +25,7 @@ async def load_dvc(uri: str):
                 uri, repo=os.environ.get("DVC_REPO", None), rev=os.environ.get("DVC_REV", None)
             )
         ) as resp:
+            resp.raise_for_status()
             return await resp.read()
 
 
