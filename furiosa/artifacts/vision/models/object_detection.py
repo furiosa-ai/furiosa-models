@@ -9,6 +9,7 @@ from pydantic import Field
 
 from .mlcommons import anchor_generator  # type: ignore[import]
 from .mlcommons.common.datasets import coco, dataset
+from .mlcommons.ssd_mobilenet_large import MLCommonsSSDLargeModel
 
 tensorArray = ForwardRef("tensor.TensorArray")
 
@@ -204,13 +205,3 @@ class MLCommonsSSDSmallModel(Model):
 
 
 MLCommonsSSDSmallModel.update_forward_refs()
-
-
-class MLCommonsSSDLargeModel(Model):
-    """MLCommons ResNet34 model"""
-
-    def preprocess(self, *args: Any, **kwargs: Any) -> Any:
-        return dataset.pre_process_coco_resnet34(*args, **kwargs)
-
-    def postprocess(self, *args: Any, **kwargs: Any) -> Any:
-        return coco.PostProcessCocoONNXNPlegacy()(*args, **kwargs)

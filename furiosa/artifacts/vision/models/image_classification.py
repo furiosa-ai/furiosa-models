@@ -3,9 +3,8 @@ from typing import Any, Callable, List, Optional
 import cv2
 import numpy as np
 import timm
-from pydantic import Field
-
 from furiosa.registry import Model
+from pydantic import Field
 
 from .common.base import ImageNetRwightman
 from .mlcommons.common.datasets import imagenet1k

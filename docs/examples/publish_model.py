@@ -7,7 +7,7 @@ loader = FileTransport()
 
 
 class ResNet18_Model(Model):
-    """ # This docstring shows up in furisao.registry.help()
+    """# This docstring shows up in furisao.registry.help()
     ResNet 18 model
 
     # Additional arguments

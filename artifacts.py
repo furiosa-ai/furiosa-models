@@ -4,6 +4,8 @@ from typing import Any
 
 import aiohttp
 import dvc.api
+from furiosa.registry import Format, Metadata, Model, Publication
+
 from furiosa.artifacts.vision.models.image_classification import (
     EfficientNetV2_M as EfficientNetV2_MModel,
 )
@@ -15,7 +17,6 @@ from furiosa.artifacts.vision.models.object_detection import (
     MLCommonsSSDLargeModel,
     MLCommonsSSDSmallModel,
 )
-from furiosa.registry import Format, Metadata, Model, Publication
 
 
 async def load_dvc(uri: str):
@@ -27,9 +28,6 @@ async def load_dvc(uri: str):
         ) as resp:
             resp.raise_for_status()
             return await resp.read()
-
-
-# Image classification
 
 
 async def MLCommonsResNet50(*args: Any, **kwargs: Any) -> MLCommonsResNet50Model:

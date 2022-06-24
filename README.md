@@ -23,6 +23,12 @@ from furiosa.models.vision import MLCommonsResNet50
 model: Model = asyncio.run(MLCommonsResNet50())
 ```
 
+## Testing
+Before contribution, we recommend you to test your codes using the following script:
+```
+pytest ./scripts
+```
+
 ## License
 
 ```
