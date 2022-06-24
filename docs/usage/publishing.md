@@ -29,7 +29,7 @@ Model class implements `furiosa.registry.Model`. `furiosa.registry.Model` is a c
 
 `def postprocess(self, *args: Any, **kwargs: Any) -> Any`
 
-Additional functions to suppport model modification. As a model provider, you can add pre-process, post-process functions to provide model specific functionalities. Note that this custom functions are not defined via interface which means you can add any custom functions.
+Additional functions to support model modification. As a model provider, you can add pre-process, post-process functions to provide model specific functionalities. Note that this custom functions are not defined via interface which means you can add any custom functions.
 
 As users does not know which functions are provided, you have to document these functions to allow clients to use models correctly.
 

@@ -4,7 +4,7 @@ from furiosa.models.vision import ResNet18
 from furiosa.registry import Model
 from furiosa.runtime import session
 
-model: Model = asyncio.run(ResNet18())
+model: Model = ResNet18()
 
 with session.create(model.model) as session:
     # Load input data
