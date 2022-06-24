@@ -21,7 +21,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 pytest
+        pip install flake8 pytest black isort
         pip install -e .
         pip install -e '.[test]'
     - name: Lint with flake8
@@ -30,6 +30,13 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings.
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
+    - name: Lint with isort
+      run: |
+        isort --check --diff .
+    - name: Lint with black
+      run: |
+        black --check --diff .
     - name: Test with pytest
       run: |
+        # ignore /scripts/ for now (needs NPU to be tested)
         pytest --ignore=scripts
