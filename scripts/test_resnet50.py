@@ -1,10 +1,10 @@
 import numpy as np
 import pytest
 
-from furiosa.registry import Model
-from .helpers.util import InferenceTestSessionWrapper
-
 import artifacts
+from furiosa.registry import Model
+
+from .helpers.util import InferenceTestSessionWrapper
 
 
 @pytest.mark.asyncio

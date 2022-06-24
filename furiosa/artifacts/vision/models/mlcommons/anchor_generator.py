@@ -188,8 +188,7 @@ def create_ssd_anchors(
     box_specs_list = []
     if scales is None or not scales:
         scales = [
-            min_scale + (max_scale - min_scale) * i / (num_layers - 1)
-            for i in range(num_layers)
+            min_scale + (max_scale - min_scale) * i / (num_layers - 1) for i in range(num_layers)
         ] + [1.0]
     else:
         # Add 1.0 to the end, which will only be used in scale_next below and used
@@ -275,9 +274,7 @@ class MultipleGridAnchorGenerator(object):
         ):
             self._box_specs = box_specs_list
         else:
-            raise ValueError(
-                "box_specs_list is expected to be a " "list of lists of pairs"
-            )
+            raise ValueError("box_specs_list is expected to be a " "list of lists of pairs")
         if base_anchor_size is None:
             base_anchor_size = torch.tensor([256, 256], dtype=torch.float32)
         self._base_anchor_size = base_anchor_size
@@ -289,12 +286,8 @@ class MultipleGridAnchorGenerator(object):
         self._scales = []
         self._aspect_ratios = []
         for box_spec in self._box_specs:
-            if not all(
-                [isinstance(entry, tuple) and len(entry) == 2 for entry in box_spec]
-            ):
-                raise ValueError(
-                    "box_specs_list is expected to be a " "list of lists of pairs"
-                )
+            if not all([isinstance(entry, tuple) and len(entry) == 2 for entry in box_spec]):
+                raise ValueError("box_specs_list is expected to be a " "list of lists of pairs")
             scales, aspect_ratios = zip(*box_spec)
             self._scales.append(scales)
             self._aspect_ratios.append(aspect_ratios)
@@ -305,14 +298,10 @@ class MultipleGridAnchorGenerator(object):
         ):
             if arg and not (isinstance(arg, list) and len(arg) == len(self._box_specs)):
                 raise ValueError(
-                    "%s must be a list with the same length "
-                    "as self._box_specs" % arg_name
+                    "%s must be a list with the same length " "as self._box_specs" % arg_name
                 )
             if arg and not all(
-                [
-                    isinstance(list_item, tuple) and len(list_item) == 2
-                    for list_item in arg
-                ]
+                [isinstance(list_item, tuple) and len(list_item) == 2 for list_item in arg]
             ):
                 raise ValueError("%s must be a list of pairs." % arg_name)
 
@@ -352,8 +341,7 @@ class MultipleGridAnchorGenerator(object):
             and len(feature_map_shape_list) == len(self._box_specs)
         ):
             raise ValueError(
-                "feature_map_shape_list must be a list with the same "
-                "length as self._box_specs"
+                "feature_map_shape_list must be a list with the same " "length as self._box_specs"
             )
         if not all(
             [
@@ -368,8 +356,7 @@ class MultipleGridAnchorGenerator(object):
 
         if not self._anchor_strides:
             anchor_strides = [
-                (1.0 / float(pair[0]), 1.0 / float(pair[1]))
-                for pair in feature_map_shape_list
+                (1.0 / float(pair[0]), 1.0 / float(pair[1])) for pair in feature_map_shape_list
             ]
         else:
             anchor_strides = [
@@ -377,9 +364,7 @@ class MultipleGridAnchorGenerator(object):
                 for stride in self._anchor_strides
             ]
         if not self._anchor_offsets:
-            anchor_offsets = [
-                (0.5 * stride[0], 0.5 * stride[1]) for stride in anchor_strides
-            ]
+            anchor_offsets = [(0.5 * stride[0], 0.5 * stride[1]) for stride in anchor_strides]
         else:
             anchor_offsets = [
                 (float(offset[0]) / im_height, float(offset[1]) / im_width)
@@ -391,15 +376,9 @@ class MultipleGridAnchorGenerator(object):
         ):
             if not (isinstance(arg, list) and len(arg) == len(self._box_specs)):
                 raise ValueError(
-                    "%s must be a list with the same length "
-                    "as self._box_specs" % arg_name
+                    "%s must be a list with the same length " "as self._box_specs" % arg_name
                 )
-            if not all(
-                [
-                    isinstance(list_item, tuple) and len(list_item) == 2
-                    for list_item in arg
-                ]
-            ):
+            if not all([isinstance(list_item, tuple) and len(list_item) == 2 for list_item in arg]):
                 raise ValueError("%s must be a list of pairs." % arg_name)
 
         anchor_grid_list = []
@@ -410,13 +389,7 @@ class MultipleGridAnchorGenerator(object):
             scale_height * self._base_anchor_size[0],
             scale_width * self._base_anchor_size[1],
         ]
-        for feature_map_index, (
-            grid_size,
-            scales,
-            aspect_ratios,
-            stride,
-            offset,
-        ) in enumerate(
+        for feature_map_index, (grid_size, scales, aspect_ratios, stride, offset,) in enumerate(
             zip(
                 feature_map_shape_list,
                 self._scales,
@@ -437,9 +410,7 @@ class MultipleGridAnchorGenerator(object):
             if self._clip_window is not None:
                 raise NotImplementedError("Oups!")
             num_anchors_in_layer = len(tiled_anchors)
-            anchorndices = feature_map_index * torch.ones(
-                num_anchors_in_layer
-            )  # noqa: F841
+            anchorndices = feature_map_index * torch.ones(num_anchors_in_layer)  # noqa: F841
             anchor_grid_list.append(tiled_anchors)
 
         return anchor_grid_list
