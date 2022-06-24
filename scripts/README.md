@@ -3,9 +3,11 @@
 Use these scripts to test Model before attaching NPU to the CI.
 
 ## Tested Models
+### Image Classification
+- [x] ResNet50
+### Object Detection
 - [x] ResNet34
-- [ ] ResNet50
-- [ ] MobileNet
+- [x] MobileNet
 
 ## How to run
 ```shell
