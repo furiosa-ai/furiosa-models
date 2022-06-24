@@ -1,11 +1,13 @@
-from typing import Any, List 
+from typing import Any, List
 
 import cv2
 import numpy as np
-from furiosa.registry import Model
 from pydantic import Field
 
+from furiosa.registry import Model
+
 from .common.datasets import imagenet1k
+
 
 class MLCommonsResNet50Model(Model):
     """MLCommons ResNet50 model"""

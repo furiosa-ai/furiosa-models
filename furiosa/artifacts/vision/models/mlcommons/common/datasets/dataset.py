@@ -199,8 +199,8 @@ def pre_process_mobilenet(img, dims=None, need_transpose=False):
 
 
 def pre_process_imagenet_pytorch(img, dims=None, need_transpose=False):
-    import torchvision.transforms.functional as F
     from PIL import Image
+    import torchvision.transforms.functional as F
 
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     img = Image.fromarray(img)
