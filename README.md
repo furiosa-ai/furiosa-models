@@ -23,7 +23,7 @@ model: Model = MLCommonsResNet50()
 ```
 
 ## Testing
-Before contribution, we recommend you to test your codes using the following script:
+Before contributing, we recommend you to write end-to-end testing codes under `./scripts/` directory. And please run the tests using the following script:
 ```
 pytest ./scripts
 ```

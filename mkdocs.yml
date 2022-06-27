@@ -18,8 +18,8 @@ nav:
 - Model description:
   - Vision:
     - Image classification:
-        - EfficientNet v2 S: 'models/efficientnet_v2_s.md'
-        - EfficientNet v2 M: 'models/efficientnet_v2_m.md'
+        # - EfficientNet v2 S: 'models/efficientnet_v2_s.md'
+        # - EfficientNet v2 M: 'models/efficientnet_v2_m.md'
         - ResNet50 v1.5: 'models/resnet50_v1.5.md'
     - Object detection:
         - SSD ResNet34: 'models/ssd_resnet34.md'
