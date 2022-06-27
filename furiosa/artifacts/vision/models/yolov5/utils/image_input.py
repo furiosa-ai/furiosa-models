@@ -1,6 +1,7 @@
-import cv2
 import glob
 import os
+
+import cv2
 
 
 class ImageInput:
@@ -84,7 +85,10 @@ class CapInput(ImageInput):
 
 
 class ImageFolderInput(ImageInput):
-    def __init__(self, path,):
+    def __init__(
+        self,
+        path,
+    ):
         self.files = sorted(glob.glob(os.path.join(path, "*")))
         self.frame_idx = 0
 

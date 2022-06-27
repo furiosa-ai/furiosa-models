@@ -5,6 +5,7 @@ import numpy as np
 import torch
 import torchvision
 import yaml
+
 from furiosa.registry import Model
 
 from .box_decode.box_decoder import BoxDecoderC
@@ -37,9 +38,7 @@ BOX_DECODER = BoxDecoderC(
 
 def _nms(prediction, iou_thres=0.45, class_agnostic=True):
     # Checks
-    assert (
-        0 <= iou_thres <= 1
-    ), f"Invalid IoU {iou_thres}, valid values are between 0.0 and 1.0"
+    assert 0 <= iou_thres <= 1, f"Invalid IoU {iou_thres}, valid values are between 0.0 and 1.0"
 
     # Settings
     min_wh, max_wh = (  # noqa: F841

@@ -1,6 +1,7 @@
 import ctypes
-import numpy as np
 import os
+
+import numpy as np
 
 _clib = ctypes.CDLL(os.path.join(os.path.dirname(__file__), 'cbox_decode.so'))
 
@@ -32,7 +33,20 @@ def _init():
 def _box_decode_feat(anchors, stride, conf_thres, max_boxes, feat, out_batch, out_batch_pos):
     bs, na, ny, nx, no = feat.shape
 
-    _clib.box_decode_feat(anchors.reshape(-1), na, stride, conf_thres, max_boxes, feat.reshape(-1), bs, ny, nx, no, out_batch.reshape(-1), out_batch_pos)
+    _clib.box_decode_feat(
+        anchors.reshape(-1),
+        na,
+        stride,
+        conf_thres,
+        max_boxes,
+        feat.reshape(-1),
+        bs,
+        ny,
+        nx,
+        no,
+        out_batch.reshape(-1),
+        out_batch_pos,
+    )
 
 
 def box_decode(anchors, stride, conf_thres, feats):
@@ -43,9 +57,11 @@ def box_decode(anchors, stride, conf_thres, feats):
     out_batch_pos = np.zeros(bs, dtype=np.uint32)
 
     for l, feat in enumerate(feats):
-        _box_decode_feat(anchors[l], stride[l], conf_thres, max_boxes, feat, out_batch, out_batch_pos)
+        _box_decode_feat(
+            anchors[l], stride[l], conf_thres, max_boxes, feat, out_batch, out_batch_pos
+        )
 
-    out_boxes_batched = [boxes[:(pos // 6)] for boxes, pos in zip(out_batch, out_batch_pos)]
+    out_boxes_batched = [boxes[: (pos // 6)] for boxes, pos in zip(out_batch, out_batch_pos)]
 
     return out_boxes_batched
 
