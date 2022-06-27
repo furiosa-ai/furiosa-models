@@ -1,0 +1,4 @@
+outs:
+- md5: 436d0d9ecafadf1d03e56981cf3fe686
+  size: 22015720
+  path: yolov5m_int8.onnx

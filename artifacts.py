@@ -9,8 +9,9 @@ from furiosa.artifacts.vision.models.image_classification import MLCommonsResNet
 from furiosa.artifacts.vision.models.object_detection import (
     MLCommonsSSDLargeModel,
     MLCommonsSSDSmallModel,
+    YoloV5LargeModel,
 )
-from furiosa.registry import Format, Metadata, Model, Publication
+from furiosa.registry import Format, Metadata, Publication
 
 module_logger = logging.getLogger(__name__)
 
@@ -20,8 +21,13 @@ async def load_dvc(uri: str):
     dvc_rev = os.environ.get("DVC_REV", None)
     module_logger.debug(f"dvc_uri={uri}, DVC_REPO={dvc_repo}, DVC_REV={dvc_rev}")
     async with aiohttp.ClientSession() as session:
-        async with session.get(dvc.api.get_url(uri, repo=dvc_repo, rev=dvc_rev)) as resp:
-            resp.raise_for_status()
+        async with session.get(
+            dvc.api.get_url(
+                uri,
+                repo=os.environ.get("DVC_REPO", None),
+                rev=os.environ.get("DVC_REV", None),
+            )
+        ) as resp:
             return await resp.read()
 
 
@@ -73,6 +79,33 @@ async def MLCommonsSSDResNet34(*args: Any, **kwargs: Any) -> MLCommonsSSDLargeMo
                 url="https://github.com/mlcommons/inference/tree/master/vision/classification_and_detection"  # noqa: E501
             ),
         ),
+        *args,
+        **kwargs,
+    )
+
+
+async def YoloV5Large(*args: Any, **kwargs: Any) -> YoloV5LargeModel:
+    return YoloV5LargeModel(
+        name="YoloV5Large",
+        model=await load_dvc("models/yolov5l_int8.onnx"),
+        format=Format.ONNX,
+        family="Yolo",
+        version="v5",
+        metadata=Metadata(
+            description="Yolo v5 large model",
+            publication=Publication(url="https://github.com/ultralytics/yolov5"),
+        ),
+        compiler_config={
+            "without_quantize": {
+                "parameters": [
+                    {
+                        "input_min": 0.0,
+                        "input_max": 1.0,
+                        "permute": [0, 2, 3, 1],  # "HWC" to "CHW"
+                    }
+                ]
+            },
+        },
         *args,
         **kwargs,
     )
