@@ -1,0 +1,21 @@
+# Copied from pyproject.toml
+
+furiosa-registry~=0.6.3
+onnx
+onnxruntime
+opencv-python
+pycocotools
+timm
+torch
+torchvision
+dvc[s3]
+pydantic
+# Protobuf major version change issue: https://github.com/furiosa-ai/furiosa-artifacts/issues/23
+protobuf<4.0dev
+# segmentation_models_pytorch: from https://github.com/qubvel/segmentation_models.pytorch
+segmentation_models_pytorch @ git+https://github.com/deeplearningfromscratch/segmentation_models.pytorch.git
+# pretrainedmodels: from https://github.com/cadene/pretrained-models.pytorch
+pretrainedmodels @ git+https://github.com/deeplearningfromscratch/pretrained-models.pytorch.git
+# effdet: from https://github.com/rwightman/efficientdet-pytorch
+effdet @ git+https://github.com/deeplearningfromscratch/efficientdet-pytorch.git
+cbox_decode @ git+https://github.com/furiosa-ai/furiosa-artifacts.git#subdirectory=furiosa/artifacts/vision/models/yolov5/box_decode/cbox_decode
