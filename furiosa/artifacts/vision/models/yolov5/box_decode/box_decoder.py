@@ -1,9 +1,6 @@
-import time
-
 import numpy as np
 import pkg_resources as pkg
 import torch
-import torchvision
 
 
 class BoxDecoderBase:
@@ -37,15 +34,18 @@ class BoxDecoderPytorch(BoxDecoderBase):
     ):
         # Check version vs. required version
         current, minimum = (pkg.parse_version(x) for x in (current, minimum))
-        result = (current == minimum) if pinned else (current >= minimum)  # bool
-        s = f"{name}{minimum} required by YOLOv5, but {name}{current} is currently installed"  # string
+        # bool
+        result = (current == minimum) if pinned else (current >= minimum)
+        # string
+        s = f"{name}{minimum} required by YOLOv5, but {name}{current} is currently installed"
         if hard:
             assert result, s  # assert min requirements met
 
         return result
 
     def _xywh2xyxy(self, x):
-        # Convert nx4 boxes from [x, y, w, h] to [x1, y1, x2, y2] where xy1=top-left, xy2=bottom-right
+        # Convert nx4 boxes from [x, y, w, h] to [x1, y1, x2, y2]
+        # where xy1=top-left, xy2=bottom-right
         y = x.clone() if isinstance(x, torch.Tensor) else np.copy(x)
         y[:, 0] = x[:, 0] - x[:, 2] / 2  # top left x
         y[:, 1] = x[:, 1] - x[:, 3] / 2  # top left y
@@ -62,9 +62,7 @@ class BoxDecoderPytorch(BoxDecoderBase):
                 [torch.arange(ny, device=d), torch.arange(nx, device=d)], indexing="ij"
             )
         else:
-            yv, xv = torch.meshgrid(
-                [torch.arange(ny, device=d), torch.arange(nx, device=d)]
-            )
+            yv, xv = torch.meshgrid([torch.arange(ny, device=d), torch.arange(nx, device=d)])
         grid = torch.stack((xv, yv), 2).expand((1, self.na, ny, nx, 2)).float()
         anchor_grid = (
             (self.anchors[i].clone() * self.stride[i])
@@ -86,9 +84,7 @@ class BoxDecoderPytorch(BoxDecoderBase):
 
             assert self.grid[i].shape[2:4] == x[i].shape[2:4]
 
-            y[..., 0:2] = (y[..., 0:2] * 2.0 - 0.5 + self.grid[i]) * self.stride[
-                i
-            ]  # xy
+            y[..., 0:2] = (y[..., 0:2] * 2.0 - 0.5 + self.grid[i]) * self.stride[i]  # xy
             y[..., 2:4] = (y[..., 2:4] * 2) ** 2 * self.anchor_grid[i]  # wh
             y = y.view(bs, -1, self.no)
 
@@ -138,8 +134,6 @@ class BoxDecoderC(BoxDecoderBase):
 
         assert all(isinstance(feat, np.ndarray) for feat in feats)
 
-        out_boxes_batched = cbox_decode(
-            self.anchors, self.stride, self.conf_thres, feats
-        )
+        out_boxes_batched = cbox_decode(self.anchors, self.stride, self.conf_thres, feats)
 
         return out_boxes_batched
