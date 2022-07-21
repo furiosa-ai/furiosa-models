@@ -11,6 +11,13 @@ Load models via [furiosa-models](https://github.com/furiosa-ai/furiosa-sdk/tree/
 pip install furiosa-models
 ```
 
+### Building from Source
+
+```
+git clone https://github.com/furiosa-ai/furiosa-artifacts
+pip install .
+```
+
 ## Example
 
 ```python
@@ -24,7 +31,12 @@ model: Model = MLCommonsResNet50()
 
 ## Testing
 Before contributing, we recommend you to write end-to-end testing codes under `./scripts/` directory. And please run the tests using the following script:
-```
+
+```sh
+# Install the test dependency first
+pip install .[test]
+
+# Run test
 pytest ./scripts
 ```
 

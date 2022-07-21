@@ -1,38 +1,24 @@
-import logging
-import os
 from typing import Any
 
-import aiohttp
-import dvc.api
-
-from furiosa.artifacts.vision.models.image_classification import MLCommonsResNet50Model
-from furiosa.artifacts.vision.models.object_detection import (
-    MLCommonsSSDLargeModel,
-    MLCommonsSSDSmallModel,
-    YoloV5LargeModel,
-)
 from furiosa.registry import Format, Metadata, Publication
 
-module_logger = logging.getLogger(__name__)
+from furiosa.models.utils import load_dvc
+from . import object_detection
+from . import image_classification
+
+__all__ = [
+    "MLCommonsResNet50",
+    "MLCommonsSSDMobileNet",
+    "MLCommonsSSDResNet34",
+    "YoloV5Large",
+
+    "image_classification",
+    "object_detection"
+]
 
 
-async def load_dvc(uri: str):
-    dvc_repo = os.environ.get("DVC_REPO", None)
-    dvc_rev = os.environ.get("DVC_REV", None)
-    module_logger.debug(f"dvc_uri={uri}, DVC_REPO={dvc_repo}, DVC_REV={dvc_rev}")
-    async with aiohttp.ClientSession() as session:
-        async with session.get(
-            dvc.api.get_url(
-                uri,
-                repo=os.environ.get("DVC_REPO", None),
-                rev=os.environ.get("DVC_REV", None),
-            )
-        ) as resp:
-            return await resp.read()
-
-
-async def MLCommonsResNet50(*args: Any, **kwargs: Any) -> MLCommonsResNet50Model:
-    return MLCommonsResNet50Model(
+async def MLCommonsResNet50(*args: Any, **kwargs: Any) -> image_classification.MLCommonsResNet50Model:
+    return image_classification.MLCommonsResNet50Model(
         name="MLCommonsResNet50",
         model=await load_dvc("models/mlcommons_resnet50_v1.5_int8.onnx"),
         format=Format.ONNX,
@@ -48,10 +34,8 @@ async def MLCommonsResNet50(*args: Any, **kwargs: Any) -> MLCommonsResNet50Model
 
 
 # Object detection
-
-
-async def MLCommonsSSDMobileNet(*args: Any, **kwargs: Any) -> MLCommonsSSDSmallModel:
-    return MLCommonsSSDSmallModel(
+async def MLCommonsSSDMobileNet(*args: Any, **kwargs: Any) -> object_detection.MLCommonsSSDSmallModel:
+    return object_detection.MLCommonsSSDSmallModel(
         name="MLCommonsSSDMobileNet",
         model=await load_dvc("models/mlcommons_ssd_mobilenet_v1_int8.onnx"),
         format=Format.ONNX,
@@ -66,8 +50,8 @@ async def MLCommonsSSDMobileNet(*args: Any, **kwargs: Any) -> MLCommonsSSDSmallM
     )
 
 
-async def MLCommonsSSDResNet34(*args: Any, **kwargs: Any) -> MLCommonsSSDLargeModel:
-    return MLCommonsSSDLargeModel(
+async def MLCommonsSSDResNet34(*args: Any, **kwargs: Any) -> object_detection.MLCommonsSSDLargeModel:
+    return object_detection.MLCommonsSSDLargeModel(
         name="MLCommonsSSDResNet34",
         model=await load_dvc("models/mlcommons_ssd_resnet34_int8.onnx"),
         format=Format.ONNX,
@@ -84,8 +68,8 @@ async def MLCommonsSSDResNet34(*args: Any, **kwargs: Any) -> MLCommonsSSDLargeMo
     )
 
 
-async def YoloV5Large(*args: Any, **kwargs: Any) -> YoloV5LargeModel:
-    return YoloV5LargeModel(
+async def YoloV5Large(*args: Any, **kwargs: Any) -> object_detection.YoloV5LargeModel:
+    return object_detection.YoloV5LargeModel(
         name="YoloV5Large",
         model=await load_dvc("models/yolov5l_int8.onnx"),
         format=Format.ONNX,
