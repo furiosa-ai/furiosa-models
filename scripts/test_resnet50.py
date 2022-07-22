@@ -1,7 +1,8 @@
 import pytest
-from furiosa.registry import Model
 
 from furiosa.models import vision
+from furiosa.registry import Model
+
 from .helpers.util import InferenceTestSessionWrapper
 
 

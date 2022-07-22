@@ -2,9 +2,8 @@ import logging
 import os
 
 import aiohttp
-import dvc.api
-
 from artifacts import module_logger
+import dvc.api
 
 module_logger = logging.getLogger(__name__)
 

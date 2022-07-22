@@ -1,23 +1,23 @@
 from typing import Any
 
+from furiosa.models.utils import load_dvc
 from furiosa.registry import Format, Metadata, Publication
 
-from furiosa.models.utils import load_dvc
-from . import object_detection
-from . import image_classification
+from . import image_classification, object_detection
 
 __all__ = [
     "MLCommonsResNet50",
     "MLCommonsSSDMobileNet",
     "MLCommonsSSDResNet34",
     "YoloV5Large",
-
     "image_classification",
-    "object_detection"
+    "object_detection",
 ]
 
 
-async def MLCommonsResNet50(*args: Any, **kwargs: Any) -> image_classification.MLCommonsResNet50Model:
+async def MLCommonsResNet50(
+    *args: Any, **kwargs: Any
+) -> image_classification.MLCommonsResNet50Model:
     return image_classification.MLCommonsResNet50Model(
         name="MLCommonsResNet50",
         model=await load_dvc("models/mlcommons_resnet50_v1.5_int8.onnx"),
@@ -34,7 +34,9 @@ async def MLCommonsResNet50(*args: Any, **kwargs: Any) -> image_classification.M
 
 
 # Object detection
-async def MLCommonsSSDMobileNet(*args: Any, **kwargs: Any) -> object_detection.MLCommonsSSDSmallModel:
+async def MLCommonsSSDMobileNet(
+    *args: Any, **kwargs: Any
+) -> object_detection.MLCommonsSSDSmallModel:
     return object_detection.MLCommonsSSDSmallModel(
         name="MLCommonsSSDMobileNet",
         model=await load_dvc("models/mlcommons_ssd_mobilenet_v1_int8.onnx"),
@@ -50,7 +52,9 @@ async def MLCommonsSSDMobileNet(*args: Any, **kwargs: Any) -> object_detection.M
     )
 
 
-async def MLCommonsSSDResNet34(*args: Any, **kwargs: Any) -> object_detection.MLCommonsSSDLargeModel:
+async def MLCommonsSSDResNet34(
+    *args: Any, **kwargs: Any
+) -> object_detection.MLCommonsSSDLargeModel:
     return object_detection.MLCommonsSSDLargeModel(
         name="MLCommonsSSDResNet34",
         model=await load_dvc("models/mlcommons_ssd_resnet34_int8.onnx"),
