@@ -4,11 +4,12 @@ from typing import Any, Dict, ForwardRef, List, Tuple
 import cv2
 import numpy as np
 import numpy.typing as npt
-from furiosa.registry import Model, Format, Metadata, Publication
+
+from furiosa.registry import Format, Metadata, Model, Publication
 
 from . import anchor_generator  # type: ignore[import]
-from ..common.datasets import coco
 from ...utils import load_dvc
+from ..common.datasets import coco
 
 tensorArray = ForwardRef("tensor.TensorArray")
 
@@ -44,6 +45,7 @@ class SSDSmallConstant(object):
 
 class MLCommonsSSDSmallModel(Model):
     """MLCommons MobileNet v1 model"""
+
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/tools/submission/submission-checker.py#L467
 
     @property

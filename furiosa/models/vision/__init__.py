@@ -10,7 +10,9 @@ __all__ = []
 
 # Iterate over non-blocking versions of Model classes (that of .nonblocking.vision)
 for model in [
-    getattr(nonblocking, m) for m in dir(nonblocking) if iscoroutinefunction(getattr(nonblocking, m))
+    getattr(nonblocking, m)
+    for m in dir(nonblocking)
+    if iscoroutinefunction(getattr(nonblocking, m))
 ]:
     # Export synchronous version of Model class in this module scope
     name = model.__name__
