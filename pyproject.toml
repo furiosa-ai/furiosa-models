@@ -1,9 +1,9 @@
 [build-system]
-requires = ["flit"]
-build-backend = "flit.buildapi"
+requires = ["maturin>=0.13,<0.14"]
+build-backend = "maturin"
 
 [project]
-name = "furiosa-artifacts"
+name = "furiosa-models"
 version = "0.0.1"
 authors = [{ name = "FurioaAI Inc.", email = "pkg@furiosa.ai" }]
 readme = "README.md"
@@ -15,6 +15,9 @@ classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
     "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
@@ -26,6 +29,7 @@ dynamic = ["description"]
 requires-python = "~=3.7"
 dependencies = [
     "furiosa-registry ~= 0.6.3",
+    "furiosa-common ~= 0.6.3",
     "onnx",
     "onnxruntime",
     "opencv-python",
@@ -56,9 +60,6 @@ Home = "https://furiosa.ai"
 Documentation = "https://github.com/furiosa-ai/furiosa-artifacts"
 "Bug Tracker" = "https://github.com/furiosa-ai/furiosa-artifacts/issues"
 "Source Code" = "https://github.com/furiosa-ai/furiosa-artifacts"
-
-[tool.flit.module]
-name = "furiosa.artifacts"
 
 [tool.black]
 skip-string-normalization = true

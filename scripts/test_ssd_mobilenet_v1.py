@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-import artifacts
+from furiosa.models.vision import nonblocking
 from furiosa.registry import Model
 
 from .helpers.util import InferenceTestSessionWrapper
@@ -9,7 +9,7 @@ from .helpers.util import InferenceTestSessionWrapper
 
 @pytest.mark.asyncio
 async def test_mlcommons_mobilessd_small_perf():
-    m: Model = await artifacts.MLCommonsSSDMobileNet()
+    m: Model = await nonblocking.SSDMobileNet()
     test_image_path = "scripts/assets/cat.jpg"
 
     assert len(m.classes) == 92, f"Classes is 92, but {len(m.classes)}"

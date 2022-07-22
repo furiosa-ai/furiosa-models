@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-import artifacts
+from furiosa.models.vision import nonblocking
 from furiosa.registry import Model
 
 from .helpers.util import InferenceTestSessionWrapper
@@ -9,7 +9,7 @@ from .helpers.util import InferenceTestSessionWrapper
 
 @pytest.mark.asyncio
 async def test_mlcommons_ssd_resnet34_perf():
-    m: Model = await artifacts.MLCommonsSSDResNet34()
+    m: Model = await nonblocking.SSDResNet34()
     test_image_path = "scripts/assets/cat.jpg"
 
     assert len(m.classes) == 81, f"Classes is 81, but {len(m.classes)}"
