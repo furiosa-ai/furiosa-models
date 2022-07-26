@@ -25,7 +25,8 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
-dynamic = ["description"]
+# dynamic = ["description"]
+description = "Furiosa Models"
 requires-python = "~=3.7"
 dependencies = [
     "furiosa-registry ~= 0.6.3",
