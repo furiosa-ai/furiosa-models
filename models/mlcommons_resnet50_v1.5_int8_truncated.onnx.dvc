@@ -1,0 +1,4 @@
+outs:
+- md5: 975076d450e70b42dcb4a137afa7a568
+  size: 25855815
+  path: mlcommons_resnet50_v1.5_int8_truncated.onnx
