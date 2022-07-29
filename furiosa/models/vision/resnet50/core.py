@@ -1,11 +1,17 @@
-from typing import Any
+import os
+from typing import Any, List
 
 import cv2
 import numpy as np
 
-from ..utils import LazyPipeLine
-from .common.datasets import imagenet1k
+from furiosa.common.thread import synchronous
+from furiosa.models.utils import load_dvc
+from furiosa.runtime import session
 
+__classes = [
+    label.strip()
+    for label in open(os.path.join(os.path.dirname(__file__), "imagenet-1k-label.txt")).readlines()
+]
 
 def center_crop(image: np.ndarray, cropped_height: int, cropped_width: int) -> np.ndarray:
     """Centrally crop `image` into cropped_width x cropped_height."""
@@ -42,35 +48,32 @@ def load(image_path: str) -> np.array:
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     return image
 
-def preprocess(rgb_image: Any, normal_mean: np.array = np.array([123.68, 116.78, 103.94], dtype=np.float32), crop_percent: float=87.5) -> np.array:
+def preprocess(rgb_image: Any) -> np.array:
     """Read and preprocess an image located at image_path."""
     # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/main.py#L37-L39
     # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L168-L184
     image = resize_with_aspect_ratio(
-        rgb_image, 224, 224, percent=crop_percent, interpolation=cv2.INTER_AREA
+        rgb_image, 224, 224, percent=87.5, interpolation=cv2.INTER_AREA
     )
     image = center_crop(image, 224, 224)
     image = np.asarray(image, dtype=np.float32)
     # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L178
-    image -= normal_mean
+    image -= np.array([123.68, 116.78, 103.94], dtype=np.float32)
     image = image.transpose([2, 0, 1])
     return image[np.newaxis, ...]
 
-classes = imagenet1k.ImageNet1k_CLASSES
-
-def postprocess(output: Any) -> str:
+def postprocess(output: Any, classes: List[str]) -> str:
     return classes[int(output[0].numpy()) - 1]
 
-def run(sess, pre_image):
-    return sess.run(pre_image)
+async def async_create_session() -> session.Session:
+    model_weight = await load_dvc('./models/mlcommons_resnet50_v1.5_int8.onnx')
+    print("model-weight:{}", len(model_weight))
+    return session.create( bytes(model_weight) )
 
-def create_session():
-    load_dvc('./models/mlcommons_resnet50_v1.5_int8.onnx', '', '')
+def create_session() -> session.Session:
+    return synchronous(async_create_session())()
 
-def load_pipeline(pre_config, post_config) -> LazyPipeLine:
-    return (
-        LazyPipeLine()
-            .bind( preprocess, kwargs=pre_config )
-            .bind( run )
-            .bind( postprocess, kwargs=post_config )
-    )
+def inference(sess, image, post_config={}) -> str:
+    pre_image = preprocess(image)
+    predict = sess.run(pre_image)
+    return postprocess(predict, __classes)
