@@ -1,7 +1,7 @@
 # ResNet50 v1.5
 
 ResNet50 v1.5 backbone model trained on ImageNet (224x224). 
-This model is also used MLCommons 1.1.
+This model is also used at MLCommons v2.0.
 
 ## Usage
 
@@ -20,7 +20,7 @@ with session.create as sess:
 ```
 
 ## Model inputs
-The input is an 3-channels image of 224x224 (height, width).
+The input is a 3-channel image of 224x224 (height, width).
 
 * Data Type: `numpy.float32`
 * Tensor Shape: `[1, 3, 224, 224]`
