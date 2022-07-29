@@ -41,7 +41,7 @@ def resize_with_aspect_ratio(
     image = cv2.resize(image, (new_width, new_height), interpolation=interpolation)
     return image
 
-def load(image_path: str) -> np.array:
+def load_image(image_path: str) -> np.array:
     image = cv2.imread(image_path)
     if image is None:
         raise FileNotFoundError(image_path)
