@@ -1,16 +1,15 @@
 import pytest
 
-from furiosa.models.vision import nonblocking
-from furiosa.registry import Model
+from furiosa.models.vision import ResNet50
+from furiosa.models.vision.resnet50 import postprocess, preprocess
+from furiosa.runtime import session
 
-from .helpers.util import InferenceTestSessionWrapper
 
-
-@pytest.mark.asyncio
-async def test_mlcommons_resnet50_perf():
-    m: Model = await nonblocking.ResNet50()
+def test_mlcommons_resnet50_perf():
+    resnet50 = ResNet50()
     test_image_path = "scripts/assets/cat.jpg"
 
-    with InferenceTestSessionWrapper(m) as sess:
-        result = sess.inference(test_image_path)
-        assert result == "tabby, tabby cat", "check your result"
+    with session.create(resnet50.model) as sess:
+        image = preprocess(test_image_path)
+        output = postprocess(sess.run(image))
+        assert output == "tabby, tabby cat", "check your result"
