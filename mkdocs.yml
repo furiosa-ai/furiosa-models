@@ -1,31 +1,25 @@
-site_name: Furiosa Artifacts
-site_description: Deep learning models provided by FuriosaAI
-site_url: https://furiosa-ai.github.io/furiosa-artifacts
+site_name: Furiosa Models
+site_description: DNN Models optimized for FuriosaAI NPU
+site_url: https://furiosa-ai.github.io/furiosa-models-experimental
 
 theme:
   name: material
 
-repo_name: furiosa-ai/furiosa-artifacts
-repo_url: https://github.com/furiosa-ai/furiosa-artifacts
+repo_name: furiosa-ai/furiosa-models-experimental
+repo_url: https://github.com/furiosa-ai/furiosa-models-experimental
 
 nav:
 - Overview: index.md
-- How it works:
-  - Publishing models: usage/publishing.md
-  - Loading models: usage/loading.md
-  - Running models: usage/running.md
-- Available models: models.md
-- Model description:
-  - Vision:
-    - Image classification:
-        # - EfficientNet v2 S: 'models/efficientnet_v2_s.md'
-        # - EfficientNet v2 M: 'models/efficientnet_v2_m.md'
+- getting_started.md
+- Models:
+    - Image Classification:
         - ResNet50 v1.5: 'models/resnet50_v1.5.md'
-    - Object detection:
-        - SSD ResNet34: 'models/ssd_resnet34.md'
+    - Object Detection:
         - SSD MobileNet v1: 'models/ssd_mobilenet_v1.md'
-
+        - SSD ResNet34: 'models/ssd_resnet34.md'
+        - YOLOv5: 'models/yolov5.md'
 - changelog.md
+- Apache License 2.0: 'https://github.com/furiosa-ai/furiosa-models-experimental/blob/main/LICENSE'
 
 markdown_extensions:
   - pymdownx.highlight:

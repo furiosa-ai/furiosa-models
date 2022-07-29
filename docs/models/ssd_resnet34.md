@@ -1,1 +1,0 @@
-# SSD ResNet34

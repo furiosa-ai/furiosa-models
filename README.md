@@ -1,20 +1,29 @@
-Furiosa Artifacts
-=================
+FuriosaAI Models
+======================
+Furiosa Models provides DNN models including quantized pre-trained weights, model metadata, and 
+runtime configurations for FuriosaAI SDK and NPU. Basically, all models are specifically optimized for FuriosaAI NPU, 
+but the models are based on standard ONNX format. You can feel free to use all models for even CPU and GPU.
 
-This repository provides deep learning models provided by FuriosaAI. Available models are described in `artifacts.py` which is a descriptor file in the form defined by [furiosa-registry](https://github.com/furiosa-ai/furiosa-sdk/tree/main/python/furiosa-registry/)
+## Available models
+
+| Model                               | Task                 | Size | Accuracy | Latency (NPU) | Latency (CPU) |
+|-------------------------------------|----------------------|------|----------|---------------|---------------|
+| [ResNet50](models/resnet50_v1.5.md) | Image Classification | 25M  |          |               |               |
+| SSDMobileNet                        | Object Detection     | 7.2M |          |               |               |
+| SSDResNet35                         | Object Detection     | 20M  |          |               |               |
+| YOLOv5M                             | Object Detection     | 21M  |          |               |               |
+| YOLOv5L                             | Object Detection     | 46M  |          |               |               |
 
 ## Installation
-
-Load models via [furiosa-models](https://github.com/furiosa-ai/furiosa-sdk/tree/main/python/furiosa-models).
-
+You can quickly install `furiosa-models` by using `pip`.
 ```sh
 pip install furiosa-models
 ```
 
-### Building from Source
+Or you can build from the source code as following:
 
 ```
-git clone https://github.com/furiosa-ai/furiosa-artifacts
+git clone https://github.com/furiosa-ai/furiosa-models-experimental
 pip install .
 ```
 
@@ -22,38 +31,11 @@ pip install .
 
 ```python
 from furiosa.registry import Model
-from furiosa.models.vision import MLCommonsResNet50
+from furiosa.models.vision import ResNet50
 
-
-model: Model = MLCommonsResNet50()
-...
+model: Model = ResNet50()
 ```
 
-## Testing
-Before contributing, we recommend you to write end-to-end testing codes under `./scripts/` directory. And please run the tests using the following script:
-
-```sh
-# Install the test dependency first
-pip install .[test]
-
-# Run test
-pytest ./scripts
-```
-
-## License
-
-```
-Copyright (c) 2021 FuriosaAI Inc. All Rights Reserved.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-```
+## See Also
+* [Furiosa Models - Github](https://github.com/furiosa-ai/furiosa-models-experimental)
+* [Furiosa SDK Documentation](https://furiosa-ai.github.io/docs/latest/en/)
