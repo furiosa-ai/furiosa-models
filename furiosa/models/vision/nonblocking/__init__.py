@@ -1,7 +1,7 @@
 from typing import Any
 
 from furiosa.models.utils import load_dvc
-from furiosa.models.vision import resnet50, ssd_mobilenet_v1_5, ssd_resnet34
+from furiosa.models.vision import resnet50, ssd_resnet34
 from furiosa.models.vision.yolov5 import large as yolov5l
 from furiosa.registry import Format, Metadata, Publication
 
@@ -11,7 +11,6 @@ __all__ = [
     "SSDResNet34",
     "YOLOv5l",
     "resnet50",
-    "ssd_mobilenet_v1_5",
     "ssd_resnet34",
     "yolov5l",
 ]
@@ -34,22 +33,6 @@ async def ResNet50(*args: Any, **kwargs: Any) -> resnet50.MLCommonsResNet50Model
 
 
 # Object detection
-async def SSDMobileNet(*args: Any, **kwargs: Any) -> ssd_mobilenet_v1_5.MLCommonsSSDSmallModel:
-    return ssd_mobilenet_v1_5.MLCommonsSSDSmallModel(
-        name="MLCommonsSSDMobileNet",
-        model=await load_dvc("models/mlcommons_ssd_mobilenet_v1_int8.onnx"),
-        format=Format.ONNX,
-        family="MobileNetV1",
-        version="v1.1",
-        metadata=Metadata(
-            description="MobileNet v1 model for MLCommons v1.1",
-            publication=Publication(url="https://arxiv.org/abs/1704.04861.pdf"),
-        ),
-        *args,
-        **kwargs,
-    )
-
-
 async def SSDResNet34(*args: Any, **kwargs: Any) -> ssd_resnet34.MLCommonsSSDLargeModel:
     return ssd_resnet34.MLCommonsSSDLargeModel(
         name="MLCommonsSSDResNet34",

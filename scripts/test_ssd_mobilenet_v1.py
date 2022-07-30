@@ -1,27 +1,27 @@
+import math
+
 import numpy as np
 import pytest
 
-from furiosa.models.vision import nonblocking
-from furiosa.registry import Model
-
-from .helpers.util import InferenceTestSessionWrapper
+from furiosa.models.vision import ssd_mobilenet_v1_5 as detector
 
 
 @pytest.mark.asyncio
 async def test_mlcommons_mobilessd_small_perf():
-    m: Model = await nonblocking.SSDMobileNet()
     test_image_path = "scripts/assets/cat.jpg"
 
-    assert len(m.classes) == 92, f"Classes is 92, but {len(m.classes)}"
-    with InferenceTestSessionWrapper(m) as sess:
+    assert len(detector.CLASSES) == 92, f"Classes is 92, but {len(detector.classes)}"
+    with await detector.create_session() as sess:
+        result = detector.inference(sess, detector.load_image(test_image_path))
+
+        assert len(result) == 1, "ssd_resnet34 output shape must be 1"
+        classname, confidence, bbox = result[0]
+
+        assert classname == "cat", f"wrong classid: {classname}, expected cat"
         true_bbox = np.array([[187.30786, 88.035324, 763.6886, 655.2937]], dtype=np.float32)
-        true_classid = np.array([17], dtype=np.int32)
-        true_confidence = np.array([0.97390455], dtype=np.float32)
-        result = sess.inference(test_image_path)
-        assert len(result) == 3, "ssd_resnet34 output shape must be (1, 3)"
-        bbox, classid, confidence = result
-        assert np.array_equal(classid, true_classid), f"wrong classid: {classid}, expected 16(cat)"
-        assert np.sum(np.abs(bbox - true_bbox)) < 1e-3, f"bbox is different from expected value"
+        assert np.sum(np.abs(np.array(bbox, dtype=np.float32) - true_bbox)) < 1e-3, f"bbox is different from expected value"
+        true_confidence = 0.97390455
         assert (
-            np.sum(np.abs(confidence - true_confidence)) < 1e-3
+            math.fabs(confidence - true_confidence) < 1e-3
         ), "confidence is different from expected value"
+        print("finish detected")
