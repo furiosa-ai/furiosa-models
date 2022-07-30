@@ -10,7 +10,6 @@ from furiosa.models.vision import ssd_mobilenet_v1_5 as detector
 async def test_mlcommons_mobilessd_small_perf():
     test_image_path = "scripts/assets/cat.jpg"
 
-    assert len(detector.CLASSES) == 92, f"Classes is 92, but {len(detector.classes)}"
     with await detector.create_session() as sess:
         result = detector.inference(sess, detector.load_image(test_image_path))
 
