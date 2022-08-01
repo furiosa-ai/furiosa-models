@@ -4,12 +4,11 @@ from typing import Any, Dict, ForwardRef, List, Tuple
 import cv2
 import numpy as np
 import numpy.typing as npt
-
 from furiosa.runtime import session
 
-from . import anchor_generator  # type: ignore[import]
 from ...utils import load_dvc
 from ..common.datasets import coco
+from . import anchor_generator  # type: ignore[import]
 
 tensorArray = ForwardRef("tensor.TensorArray")
 
@@ -58,6 +57,7 @@ def load_image(image_path: str) -> np.array:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     return image
 
+
 def preprocess(image: np.array) -> Tuple[npt.ArrayLike, int, int]:
     """Read and preprocess an image located at image_path."""
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L49-L51
@@ -70,8 +70,10 @@ def preprocess(image: np.array) -> Tuple[npt.ArrayLike, int, int]:
     image = image.transpose([2, 0, 1])
     return image[np.newaxis, ...], width, height
 
+
 def sigmoid(x: np.ndarray) -> np.ndarray:  # pylint: disable=invalid-name
     return 1 / (1 + np.exp(-x))
+
 
 def decode_boxes(rel_codes: np.ndarray) -> np.ndarray:
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/utils.py#L149-L198
@@ -91,7 +93,9 @@ def decode_boxes(rel_codes: np.ndarray) -> np.ndarray:
     dw /= 5.0
     dh /= 5.0
 
-    prediction_center_x = dx * SSDSmallConstant.PRIORS_WIDTHS + SSDSmallConstant.PRIORS_CENTER_X
+    prediction_center_x = (
+        dx * SSDSmallConstant.PRIORS_WIDTHS + SSDSmallConstant.PRIORS_CENTER_X
+    )
     prediction_center_y = (
         dy * SSDSmallConstant.PRIORS_HEIGHTS + SSDSmallConstant.PRIORS_CENTER_Y
     )
@@ -109,9 +113,9 @@ def decode_boxes(rel_codes: np.ndarray) -> np.ndarray:
     )
     return prediction_boxes
 
+
 def filter_results(
-    scores: np.ndarray, boxes: np.ndarray,
-    confidence_threshold: float
+    scores: np.ndarray, boxes: np.ndarray, confidence_threshold: float
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L197-L212
     selected_box_probs = []
@@ -128,6 +132,7 @@ def filter_results(
     selected_box_probs = np.concatenate(selected_box_probs)  # type: ignore[assignment]
     labels = np.concatenate(labels)  # type: ignore[assignment]
     return selected_box_probs[:, :4], labels, selected_box_probs[:, 4]  # type: ignore[call-overload, return-value]
+
 
 def nms(box_scores: np.ndarray, iou_threshold: float) -> np.ndarray:
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/utils.py#L122-L146
@@ -147,6 +152,7 @@ def nms(box_scores: np.ndarray, iou_threshold: float) -> np.ndarray:
         indexes = indexes[iou <= iou_threshold]
     return box_scores[picked, :]
 
+
 def box_iou(boxes1: np.ndarray, boxes2: np.ndarray, eps: float = 1e-5) -> np.ndarray:
     """Return intersection-over-union (Jaccard index) of boxes."""
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/utils.py#L103-L119
@@ -157,11 +163,13 @@ def box_iou(boxes1: np.ndarray, boxes2: np.ndarray, eps: float = 1e-5) -> np.nda
     area2 = box_area(boxes2[..., :2], boxes2[..., 2:])
     return overlap_area / (area1 + area2 - overlap_area + eps)
 
+
 def box_area(left_top: np.ndarray, right_bottom: np.ndarray):
     """Compute the areas of rectangles given two corners."""
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/utils.py#L89-L100
     width_height = np.clip(right_bottom - left_top, a_min=0.0, a_max=None)
     return width_height[..., 0] * width_height[..., 1]
+
 
 def calibration_box(bbox, width, height):
     bbox[:, 0] *= width
@@ -182,7 +190,8 @@ class BoundingBox:
     height: float
 
     def numpy(self):
-        return np.array([self.x,self.y,self.width,self.height], dtype=np.float32)
+        return np.array([self.x, self.y, self.width, self.height], dtype=np.float32)
+
 
 @dataclass
 class DetectionResult:
@@ -190,6 +199,7 @@ class DetectionResult:
     boundingbox: BoundingBox
     score: float
     predicted_class: str
+
 
 def postprocess(
     outputs: tensorArray, width: int, height: int, confidence_threshold: float
@@ -211,31 +221,39 @@ def postprocess(
 
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L178-L185
     batch_results = []
-    for scores, boxes in zip(batch_scores, batch_boxes): # loop mini-batch
-        boxes, labels, scores = filter_results(scores, boxes, confidence_threshold=confidence_threshold)
+    for scores, boxes in zip(batch_scores, batch_boxes):  # loop mini-batch
+        boxes, labels, scores = filter_results(
+            scores, boxes, confidence_threshold=confidence_threshold
+        )
         cal_boxes = calibration_box(boxes, width, height)
         predicted_result = []
         for b, l, s in zip(cal_boxes, labels, scores):
             bb_list = b.tolist()
-            predicted_result.append( 
-                    DetectionResult(
-                        index=l,
-                        predicted_class=CLASSES[l], 
-                        score=s, 
-                        boundingbox=BoundingBox(x=bb_list[0], 
-                            y=bb_list[1], 
-                            width=bb_list[2], 
-                            height=bb_list[3] ) )
+            predicted_result.append(
+                DetectionResult(
+                    index=l,
+                    predicted_class=CLASSES[l],
+                    score=s,
+                    boundingbox=BoundingBox(
+                        x=bb_list[0], y=bb_list[1], width=bb_list[2], height=bb_list[3]
+                    ),
+                )
             )
         batch_results.append(predicted_result)
     return batch_results[0]  # 1-batch(NPU)
 
-async def create_session():
-    model_weight = await load_dvc('./models/mlcommons_ssd_mobilenet_v1_int8.onnx')
-    print("model-weight:{}", len(model_weight))
-    return session.create( bytes(model_weight) )
 
-def inference(sess: session.Session, image: np.array, confidence_threshold: float=0.3):
+async def create_session():
+    model_weight = await load_dvc("./models/mlcommons_ssd_mobilenet_v1_int8.onnx")
+    print("model-weight:{}", len(model_weight))
+    return session.create(bytes(model_weight))
+
+
+def inference(
+    sess: session.Session, image: np.array, confidence_threshold: float = 0.3
+):
     pre_image, width, height = preprocess(image)
     predict = sess.run(pre_image)
-    return postprocess(predict, width=width, height=height, confidence_threshold=confidence_threshold)
+    return postprocess(
+        predict, width=width, height=height, confidence_threshold=confidence_threshold
+    )

@@ -1,6 +1,6 @@
-from dataclasses import dataclass
 import itertools
 import logging
+from dataclasses import dataclass
 from math import sqrt
 from typing import Any, Dict, List, Sequence, Tuple
 
@@ -9,7 +9,6 @@ import numpy as np
 import numpy.typing as npt
 import torch
 import torch.nn.functional as F
-
 from furiosa.runtime import session
 
 from ...utils import load_dvc
@@ -152,7 +151,9 @@ def scale_back_batch(bboxes_in, scores_in, scale_xy, scale_wh, dboxes_xywh):
 
     bboxes_in[:, :, :2] = scale_xy * bboxes_in[:, :, :2]
     bboxes_in[:, :, 2:] = scale_wh * bboxes_in[:, :, 2:]
-    bboxes_in[:, :, :2] = bboxes_in[:, :, :2] * dboxes_xywh[:, :, 2:] + dboxes_xywh[:, :, :2]
+    bboxes_in[:, :, :2] = (
+        bboxes_in[:, :, :2] * dboxes_xywh[:, :, 2:] + dboxes_xywh[:, :, :2]
+    )
     bboxes_in[:, :, 2:] = bboxes_in[:, :, 2:].exp() * dboxes_xywh[:, :, 2:]
     # Transform format to ltrb
     l, t, r, b = (
@@ -168,10 +169,16 @@ def scale_back_batch(bboxes_in, scores_in, scale_xy, scale_wh, dboxes_xywh):
     return bboxes_in, F.softmax(scores_in, dim=-1)
 
 
-
 class DefaultBoxes(object):
     def __init__(
-        self, fig_size, feat_size, steps, scales, aspect_ratios, scale_xy=0.1, scale_wh=0.2
+        self,
+        fig_size,
+        feat_size,
+        steps,
+        scales,
+        aspect_ratios,
+        scale_xy=0.1,
+        scale_wh=0.2,
     ):
 
         self.feat_size = feat_size
@@ -228,6 +235,7 @@ class DefaultBoxes(object):
         if order == "xywh":
             return self.dboxes
 
+
 def dboxes_R34_coco(figsize, strides):
     feat_size = [[50, 50], [25, 25], [13, 13], [7, 7], [3, 3], [3, 3]]
     steps = [(int(figsize[0] / fs[0]), int(figsize[1] / fs[1])) for fs in feat_size]
@@ -251,6 +259,7 @@ def load_image(image_path: str) -> np.array:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     return image
 
+
 def preprocess(image: np.array) -> Tuple[npt.ArrayLike, Dict[str, Any]]:
     """Read and preprocess an image located at image_path."""
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L141
@@ -270,6 +279,7 @@ def preprocess(image: np.array) -> Tuple[npt.ArrayLike, Dict[str, Any]]:
     image = image.transpose([2, 0, 1])
     return [np.expand_dims(image, axis=0)], width, height
 
+
 def calibration_box(bbox, width, height):
     bbox[:, 0] *= width
     bbox[:, 1] *= height
@@ -280,10 +290,12 @@ def calibration_box(bbox, width, height):
     bbox[:, 3] -= bbox[:, 1]
     return bbox
 
+
 def pick_best(detections, confidence_threshold=0.3):
     bboxes, classes, confidences = detections
     best = np.argwhere(confidences > confidence_threshold).squeeze(axis=1)
     return [pred[best].squeeze(axis=0) for pred in detections]
+
 
 @dataclass
 class BoundingBox:
@@ -293,7 +305,8 @@ class BoundingBox:
     height: float
 
     def numpy(self):
-        return np.array([self.x,self.y,self.width,self.height], dtype=np.float32)
+        return np.array([self.x, self.y, self.width, self.height], dtype=np.float32)
+
 
 @dataclass
 class DetectionResult:
@@ -301,6 +314,7 @@ class DetectionResult:
     boundingbox: BoundingBox
     score: float
     predicted_class: str
+
 
 def postprocess(
     outputs: Sequence[np.ndarray], width, height, confidence_threshold=0.3
@@ -329,32 +343,37 @@ def postprocess(
     batch_results = []
     for boxes, labels, scores in zip(det_boxes, det_labels, det_scores):
         boxes, labels, scores = pick_best(
-            detections=(boxes, labels, scores), confidence_threshold=confidence_threshold
+            detections=(boxes, labels, scores),
+            confidence_threshold=confidence_threshold,
         )
         cal_boxes = calibration_box(boxes, width, height)
         predicted_result = []
         for b, l, s in zip(cal_boxes, labels, scores):
             bb_list = b.tolist()
-            predicted_result.append( 
-                    DetectionResult(
-                        index=l,
-                        predicted_class=CLASSES[l], 
-                        score=s, 
-                        boundingbox=BoundingBox(x=bb_list[0], 
-                            y=bb_list[1], 
-                            width=bb_list[2], 
-                            height=bb_list[3] ) )
+            predicted_result.append(
+                DetectionResult(
+                    index=l,
+                    predicted_class=CLASSES[l],
+                    score=s,
+                    boundingbox=BoundingBox(
+                        x=bb_list[0], y=bb_list[1], width=bb_list[2], height=bb_list[3]
+                    ),
+                )
             )
         batch_results.append(predicted_result)
 
     return batch_results[0]  # 1-batch(NPU)
 
+
 async def create_session():
-    model_weight = await load_dvc('./models/mlcommons_ssd_resnet34_int8.onnx')
+    model_weight = await load_dvc("./models/mlcommons_ssd_resnet34_int8.onnx")
     logging.info("model-weight:{}", len(model_weight))
-    return session.create( bytes(model_weight) )
+    return session.create(bytes(model_weight))
+
 
 def inference(sess: session.Session, image: np.array, confidence_threshold=0.3):
     pre_image, width, height = preprocess(image)
     predict = sess.run(pre_image)
-    return postprocess(predict, width=width, height=height, confidence_threshold=confidence_threshold)
+    return postprocess(
+        predict, width=width, height=height, confidence_threshold=confidence_threshold
+    )

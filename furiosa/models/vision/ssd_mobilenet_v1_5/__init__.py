@@ -1,1 +1,1 @@
-from .core import load_image, create_session, inference, CLASSES
+from .core import create_session, inference, load_image
