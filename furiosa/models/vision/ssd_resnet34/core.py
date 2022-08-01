@@ -152,9 +152,7 @@ def scale_back_batch(bboxes_in, scores_in, scale_xy, scale_wh, dboxes_xywh):
 
     bboxes_in[:, :, :2] = scale_xy * bboxes_in[:, :, :2]
     bboxes_in[:, :, 2:] = scale_wh * bboxes_in[:, :, 2:]
-    bboxes_in[:, :, :2] = (
-        bboxes_in[:, :, :2] * dboxes_xywh[:, :, 2:] + dboxes_xywh[:, :, :2]
-    )
+    bboxes_in[:, :, :2] = bboxes_in[:, :, :2] * dboxes_xywh[:, :, 2:] + dboxes_xywh[:, :, :2]
     bboxes_in[:, :, 2:] = bboxes_in[:, :, 2:].exp() * dboxes_xywh[:, :, 2:]
     # Transform format to ltrb
     l, t, r, b = (

@@ -18,16 +18,9 @@ async def test_mlcommons_mobilessd_small_perf():
         assert (
             result[0].predicted_class == "cat"
         ), f"wrong classid: {result[0].predicted_class}, expected cat"
-        true_bbox = np.array(
-            [[187.30786, 88.035324, 763.6886, 655.2937]], dtype=np.float32
-        )
+        true_bbox = np.array([[187.30786, 88.035324, 763.6886, 655.2937]], dtype=np.float32)
         assert (
-            np.sum(
-                np.abs(
-                    np.array(result[0].boundingbox.numpy(), dtype=np.float32)
-                    - true_bbox
-                )
-            )
+            np.sum(np.abs(np.array(result[0].boundingbox.numpy(), dtype=np.float32) - true_bbox))
             < 1e-3
         ), f"bbox is different from expected value"
         true_score = 0.97390455

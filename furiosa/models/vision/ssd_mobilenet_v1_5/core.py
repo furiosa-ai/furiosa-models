@@ -94,12 +94,8 @@ def decode_boxes(rel_codes: np.ndarray) -> np.ndarray:
     dw /= 5.0
     dh /= 5.0
 
-    prediction_center_x = (
-        dx * SSDSmallConstant.PRIORS_WIDTHS + SSDSmallConstant.PRIORS_CENTER_X
-    )
-    prediction_center_y = (
-        dy * SSDSmallConstant.PRIORS_HEIGHTS + SSDSmallConstant.PRIORS_CENTER_Y
-    )
+    prediction_center_x = dx * SSDSmallConstant.PRIORS_WIDTHS + SSDSmallConstant.PRIORS_CENTER_X
+    prediction_center_y = dy * SSDSmallConstant.PRIORS_HEIGHTS + SSDSmallConstant.PRIORS_CENTER_Y
     prediction_w = np.exp(dw) * SSDSmallConstant.PRIORS_WIDTHS
     prediction_h = np.exp(dh) * SSDSmallConstant.PRIORS_HEIGHTS
 
@@ -208,9 +204,7 @@ def postprocess(
     outputs = [output.numpy() for output in outputs]
     assert len(outputs) == 12, len(outputs)
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L94-L97
-    class_logits = [
-        output.transpose((0, 2, 3, 1)).reshape((1, -1, 91)) for output in outputs[0::2]
-    ]
+    class_logits = [output.transpose((0, 2, 3, 1)).reshape((1, -1, 91)) for output in outputs[0::2]]
     box_regression = [
         output.transpose((0, 2, 3, 1)).reshape((1, -1, 4)) for output in outputs[1::2]
     ]
@@ -250,9 +244,7 @@ async def create_session():
     return session.create(bytes(model_weight))
 
 
-def inference(
-    sess: session.Session, image: np.array, confidence_threshold: float = 0.3
-):
+def inference(sess: session.Session, image: np.array, confidence_threshold: float = 0.3):
     pre_image, width, height = preprocess(image)
     predict = sess.run(pre_image)
     return postprocess(

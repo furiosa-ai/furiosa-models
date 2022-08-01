@@ -32,7 +32,6 @@ async def ResNet50(*args: Any, **kwargs: Any) -> resnet50.MLCommonsResNet50Model
     )
 
 
-
 async def YOLOv5l(*args: Any, **kwargs: Any) -> yolov5l.YoloV5LargeModel:
     return yolov5l.YoloV5LargeModel(
         name="YoloV5Large",
