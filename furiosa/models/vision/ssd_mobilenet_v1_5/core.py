@@ -1,4 +1,4 @@
-import logging
+from dataclasses import dataclass
 from typing import Any, Dict, ForwardRef, List, Tuple
 
 import cv2
@@ -12,6 +12,9 @@ from ...utils import load_dvc
 from ..common.datasets import coco
 
 tensorArray = ForwardRef("tensor.TensorArray")
+
+# https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/tools/submission/submission-checker.py#L467
+CLASSES: List[str] = coco.MobileNetSSD_CLASSES
 
 # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L155-L158
 PRIORS = np.concatenate(
@@ -36,16 +39,15 @@ PRIORS_CENTER_Y = PRIORS_Y1 + 0.5 * PRIORS_HEIGHTS
 del PRIORS_Y1, PRIORS_X1, PRIORS_Y2, PRIORS_X2, PRIORS
 
 
+# Generate Prior Default Boxes
 class SSDSmallConstant(object):
     PRIORS_WIDTHS = PRIORS_WIDTHS
     PRIORS_HEIGHTS = PRIORS_HEIGHTS
     PRIORS_CENTER_X = PRIORS_CENTER_X
     PRIORS_CENTER_Y = PRIORS_CENTER_Y
 
-# https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/tools/submission/submission-checker.py#L467
-CLASSES: List[str] = coco.MobileNetSSD_CLASSES
 
-def load_image(image_path: str) -> cv2.Mat:
+def load_image(image_path: str) -> np.array:
     image = cv2.imread(image_path)
     if image is None:
         raise FileNotFoundError(image_path)
@@ -56,7 +58,7 @@ def load_image(image_path: str) -> cv2.Mat:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     return image
 
-def preprocess(image: cv2.Mat) -> Tuple[npt.ArrayLike, Dict[str, Any]]:
+def preprocess(image: np.array) -> Tuple[npt.ArrayLike, int, int]:
     """Read and preprocess an image located at image_path."""
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L49-L51
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L242-L249
@@ -66,7 +68,7 @@ def preprocess(image: cv2.Mat) -> Tuple[npt.ArrayLike, Dict[str, Any]]:
     image -= 127.5
     image /= 127.5
     image = image.transpose([2, 0, 1])
-    return image[np.newaxis, ...], {"width": width, "height": height}
+    return image[np.newaxis, ...], width, height
 
 def sigmoid(x: np.ndarray) -> np.ndarray:  # pylint: disable=invalid-name
     return 1 / (1 + np.exp(-x))
@@ -108,14 +110,15 @@ def decode_boxes(rel_codes: np.ndarray) -> np.ndarray:
     return prediction_boxes
 
 def filter_results(
-    scores: np.ndarray, boxes: np.ndarray
+    scores: np.ndarray, boxes: np.ndarray,
+    confidence_threshold: float
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L197-L212
     selected_box_probs = []
     labels = []
     for class_index in range(1, scores.shape[1]):
         probs = scores[:, class_index]
-        mask = probs > 0.3
+        mask = probs > confidence_threshold
         probs = probs[mask]
         subset_boxes = boxes[mask, :]
         box_probs = np.concatenate((subset_boxes, probs.reshape(-1, 1)), axis=1)
@@ -170,10 +173,27 @@ def calibration_box(bbox, width, height):
     bbox[:, 3] -= bbox[:, 1]
     return bbox
 
+
+@dataclass
+class BoundingBox:
+    x: float
+    y: float
+    width: float
+    height: float
+
+    def numpy(self):
+        return np.array([self.x,self.y,self.width,self.height], dtype=np.float32)
+
+@dataclass
+class DetectionResult:
+    index: int
+    boundingbox: BoundingBox
+    score: float
+    predicted_class: str
+
 def postprocess(
-    outputs: tensorArray, extra_params: Dict[str, Any]
-) -> List[Tuple[str, float, List[float]]]:
-    logging.debug(f"extra_params: {extra_params}")
+    outputs: tensorArray, width: int, height: int, confidence_threshold: float
+) -> List[DetectionResult]:
     outputs = [output.numpy() for output in outputs]
     assert len(outputs) == 12, len(outputs)
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L94-L97
@@ -190,15 +210,23 @@ def postprocess(
     batch_boxes = decode_boxes(box_regression)  # type: ignore[arg-type]
 
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L178-L185
-    width = extra_params["width"]
-    height = extra_params["height"]
     batch_results = []
-    for scores, boxes in zip(batch_scores, batch_boxes): # mini-batch loop
-        boxes, labels, scores = filter_results(scores, boxes)
+    for scores, boxes in zip(batch_scores, batch_boxes): # loop mini-batch
+        boxes, labels, scores = filter_results(scores, boxes, confidence_threshold=confidence_threshold)
         cal_boxes = calibration_box(boxes, width, height)
         predicted_result = []
         for b, l, s in zip(cal_boxes, labels, scores):
-            predicted_result.append( (CLASSES[l], s, b.tolist()) )
+            bb_list = b.tolist()
+            predicted_result.append( 
+                    DetectionResult(
+                        index=l,
+                        predicted_class=CLASSES[l], 
+                        score=s, 
+                        boundingbox=BoundingBox(x=bb_list[0], 
+                            y=bb_list[1], 
+                            width=bb_list[2], 
+                            height=bb_list[3] ) )
+            )
         batch_results.append(predicted_result)
     return batch_results[0]  # 1-batch(NPU)
 
@@ -207,7 +235,7 @@ async def create_session():
     print("model-weight:{}", len(model_weight))
     return session.create( bytes(model_weight) )
 
-def inference(sess: session.Session, image: np.array):
-    pre_image, extra_params = preprocess(image)
+def inference(sess: session.Session, image: np.array, confidence_threshold: float=0.3):
+    pre_image, width, height = preprocess(image)
     predict = sess.run(pre_image)
-    return postprocess(predict, extra_params)
+    return postprocess(predict, width=width, height=height, confidence_threshold=confidence_threshold)

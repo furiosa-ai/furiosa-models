@@ -1,7 +1,7 @@
 from typing import Any
 
 from furiosa.models.utils import load_dvc
-from furiosa.models.vision import resnet50, ssd_resnet34
+from furiosa.models.vision import resnet50
 from furiosa.models.vision.yolov5 import large as yolov5l
 from furiosa.registry import Format, Metadata, Publication
 
@@ -31,24 +31,6 @@ async def ResNet50(*args: Any, **kwargs: Any) -> resnet50.MLCommonsResNet50Model
         **kwargs,
     )
 
-
-# Object detection
-async def SSDResNet34(*args: Any, **kwargs: Any) -> ssd_resnet34.MLCommonsSSDLargeModel:
-    return ssd_resnet34.MLCommonsSSDLargeModel(
-        name="MLCommonsSSDResNet34",
-        model=await load_dvc("models/mlcommons_ssd_resnet34_int8.onnx"),
-        format=Format.ONNX,
-        family="ResNet",
-        version="v1.1",
-        metadata=Metadata(
-            description="ResNet34 model for MLCommons v1.1",
-            publication=Publication(
-                url="https://github.com/mlcommons/inference/tree/master/vision/classification_and_detection"  # noqa: E501
-            ),
-        ),
-        *args,
-        **kwargs,
-    )
 
 
 async def YOLOv5l(*args: Any, **kwargs: Any) -> yolov5l.YoloV5LargeModel:

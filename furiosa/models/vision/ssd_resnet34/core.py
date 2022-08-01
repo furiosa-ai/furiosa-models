@@ -1,6 +1,8 @@
+from dataclasses import dataclass
 import itertools
-from math import ceil, sqrt
-from typing import Any, Dict, ForwardRef, List, Sequence, Tuple
+import logging
+from math import sqrt
+from typing import Any, Dict, List, Sequence, Tuple
 
 import cv2
 import numpy as np
@@ -8,10 +10,12 @@ import numpy.typing as npt
 import torch
 import torch.nn.functional as F
 
-from furiosa.registry import Model
+from furiosa.runtime import session
 
-from .common.datasets import coco
+from ...utils import load_dvc
+from ..common.datasets import coco
 
+CLASSES = coco.MobileNetSSD_Large_CLASSES
 
 ##Inspired by https://github.com/kuangliu/pytorch-ssd
 class Encoder(object):
@@ -164,17 +168,6 @@ def scale_back_batch(bboxes_in, scores_in, scale_xy, scale_wh, dboxes_xywh):
     return bboxes_in, F.softmax(scores_in, dim=-1)
 
 
-def dboxes_R34_coco(figsize, strides):
-    feat_size = [[50, 50], [25, 25], [13, 13], [7, 7], [3, 3], [3, 3]]
-    steps = [(int(figsize[0] / fs[0]), int(figsize[1] / fs[1])) for fs in feat_size]
-    scales = [
-        (int(s * figsize[0] / 300), int(s * figsize[1] / 300))
-        for s in [21, 45, 99, 153, 207, 261, 315]
-    ]
-    aspect_ratios = [[2], [2, 3], [2, 3], [2, 3], [2], [2]]
-    dboxes = DefaultBoxes(figsize, feat_size, steps, scales, aspect_ratios)
-    return dboxes
-
 
 class DefaultBoxes(object):
     def __init__(
@@ -235,88 +228,133 @@ class DefaultBoxes(object):
         if order == "xywh":
             return self.dboxes
 
+def dboxes_R34_coco(figsize, strides):
+    feat_size = [[50, 50], [25, 25], [13, 13], [7, 7], [3, 3], [3, 3]]
+    steps = [(int(figsize[0] / fs[0]), int(figsize[1] / fs[1])) for fs in feat_size]
+    scales = [
+        (int(s * figsize[0] / 300), int(s * figsize[1] / 300))
+        for s in [21, 45, 99, 153, 207, 261, 315]
+    ]
+    aspect_ratios = [[2], [2, 3], [2, 3], [2, 3], [2], [2]]
+    dboxes = DefaultBoxes(figsize, feat_size, steps, scales, aspect_ratios)
+    return dboxes
 
-class MLCommonsSSDLargeModel(Model):
-    @property
-    def classes(self):
-        return coco.MobileNetSSD_Large_CLASSES
 
-    def preprocess(self, image_path: str) -> Tuple[npt.ArrayLike, Dict[str, Any]]:
-        """Read and preprocess an image located at image_path."""
-        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L141
-        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L61-L63
-        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L252-L263
-        image = cv2.imread(image_path)
-        if image is None:
-            raise FileNotFoundError(image_path)
-        image = np.array(image, dtype=np.float32)
-        if len(image.shape) < 3 or image.shape[2] != 3:
-            image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-        else:
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        width = image.shape[1]
-        height = image.shape[0]
-        image = cv2.resize(image, (1200, 1200), interpolation=cv2.INTER_LINEAR)
-        mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
-        std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
-        image = image / 255.0 - mean
-        image = image / std
-        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L143
-        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/coco.py#L40
-        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/coco.py#L91
-        image = image.transpose([2, 0, 1])
-        return [np.expand_dims(image, axis=0)], {"width": width, "height": height}
+def load_image(image_path: str) -> np.array:
+    image = cv2.imread(image_path)
+    if image is None:
+        raise FileNotFoundError(image_path)
+    image = np.array(image, dtype=np.float32)
+    if len(image.shape) < 3 or image.shape[2] != 3:
+        image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+    else:
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    return image
 
-    def calibration_box(self, bbox, width, height):
-        bbox[:, 0] *= width
-        bbox[:, 1] *= height
-        bbox[:, 2] *= width
-        bbox[:, 3] *= height
+def preprocess(image: np.array) -> Tuple[npt.ArrayLike, Dict[str, Any]]:
+    """Read and preprocess an image located at image_path."""
+    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L141
+    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L61-L63
+    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L252-L263
 
-        bbox[:, 2] -= bbox[:, 0]
-        bbox[:, 3] -= bbox[:, 1]
-        return bbox
+    width = image.shape[1]
+    height = image.shape[0]
+    image = cv2.resize(image, (1200, 1200), interpolation=cv2.INTER_LINEAR)
+    mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
+    std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+    image = image / 255.0 - mean
+    image = image / std
+    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L143
+    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/coco.py#L40
+    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/coco.py#L91
+    image = image.transpose([2, 0, 1])
+    return [np.expand_dims(image, axis=0)], width, height
 
-    def pick_best(self, detections, confidence_threshold=0.3):
-        bboxes, classes, confidences = detections
-        best = np.argwhere(confidences > confidence_threshold).squeeze(axis=1)
-        return [pred[best].squeeze(axis=0) for pred in detections]
+def calibration_box(bbox, width, height):
+    bbox[:, 0] *= width
+    bbox[:, 1] *= height
+    bbox[:, 2] *= width
+    bbox[:, 3] *= height
 
-    def postprocess(
-        self, outputs: Sequence[np.ndarray], extra_params: Dict[str, Any], confidence_threshold=0.3
-    ) -> Tuple[List[np.ndarray], List[np.ndarray], List[np.ndarray]]:
-        outputs = [output.numpy() for output in outputs]
-        if len(outputs) != 12:
-            raise Exception(f"output size must be 12, but {len(outputs)}")
-        classes, locations = outputs[:6], outputs[6:]
+    bbox[:, 2] -= bbox[:, 0]
+    bbox[:, 3] -= bbox[:, 1]
+    return bbox
 
-        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_r34.py#L317-L329
-        classes = [np.reshape(cls, (cls.shape[0], 81, -1)) for cls in classes]
-        locations = [np.reshape(loc, (loc.shape[0], 4, -1)) for loc in locations]
-        classes = np.concatenate(classes, axis=2)
-        locations = np.concatenate(locations, axis=2)
+def pick_best(detections, confidence_threshold=0.3):
+    bboxes, classes, confidences = detections
+    best = np.argwhere(confidences > confidence_threshold).squeeze(axis=1)
+    return [pred[best].squeeze(axis=0) for pred in detections]
 
-        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_r34.py#L251-L253
-        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_r34.py#L350
-        # len(det_boxes: List[np.array]) = N batch
-        det_boxes, det_labels, det_scores = Encoder(
-            dboxes_R34_coco((1200, 1200), (3, 3, 2, 2, 2, 2))
-        ).decode_batch(torch.from_numpy(locations), torch.from_numpy(classes), 0.50, 200)
+@dataclass
+class BoundingBox:
+    x: float
+    y: float
+    width: float
+    height: float
 
-        # Pick the best boxes
-        # https://pytorch.org/hub/nvidia_deeplearningexamples_ssd/
-        # sometimes there are many boxes with localizaition and class probability distrituion.
-        width = extra_params["width"]
-        height = extra_params["height"]
-        filtered_bboxes = []
-        filtered_labels = []
-        filtered_scores = []
-        for boxes, labels, scores in zip(det_boxes, det_labels, det_scores):
-            boxes, labels, scores = self.pick_best(
-                detections=(boxes, labels, scores), confidence_threshold=confidence_threshold
+    def numpy(self):
+        return np.array([self.x,self.y,self.width,self.height], dtype=np.float32)
+
+@dataclass
+class DetectionResult:
+    index: int
+    boundingbox: BoundingBox
+    score: float
+    predicted_class: str
+
+def postprocess(
+    outputs: Sequence[np.ndarray], width, height, confidence_threshold=0.3
+) -> List[DetectionResult]:
+    outputs = [output.numpy() for output in outputs]
+    if len(outputs) != 12:
+        raise Exception(f"output size must be 12, but {len(outputs)}")
+    classes, locations = outputs[:6], outputs[6:]
+
+    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_r34.py#L317-L329
+    classes = [np.reshape(cls, (cls.shape[0], 81, -1)) for cls in classes]
+    locations = [np.reshape(loc, (loc.shape[0], 4, -1)) for loc in locations]
+    classes = np.concatenate(classes, axis=2)
+    locations = np.concatenate(locations, axis=2)
+
+    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_r34.py#L251-L253
+    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_r34.py#L350
+    # len(det_boxes: List[np.array]) = N batch
+    det_boxes, det_labels, det_scores = Encoder(
+        dboxes_R34_coco((1200, 1200), (3, 3, 2, 2, 2, 2))
+    ).decode_batch(torch.from_numpy(locations), torch.from_numpy(classes), 0.50, 200)
+
+    # Pick the best boxes
+    # https://pytorch.org/hub/nvidia_deeplearningexamples_ssd/
+    # sometimes there are many boxes with localizaition and class probability distrituion.
+    batch_results = []
+    for boxes, labels, scores in zip(det_boxes, det_labels, det_scores):
+        boxes, labels, scores = pick_best(
+            detections=(boxes, labels, scores), confidence_threshold=confidence_threshold
+        )
+        cal_boxes = calibration_box(boxes, width, height)
+        predicted_result = []
+        for b, l, s in zip(cal_boxes, labels, scores):
+            bb_list = b.tolist()
+            predicted_result.append( 
+                    DetectionResult(
+                        index=l,
+                        predicted_class=CLASSES[l], 
+                        score=s, 
+                        boundingbox=BoundingBox(x=bb_list[0], 
+                            y=bb_list[1], 
+                            width=bb_list[2], 
+                            height=bb_list[3] ) )
             )
-            filtered_bboxes.append(self.calibration_box(boxes.numpy(), width, height))
-            filtered_labels.append(labels.numpy())
-            filtered_scores.append(scores.numpy())
+        batch_results.append(predicted_result)
 
-        return filtered_bboxes[0], filtered_labels[0], filtered_scores[0]  # 1-batch(NPU)
+    return batch_results[0]  # 1-batch(NPU)
+
+async def create_session():
+    model_weight = await load_dvc('./models/mlcommons_ssd_resnet34_int8.onnx')
+    logging.info("model-weight:{}", len(model_weight))
+    return session.create( bytes(model_weight) )
+
+def inference(sess: session.Session, image: np.array, confidence_threshold=0.3):
+    pre_image, width, height = preprocess(image)
+    predict = sess.run(pre_image)
+    return postprocess(predict, width=width, height=height, confidence_threshold=confidence_threshold)
