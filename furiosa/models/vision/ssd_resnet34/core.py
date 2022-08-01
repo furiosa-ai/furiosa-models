@@ -1,6 +1,6 @@
+from dataclasses import dataclass
 import itertools
 import logging
-from dataclasses import dataclass
 from math import sqrt
 from typing import Any, Dict, List, Sequence, Tuple
 
@@ -9,6 +9,7 @@ import numpy as np
 import numpy.typing as npt
 import torch
 import torch.nn.functional as F
+
 from furiosa.runtime import session
 
 from ...utils import load_dvc

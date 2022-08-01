@@ -4,11 +4,12 @@ from typing import Any, Dict, ForwardRef, List, Tuple
 import cv2
 import numpy as np
 import numpy.typing as npt
+
 from furiosa.runtime import session
 
+from . import anchor_generator  # type: ignore[import]
 from ...utils import load_dvc
 from ..common.datasets import coco
-from . import anchor_generator  # type: ignore[import]
 
 tensorArray = ForwardRef("tensor.TensorArray")
 

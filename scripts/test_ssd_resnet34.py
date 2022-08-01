@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 from furiosa.models.vision import ssd_resnet34 as detector
 
 

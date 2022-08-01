@@ -2,6 +2,7 @@ import math
 
 import numpy as np
 import pytest
+
 from furiosa.models.vision import ssd_mobilenet_v1_5 as detector
 
 
