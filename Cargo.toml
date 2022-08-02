@@ -5,8 +5,13 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
-name = "furiosa_models"
+# Set name to furiosa to make /python/furiosa/* recognizable
+name = "furiosa"
 crate-type = ["cdylib"]
+
+# https://maturin.rs/project_layout.html#alternate-python-source-directory-src-layout
+[package.metadata.maturin]
+python-source = "python"
 
 [dependencies]
 pyo3 = { version = "0.16.5", features = ["extension-module"] }
