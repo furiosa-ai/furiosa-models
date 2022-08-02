@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  PACKAGE_NAME: furiosa_models
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,12 +21,26 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Install Rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        profile: minimal
+        default: true
+    - name: Build Wheels
+      uses: messense/maturin-action@v1
+      with:
+        manylinux: auto
+        args: -i ${{ matrix.python-version }} --release --out dist
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install flake8 pytest black isort
-        pip install -e .
-        pip install -e '.[test]'
+        python -m pip install --upgrade pip wheel setuptools
+        pip install flake8 black isort
+        # Installing from source results ModuleNotFoundError: No module named 'furiosa.common'
+        # in github worker's pytest. So install this package with wheel.
+        # pip install --verbose --editable .
+        # pip install --verbose --editable '.[test]'
+        pip install dist/${{ env.PACKAGE_NAME }}-*.whl --force-reinstall
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -38,5 +55,6 @@ jobs:
         black --check --diff .
     - name: Test with pytest
       run: |
+        pip install pytest pytest-asyncio
         # ignore /scripts/ for now (needs NPU to be tested)
-        pytest --ignore=scripts
+        pytest --verbose --ignore=scripts
