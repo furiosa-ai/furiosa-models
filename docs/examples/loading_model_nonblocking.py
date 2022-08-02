@@ -1,9 +1,9 @@
 import asyncio
 
-from furiosa.models.nonblocking.vision import ResNet18
+from furiosa.models.vision.nonblocking import ResNet18
 from furiosa.registry import Model
 
-model: Model = asyncio.run(ResNet18(pretrained=True))
+model: Model = asyncio.run(ResNet18())
 
 print(model.name)
 print(model.format)

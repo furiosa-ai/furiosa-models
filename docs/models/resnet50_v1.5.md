@@ -1,7 +1,7 @@
 # ResNet50 v1.5
 
 ResNet50 v1.5 backbone model trained on ImageNet (224x224). 
-This model is also used at MLCommons v2.0.
+This model has been used since MLCommons v0.5.
 
 ## Usage
 
@@ -13,7 +13,7 @@ from furiosa.runtime import session
 
 resnet50 = ResNet50()
 
-with session.create as sess:
+with session.create(resnet50.bytes) as sess:
     image = resnet50.preprocess("image/car.jpeg")
     output = sess.run(image)
     resnet50.postprocess(output)

@@ -1,7 +1,7 @@
 from typing import Any
 
 from furiosa.models.utils import load_dvc
-from furiosa.models.vision import resnet50, ssd_mobilenet_v1_5, ssd_resnet34
+from furiosa.models.vision import resnet50, ssd_mobilenet, ssd_resnet34
 from furiosa.models.vision.yolov5 import large as yolov5l
 from furiosa.registry import Format, Metadata, Publication
 
@@ -34,8 +34,8 @@ async def ResNet50(*args: Any, **kwargs: Any) -> resnet50.MLCommonsResNet50Model
 
 
 # Object detection
-async def SSDMobileNet(*args: Any, **kwargs: Any) -> ssd_mobilenet_v1_5.MLCommonsSSDSmallModel:
-    return ssd_mobilenet_v1_5.MLCommonsSSDSmallModel(
+async def SSDMobileNet(*args: Any, **kwargs: Any) -> ssd_mobilenet.MLCommonsSSDSmallModel:
+    return ssd_mobilenet.MLCommonsSSDSmallModel(
         name="MLCommonsSSDMobileNet",
         model=await load_dvc("models/mlcommons_ssd_mobilenet_v1_int8.onnx"),
         format=Format.ONNX,
