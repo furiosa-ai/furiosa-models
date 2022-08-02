@@ -1,1 +1,1 @@
-"""Furiosa Models"""
+"""Furiosa Packages"""

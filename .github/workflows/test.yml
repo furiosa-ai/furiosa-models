@@ -36,11 +36,8 @@ jobs:
       run: |
         python -m pip install --upgrade pip wheel setuptools
         pip install flake8 black isort
-        # Installing from source results ModuleNotFoundError: No module named 'furiosa.common'
-        # in github worker's pytest. So install this package with wheel.
-        # pip install --verbose --editable .
-        # pip install --verbose --editable '.[test]'
-        pip install dist/${{ env.PACKAGE_NAME }}-*.whl --force-reinstall
+        pip install --verbose '.[test]'
+        # pip install dist/${{ env.PACKAGE_NAME }}-*.whl --force-reinstall
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -55,6 +52,5 @@ jobs:
         black --check --diff .
     - name: Test with pytest
       run: |
-        pip install pytest pytest-asyncio
         # ignore /scripts/ for now (needs NPU to be tested)
         pytest --verbose --ignore=scripts
