@@ -1,7 +1,7 @@
-"""FuriosaAI Model Zoo"""
+"""Furiosa Models"""
 from . import vision
 
-# Re-import rust bindings here
-from ..furiosa import *
+# NOTE: Import rust bindings here
+from .furiosa_models_native import *
 
 __all__ = ["vision"]
