@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, ForwardRef, List, Tuple
+from typing import Any, Dict, ForwardRef, List, Sequence, Tuple
 
 import cv2
 import numpy
@@ -168,7 +168,7 @@ def _box_area(left_top: np.ndarray, right_bottom: np.ndarray):
 
 
 def postprocess(
-    outputs: numpy.ndarray, extra_params: Dict[str, Any]
+    outputs: Sequence[numpy.ndarray], extra_params: Dict[str, Any]
 ) -> Tuple[List[np.ndarray], List[np.ndarray], List[np.ndarray]]:
     logging.debug(f"extra_params: {extra_params}")
     assert len(outputs) == 12, len(outputs)
