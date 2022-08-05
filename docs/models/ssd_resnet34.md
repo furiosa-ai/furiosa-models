@@ -1,4 +1,4 @@
-# SSD MobileNet v1
+# SSD ResNet34
 
 SSD MobileNet v1 backbone model trained on COCO (1200x1200).
 This model has been used since MLCommons v0.5.

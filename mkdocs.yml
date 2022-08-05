@@ -12,10 +12,10 @@ nav:
 - Overview: index.md
 - Models:
     - Image Classification:
-        - ResNet50 v1.5: 'models/resnet50_v1.5.md'
+        - models/resnet50_v1.5.md
     - Object Detection:
-        - SSD MobileNet v1: 'models/ssd_mobilenet.md'
-        - SSD ResNet34: 'models/ssd_resnet34.md'
+        - models/ssd_mobilenet.md
+        - models/ssd_resnet34.md
 - blocking_and_nonblocking_api.md
 - changelog.md
 - Apache License 2.0: 'https://github.com/furiosa-ai/furiosa-models-experimental/blob/main/LICENSE'
