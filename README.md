@@ -1,59 +1,49 @@
-Furiosa Artifacts
-=================
+Furiosa Models
+======================
+Furiosa Models provides DNN models including quantized pre-trained weights, model metadata, and 
+runtime configurations for FuriosaAI SDK and NPU. Basically, all models are specifically optimized for FuriosaAI NPU, 
+but the models are based on standard ONNX format. You can feel free to use all models for even CPU and GPU.
 
-This repository provides deep learning models provided by FuriosaAI. Available models are described in `artifacts.py` which is a descriptor file in the form defined by [furiosa-registry](https://github.com/furiosa-ai/furiosa-sdk/tree/main/python/furiosa-registry/)
+## <a name="AvailableModels"></a>Available Models
+
+| Model                                   | Task                 | Size | Accuracy | Latency (NPU) | Latency (CPU) |
+|-----------------------------------------|----------------------|------|----------|---------------|---------------|
+| [ResNet50](models/resnet50_v1.5.md)     | Image Classification | 25M  |          |               |               |
+| [SSDMobileNet](models/ssd_mobilenet.md) | Object Detection     | 7.2M |          |               |               |
+| [SSDResNet35](models/ssd_resnet34.md)   | Object Detection     | 20M  |          |               |               |
+| YOLOv5M                                 | Object Detection     | 21M  |          |               |               |
+| YOLOv5L                                 | Object Detection     | 46M  |          |               |               |
 
 ## Installation
-
-Load models via [furiosa-models](https://github.com/furiosa-ai/furiosa-sdk/tree/main/python/furiosa-models).
-
+You can quickly install Furiosa Models by using `pip` as following:
 ```sh
-pip install furiosa-models
+pip install 'furiosa-sdk[models]'
 ```
 
-### Building from Source
+Or you can build from the source code as following:
 
 ```
-git clone https://github.com/furiosa-ai/furiosa-artifacts
+git clone https://github.com/furiosa-ai/furiosa-models-experimental
 pip install .
 ```
 
-## Example
-
+## Usage
+You can simply access each model as following:
 ```python
-from furiosa.registry import Model
-from furiosa.models.vision import MLCommonsResNet50
+from furiosa.models.vision import ResNet50
 
-
-model: Model = MLCommonsResNet50()
-...
+model = ResNet50()
 ```
 
-## Testing
-Before contributing, we recommend you to write end-to-end testing codes under `./scripts/` directory. And please run the tests using the following script:
+Each model in [available models](#AvailableModels) also provides the details 
+including how to access the model, input and output tensors, and pre/post processings.
 
-```sh
-# Install the test dependency first
-pip install .[test]
+If you want to learn more about Furiosa SDK, you can refer to 
+[Furiosa SDK - Tutorial and Code Examples](https://furiosa-ai.github.io/docs/latest/en/software/tutorials.html)
 
-# Run test
-pytest ./scripts
-```
+Also, you can learn about [Blocking and Non-blocking APIs](blocking_and_nonblocking_api.md) 
+if you want to access the models with Asynchronous (AsyncIO) client library.
 
-## License
-
-```
-Copyright (c) 2021 FuriosaAI Inc. All Rights Reserved.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-```
+## See Also
+* [Furiosa Models - Github](https://github.com/furiosa-ai/furiosa-models-experimental)
+* [Furiosa SDK Documentation](https://furiosa-ai.github.io/docs/latest/en/)
