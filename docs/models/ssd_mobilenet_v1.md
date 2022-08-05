@@ -1,1 +1,0 @@
-# SSD MobileNet v1
