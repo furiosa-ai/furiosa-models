@@ -1,6 +1,6 @@
 import itertools
-from math import ceil, sqrt
-from typing import Any, Dict, ForwardRef, List, Sequence, Tuple
+from math import sqrt
+from typing import Any, Dict, List, Sequence, Tuple
 
 import cv2
 import numpy as np
@@ -237,86 +237,91 @@ class DefaultBoxes(object):
 
 
 class MLCommonsSSDLargeModel(Model):
-    @property
-    def classes(self):
-        return coco.MobileNetSSD_Large_CLASSES
+    pass
 
-    def preprocess(self, image_path: str) -> Tuple[npt.ArrayLike, Dict[str, Any]]:
-        """Read and preprocess an image located at image_path."""
-        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L141
-        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L61-L63
-        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L252-L263
-        image = cv2.imread(image_path)
-        if image is None:
-            raise FileNotFoundError(image_path)
-        image = np.array(image, dtype=np.float32)
-        if len(image.shape) < 3 or image.shape[2] != 3:
-            image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-        else:
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        width = image.shape[1]
-        height = image.shape[0]
-        image = cv2.resize(image, (1200, 1200), interpolation=cv2.INTER_LINEAR)
-        mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
-        std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
-        image = image / 255.0 - mean
-        image = image / std
-        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L143
-        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/coco.py#L40
-        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/coco.py#L91
-        image = image.transpose([2, 0, 1])
-        return [np.expand_dims(image, axis=0)], {"width": width, "height": height}
 
-    def calibration_box(self, bbox, width, height):
-        bbox[:, 0] *= width
-        bbox[:, 1] *= height
-        bbox[:, 2] *= width
-        bbox[:, 3] *= height
+CLASSES = coco.MobileNetSSD_Large_CLASSES
 
-        bbox[:, 2] -= bbox[:, 0]
-        bbox[:, 3] -= bbox[:, 1]
-        return bbox
 
-    def pick_best(self, detections, confidence_threshold=0.3):
-        bboxes, classes, confidences = detections
-        best = np.argwhere(confidences > confidence_threshold).squeeze(axis=1)
-        return [pred[best].squeeze(axis=0) for pred in detections]
+def preprocess(image_path: str) -> Tuple[npt.ArrayLike, Dict[str, Any]]:
+    """Read and preprocess an image located at image_path."""
+    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L141
+    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L61-L63
+    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L252-L263
+    image = cv2.imread(image_path)
+    if image is None:
+        raise FileNotFoundError(image_path)
+    image = np.array(image, dtype=np.float32)
+    if len(image.shape) < 3 or image.shape[2] != 3:
+        image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+    else:
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    width = image.shape[1]
+    height = image.shape[0]
+    image = cv2.resize(image, (1200, 1200), interpolation=cv2.INTER_LINEAR)
+    mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
+    std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+    image = image / 255.0 - mean
+    image = image / std
+    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L143
+    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/coco.py#L40
+    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/coco.py#L91
+    image = image.transpose([2, 0, 1])
+    return [np.expand_dims(image, axis=0)], {"width": width, "height": height}
 
-    def postprocess(
-        self, outputs: Sequence[np.ndarray], extra_params: Dict[str, Any], confidence_threshold=0.3
-    ) -> Tuple[List[np.ndarray], List[np.ndarray], List[np.ndarray]]:
-        outputs = [output.numpy() for output in outputs]
-        if len(outputs) != 12:
-            raise Exception(f"output size must be 12, but {len(outputs)}")
-        classes, locations = outputs[:6], outputs[6:]
 
-        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_r34.py#L317-L329
-        classes = [np.reshape(cls, (cls.shape[0], 81, -1)) for cls in classes]
-        locations = [np.reshape(loc, (loc.shape[0], 4, -1)) for loc in locations]
-        classes = np.concatenate(classes, axis=2)
-        locations = np.concatenate(locations, axis=2)
+def _calibration_box(bbox, width, height):
+    bbox[:, 0] *= width
+    bbox[:, 1] *= height
+    bbox[:, 2] *= width
+    bbox[:, 3] *= height
 
-        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_r34.py#L251-L253
-        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_r34.py#L350
-        # len(det_boxes: List[np.array]) = N batch
-        det_boxes, det_labels, det_scores = Encoder(
-            dboxes_R34_coco((1200, 1200), (3, 3, 2, 2, 2, 2))
-        ).decode_batch(torch.from_numpy(locations), torch.from_numpy(classes), 0.50, 200)
+    bbox[:, 2] -= bbox[:, 0]
+    bbox[:, 3] -= bbox[:, 1]
+    return bbox
 
-        # Pick the best boxes
-        # https://pytorch.org/hub/nvidia_deeplearningexamples_ssd/
-        # sometimes there are many boxes with localizaition and class probability distrituion.
-        width = extra_params["width"]
-        height = extra_params["height"]
-        filtered_bboxes = []
-        filtered_labels = []
-        filtered_scores = []
-        for boxes, labels, scores in zip(det_boxes, det_labels, det_scores):
-            boxes, labels, scores = self.pick_best(
-                detections=(boxes, labels, scores), confidence_threshold=confidence_threshold
-            )
-            filtered_bboxes.append(self.calibration_box(boxes.numpy(), width, height))
-            filtered_labels.append(labels.numpy())
-            filtered_scores.append(scores.numpy())
 
-        return filtered_bboxes[0], filtered_labels[0], filtered_scores[0]  # 1-batch(NPU)
+def _pick_best(detections, confidence_threshold=0.3):
+    bboxes, classes, confidences = detections
+    best = np.argwhere(confidences > confidence_threshold).squeeze(axis=1)
+    return [pred[best].squeeze(axis=0) for pred in detections]
+
+
+def postprocess(
+    outputs: Sequence[np.ndarray], extra_params: Dict[str, Any], confidence_threshold=0.3
+) -> Tuple[List[np.ndarray], List[np.ndarray], List[np.ndarray]]:
+
+    if len(outputs) != 12:
+        raise Exception(f"output size must be 12, but {len(outputs)}")
+    classes, locations = outputs[:6], outputs[6:]
+
+    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_r34.py#L317-L329
+    classes = [np.reshape(cls, (cls.shape[0], 81, -1)) for cls in classes]
+    locations = [np.reshape(loc, (loc.shape[0], 4, -1)) for loc in locations]
+    classes = np.concatenate(classes, axis=2)
+    locations = np.concatenate(locations, axis=2)
+
+    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_r34.py#L251-L253
+    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_r34.py#L350
+    # len(det_boxes: List[np.array]) = N batch
+    det_boxes, det_labels, det_scores = Encoder(
+        dboxes_R34_coco((1200, 1200), (3, 3, 2, 2, 2, 2))
+    ).decode_batch(torch.from_numpy(locations), torch.from_numpy(classes), 0.50, 200)
+
+    # Pick the best boxes
+    # https://pytorch.org/hub/nvidia_deeplearningexamples_ssd/
+    # sometimes there are many boxes with localizaition and class probability distrituion.
+    width = extra_params["width"]
+    height = extra_params["height"]
+    filtered_bboxes = []
+    filtered_labels = []
+    filtered_scores = []
+    for boxes, labels, scores in zip(det_boxes, det_labels, det_scores):
+        boxes, labels, scores = _pick_best(
+            detections=(boxes, labels, scores), confidence_threshold=confidence_threshold
+        )
+        filtered_bboxes.append(_calibration_box(boxes.numpy(), width, height))
+        filtered_labels.append(labels.numpy())
+        filtered_scores.append(scores.numpy())
+
+    return filtered_bboxes[0], filtered_labels[0], filtered_scores[0]  # 1-batch(NPU)
