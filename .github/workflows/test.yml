@@ -21,17 +21,17 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install Rust toolchain
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: nightly
-        profile: minimal
-        default: true
-    - name: Build Wheels
-      uses: messense/maturin-action@v1
-      with:
-        manylinux: auto
-        args: -i ${{ matrix.python-version }} --release --out dist
+    # - name: Install Rust toolchain
+    #   uses: actions-rs/toolchain@v1
+    #   with:
+    #     toolchain: nightly
+    #     profile: minimal
+    #     default: true
+    # - name: Build Wheels
+    #   uses: messense/maturin-action@v1
+    #   with:
+    #     manylinux: auto
+    #     args: -i ${{ matrix.python-version }} --release --out dist
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip wheel setuptools
