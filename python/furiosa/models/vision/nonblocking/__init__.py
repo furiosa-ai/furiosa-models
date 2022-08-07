@@ -80,17 +80,21 @@ async def YOLOv5l(*args: Any, **kwargs: Any) -> yolov5l.YoloV5LargeModel:
             description="Yolo v5 large model",
             publication=Publication(url="https://github.com/ultralytics/yolov5"),
         ),
-        compiler_config={
-            "without_quantize": {
-                "parameters": [
-                    {
-                        "input_min": 0.0,
-                        "input_max": 1.0,
-                        "permute": [0, 2, 3, 1],  # "HWC" to "CHW"
-                    }
-                ]
-            },
-        },
+        *args,
+        **kwargs,
+    )
+
+async def YOLOv5m(*args: Any, **kwargs: Any) -> yolov5m.YoloV5MediumModel:
+    return yolov5m.YoloV5MediumModel(
+        name="YoloV5Medium",
+        model=await load_dvc("models/yolov5m_int8.onnx"),
+        format=Format.ONNX,
+        family="Yolo",
+        version="v5",
+        metadata=Metadata(
+            description="Yolo v5 medium model",
+            publication=Publication(url="https://github.com/ultralytics/yolov5"),
+        ),
         *args,
         **kwargs,
     )
