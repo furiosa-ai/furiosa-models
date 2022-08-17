@@ -25,7 +25,6 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
-# dynamic = ["description"]
 description = "Furiosa Models"
 requires-python = "~=3.7"
 dependencies = [
@@ -34,7 +33,7 @@ dependencies = [
 
     "onnx",
     "onnxruntime",
-    "opencv-python",
+    "opencv-python-headless",
     "pycocotools",
     "timm",
     "torch",
@@ -80,3 +79,4 @@ extend_skip_glob = ["**/generated/**"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "strict"
+pythonpath = ["."]
