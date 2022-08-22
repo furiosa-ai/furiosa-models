@@ -80,6 +80,3 @@ extend_skip_glob = ["**/generated/**"]
 [tool.pytest.ini_options]
 asyncio_mode = "strict"
 pythonpath = ["."]
-
-[tool.maturin]
-python-source = "furiosa/models"
