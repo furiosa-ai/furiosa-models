@@ -1,6 +1,5 @@
 [build-system]
-requires = ["maturin>=0.13,<0.14"]
-build-backend = "maturin"
+requires = ["setuptools", "wheel", "setuptools-rust"]
 
 [project]
 name = "furiosa-models"
@@ -25,7 +24,6 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
-# dynamic = ["description"]
 description = "Furiosa Models"
 requires-python = "~=3.7"
 dependencies = [
@@ -34,7 +32,7 @@ dependencies = [
 
     "onnx",
     "onnxruntime",
-    "opencv-python",
+    "opencv-python-headless",
     "pycocotools",
     "timm",
     "torch",
@@ -59,6 +57,7 @@ test = [
     "pytest-asyncio ~= 0.17.2",
 ]
 
+# FIXME: wrong url
 [project.urls]
 Home = "https://furiosa.ai"
 Documentation = "https://github.com/furiosa-ai/furiosa-artifacts"
@@ -80,3 +79,4 @@ extend_skip_glob = ["**/generated/**"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "strict"
+pythonpath = ["."]

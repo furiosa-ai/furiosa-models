@@ -5,7 +5,7 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
-name = "furiosa_models"
+name = "furiosa_models_native"
 crate-type = ["cdylib"]
 
 [dependencies]

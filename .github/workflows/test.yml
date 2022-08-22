@@ -12,7 +12,6 @@ jobs:
     strategy:
       matrix:
         python-version: [ '3.7', '3.8', '3.9' ]
-
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
@@ -20,10 +19,9 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install flake8 pytest black isort
-        pip install -e .
-        pip install -e '.[test]'
+        python -m pip install --upgrade pip wheel setuptools
+        pip install flake8 black isort
+        pip install --verbose '.[test]'
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -39,4 +37,4 @@ jobs:
     - name: Test with pytest
       run: |
         # ignore /scripts/ for now (needs NPU to be tested)
-        pytest --ignore=scripts
+        pytest --verbose --ignore=scripts
