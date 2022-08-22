@@ -1,6 +1,5 @@
 [build-system]
-requires = ["maturin>=0.13,<0.14"]
-build-backend = "maturin"
+requires = ["setuptools", "wheel", "setuptools-rust"]
 
 [project]
 name = "furiosa-models"
@@ -58,6 +57,7 @@ test = [
     "pytest-asyncio ~= 0.17.2",
 ]
 
+# FIXME: wrong url
 [project.urls]
 Home = "https://furiosa.ai"
 Documentation = "https://github.com/furiosa-ai/furiosa-artifacts"

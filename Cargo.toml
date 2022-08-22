@@ -8,10 +8,5 @@ edition = "2021"
 name = "furiosa_models_native"
 crate-type = ["cdylib"]
 
-# https://maturin.rs/project_layout.html#alternate-python-source-directory-src-layout
-[package.metadata.maturin]
-python-source = "python"
-name = "furiosa.models.furiosa_models_native"
-
 [dependencies]
 pyo3 = { version = "0.16.5", features = ["extension-module"] }
