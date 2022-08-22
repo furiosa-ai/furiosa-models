@@ -2,7 +2,6 @@ import numpy as np
 import pytest
 
 from furiosa.models.vision import SSDResNet34
-from furiosa.models.vision.postprocess import collate_data
 from furiosa.models.vision.ssd_resnet34 import CLASSES, NUM_OUTPUTS, postprocess, preprocess
 from furiosa.registry import Model
 from furiosa.runtime import session
@@ -14,7 +13,7 @@ async def test_mlcommons_ssd_resnet34_perf():
     test_image_path = "scripts/assets/cat.jpg"
 
     assert len(CLASSES) == 81, f"Classes is 81, but {len(CLASSES)}"
-    sess = session.create(m.model)
+    sess = session.create(m.model, batch_size=2)
     true_bbox = np.array(
         [
             [264.24792, 259.05603, 963.37756, 733.70935000000012],
@@ -26,14 +25,9 @@ async def test_mlcommons_ssd_resnet34_perf():
 
     # For batch mode test, simply read two identical images.
     batch_pre_image, batch_preproc_param = preprocess([test_image_path, test_image_path])
-    batch_feat = []
-    for pre_image in batch_pre_image:
-        feat = sess.run(np.expand_dims(pre_image, axis=0)).numpy()
-        assert len(feat) == NUM_OUTPUTS, f"model outputs expteds {NUM_OUTPUTS}"
-        batch_feat.append(feat)
-    batch_feat = collate_data(batch_feat, NUM_OUTPUTS, axis=0)
+    batch_feat = sess.run(batch_pre_image).numpy()
     detected_result = postprocess(batch_feat, batch_preproc_param, confidence_threshold=0.3)
-    assert len(detected_result) == 2, "batch axis exptected 2"
+    assert len(detected_result) == 2, "batch size must be 2"
     detected_result = detected_result[0]  # due to duplicated input image
 
     assert len(detected_result) == 2, "ssd_resnet34 output shape must be 2"
