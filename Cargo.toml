@@ -5,9 +5,10 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
-name = "furiosa_models_native"
-crate-type = ["cdylib"]
+name = "furiosa_models_vision_native"
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-pyo3 = { version = "0.16.5", features = ["extension-module"] }
 mlperf-postprocess = { path = "thirdparty/mlcommons/postprocess" }
+numpy = "0.16"
+pyo3 = { version = "0.16.5", features = ["extension-module"] }

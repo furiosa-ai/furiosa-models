@@ -1,4 +1,5 @@
 use pyo3::prelude::*;
+use pyo3::wrap_pymodule;
 
 mod ssd_mobilenet;
 
@@ -11,13 +12,15 @@ fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
 // NOTE: This docstring is unshown in Python level
 /// A Python module implemented in Rust.
 #[pymodule]
-fn furiosa_models_native(py: Python, m: &PyModule) -> PyResult<()> {
+fn furiosa_models_vision_native(py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
 
-    let ssd_mobilenet_mod = PyModule::new(py, "ssd_mobilenet")?;
-    ssd_mobilenet::register_module(py, &ssd_mobilenet_mod)?;
+    let ssd_mobilenet_module = pyo3::wrap_pymodule!(ssd_mobilenet::ssd_mobilenet);
+    m.add_wrapped(ssd_mobilenet_module)?;
 
-    m.add_submodule(ssd_mobilenet_mod)?;
+    py.import("sys")?
+        .getattr("modules")?
+        .set_item("furiosa_models_native.ssd_mobilenet", ssd_mobilenet_module(py))?;
 
     Ok(())
 }

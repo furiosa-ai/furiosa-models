@@ -1,4 +1,4 @@
 """Furiosa Models"""
-from . import vision, native
+from . import vision
 
-__all__ = ["vision", "native"]
+__all__ = ["vision"]
