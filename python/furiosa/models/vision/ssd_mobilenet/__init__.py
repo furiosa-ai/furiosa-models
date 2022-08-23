@@ -180,7 +180,7 @@ def postprocess(
     confidence_threshold: float = 0.3,
     iou_threshold: float = 0.6,
 ) -> List[List[ObjectDetectionResult]]:
-    assert len(outputs) == NUM_OUTPUTS, f"model output exptected {NUM_OUTPUTS}, but {len(outputs)}"
+    assert len(outputs) == NUM_OUTPUTS, f"the number of model outputs must be {NUM_OUTPUTS}, but {len(outputs)}"
     bs = outputs[0].shape[0]
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L94-L97
     class_logits = [
