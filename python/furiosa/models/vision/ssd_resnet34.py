@@ -11,6 +11,7 @@ import torch.nn.functional as F
 from furiosa.registry import Model
 
 from .common.datasets import coco
+from .postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox
 
 
 ##Inspired by https://github.com/kuangliu/pytorch-ssd
@@ -240,59 +241,55 @@ class MLCommonsSSDLargeModel(Model):
     pass
 
 
+NUM_OUTPUTS: int = 12
 CLASSES = coco.MobileNetSSD_Large_CLASSES
 
 
-def preprocess(image_path: str) -> Tuple[npt.ArrayLike, Dict[str, Any]]:
+def preprocess(image_path_list: List[str]) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
     """Read and preprocess an image located at image_path."""
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L141
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L61-L63
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L252-L263
-    image = cv2.imread(image_path)
-    if image is None:
-        raise FileNotFoundError(image_path)
-    image = np.array(image, dtype=np.float32)
-    if len(image.shape) < 3 or image.shape[2] != 3:
-        image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-    else:
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    width = image.shape[1]
-    height = image.shape[0]
-    image = cv2.resize(image, (1200, 1200), interpolation=cv2.INTER_LINEAR)
-    mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
-    std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
-    image = image / 255.0 - mean
-    image = image / std
-    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L143
-    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/coco.py#L40
-    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/coco.py#L91
-    image = image.transpose([2, 0, 1])
-    return [np.expand_dims(image, axis=0)], {"width": width, "height": height}
+    batch_image = []
+    batch_preproc_param = []
+    for image_path in image_path_list:
+        image = cv2.imread(image_path)
+        if image is None:
+            raise FileNotFoundError(image_path)
+        image = np.array(image, dtype=np.float32)
+        if len(image.shape) < 3 or image.shape[2] != 3:
+            image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+        else:
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        width = image.shape[1]
+        height = image.shape[0]
+        image = cv2.resize(image, (1200, 1200), interpolation=cv2.INTER_LINEAR)
+        mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
+        std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+        image = image / 255.0 - mean
+        image = image / std
+        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L143
+        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/coco.py#L40
+        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/coco.py#L91
+        image = image.transpose([2, 0, 1])
+        batch_image.append(image)
+        batch_preproc_param.append({"width": width, "height": height})
+    return np.stack(batch_image, axis=0), batch_preproc_param
 
 
-def _calibration_box(bbox, width, height):
-    bbox[:, 0] *= width
-    bbox[:, 1] *= height
-    bbox[:, 2] *= width
-    bbox[:, 3] *= height
-
-    bbox[:, 2] -= bbox[:, 0]
-    bbox[:, 3] -= bbox[:, 1]
-    return bbox
-
-
-def _pick_best(detections, confidence_threshold=0.3):
+def _pick_best(detections, confidence_threshold):
     bboxes, classes, confidences = detections
     best = np.argwhere(confidences > confidence_threshold).squeeze(axis=1)
     return [pred[best].squeeze(axis=0) for pred in detections]
 
 
 def postprocess(
-    outputs: Sequence[np.ndarray], extra_params: Dict[str, Any], confidence_threshold=0.3
-) -> Tuple[List[np.ndarray], List[np.ndarray], List[np.ndarray]]:
-
-    if len(outputs) != 12:
-        raise Exception(f"output size must be 12, but {len(outputs)}")
+    outputs: Sequence[np.ndarray],
+    batch_preproc_params: Sequence[Dict[str, Any]],
+    confidence_threshold=0.3,
+) -> List[List[ObjectDetectionResult]]:
+    if len(outputs) != NUM_OUTPUTS:
+        raise Exception(f"output size must be {NUM_OUTPUTS}, but {len(outputs)}")
     classes, locations = outputs[:6], outputs[6:]
 
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_r34.py#L317-L329
@@ -311,17 +308,28 @@ def postprocess(
     # Pick the best boxes
     # https://pytorch.org/hub/nvidia_deeplearningexamples_ssd/
     # sometimes there are many boxes with localizaition and class probability distrituion.
-    width = extra_params["width"]
-    height = extra_params["height"]
-    filtered_bboxes = []
-    filtered_labels = []
-    filtered_scores = []
-    for boxes, labels, scores in zip(det_boxes, det_labels, det_scores):
+    batch_results = []
+    for boxes, labels, scores, preproc_params in zip(
+        det_boxes, det_labels, det_scores, batch_preproc_params
+    ):
+        width, height = preproc_params['width'], preproc_params['height']
         boxes, labels, scores = _pick_best(
-            detections=(boxes, labels, scores), confidence_threshold=confidence_threshold
+            detections=(boxes, labels, scores),
+            confidence_threshold=confidence_threshold,
         )
-        filtered_bboxes.append(_calibration_box(boxes.numpy(), width, height))
-        filtered_labels.append(labels.numpy())
-        filtered_scores.append(scores.numpy())
-
-    return filtered_bboxes[0], filtered_labels[0], filtered_scores[0]  # 1-batch(NPU)
+        cal_boxes = calibration_ltrbbox(boxes, width, height)
+        predicted_result = []
+        for b, l, s in zip(cal_boxes, labels, scores):
+            bb_list = b.tolist()
+            predicted_result.append(
+                ObjectDetectionResult(
+                    index=l,
+                    label=CLASSES[l],
+                    score=s,
+                    boundingbox=LtrbBoundingBox(
+                        left=bb_list[0], top=bb_list[1], right=bb_list[2], bottom=bb_list[3]
+                    ),
+                )
+            )
+        batch_results.append(predicted_result)
+    return batch_results
