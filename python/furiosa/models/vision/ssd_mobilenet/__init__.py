@@ -180,14 +180,17 @@ def postprocess(
     confidence_threshold: float = 0.3,
     iou_threshold: float = 0.6,
 ) -> List[List[ObjectDetectionResult]]:
-    assert len(outputs) == NUM_OUTPUTS, f"the number of model outputs must be {NUM_OUTPUTS}, but {len(outputs)}"
-    bs = outputs[0].shape[0]
+    assert (
+        len(outputs) == NUM_OUTPUTS
+    ), f"the number of model outputs must be {NUM_OUTPUTS}, but {len(outputs)}"
+    batch_size = outputs[0].shape[0]
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L94-L97
     class_logits = [
-        output.transpose((0, 2, 3, 1)).reshape((bs, -1, NUM_CLASSES)) for output in outputs[0::2]
+        output.transpose((0, 2, 3, 1)).reshape((batch_size, -1, NUM_CLASSES))
+        for output in outputs[0::2]
     ]
     box_regression = [
-        output.transpose((0, 2, 3, 1)).reshape((bs, -1, 4)) for output in outputs[1::2]
+        output.transpose((0, 2, 3, 1)).reshape((batch_size, -1, 4)) for output in outputs[1::2]
     ]
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L144-L166
     class_logits = np.concatenate(class_logits, axis=1)  # type: ignore[assignment]

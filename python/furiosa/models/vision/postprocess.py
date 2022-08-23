@@ -8,7 +8,7 @@ def sigmoid(x: np.ndarray) -> np.ndarray:  # pylint: disable=invalid-name
     return 1 / (1 + np.exp(-x))
 
 
-def calibration_ltrbbox(bbox, width, height):
+def calibration_ltrbbox(bbox: np.ndarray, width: float, height: float) -> np.ndarray:
     bbox[:, 0] *= width
     bbox[:, 1] *= height
     bbox[:, 2] *= width
