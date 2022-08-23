@@ -1,5 +1,4 @@
-import logging
-from typing import Any, Dict, ForwardRef, List, Sequence, Tuple
+from typing import Any, Dict, List, Sequence, Tuple
 
 import cv2
 import numpy
@@ -10,9 +9,7 @@ from furiosa.registry import Model
 
 from . import anchor_generator  # type: ignore[import]
 from ..common.datasets import coco
-from ..postprocess import calibration_box, sigmoid
-
-tensorArray = ForwardRef("tensor.TensorArray")
+from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox, sigmoid
 
 # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L155-L158
 PRIORS = np.concatenate(
@@ -51,28 +48,35 @@ class MLCommonsSSDSmallModel(Model):
     pass
 
 
+NUM_OUTPUTS: int = 12
 CLASSES = coco.MobileNetSSD_CLASSES
+NUM_CLASSES = len(CLASSES) - 1  # remove background
 
 
-def preprocess(image_path: str) -> Tuple[npt.ArrayLike, Dict[str, Any]]:
+def preprocess(image_path_list: Sequence[str]) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
     """Read and preprocess an image located at image_path."""
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L49-L51
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L242-L249
-    image = cv2.imread(image_path)
-    if image is None:
-        raise FileNotFoundError(image_path)
-    image = np.array(image, dtype=np.float32)
-    if len(image.shape) < 3 or image.shape[2] != 3:
-        image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-    else:
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    width = image.shape[1]
-    height = image.shape[0]
-    image = cv2.resize(image, (300, 300), interpolation=cv2.INTER_LINEAR)
-    image -= 127.5
-    image /= 127.5
-    image = image.transpose([2, 0, 1])
-    return image[np.newaxis, ...], {"width": width, "height": height}
+    batch_image = []
+    batch_preproc_param = []
+    for image_path in image_path_list:
+        image = cv2.imread(image_path)
+        if image is None:
+            raise FileNotFoundError(image_path)
+        image = np.array(image, dtype=np.float32)
+        if len(image.shape) < 3 or image.shape[2] != 3:
+            image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+        else:
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        width = image.shape[1]
+        height = image.shape[0]
+        image = cv2.resize(image, (300, 300), interpolation=cv2.INTER_LINEAR)
+        image -= 127.5
+        image /= 127.5
+        image = image.transpose([2, 0, 1])
+        batch_image.append(image)
+        batch_preproc_param.append({"width": width, "height": height})
+    return np.stack(batch_image, axis=0), batch_preproc_param
 
 
 def _decode_boxes(rel_codes: np.ndarray) -> np.ndarray:
@@ -111,18 +115,21 @@ def _decode_boxes(rel_codes: np.ndarray) -> np.ndarray:
 
 
 def _filter_results(
-    scores: np.ndarray, boxes: np.ndarray
+    scores: np.ndarray,
+    boxes: np.ndarray,
+    confidence_threshold: float,
+    iou_threshold: float,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L197-L212
     selected_box_probs = []
     labels = []
     for class_index in range(1, scores.shape[1]):
         probs = scores[:, class_index]
-        mask = probs > 0.3
+        mask = probs > confidence_threshold
         probs = probs[mask]
         subset_boxes = boxes[mask, :]
         box_probs = np.concatenate((subset_boxes, probs.reshape(-1, 1)), axis=1)
-        box_probs = _nms(box_probs, 0.6)
+        box_probs = _nms(box_probs, iou_threshold)
         selected_box_probs.append(box_probs)
         labels.append(np.full((box_probs.shape[0],), class_index, dtype=np.int64))
     selected_box_probs = np.concatenate(selected_box_probs)  # type: ignore[assignment]
@@ -168,14 +175,22 @@ def _box_area(left_top: np.ndarray, right_bottom: np.ndarray):
 
 
 def postprocess(
-    outputs: Sequence[numpy.ndarray], extra_params: Dict[str, Any]
-) -> Tuple[List[np.ndarray], List[np.ndarray], List[np.ndarray]]:
-    logging.debug(f"extra_params: {extra_params}")
-    assert len(outputs) == 12, len(outputs)
+    outputs: Sequence[numpy.ndarray],
+    batch_preproc_params: Sequence[Dict[str, Any]],
+    confidence_threshold: float = 0.3,
+    iou_threshold: float = 0.6,
+) -> List[List[ObjectDetectionResult]]:
+    assert (
+        len(outputs) == NUM_OUTPUTS
+    ), f"the number of model outputs must be {NUM_OUTPUTS}, but {len(outputs)}"
+    batch_size = outputs[0].shape[0]
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L94-L97
-    class_logits = [output.transpose((0, 2, 3, 1)).reshape((1, -1, 91)) for output in outputs[0::2]]
+    class_logits = [
+        output.transpose((0, 2, 3, 1)).reshape((batch_size, -1, NUM_CLASSES))
+        for output in outputs[0::2]
+    ]
     box_regression = [
-        output.transpose((0, 2, 3, 1)).reshape((1, -1, 4)) for output in outputs[1::2]
+        output.transpose((0, 2, 3, 1)).reshape((batch_size, -1, 4)) for output in outputs[1::2]
     ]
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L144-L166
     class_logits = np.concatenate(class_logits, axis=1)  # type: ignore[assignment]
@@ -184,15 +199,30 @@ def postprocess(
     batch_boxes = _decode_boxes(box_regression)  # type: ignore[arg-type]
 
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L178-L185
-    filtered_boxes, filtered_labels, filtered_scores = [], [], []
-    width = extra_params["width"]
-    height = extra_params["height"]
-    for scores, boxes in zip(batch_scores, batch_boxes):
-        boxes, labels, scores = _filter_results(scores, boxes)
-        filtered_boxes.append(calibration_box(boxes, width, height))
-        filtered_labels.append(labels)
-        filtered_scores.append(scores)
-    return filtered_boxes[0], filtered_labels[0], filtered_scores[0]  # 1-batch(NPU)
-
-
-MLCommonsSSDSmallModel.update_forward_refs()
+    batch_results = []
+    for scores, boxes, preproc_params in zip(
+        batch_scores, batch_boxes, batch_preproc_params
+    ):  # loop mini-batch
+        width, height = preproc_params["width"], preproc_params["height"]
+        boxes, labels, scores = _filter_results(
+            scores,
+            boxes,
+            confidence_threshold=confidence_threshold,
+            iou_threshold=iou_threshold,
+        )
+        cal_boxes = calibration_ltrbbox(boxes, width, height)
+        predicted_result = []
+        for b, l, s in zip(cal_boxes, labels, scores):
+            bb_list = b.tolist()
+            predicted_result.append(
+                ObjectDetectionResult(
+                    index=l,
+                    label=CLASSES[l],
+                    score=s,
+                    boundingbox=LtrbBoundingBox(
+                        left=bb_list[0], top=bb_list[1], right=bb_list[2], bottom=bb_list[3]
+                    ),
+                )
+            )
+        batch_results.append(predicted_result)
+    return batch_results
