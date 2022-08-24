@@ -135,7 +135,7 @@ def _nms_internal_ops_fast_py(
 def nms_internal_ops_fast(
     boxes: np.ndarray, scores: np.ndarray, iou_threshold: float, eps: float = 1e-5
 ) -> List[int]:
-    """Non-maximum Supression(NMS)
+    """Non-maximum Suppression(NMS)
        Select the boxes out of many overlapped regions with scores based on some criteria(IoU Threshold Value).
        The criterion for the overlapping regions is if an intersect between two regions is greater than the iou threshold value.
 
