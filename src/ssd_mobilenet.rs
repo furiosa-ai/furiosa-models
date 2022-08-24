@@ -35,7 +35,6 @@ impl RustPostprocessor {
 
     fn process(self_: PyRef<'_, Self>, inputs: PyReadonlyArrayDyn<'_, i8>) -> PyResult<()> {
         eprintln!("inputs len: {}", inputs.len());
-        inputs.
         //self.0.postprocess(0, )
         Ok(())
     }
