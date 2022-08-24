@@ -88,20 +88,6 @@ def _nms_internal_ops_fast_rust(
 def _nms_internal_ops_fast_py(
     boxes: np.ndarray, scores: np.ndarray, iou_threshold: float, eps: float = 1e-5
 ) -> List[int]:
-    """Non-maximum Supression(NMS)
-       Select the one regions(boxes) out of many overlapped regions with scores based on some criteria(IoU Threshold Value).
-       The criterion for the overlapping regions is if an intersect between two regions is greater than the iou threshold value.
-
-    Args:
-        boxes (np.ndarray): A list of candiate boxes corresponding confidence score.
-            They have to be in (left, top, right, bottom) format with left <= right and top <= bottom.
-        scores (np.ndarray): scores for each candidate boxes. It's dimension has N x 1.
-        iou_threshold (float): discards all overlapping boxes with the overlap > iou_threshold.
-        eps (float, optional): preventing during overlapping between boxes from NaN. Defaults to 1e-5.
-
-    Returns:
-        List[int]: the list of indices of the element filtered by NMS, sorted in decreasing order of scores.
-    """
     # if there are no boxes, return an empty list
     if len(boxes) == 0:
         return []
@@ -149,6 +135,20 @@ def _nms_internal_ops_fast_py(
 def nms_internal_ops_fast(
     boxes: np.ndarray, scores: np.ndarray, iou_threshold: float, eps: float = 1e-5
 ) -> List[int]:
+    """Non-maximum Supression(NMS)
+       Select the boxes out of many overlapped regions with scores based on some criteria(IoU Threshold Value).
+       The criterion for the overlapping regions is if an intersect between two regions is greater than the iou threshold value.
+
+    Args:
+        boxes (np.ndarray): A list of candiate boxes corresponding confidence score.
+            They have to be in (left, top, right, bottom) format with left <= right and top <= bottom.
+        scores (np.ndarray): scores for each candidate boxes. It's dimension has N x 1.
+        iou_threshold (float): discards all overlapping boxes with the overlap > iou_threshold.
+        eps (float, optional): preventing during overlapping between boxes from NaN. Defaults to 1e-5.
+
+    Returns:
+        List[int]: the list of indices of the element filtered by NMS, sorted in decreasing order of scores.
+    """
     return _nms_internal_ops_fast_py(boxes, scores, iou_threshold, eps)
-    # for PyO3 Competible Version
+    # for PyO3 Competible Testing Version
     # return _nms_internal_ops_fast_rust(boxes, scores, iou_threshold, eps)
