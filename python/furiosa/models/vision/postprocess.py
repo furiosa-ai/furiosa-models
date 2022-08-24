@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Sequence
+from typing import List
 
 import numpy as np
 
@@ -12,7 +12,7 @@ class CXcywhBoundingBox:
     height: float
 
     def __iter__(self) -> List[float]:
-        return [self.center_x, self.center_y, self.width, self.height]
+        return iter([self.center_x, self.center_y, self.width, self.height])
 
 
 @dataclass
@@ -23,7 +23,7 @@ class XywhBoundingBox:
     height: float
 
     def __iter__(self) -> List[float]:
-        return [self.x, self.y, self.width, self.height]
+        return iter([self.x, self.y, self.width, self.height])
 
 
 @dataclass
@@ -34,7 +34,7 @@ class LtrbBoundingBox:
     bottom: float
 
     def __iter__(self) -> List[float]:
-        return [self.left, self.top, self.right, self.bottom]
+        return iter([self.left, self.top, self.right, self.bottom])
 
 
 def sigmoid(x: np.ndarray) -> np.ndarray:  # pylint: disable=invalid-name
