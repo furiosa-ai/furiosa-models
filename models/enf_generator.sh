@@ -38,7 +38,7 @@ for onnx in $onnxes; do
 	# filename=$stem\_$revision\_warboy.enf
 	# if ! [ -f $filename ]; then
 	# 	if [ "$config_exists" = true ]; then
-	# 		( set -x; NPU_GLOBAL_CONFIG_PATH=$config furiosa compile --target-npu warboy ../$onnx -o $filename )
+	# 		( set -x; NPU_COMPILER_CONFIG_PATH=$config furiosa compile --target-npu warboy ../$onnx -o $filename )
 	# 	else
 	# 		( set -x; furiosa compile --target-npu warboy ../$onnx -o $filename )
 	# 	fi
@@ -51,8 +51,8 @@ for onnx in $onnxes; do
 	enf_filename=$stem\_$revision\_warboy_2pe.enf
 	if [ ! -f $enf_filename ] || [ ! -f $dfg_filename ] ; then
 		if [ "$config_exists" = true ]; then
-			( set -x; NPU_GLOBAL_CONFIG_PATH=$config furiosa compile --target-ir dfg --target-npu warboy-2pe ../$onnx -o $dfg_filename )
-			( set -x; NPU_GLOBAL_CONFIG_PATH=$config furiosa compile --target-npu warboy-2pe ../$onnx -o $enf_filename )
+			( set -x; NPU_COMPILER_CONFIG_PATH=$config furiosa compile --target-ir dfg --target-npu warboy-2pe ../$onnx -o $dfg_filename )
+			( set -x; NPU_COMPILER_CONFIG_PATH=$config furiosa compile --target-npu warboy-2pe ../$onnx -o $enf_filename )
 		else
 			( set -x; furiosa compile --target-ir dfg --target-npu warboy-2pe ../$onnx -o $dfg_filename )
 			( set -x; furiosa compile --target-npu warboy-2pe ../$onnx -o $enf_filename )
