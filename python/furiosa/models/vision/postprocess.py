@@ -75,8 +75,17 @@ class ObjectDetectionResult:
     index: int
 
 
+from ..furiosa_models_native import nms_internal_ops_fast_rust
+
+
+def _nms_internal_ops_fast_rust(
+    boxes: np.ndarray, scores: np.ndarray, iou_threshold: float, eps: float = 1e-5
+) -> List[int]:
+    return nms_internal_ops_fast_rust(boxes, scores, iou_threshold, eps)
+
+
 # Malisiewicz et al.
-def nms_internal_ops_fast(
+def _nms_internal_ops_fast_py(
     boxes: np.ndarray, scores: np.ndarray, iou_threshold: float, eps: float = 1e-5
 ) -> List[int]:
     """Non-maximum Supression(NMS)
@@ -135,3 +144,11 @@ def nms_internal_ops_fast(
     # return only the bounding boxes that were picked using the
     # integer data type
     return pick_indices
+
+
+def nms_internal_ops_fast(
+    boxes: np.ndarray, scores: np.ndarray, iou_threshold: float, eps: float = 1e-5
+) -> List[int]:
+    return _nms_internal_ops_fast_py(boxes, scores, iou_threshold, eps)
+    # for PyO3 Competible Version
+    # return _nms_internal_ops_fast_rust(boxes, scores, iou_threshold, eps)
