@@ -1,69 +1,75 @@
-import pathlib
+"""Yolov5l Module
 
-import cv2
+Attributes:
+    CLASSES (List[str]): a list of class names
+"""
+__all__ = ['CLASSES', 'preprocess', 'get_anchor_per_layer_count', 'postprocess', 'YoloV5LargeModel']
+
+import pathlib
+from typing import Any, Dict, List, Sequence
+
 import numpy as np
 import yaml
-from typing import List
 
 from furiosa.registry import Model
 
-from .box_decode.box_decoder import BoxDecoderC
-from .core import DetectecdResult, LtrbBoundingBox
-
-INPUT_SIZE = (640, 640)
-IOU_THRES = 0.45
-OUTPUT_SHAPES = [(1, 45, 80, 80), (1, 45, 40, 40), (1, 45, 20, 20)]
+from . import core as _yolov5
 
 with open(pathlib.Path(__file__).parent / "datasets/yolov5l/cfg.yaml", "r") as f:
     cfg = yaml.safe_load(f)
-    ANCHORS = np.float32(cfg["anchors"])
-    CLASS_NAMES = cfg["class_names"]
+    _ANCHORS: np.array = np.float32(cfg["anchors"])
+    _CLASS_NAMES: List[str] = cfg["class_names"]
 
-print("CLASSES_NAME", CLASS_NAMES)
-
-def _compute_stride():
-    img_h = INPUT_SIZE[1]
-    feat_h = np.float32([shape[2] for shape in OUTPUT_SHAPES])
-    strides = img_h / feat_h
-    return strides
-
-
-BOX_DECODER = BoxDecoderC(
-    nc=len(CLASS_NAMES),
-    anchors=ANCHORS,
-    stride=_compute_stride(),
-    conf_thres=0.25,
-)
+_BOX_DECODER = _yolov5.boxdecoder(_CLASS_NAMES, _ANCHORS)
 
 
 class YoloV5LargeModel(Model):
-    def compile_config(self, input_format="hwc"):
+    def compile_config(self, model_input_format="hwc"):
         return {
             "without_quantize": {
-                    "parameters": [
-                        {
-                            "input_min": 0.0, 
-                            "input_max": 1.0, 
-                            "permute": [0, 2, 3, 1] if input_format == "hwc" else [0, 1, 2, 3] # bchw
-                        }
-                    ]
-                }
+                "parameters": [
+                    {
+                        "input_min": 0.0,
+                        "input_max": 1.0,
+                        "permute": [0, 2, 3, 1]
+                        if model_input_format == "hwc"
+                        else [0, 1, 2, 3],  # bchw
+                    }
+                ]
             }
+        }
 
-    def get_class_names(self):
-        return CLASS_NAMES
 
-    def get_class_count(self):
-        return len(CLASS_NAMES)
+def get_anchor_per_layer_count() -> int:
+    """Anchors per layers
 
-    def get_output_feat_count(self):
-        return ANCHORS.shape[0]
+    Returns:
+        int: the number of anchors for yolov5l
+    """
+    return _ANCHORS.shape[1]
 
-    def get_anchor_per_layer_count(self):
-        return ANCHORS.shape[1]
 
-    def preprocess(self, img: np.array, input_color_format: str="bgr"):
-        return yolov5.preprocess(img, INPUT_SIZE, input_color_format)
+CLASSES: List[str] = _CLASS_NAMES
+preprocess = _yolov5.preprocess
 
-    def postprocess(self, feats, preproc_param):
-        return yolov5.postprocess(feats, BOX_DECODER, preproc_param, IOU_THRES)
+
+def postprocess(
+    batch_feats: Sequence[np.array],
+    batch_preproc_param: Sequence[Dict[str, Any]],
+) -> List[List[_yolov5.ObjectDetectionResult]]:
+    """Yolov5l Postprocess
+
+    Args:
+        batch_feats (Sequence[np.array]): P3/8, P4/16, P5/32 features from yolov5l model.
+        batch_preproc_param (Dict[str, Any]): configurations from preprocess.
+
+    Returns:
+        yolov5.ObjectDetectionResult: Detected Bounding Box and its score and label by Yolov5l.
+    """
+    return _yolov5.postprocess(
+        batch_feats,
+        _BOX_DECODER,
+        get_anchor_per_layer_count(),
+        _CLASS_NAMES,
+        batch_preproc_param,
+    )

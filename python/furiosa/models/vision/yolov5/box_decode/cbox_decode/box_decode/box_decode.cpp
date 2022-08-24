@@ -50,6 +50,7 @@ void box_decode_feat(
                         const float conf = obj_conf * cls_conf;
 
                         if (conf > conf_thres) {
+                            // yolov5 boundingbox format(center_x,center_y,width,height)
                             float bx = cell[0];
                             float by = cell[1];
                             float bw = cell[2];

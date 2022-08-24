@@ -24,7 +24,7 @@ class build_ext(build_ext_orig):
 
 
 setup(
-    name="cbox_decode",
+    name="cbox_decode for Yolov5",
     version="1.0.0",
     packages=find_packages(),
     ext_modules=[

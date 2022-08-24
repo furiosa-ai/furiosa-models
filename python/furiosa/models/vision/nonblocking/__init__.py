@@ -5,6 +5,7 @@ from furiosa.registry import Format, Metadata, Publication
 from ...utils import load_dvc
 from ...vision import resnet50, ssd_mobilenet, ssd_resnet34
 from ...vision.yolov5 import large as yolov5l
+from ...vision.yolov5 import meidum as yolov5m
 
 __all__ = [
     "ResNet50",
@@ -83,6 +84,7 @@ async def YOLOv5l(*args: Any, **kwargs: Any) -> yolov5l.YoloV5LargeModel:
         *args,
         **kwargs,
     )
+
 
 async def YOLOv5m(*args: Any, **kwargs: Any) -> yolov5m.YoloV5MediumModel:
     return yolov5m.YoloV5MediumModel(
