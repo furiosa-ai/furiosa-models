@@ -3,6 +3,8 @@ from typing import List
 
 import numpy as np
 
+from ..furiosa_models_native import nms_internal_ops_fast_rust
+
 
 @dataclass
 class CXcywhBoundingBox:
@@ -73,9 +75,6 @@ class ObjectDetectionResult:
     score: float
     label: str
     index: int
-
-
-from ..furiosa_models_native import nms_internal_ops_fast_rust
 
 
 def _nms_internal_ops_fast_rust(
