@@ -28,19 +28,17 @@ def _letterbox(
        a constrained space dictated by the model requirements.
        If some axis is smaller than new_shape, it will be filled with color.
     Args:
-        im (np.ndarray): a numpy image. Its shape must be Channel x Height, Width
+        im (np.ndarray): a numpy image. Its shape must be Channel x Height x Width.
         new_shape (Tuple[int, int], optional): Targeted Image size. Defaults to (640, 640).
         color (Tuple[int, int, int], optional): Padding Color Value. Defaults to (114, 114, 114).
-        auto (bool, optional): If True, calculate padding width and height along to stride  Defaults to True.
-        scaleFill (bool, optional): If True and auto is False, stretch an give image to target shape without any padding. Defaults to False.
-        scaleup (bool, optional): If True, only scale down. Defaults to True.
-        stride (int, optional): an output size of an image must be divied by a stride it is dependent on a model. This is only valid for auto is True. Defaults to 32.
+        auto (bool, optional): If True, calculate padding width and height along to stride  Default to True.
+        scaleFill (bool, optional): If True and auto is False, stretch an give image to target shape without any padding. Default to False.
+        scaleup (bool, optional): If True, only scale down. Default to True.
+        stride (int, optional): an output size of an image must be divied by a stride it is dependent on a model. This is only valid for auto is True. Default to 32.
 
     Returns:
         Tuple[np.ndarray, Tuple[float, float], Tuple[int, int]]:
-        The first element is an padded-resized image.
-        The second element is resized image.
-        The last element is padded size.
+        The first element is an padded-resized image. The second element is a resized image. The last element is padded sizes, respectivly width and height.
     """
     # Resize and pad image while meeting stride-multiple constraints
     shape = im.shape[:2]  # current shape [height, width]
@@ -127,14 +125,15 @@ def _compute_stride() -> np.ndarray:
 
 
 def boxdecoder(class_names: Sequence[str], anchors: np.ndarray) -> BoxDecoderC:
-    """모델의 예측된 결과로부터 박스의 left, top, width, height를 계산한다.
+    """Calculate the left, top, right, and bottom of the box from the coordinates
+       predicted by a model.
 
     Args:
-        class_names (List[str]): A list of class string.
+        class_names (Sequence[str]): A list of class string.
         anchors (np.ndarray): a aspect ratio array of anchors.
 
     Returns:
-        BoxDecoderC
+        BoxDecoderC Callable Instance
     """
     return BoxDecoderC(
         nc=len(class_names),
@@ -153,11 +152,11 @@ def preprocess(
         input_color_format (str): a color format: rgb(Red,Green,Blue), bgr(Blue,Green,Red)
 
     Returns:
-        Tuple[np.ndarray, List[Dict[str, Any]]]: a pre-processed image, scalesand padded sizes(width,height) per images.
+        Tuple[np.ndarray, List[Dict[str, Any]]]: a pre-processed image, scales and padded sizes(width,height) per images.
         The first element is a preprocessing image, and a second element is a dictionary object to be used for postprocess.
         'scale' key of the returned dict has a rescaled ratio per width(=target/width) and height(=target/height),
-        and the 'pad' key has padded width and height pixels. Especially, the last dictionary element of returing
-        tuple will be passed to postprocessing as a parameter named preproc_params.
+        and the 'pad' key has padded width and height pixels. Specially, the last dictionary element of returing
+        tuple will be passed to postprocessing as a parameter to calculate predicted coordinates on normalized coordinates back to an input image cooridnates.
     """
     # image format must be chw
     batched_image = []
@@ -176,7 +175,7 @@ def preprocess(
 
 
 def postprocess(
-    feats: Sequence[np.ndarray],
+    batch_feats: Sequence[np.ndarray],
     box_decoder: BoxDecoderC,
     anchor_per_layer_count: int,
     class_names: Sequence[str],
@@ -187,20 +186,23 @@ def postprocess(
     """Yolov5 PostProcess.
 
     Args:
-        feats (Sequence[np.ndarray]): model output, this array expects to be in Batch x Features(the number anchors x (5+the number of clsss)) x N x N.
-        box_decoder (BoxDecoderC): box decoder has several informations to decode: (xyxy, confidence threshold, anchor_grid, stride, number of classes).
-        anchor_per_layer_count (int): the number of anchors per layers
-        class_names (Sequence[str]): a list of class names.
-        preproc_params (Dict[str, Any]): preprocessor's configuration: scaling, padding informations
-        conf_threshold (float): confidence score threshold
-        iou_thres (float, optional): IoU threshold value for the NMS processing. Defaults to 0.45.
+        batch_feats (Sequence[np.ndarray]): Model numpy version outputs. This numpy array expects to be in Batch x Features(the number anchors x (5+the number of clsss)) x N x N.
+        box_decoder (BoxDecoderC): A box decoder. It has several informations to decode: (xyxy, confidence threshold, anchor_grid, stride, number of classes).
+        anchor_per_layer_count (int): The number of anchors per layers.
+        class_names (Sequence[str]): A list of class names.
+        batch_preproc_params (Dict[str, Any]): The components manipulated by the preprocessor to be used for information recovery: image scaling ratio, padding size in width and height.
+        conf_threshold (float, optional): Confidence score threshold. The default to 0.25
+        iou_thres (float, optional): IoU threshold value for the NMS processing. The default to 0.45.
 
     Returns:
-        List[List[ObjectDetectionResult]]: Finally detected bounding boxes(class index, class name, score, (left,top,right,bottom)).
+        List[List[ObjectDetectionResult]]: Detected bounding boxes(class index, class name, score, 2D box coordinates(left,top,right,bottom)).
+            This ObjectDetectionResult inherits from dataclass, so that it could be converted to Tuple (by astuple funciton in the dataclass package).
     """
 
-    feats = [_reshape_output(f, anchor_per_layer_count, len(class_names)) for f in feats]
-    batched_boxes = box_decoder(feats, conf_thres)
+    batch_feats = [
+        _reshape_output(f, anchor_per_layer_count, len(class_names)) for f in batch_feats
+    ]
+    batched_boxes = box_decoder(batch_feats, conf_thres)
     batched_boxes = _nms(batched_boxes, iou_thres)
 
     batched_detected_boxes = []
