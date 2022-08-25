@@ -142,13 +142,17 @@ def _compute_stride() -> np.ndarray:
 def boxdecoder(class_names: Sequence[str], anchors: np.ndarray) -> BoxDecoderC:
     """Calculate the left, top, right, and bottom of the box from the coordinates
        predicted by a model.
+       In predicted features(batch x features(the number anchors x (5+the number of clsss))),
+       this box deocoder computes Batch x N x 6 properties(left,top,right,bottom,conf,class index) for boxes with a high probability of being an object.
+       It is selected as a candidate box with a high probability of an object with the condition of "obj_conf * class_conf >= confidnece threshold". And the class index is the index of the array corresponding to the highest score value.
 
     Args:
         class_names (Sequence[str]): A list of class string.
         anchors (np.ndarray): a aspect ratio array of anchors.
 
     Returns:
-        BoxDecoderC Callable Instance
+        BoxDecoderC Callable Instance. If the instance is called,
+            it returns an numpy.ndarray with batch x N x 6 propertie.
     """
     return BoxDecoderC(
         nc=len(class_names),
@@ -164,14 +168,14 @@ def preprocess(
 
     Args:
         img (Sequence[np.ndarray]): Color images have (Batch, Channel, Height, Width) dimensions.
-        input_color_format (str): a color format: rgb(Red,Green,Blue), bgr(Blue,Green,Red)
+        input_color_format (str): a color format: rgb(Red,Green,Blue), bgr(Blue,Green,Red).
 
     Returns:
         Tuple[np.ndarray, List[Dict[str, Any]]]: a pre-processed image, scales and padded sizes(width,height) per images.
-        The first element is a preprocessing image, and a second element is a dictionary object to be used for postprocess.
-        'scale' key of the returned dict has a rescaled ratio per width(=target/width) and height(=target/height),
-        and the 'pad' key has padded width and height pixels. Specially, the last dictionary element of returing
-        tuple will be passed to postprocessing as a parameter to calculate predicted coordinates on normalized coordinates back to an input image cooridnates.
+            The first element is a preprocessing image, and a second element is a dictionary object to be used for postprocess.
+            'scale' key of the returned dict has a rescaled ratio per width(=target/width) and height(=target/height),
+            and the 'pad' key has padded width and height pixels. Specially, the last dictionary element of returing
+            tuple will be passed to postprocessing as a parameter to calculate predicted coordinates on normalized coordinates back to an input image cooridnates.
     """
     # image format must be chw
     batched_image = []
