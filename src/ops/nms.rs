@@ -1,10 +1,7 @@
 #![allow(dead_code)]
 use pyo3::prelude::*;
-use pyo3::create_exception;
-use pyo3::exceptions::PyException;
+use pyo3::{exceptions::PyValueError, PyErr};
 use numpy::{PyReadonlyArray1, PyReadonlyArray2};
-
-create_exception!(furiosa_models_native, NativeException, PyException, "Some description.");
 
 
 #[derive(Debug)]
@@ -44,7 +41,7 @@ pub fn nms_index(boxes: PyReadonlyArray2<f32>,
         }
         let x_stride: usize = x.shape()[1];
         let x = x.as_slice().ok_or(
-            NativeException::new_err("slice error".to_string())
+            PyErr::new::<PyValueError, _>("slice error".to_string())
         )?;
 
         let scores: Vec<f32> = scores.iter().map( |v| *v).collect();
