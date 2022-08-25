@@ -56,6 +56,9 @@ dvc = [
     "dvc[s3]",
 ]
 
+[project.scripts]
+furiosa-models = "furiosa.models.client.main:main"
+
 [project.urls]
 Home = "https://furiosa.ai"
 Documentation = "https://github.com/furiosa-ai/furiosa-models"
