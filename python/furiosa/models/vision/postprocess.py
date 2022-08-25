@@ -150,4 +150,6 @@ def nms_internal_ops_fast(
     """
     return _nms_internal_ops_fast_py(boxes, scores, iou_threshold, eps)
     # for PyO3 Competible Testing Version
-    # return _nms_internal_ops_fast_rust(boxes, scores, iou_threshold, eps)
+    # return _nms_internal_ops_fast_rust(
+    #    np.ascontiguousarray(boxes), np.ascontiguousarray(scores), iou_threshold, eps
+    # )
