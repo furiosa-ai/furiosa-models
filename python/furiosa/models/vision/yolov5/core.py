@@ -101,6 +101,11 @@ def _nms(
         # Batched NMS
         if not class_agnostic:
             c = x[:, 5:6] * max_wh  # classe index * max_wh
+            # c = 0, offset 0 + (xyxy)
+            # c = 1, +max_wh + (xyxy)
+            # c = 2, +2*max_wh + (xyxy)
+            # ...
+            # boxes of different classes can never overlap each other.
             boxes, scores = x[:, :4] + c, x[:, 4]  # boxes (offset by class), scores
         else:
             boxes, scores = x[:, :4], x[:, 4]
