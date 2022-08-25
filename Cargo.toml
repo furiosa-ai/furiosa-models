@@ -9,6 +9,7 @@ name = "furiosa_models_vision_native"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+itertools = "0.10.3"
 mlperf-postprocess = { path = "thirdparty/mlcommons/postprocess" }
 numpy = "0.16"
 pyo3 = { version = "0.16.5", features = ["extension-module"] }
