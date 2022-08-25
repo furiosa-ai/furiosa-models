@@ -3,7 +3,7 @@ from typing import List
 
 import numpy as np
 
-from ..furiosa_models_native import nms_internal_ops_fast_rust
+from ..furiosa_models_vision_native import nms_internal_ops_fast_rust
 
 
 @dataclass
@@ -52,6 +52,14 @@ def calibration_ltrbbox(bbox: np.ndarray, width: float, height: float) -> np.nda
 
 
 def xyxytocxcywh(xyxy: LtrbBoundingBox) -> CXcywhBoundingBox:
+    """Convert xyxy BoundingBox format to CXcywhBoundingBox format.
+
+    Args:
+        xyxy (LtrbBoundingBox): Left,Top,Right and Bottom bounding box format
+
+    Returns:
+        CXcywhBoundingBox: Center Point(x,y), width and height bounding box format
+    """
     return CXcywhBoundingBox(
         center_x=(xyxy.left + xyxy.right) / 2,
         center_y=(xyxy.top + xyxy.bottom) / 2,
@@ -61,6 +69,14 @@ def xyxytocxcywh(xyxy: LtrbBoundingBox) -> CXcywhBoundingBox:
 
 
 def xyxytoxywh(xyxy: LtrbBoundingBox) -> XywhBoundingBox:
+    """Convert xyxy BoundingBox format to XywhBoundingBox format.
+
+    Args:
+        xyxy (LtrbBoundingBox): Left,Top,Right and Bottom bounding box format
+
+    Returns:
+        CXcywhBoundingBox: LeftTop Point(x,y), width and height bounding box format
+    """
     return XywhBoundingBox(
         x=xyxy.left,
         y=xyxy.top,
@@ -135,8 +151,8 @@ def nms_internal_ops_fast(
     boxes: np.ndarray, scores: np.ndarray, iou_threshold: float, eps: float = 1e-5
 ) -> List[int]:
     """Non-maximum Suppression(NMS)
-       Select the boxes out of many overlapped regions with scores based on some criteria(IoU Threshold Value).
-       The criterion for the overlapping regions is if an intersect between two regions is greater than the iou threshold value.
+       Select the boxes in the order of the highest score out of many overlapping boxes based on several criteria (IoU Threshold Value).
+       The criterion for the overlapping regions is when an intersect between two regions is greater than the iou threshold value.
 
     Args:
         boxes (np.ndarray): A list of candiate boxes corresponding confidence score.
