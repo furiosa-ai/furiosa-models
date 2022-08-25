@@ -77,6 +77,16 @@ def _letterbox(
 def _nms(
     prediction: Sequence[np.ndarray], iou_thres: float = 0.45, class_agnostic: bool = True
 ) -> List[np.ndarray]:
+    """Internal Non-Maxima Suppression for BoxDecode
+
+    Args:
+        prediction (Sequence[np.ndarray]): Batch x 6(left,top,right,bottom,confidence,class index)
+        iou_thres (float, optional): IoU Threshold. Defaults to 0.45.
+        class_agnostic (bool, optional): Class Agnostic. Defaults to True.
+
+    Returns:
+        List[np.ndarray]: Detected Boxes
+    """
     # Checks
     assert 0 <= iou_thres <= 1, f"Invalid IoU {iou_thres}, valid values are between 0.0 and 1.0"
 
@@ -90,7 +100,7 @@ def _nms(
     for x in prediction:
         # Batched NMS
         if not class_agnostic:
-            c = x[:, 5:6] * max_wh  # classes
+            c = x[:, 5:6] * max_wh  # classe index * max_wh
             boxes, scores = x[:, :4] + c, x[:, 4]  # boxes (offset by class), scores
         else:
             boxes, scores = x[:, :4], x[:, 4]
