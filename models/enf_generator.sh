@@ -4,7 +4,7 @@ set -e
 MODEL_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # Install furiosa compiler husk if necessary
-if [ -x "$(command -v foo)" ]; then
+if [ ! -x "$(command -v furiosa-compile)" ]; then
 	echo "[+] Installing furiosa-sdk pip package"
 	pip install furiosa-sdk
 fi
