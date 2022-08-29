@@ -10,7 +10,7 @@ if [ -x "$(command -v foo)" ]; then
 fi
 
 ONNX_FILES=($(ls $MODEL_DIR/*.onnx))
-PACKAGE_VERSION=$(apt show furiosa-libcompiler | grep -E "^Version: " | cut -b 10-)
+PACKAGE_VERSION=$(apt show furiosa-libcompiler 2> /dev/null | grep -E "^Version: " | cut -b 10-)
 COMPILER_VERSION=$(furiosa compile --version | grep "compiler" | awk '{print $2}')
 COMPILER_REVISION=$(furiosa compile --version | grep "compiler" | grep -Eo 'rev: ([a-z]|[0-9])+' | cut -b 6-)
 COMPILER_FULL_VERSION=${COMPILER_VERSION}_${COMPILER_REVISION}
