@@ -2,7 +2,7 @@ from typing import Any
 
 from furiosa.registry import Format, Metadata, Publication
 
-from ...utils import load_dvc
+from ...utils import load_dvc, load_dvc_generated
 from ...vision import resnet50, ssd_mobilenet, ssd_resnet34
 from ...vision.yolov5 import large as yolov5l
 
@@ -70,9 +70,14 @@ async def SSDResNet34(*args: Any, **kwargs: Any) -> ssd_resnet34.MLCommonsSSDLar
 
 
 async def YOLOv5l(*args: Any, **kwargs: Any) -> yolov5l.YoloV5LargeModel:
+    source = await load_dvc("models/yolov5l_int8.onnx")
+    dfg = await load_dvc_generated("models/yolov5l_int8.onnx", "dfg")
+    enf = await load_dvc_generated("models/yolov5l_int8.onnx", "enf")
     return yolov5l.YoloV5LargeModel(
         name="YoloV5Large",
-        model=await load_dvc("models/yolov5l_int8.onnx"),
+        source=source,
+        dfg=dfg,
+        enf=enf,
         format=Format.ONNX,
         family="Yolo",
         version="v5",

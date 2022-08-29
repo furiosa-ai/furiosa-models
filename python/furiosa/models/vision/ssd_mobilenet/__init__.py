@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Sequence, Tuple
+from enum import Enum
 
 import cv2
 import numpy
@@ -9,7 +10,8 @@ from furiosa.registry import Model
 
 from . import anchor_generator  # type: ignore[import]
 from ..common.datasets import coco
-from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox, sigmoid
+from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox, sigmoid, PostProcessor
+from .. import native
 
 # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L155-L158
 PRIORS = np.concatenate(
@@ -40,11 +42,8 @@ class SSDSmallConstant(object):
     PRIORS_CENTER_X = PRIORS_CENTER_X
     PRIORS_CENTER_Y = PRIORS_CENTER_Y
 
-
 class MLCommonsSSDSmallModel(Model):
     """MLCommons MobileNet v1 model"""
-
-    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/tools/submission/submission-checker.py#L467
     pass
 
 
@@ -226,3 +225,20 @@ def postprocess(
             )
         batch_results.append(predicted_result)
     return batch_results
+
+
+# def native_postprocess(
+#     context,
+#     outputs: Sequence[numpy.ndarray],
+#     batch_preproc_params: Sequence[Dict[str, Any]],
+# ) -> List[List[ObjectDetectionResult]]:
+#
+#     context.post_processor
+
+class RustPostProcessor(PostProcessor):
+    def __init__(self, model: Model):
+        self._native = native.ssd_mobilenet.RustPostprocessor(model.dfg)
+        super.__init__(self, model)
+
+    def eval(self, inputs: Sequence[np.ndarray], *args: Any, **kwargs: Any):
+        return self._native.postprocess(inputs)

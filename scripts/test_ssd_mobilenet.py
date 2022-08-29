@@ -22,6 +22,7 @@ async def test_mlcommons_mobilessd_small_perf():
     detected_result = postprocess(batch_feat, batch_preproc_param, confidence_threshold=0.3)
     assert len(detected_result) == 2, "batch size must be 2"
     detected_result = detected_result[0]  # due to duplicated input image
+    print(detected_result)
 
     assert len(detected_result) == 1, "detected object must be 1"
     assert np.array_equal(

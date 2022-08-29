@@ -27,8 +27,8 @@ classifiers = [
 description = "Furiosa Models"
 requires-python = "~=3.7"
 dependencies = [
-    "furiosa-registry == 0.7.*",
-    "furiosa-common == 0.7.*",
+    "furiosa-registry == 0.8.*",
+    "furiosa-common == 0.8.*",
 
     "onnx",
     "onnxruntime",
