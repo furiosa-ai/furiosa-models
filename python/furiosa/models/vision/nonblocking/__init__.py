@@ -12,16 +12,29 @@ __all__ = [
     "SSDResNet34",
     "YOLOv5l",
     "resnet50",
-    "ssd_mobilenet_v1_5",
+    "ssd_mobilenet",
     "ssd_resnet34",
     "yolov5l",
 ]
 
 
-async def ResNet50(*args: Any, **kwargs: Any) -> resnet50.MLCommonsResNet50Model:
+_ENF = "enf"
+_DFG = "dfg"
+
+
+async def ResNet50(
+    optimized_postprocess=False, *args: Any, **kwargs: Any
+) -> resnet50.MLCommonsResNet50Model:
+    if optimized_postprocess:
+        source_path = "models/mlcommons_resnet50_v1.5_int8_truncated.onnx"
+    else:
+        source_path = "models/mlcommons_resnet50_v1.5_int8.onnx"
+
     return resnet50.MLCommonsResNet50Model(
         name="ResNet50",
-        model=await load_dvc("models/mlcommons_resnet50_v1.5_int8.onnx"),
+        source=await load_dvc(source_path),
+        dfg=await load_dvc_generated(source_path, _DFG),
+        enf=await load_dvc_generated(source_path, _ENF),
         format=Format.ONNX,
         family="ResNet",
         version="v1.5",
@@ -35,10 +48,19 @@ async def ResNet50(*args: Any, **kwargs: Any) -> resnet50.MLCommonsResNet50Model
 
 
 # Object detection
-async def SSDMobileNet(*args: Any, **kwargs: Any) -> ssd_mobilenet.MLCommonsSSDSmallModel:
+async def SSDMobileNet(
+    optimized_postprocess=False, *args: Any, **kwargs: Any
+) -> ssd_mobilenet.MLCommonsSSDSmallModel:
+    if optimized_postprocess:
+        source_path = "models/mlcommons_ssd_mobilenet_v1_int8.onnx_truncated.onnx"
+    else:
+        source_path = "models/mlcommons_ssd_mobilenet_v1_int8.onnx"
+
     return ssd_mobilenet.MLCommonsSSDSmallModel(
         name="MLCommonsSSDMobileNet",
-        model=await load_dvc("models/mlcommons_ssd_mobilenet_v1_int8.onnx"),
+        source=await load_dvc(source_path),
+        dfg=await load_dvc_generated(source_path, _DFG),
+        enf=await load_dvc_generated(source_path, _ENF),
         format=Format.ONNX,
         family="MobileNetV1",
         version="v1.1",
@@ -51,10 +73,19 @@ async def SSDMobileNet(*args: Any, **kwargs: Any) -> ssd_mobilenet.MLCommonsSSDS
     )
 
 
-async def SSDResNet34(*args: Any, **kwargs: Any) -> ssd_resnet34.MLCommonsSSDLargeModel:
+async def SSDResNet34(
+    optimized_postprocess=False, *args: Any, **kwargs: Any
+) -> ssd_resnet34.MLCommonsSSDLargeModel:
+    if optimized_postprocess:
+        source_path = "models/mlcommons_ssd_resnet34_int8.onnx_truncated.onnx"
+    else:
+        source_path = "models/mlcommons_ssd_resnet34_int8.onnx"
+
     return ssd_resnet34.MLCommonsSSDLargeModel(
         name="MLCommonsSSDResNet34",
-        model=await load_dvc("models/mlcommons_ssd_resnet34_int8.onnx"),
+        source=await load_dvc(source_path),
+        dfg=await load_dvc_generated(source_path, _DFG),
+        enf=await load_dvc_generated(source_path, _ENF),
         format=Format.ONNX,
         family="ResNet",
         version="v1.1",
@@ -70,14 +101,12 @@ async def SSDResNet34(*args: Any, **kwargs: Any) -> ssd_resnet34.MLCommonsSSDLar
 
 
 async def YOLOv5l(*args: Any, **kwargs: Any) -> yolov5l.YoloV5LargeModel:
-    source = await load_dvc("models/yolov5l_int8.onnx")
-    dfg = await load_dvc_generated("models/yolov5l_int8.onnx", "dfg")
-    enf = await load_dvc_generated("models/yolov5l_int8.onnx", "enf")
+    source_path = "models/yolov5l_int8.onnx"
     return yolov5l.YoloV5LargeModel(
         name="YoloV5Large",
-        source=source,
-        dfg=dfg,
-        enf=enf,
+        source=await load_dvc(source_path),
+        dfg=await load_dvc_generated(source_path, _DFG),
+        enf=await load_dvc_generated(source_path, _ENF),
         format=Format.ONNX,
         family="Yolo",
         version="v5",

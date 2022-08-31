@@ -1,4 +1,4 @@
 outs:
-- md5: 5607e3fb76b3ca1d98c47ec97232e7dd
-  size: 57576049
+- md5: 1ce7e7d4dd7de7b3ce0304465700bd25
+  size: 57576695
   path: mlcommons_resnet50_v1.5_int8_truncated_warboy_2pe.enf

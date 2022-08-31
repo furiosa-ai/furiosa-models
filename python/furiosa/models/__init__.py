@@ -1,4 +1,4 @@
 """Furiosa Models"""
-from . import vision
+from . import errors, vision
 
-__all__ = ["vision"]
+__all__ = ["errors", "vision"]

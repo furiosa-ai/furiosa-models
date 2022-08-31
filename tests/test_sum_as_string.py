@@ -1,5 +1,5 @@
 # FIXME: This is a temporary test script to check rust binding has imported
-from furiosa.models import sum_as_string
+from furiosa.models.vision.native import sum_as_string
 
 
 def test_one_two():

@@ -3,12 +3,6 @@ set -e
 
 MODEL_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-# Install furiosa compiler husk if necessary
-if [ ! -x "$(command -v furiosa-compile)" ]; then
-	echo "[+] Installing furiosa-sdk pip package"
-	pip install furiosa-sdk
-fi
-
 ONNX_FILES=($(ls $MODEL_DIR/*.onnx))
 PACKAGE_VERSION=$(apt list furiosa-libcompiler -a 2> /dev/null | grep installed | awk '{print $2}')
 COMPILER_VERSION=$(furiosa compile --version | grep "compiler" | awk '{print $2}')
@@ -26,6 +20,36 @@ GENERATED_DIR=${MODEL_DIR}/generated/${COMPILER_FULL_VERSION}
 mkdir -p ${GENERATED_DIR}
 echo "[+] Output directory: ${GENERATED_DIR}"
 
+function compile() {
+  OUTPUT_PATH=$1
+  FORMAT=$2
+
+	if [ -f $OUTPUT_PATH ]; then
+    echo " ... (Skipped)"
+  else
+    echo " ... (Running)"
+
+    if [ ! -z NPU_COMPILER_CONFIG_PATH ]; then
+      PREV_CONFIG=$NPU_COMPILER_CONFIG_PATH
+      unset NPU_COMPILER_CONFIG_PATH
+    fi
+
+    # Try to find the format-specific compiler config
+    IR_COMPILER_CONFIG=$MODEL_DIR/${FILENAME}.${FORMAT}.yaml
+    if [ -f $IR_COMPILER_CONFIG ]; then
+      export NPU_COMPILER_CONFIG_PATH=$IR_COMPILER_CONFIG
+      echo "    Using $(basename -- $NPU_COMPILER_CONFIG_PATH)"
+    fi
+
+    furiosa compile --target-ir enf --target-npu warboy-2pe --target-ir ${FORMAT} $ONNX_PATH -o ${OUTPUT_PATH} &> /dev/null
+
+    if [ ! -z PREV_CONFIG ]; then
+      export NPU_COMPILER_CONFIG_PATH=$PREV_CONFIG
+      unset PREV_CONFIG
+    fi
+  fi
+}
+
 for INDEX in ${!ONNX_FILES[@]}; do
   ONNX_PATH=${ONNX_FILES[INDEX]}
 	FULLNAME=$(basename -- "$ONNX_PATH")
@@ -34,34 +58,19 @@ for INDEX in ${!ONNX_FILES[@]}; do
 
   echo "[$(expr ${INDEX} + 1)/${#ONNX_FILES[@]}] Compiling $FULLNAME .."
 
+  # Try to find the compiler config for all IR formats
+  unset NPU_COMPILER_CONFIG_PATH
+  if [ -f $MODEL_DIR/${FILENAME}.yaml ]; then
+    export NPU_COMPILER_CONFIG_PATH=$MODEL_DIR/$MODEL_DIR/${FILENAME}.yaml
+    echo "  Compiler config found at $(basename -- $NPU_COMPILER_CONFIG_PATH)"
+  fi
+
 	DFG_PATH=${OUTPUT_PATH_BASE}_warboy_2pe.dfg
 	ENF_PATH=${OUTPUT_PATH_BASE}_warboy_2pe.enf
 
-	# Set compiler config if exists
-	unset NPU_COMPILER_CONFIG_PATH
-	if [ -f $MODEL_DIR/${FILENAME}.yaml ]; then
-		export NPU_COMPILER_CONFIG_PATH=$MODEL_DIR/${FILENAME}.yaml
-	fi
-
   printf " [Task 1/2] Generating $(basename -- $DFG_PATH)"
-	if [ -f $DFG_PATH ]; then
-    echo " ... (Skipped)"
-  else
-    echo " ... (Running)"
-    if [ ! -z $NPU_COMPILER_CONFIG_PATH ];then
-      echo "    Using $(basename -- $NPU_COMPILER_CONFIG_PATH)"
-    fi
-    furiosa compile --target-ir dfg --target-npu warboy-2pe $ONNX_PATH -o $DFG_PATH &> /dev/null
-  fi
+	compile $DFG_PATH dfg
 
   printf " [Task 2/2] Generating $(basename -- $ENF_PATH)"
-	if [ -f $ENF_PATH ]; then
-    echo " ... (Skipped)"
-  else
-    echo " ... (Running)"
-    if [ ! -z $NPU_COMPILER_CONFIG_PATH ];then
-      echo "    Using $(basename -- $NPU_COMPILER_CONFIG_PATH)"
-    fi
-    furiosa compile --target-ir enf --target-npu warboy-2pe $ONNX_PATH -o $ENF_PATH &> /dev/null
-  fi
+  compile $ENF_PATH enf
 done

@@ -1,5 +1,5 @@
-from typing import Any, Dict, List, Sequence, Tuple
 from enum import Enum
+from typing import Any, Dict, List, Sequence, Tuple
 
 import cv2
 import numpy
@@ -9,9 +9,16 @@ import numpy.typing as npt
 from furiosa.registry import Model
 
 from . import anchor_generator  # type: ignore[import]
-from ..common.datasets import coco
-from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox, sigmoid, PostProcessor
 from .. import native
+from ...errors import ArtifactNotFound
+from ..common.datasets import coco
+from ..postprocess import (
+    LtrbBoundingBox,
+    ObjectDetectionResult,
+    PostProcessor,
+    calibration_ltrbbox,
+    sigmoid,
+)
 
 # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L155-L158
 PRIORS = np.concatenate(
@@ -42,8 +49,10 @@ class SSDSmallConstant(object):
     PRIORS_CENTER_X = PRIORS_CENTER_X
     PRIORS_CENTER_Y = PRIORS_CENTER_Y
 
+
 class MLCommonsSSDSmallModel(Model):
     """MLCommons MobileNet v1 model"""
+
     pass
 
 
@@ -227,18 +236,44 @@ def postprocess(
     return batch_results
 
 
-# def native_postprocess(
-#     context,
-#     outputs: Sequence[numpy.ndarray],
-#     batch_preproc_params: Sequence[Dict[str, Any]],
-# ) -> List[List[ObjectDetectionResult]]:
-#
-#     context.post_processor
+class SSDMobilePostProcessor(PostProcessor):
+    def eval(self, inputs: Sequence[numpy.ndarray], *args: Any, **kwargs: Any):
+        context = kwargs.get("context")
+        raw_results = self._native.eval(inputs)
 
-class RustPostProcessor(PostProcessor):
+        results = []
+        for value, context in zip(raw_results, context):
+            width = context['width']
+            height = context['height']
+            left = value.left * width
+            right = value.right * width
+            top = value.top * height
+            bottom = value.bottom * height
+            results.append(
+                ObjectDetectionResult(
+                    index=value.class_id,
+                    label=CLASSES[value.class_id],
+                    score=value.score,
+                    boundingbox=LtrbBoundingBox(left=left, top=top, right=right, bottom=bottom),
+                )
+            )
+
+        return results
+
+
+class RustPostProcessor(SSDMobilePostProcessor):
     def __init__(self, model: Model):
-        self._native = native.ssd_mobilenet.RustPostprocessor(model.dfg)
-        super.__init__(self, model)
+        if not model.dfg:
+            raise ArtifactNotFound("dfg")
 
-    def eval(self, inputs: Sequence[np.ndarray], *args: Any, **kwargs: Any):
-        return self._native.postprocess(inputs)
+        self._native = native.ssd_mobilenet.RustPostProcessor(model.dfg)
+        super().__init__()
+
+
+class CppPostProcessor(SSDMobilePostProcessor):
+    def __init__(self, model: Model):
+        if not model.dfg:
+            raise ArtifactNotFound("dfg")
+
+        self._native = native.ssd_mobilenet.CppPostProcessor(model.dfg)
+        super().__init__()

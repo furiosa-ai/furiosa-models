@@ -5,7 +5,9 @@ from typing import Optional
 
 import aiohttp
 import dvc.api
-from furiosa.common.native import find_native_libs, find_native_lib_path, DEFAULT_ENCODING
+
+from furiosa.common.native import DEFAULT_ENCODING, find_native_lib_path, find_native_libs
+from furiosa.models.errors import ArtifactNotFound
 
 module_logger = logging.getLogger(__name__)
 
@@ -15,22 +17,32 @@ async def load_dvc(uri: str):
     dvc_rev = os.environ.get("DVC_REV", None)
     module_logger.debug(f"dvc_uri={uri}, DVC_REPO={dvc_repo}, DVC_REV={dvc_rev}")
     async with aiohttp.ClientSession() as session:
-        async with session.get(
-            dvc.api.get_url(
-                uri,
-                repo=os.environ.get("DVC_REPO", None),
-                rev=os.environ.get("DVC_REV", None),
-            )
-        ) as resp:
-            return await resp.read()
+        try:
+            async with session.get(
+                dvc.api.get_url(
+                    uri,
+                    repo=os.environ.get("DVC_REPO", None),
+                    rev=os.environ.get("DVC_REV", None),
+                )
+            ) as resp:
+                return await resp.read()
+        except Exception as e:
+            if is_onnx_file(uri) == "onnx":
+                raise e
+            else:
+                # It can happen in development phase
+                module_logger.warning(f"{uri} is missing")
+                return None
+
+
+def is_onnx_file(uri: str) -> bool:
+    ext_index = uri.rfind(".")
+    return uri[:ext_index].lower() == "onnx"
 
 
 async def load_dvc_generated(uri: str, extension: str):
     """Return the generated artifacts identified by the original source model"""
     artifact_path = generated_artifact_path(uri, extension)
-    if not artifact_path:
-        return None
-
     return await load_dvc(artifact_path)
 
 
@@ -61,5 +73,7 @@ def compiler_version() -> Optional[CompilerVersion]:
         return None
     else:
         libnux = find_native_libs("nux")
-        return CompilerVersion(libnux.version().decode(DEFAULT_ENCODING),
-                               libnux.git_short_hash().decode(DEFAULT_ENCODING))
+        return CompilerVersion(
+            libnux.version().decode(DEFAULT_ENCODING),
+            libnux.git_short_hash().decode(DEFAULT_ENCODING),
+        )

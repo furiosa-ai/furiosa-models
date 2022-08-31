@@ -12,4 +12,4 @@ crate-type = ["cdylib", "rlib"]
 itertools = "0.10.3"
 mlperf-postprocess = { path = "thirdparty/mlcommons/postprocess" }
 numpy = "0.16"
-pyo3 = { version = "0.16.5", features = ["extension-module"] }
+pyo3 = { version = "0.16.6", features = ["extension-module"] }
