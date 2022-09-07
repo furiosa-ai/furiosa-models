@@ -25,7 +25,7 @@ const OUTPUT_NUM: usize = 12;
 #[pyo3(text_signature = "(dfg: bytes)")]
 pub struct RustPostProcessor(native::RustPostprocessor);
 
-/// CPPPostProcessor
+/// CppPostProcessor
 ///
 /// It takes a DFG whose unlower part is removed.
 /// The DFG binary must have magic number in its head.
