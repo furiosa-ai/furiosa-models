@@ -1,5 +1,5 @@
 use mlperf_postprocess::common::graph::create_graph_from_binary_with_header;
-use mlperf_postprocess::common::ssd_postprocess::{Postprocess, DetectionResult};
+use mlperf_postprocess::common::ssd_postprocess::{DetectionResult, Postprocess};
 use mlperf_postprocess::common::uninitialized_vec;
 use mlperf_postprocess::ssd_small as native;
 use numpy::PyArrayDyn;
