@@ -2,18 +2,18 @@ from typing import List
 
 import numpy as np
 import pytest
-from furiosa.registry import Model
-from furiosa.runtime import session
 
 from furiosa.models.vision import SSDMobileNet
 from furiosa.models.vision.postprocess import ObjectDetectionResult
 from furiosa.models.vision.ssd_mobilenet import (
     CLASSES,
+    CppPostProcessor,
+    RustPostProcessor,
     postprocess,
     preprocess,
-    RustPostProcessor,
-    CppPostProcessor,
 )
+from furiosa.registry import Model
+from furiosa.runtime import session
 
 test_image_path = "tests/assets/cat.jpg"
 expected_bbox = np.array([[187.30786, 88.035324, 950.99646, 743.3290239999999]], dtype=np.float32)

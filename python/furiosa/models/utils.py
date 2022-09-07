@@ -27,7 +27,7 @@ async def load_dvc(uri: str):
             ) as resp:
                 return await resp.read()
         except Exception as e:
-            if is_onnx_file(uri) == "onnx":
+            if is_onnx_file(uri):
                 raise e
             else:
                 # It can happen in development phase
@@ -37,7 +37,7 @@ async def load_dvc(uri: str):
 
 def is_onnx_file(uri: str) -> bool:
     ext_index = uri.rfind(".")
-    return uri[:ext_index].lower() == "onnx"
+    return uri[ext_index:].lower() == "onnx"
 
 
 async def load_dvc_generated(uri: str, extension: str):
