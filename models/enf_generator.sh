@@ -24,7 +24,7 @@ function compile() {
   OUTPUT_PATH=$1
   FORMAT=$2
 
-	if [ -f $OUTPUT_PATH ]; then
+  if [ -f $OUTPUT_PATH ]; then
     echo " ... (Skipped)"
   else
     echo " ... (Running)"
