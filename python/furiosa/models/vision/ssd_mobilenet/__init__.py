@@ -10,7 +10,7 @@ from furiosa.registry import Model
 
 from . import anchor_generator  # type: ignore[import]
 from .. import native
-from ...errors import ArtifactNotFound
+from ...errors import ArtifactNotFound, FuriosaModelException
 from ..common.datasets import coco
 from ..postprocess import (
     LtrbBoundingBox,
@@ -50,7 +50,7 @@ class SSDSmallConstant(object):
     PRIORS_CENTER_Y = PRIORS_CENTER_Y
 
 
-class MLCommonsSSDSmallModel(Model):
+class SSDMobileNetModel(Model):
     """MLCommons MobileNet v1 model"""
 
     pass
@@ -261,19 +261,16 @@ class SSDMobilePostProcessor(PostProcessor):
         return results
 
 
-class RustPostProcessor(SSDMobilePostProcessor):
-    def __init__(self, model: Model):
+class NativePostProcessor(SSDMobilePostProcessor):
+    def __init__(self, model: Model, version: str = "cpp"):
         if not model.dfg:
-            raise ArtifactNotFound("dfg")
+            raise ArtifactNotFound(model.name, "dfg")
 
-        self._native = native.ssd_mobilenet.RustPostProcessor(model.dfg)
-        super().__init__()
+        if version == "cpp":
+            self._native = native.ssd_mobilenet.CppPostProcessor(model.dfg)
+        elif version == "rust":
+            self._native = native.ssd_mobilenet.RustPostProcessor(model.dfg)
+        else:
+            raise FuriosaModelException(f"Unknown post processor version: {version}")
 
-
-class CppPostProcessor(SSDMobilePostProcessor):
-    def __init__(self, model: Model):
-        if not model.dfg:
-            raise ArtifactNotFound("dfg")
-
-        self._native = native.ssd_mobilenet.CppPostProcessor(model.dfg)
         super().__init__()

@@ -22,15 +22,20 @@ _ENF = "enf"
 _DFG = "dfg"
 
 
-async def ResNet50(
-    optimized_postprocess=False, *args: Any, **kwargs: Any
-) -> resnet50.MLCommonsResNet50Model:
-    if optimized_postprocess:
-        source_path = "models/mlcommons_resnet50_v1.5_int8_truncated.onnx"
+def __model_file(relative_path, truncated=True) -> str:
+    if truncated:
+        return f"{relative_path}_truncated.onnx"
     else:
-        source_path = "models/mlcommons_resnet50_v1.5_int8.onnx"
+        return relative_path
 
-    return resnet50.MLCommonsResNet50Model(
+
+async def ResNet50(
+    use_native_post=False, *args: Any, **kwargs: Any
+) -> resnet50.ResNet50Model:
+
+    source_path = __model_file("models/mlcommons_resnet50_v1.5_int8.onnx", use_native_post)
+
+    return resnet50.ResNet50Model(
         name="ResNet50",
         source=await load_dvc(source_path),
         dfg=await load_dvc_generated(source_path, _DFG),
@@ -49,14 +54,12 @@ async def ResNet50(
 
 # Object detection
 async def SSDMobileNet(
-    optimized_postprocess=False, *args: Any, **kwargs: Any
-) -> ssd_mobilenet.MLCommonsSSDSmallModel:
-    if optimized_postprocess:
-        source_path = "models/mlcommons_ssd_mobilenet_v1_int8.onnx_truncated.onnx"
-    else:
-        source_path = "models/mlcommons_ssd_mobilenet_v1_int8.onnx"
+    use_native_post=False, *args: Any, **kwargs: Any
+) -> ssd_mobilenet.SSDMobileNetModel:
 
-    return ssd_mobilenet.MLCommonsSSDSmallModel(
+    source_path = __model_file("models/mlcommons_ssd_mobilenet_v1_int8.onnx", use_native_post)
+
+    return ssd_mobilenet.SSDMobileNetModel(
         name="MLCommonsSSDMobileNet",
         source=await load_dvc(source_path),
         dfg=await load_dvc_generated(source_path, _DFG),
@@ -74,14 +77,12 @@ async def SSDMobileNet(
 
 
 async def SSDResNet34(
-    optimized_postprocess=False, *args: Any, **kwargs: Any
-) -> ssd_resnet34.MLCommonsSSDLargeModel:
-    if optimized_postprocess:
-        source_path = "models/mlcommons_ssd_resnet34_int8.onnx_truncated.onnx"
-    else:
-        source_path = "models/mlcommons_ssd_resnet34_int8.onnx"
+    use_native_post=False, *args: Any, **kwargs: Any
+) -> ssd_resnet34.SSDResNet34Model:
 
-    return ssd_resnet34.MLCommonsSSDLargeModel(
+    source_path = __model_file("models/mlcommons_ssd_resnet34_int8.onnx", use_native_post)
+
+    return ssd_resnet34.SSDResNet34Model(
         name="MLCommonsSSDResNet34",
         source=await load_dvc(source_path),
         dfg=await load_dvc_generated(source_path, _DFG),

@@ -7,7 +7,6 @@ import aiohttp
 import dvc.api
 
 from furiosa.common.native import DEFAULT_ENCODING, find_native_lib_path, find_native_libs
-from furiosa.models.errors import ArtifactNotFound
 
 module_logger = logging.getLogger(__name__)
 
@@ -37,7 +36,7 @@ async def load_dvc(uri: str):
 
 def is_onnx_file(uri: str) -> bool:
     ext_index = uri.rfind(".")
-    return uri[ext_index:].lower() == "onnx"
+    return uri[ext_index + 1 :].lower() == "onnx"
 
 
 async def load_dvc_generated(uri: str, extension: str):
@@ -69,6 +68,8 @@ class CompilerVersion:
 
 
 def compiler_version() -> Optional[CompilerVersion]:
+    # TODO - hacky version. Eventually,
+    #  it should find a compiler version being used by runtime.
     if find_native_lib_path("nux") is None:
         return None
     else:

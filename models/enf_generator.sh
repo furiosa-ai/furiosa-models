@@ -41,7 +41,7 @@ function compile() {
       echo "    Using $(basename -- $NPU_COMPILER_CONFIG_PATH)"
     fi
 
-    furiosa compile --target-ir enf --target-npu warboy-2pe --target-ir ${FORMAT} $ONNX_PATH -o ${OUTPUT_PATH} &> /dev/null
+    furiosa compile --target-npu warboy-2pe --target-ir ${FORMAT} $ONNX_PATH -o ${OUTPUT_PATH} &> /dev/null
 
     if [ ! -z PREV_CONFIG ]; then
       export NPU_COMPILER_CONFIG_PATH=$PREV_CONFIG

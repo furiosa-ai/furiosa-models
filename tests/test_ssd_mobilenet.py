@@ -7,8 +7,7 @@ from furiosa.models.vision import SSDMobileNet
 from furiosa.models.vision.postprocess import ObjectDetectionResult
 from furiosa.models.vision.ssd_mobilenet import (
     CLASSES,
-    CppPostProcessor,
-    RustPostProcessor,
+    NativePostProcessor,
     postprocess,
     preprocess,
 )
@@ -49,8 +48,8 @@ async def test_mlcommons_mobilessd_small_perf():
 
 
 def test_rust_post_processor():
-    model = SSDMobileNet(optimized_postprocess=True)
-    processor = RustPostProcessor(model)
+    model = SSDMobileNet(use_native_post=True)
+    processor = NativePostProcessor(model, version="rust")
 
     images, context = preprocess([test_image_path])
 
@@ -62,8 +61,8 @@ def test_rust_post_processor():
 
 
 def test_cpp_post_processor():
-    model = SSDMobileNet(optimized_postprocess=True)
-    processor = CppPostProcessor(model)
+    model = SSDMobileNet(use_native_post=True)
+    processor = NativePostProcessor(model, version="cpp")
 
     images, context = preprocess([test_image_path])
 

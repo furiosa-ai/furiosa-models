@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any, List, Sequence
 
+import numpy
 import numpy as np
 
 from furiosa.registry import Model
@@ -40,5 +41,5 @@ class ObjectDetectionResult:
 
 class PostProcessor(ABC):
     @abstractmethod
-    def eval(self, inputs, *args: Any, **kwargs: Any):
+    def eval(self, inputs: Sequence[numpy.ndarray], *args: Any, **kwargs: Any):
         pass

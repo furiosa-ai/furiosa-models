@@ -1,5 +1,5 @@
 use mlperf_postprocess::common::graph::create_graph_from_binary_with_header;
-use mlperf_postprocess::common::ssd_postprocess::DetectionResult;
+use mlperf_postprocess::common::ssd_postprocess::{Postprocess, DetectionResult};
 use mlperf_postprocess::common::uninitialized_vec;
 use mlperf_postprocess::ssd_small as native;
 use numpy::PyArrayDyn;
@@ -163,7 +163,7 @@ impl RustPostProcessor {
         let slices = convert_to_slices(inputs)?;
         Ok(self
             .0
-            .postprocess_impl(0f32, &slices)
+            .postprocess(0f32, &slices)
             .0
             .into_iter()
             .map(PyDetectionResult::new)
@@ -193,7 +193,7 @@ impl CppPostProcessor {
         let slices = convert_to_slices(inputs)?;
         Ok(self
             .0
-            .postprocess_impl2(0f32, &slices)
+            .postprocess(0f32, &slices)
             .0
             .into_iter()
             .map(PyDetectionResult::new)

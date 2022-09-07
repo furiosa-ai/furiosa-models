@@ -5,17 +5,21 @@ This directory includes the model artifacts which are managed by DVC.
 ## DFG/ENF Generator
 *Pre-requisites*
 ```
+pip install -r furiosa-models/models/requirements.txt
+
 export DPKG_VERSION=0.8.0-2+nightly-220827
-sudo apt-get install furiosa-libcompiler=${DPKG_VERSION}
+sudo apt-get install furiosa-libcompiler=${DPKG_VERSION} \
+furiosa-libnux=${DPKG_VERSION} \
+furiosa-libnux-extrinsic=${DPKG_VERSION}
 ```   
 
 ### Compiler Config
-You can optionally add a compiler config for each model or the model's specific IR format.
+You can optionally add a compiler config for each model or model's specific IR formats.
 
 If you want to set a compiler config for a `mlcommons_resnet50_v1.5_int8.onnx`, 
 you need to add `mlcommons_resnet50_v1.5_int8.yaml` here.
 
-`enf-generator.sh` also allow to specific a compiler config for a certain IR format.
+`enf-generator.sh` also allow to specify a compiler config for a certain IR format.
 To specify a compiler config for dfg or enf, you can add the config file named `{NAME}.{FORMAT}.yaml`; e.g.,
 * DFG: `mlcommons_resnet50_v1.5_int8.dfg.yaml`
 * ENF: `mlcommons_resnet50_v1.5_int8.enf.yaml`
