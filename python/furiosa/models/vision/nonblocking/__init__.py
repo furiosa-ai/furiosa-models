@@ -29,9 +29,7 @@ def __model_file(relative_path, truncated=True) -> str:
         return relative_path
 
 
-async def ResNet50(
-    use_native_post=False, *args: Any, **kwargs: Any
-) -> resnet50.ResNet50Model:
+async def ResNet50(use_native_post=False, *args: Any, **kwargs: Any) -> resnet50.ResNet50Model:
 
     source_path = __model_file("models/mlcommons_resnet50_v1.5_int8.onnx", use_native_post)
 
