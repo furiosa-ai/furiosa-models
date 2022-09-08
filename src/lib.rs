@@ -1,5 +1,3 @@
-
-#![allow(dead_code)]
 use pyo3::prelude::*;
 
 mod ssd_mobilenet;
