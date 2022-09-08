@@ -35,8 +35,7 @@ async def load_dvc(uri: str):
 
 
 def is_onnx_file(uri: str) -> bool:
-    ext_index = uri.rfind(".")
-    return uri[ext_index + 1 :].lower() == "onnx"
+    return uri.lower().endswith(".onnx")
 
 
 async def load_dvc_generated(uri: str, extension: str):
