@@ -3,7 +3,7 @@ import os
 
 import numpy as np
 
-_clib = ctypes.CDLL(os.path.join(os.path.dirname(__file__), 'cbox_decode.so'))
+_clib = ctypes.CDLL(os.path.join(os.path.dirname(__file__), f'cbox_decode.so'))
 
 
 def _init():

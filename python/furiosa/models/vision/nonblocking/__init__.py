@@ -100,8 +100,8 @@ async def SSDResNet34(
     )
 
 
-async def YOLOv5l(*args: Any, **kwargs: Any) -> yolov5l.YoloV5LargeModel:
-    source_path = "models/yolov5l_int8.onnx"
+async def YOLOv5l(use_native_post=False, *args: Any, **kwargs: Any) -> yolov5l.YoloV5LargeModel:
+    source_path = __model_file("models/yolov5l_int8.onnx", use_native_post)
     return yolov5l.YoloV5LargeModel(
         name="YOLOv5Large",
         source=await load_dvc(source_path),
@@ -119,13 +119,14 @@ async def YOLOv5l(*args: Any, **kwargs: Any) -> yolov5l.YoloV5LargeModel:
     )
 
 
-async def YOLOv5m(*args: Any, **kwargs: Any) -> yolov5m.YoloV5MediumModel:
-    source_path = "models/yolov5m_int8.onnx"
+async def YOLOv5m(use_native_post=False, *args: Any, **kwargs: Any) -> yolov5m.YoloV5MediumModel:
+    source_path = __model_file("models/yolov5m_int8.onnx", use_native_post)
     return yolov5m.YoloV5MediumModel(
         name="YOLOv5Medium",
         model=await load_dvc(source_path),
-        dfg=await load_dvc_generated(source_path, _DFG),
-        enf=await load_dvc_generated(source_path, _ENF),
+        # FIXME
+        # dfg=await load_dvc_generated(source_path, _DFG),
+        # enf=await load_dvc_generated(source_path, _ENF),
         format=Format.ONNX,
         family="YOLOv5",
         version="v5",
