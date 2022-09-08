@@ -11,7 +11,7 @@ from furiosa.runtime import session
 
 
 @pytest.mark.asyncio
-async def test_mlcommons_mobilessd_small_perf():
+async def test_yolov5_large():
     m = await nonblocking.YOLOv5l()
     test_image_path = "scripts/assets/yolov5-test.jpg"
 
