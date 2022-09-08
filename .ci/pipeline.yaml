@@ -1,0 +1,133 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: furiosa-models-ci
+spec:
+  params:
+    - name: repo_full_name
+      description: The git repository name
+    - name: gitRepository
+      description: The git repository that hosts context and Dockerfile
+      default: git@github.com:furiosa-ai/furiosa-models-experimental.git
+    - name: gitRevision
+      description: The Git revision to be used.
+      default: master
+    - name: triggerContext
+      description: Trigger context came from status trigger binding
+    - name: headRef
+      description: The git head ref (branch name)
+    - name: gitCloneDepth
+      description: Number of commits in the change + 1
+      default: "1"
+
+  workspaces:
+    - name: furiosa-apt-credential
+      description: APT credential for FuriosaAI private repository
+    - name: source
+      description: Workspace where the git repo is prepared for testing
+
+  tasks:
+  - name: set-status-begin
+    taskRef:
+      name: github-set-status
+    params:
+    - name: REPO_FULL_NAME
+      value: $(params.repo_full_name)
+    - name: SHA
+      value: $(params.gitRevision)
+    - name: TARGET_URL
+      value: https://tekton.office.furiosa.in/#/namespaces/ci-furiosa-models/pipelineruns/$(context.pipelineRun.name)
+    - name: GITHUB_TOKEN_SECRET_NAME
+      value: "github-credential"
+    - name: GITHUB_TOKEN_SECRET_KEY
+      value: "password"
+    - name: DESCRIPTION
+      value: "begin"
+    - name: CONTEXT
+      value: "furiosa-models-ci"
+    - name: STATE
+      value: pending
+
+  - name: clone
+    taskRef:
+      name: git-clone
+    workspaces:
+      - name: output
+        workspace: source
+    params:
+    - name: url
+      value: $(params.gitRepository)
+    - name: revision
+      value: $(params.gitRevision)
+    - name: depth
+      value: $(params.gitCloneDepth)
+
+  - name: format
+    taskRef:
+      name: format
+    workspaces:
+      - name: source
+        workspace: source
+    runAfter:
+      - clone
+
+  - name: test
+    taskRef:
+      name: test
+    workspaces:
+      - name: source
+        workspace: source
+      - name: furiosa-apt-credential
+        workspace: furiosa-apt-credential
+    runAfter:
+      - clone
+
+  finally:
+  - name: set-status-success
+    taskRef:
+      name: github-set-status
+    params:
+    - name: REPO_FULL_NAME
+      value: $(params.repo_full_name)
+    - name: SHA
+      value: $(params.gitRevision)
+    - name: TARGET_URL
+      value: https://tekton.office.furiosa.in/#/namespaces/ci-furiosa-models/pipelineruns/$(context.pipelineRun.name)
+    - name: GITHUB_TOKEN_SECRET_NAME
+      value: "github-credential"
+    - name: GITHUB_TOKEN_SECRET_KEY
+      value: "password"
+    - name: DESCRIPTION
+      value: "succeeded"
+    - name: CONTEXT
+      value: "furiosa-models-ci"
+    - name: STATE
+      value: success
+    when:
+    - input: $(tasks.status)
+      operator: notin
+      values: ["Failed"]
+  - name: set-status-failed
+    taskRef:
+      name: github-set-status
+    params:
+    - name: REPO_FULL_NAME
+      value: $(params.repo_full_name)
+    - name: SHA
+      value: $(params.gitRevision)
+    - name: TARGET_URL
+      value: https://tekton.office.furiosa.in/#/namespaces/ci-furiosa-models/pipelineruns/$(context.pipelineRun.name)
+    - name: GITHUB_TOKEN_SECRET_NAME
+      value: "github-credential"
+    - name: GITHUB_TOKEN_SECRET_KEY
+      value: "password"
+    - name: DESCRIPTION
+      value: "failed"
+    - name: CONTEXT
+      value: "furiosa-models-ci"
+    - name: STATE
+      value: failure
+    when:
+    - input: $(tasks.status)
+      operator: in
+      values: ["Failed"]
