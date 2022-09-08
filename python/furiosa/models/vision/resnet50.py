@@ -11,7 +11,7 @@ from .preprocess import center_crop, resize_with_aspect_ratio
 CLASSES: List[str] = imagenet1k.ImageNet1k_CLASSES
 
 
-class MLCommonsResNet50Model(Model):
+class ResNet50Model(Model):
     """MLCommons ResNet50 model"""
 
     pass
