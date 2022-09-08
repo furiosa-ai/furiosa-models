@@ -19,7 +19,10 @@ async def test_yolov5_large():
 
     batch_im = [cv2.imread(test_image_path), cv2.imread(test_image_path)]
     sess = session.create(
-        m.model, batch_size=2, compile_config=m.compile_config(model_input_format='hwc')
+        m.model,
+        device="npu0pe0-1",
+        batch_size=2,
+        compile_config=m.compile_config(model_input_format='hwc'),
     )
     batch_pre_img, batch_preproc_param = preprocess(batch_im, input_color_format="bgr")
     batch_feat = sess.run(batch_pre_img).numpy()

@@ -46,7 +46,7 @@ dependencies = [
     "pretrainedmodels",
     "effdet",
 
-    "cbox_decode @ git+https://github.com/furiosa-ai/furiosa-artifacts.git#subdirectory=furiosa/models/vision/yolov5/box_decode/cbox_decode"
+    #"cbox_decode @ git+https://github.com/furiosa-ai/furiosa-artifacts.git#subdirectory=furiosa/models/vision/yolov5/box_decode/cbox_decode"
 ]
 
 [project.optional-dependencies]

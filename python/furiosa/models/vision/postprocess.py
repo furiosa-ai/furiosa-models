@@ -3,8 +3,6 @@ from typing import List
 
 import numpy as np
 
-from ..furiosa_models_vision_native import nms_internal_ops_fast_rust
-
 
 @dataclass
 class CXcywhBoundingBox:
@@ -93,12 +91,6 @@ class ObjectDetectionResult:
     index: int
 
 
-def _nms_internal_ops_fast_rust(
-    boxes: np.ndarray, scores: np.ndarray, iou_threshold: float, eps: float = 1e-5
-) -> List[int]:
-    return nms_internal_ops_fast_rust(boxes, scores, iou_threshold, eps)
-
-
 # Malisiewicz et al.
 def _nms_internal_ops_fast_py(
     boxes: np.ndarray, scores: np.ndarray, iou_threshold: float, eps: float = 1e-5
@@ -165,7 +157,3 @@ def nms_internal_ops_fast(
         List[int]: the list of indices of the element filtered by NMS, sorted in decreasing order of scores.
     """
     return _nms_internal_ops_fast_py(boxes, scores, iou_threshold, eps)
-    # for PyO3 Competible Testing Version
-    # return _nms_internal_ops_fast_rust(
-    #    np.ascontiguousarray(boxes), np.ascontiguousarray(scores), iou_threshold, eps
-    # )

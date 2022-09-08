@@ -72,10 +72,10 @@ async def SSDResNet34(*args: Any, **kwargs: Any) -> ssd_resnet34.MLCommonsSSDLar
 
 async def YOLOv5l(*args: Any, **kwargs: Any) -> yolov5l.YoloV5LargeModel:
     return yolov5l.YoloV5LargeModel(
-        name="YoloV5Large",
+        name="YOLOv5Large",
         model=await load_dvc("models/yolov5l_int8.onnx"),
         format=Format.ONNX,
-        family="Yolo",
+        family="YOLOv5",
         version="v5",
         metadata=Metadata(
             description="Yolo v5 large model",
@@ -88,10 +88,10 @@ async def YOLOv5l(*args: Any, **kwargs: Any) -> yolov5l.YoloV5LargeModel:
 
 async def YOLOv5m(*args: Any, **kwargs: Any) -> yolov5m.YoloV5MediumModel:
     return yolov5m.YoloV5MediumModel(
-        name="YoloV5Medium",
+        name="YOLOv5Medium",
         model=await load_dvc("models/yolov5m_int8.onnx"),
         format=Format.ONNX,
-        family="Yolo",
+        family="YOLOv5",
         version="v5",
         metadata=Metadata(
             description="Yolo v5 medium model",
