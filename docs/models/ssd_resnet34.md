@@ -14,9 +14,9 @@ from furiosa.runtime import session
 
 ssd_resnet34 = SSDResNet34()
 
-with session.create(ssd_resnet34.bytes) as sess:
+with session.create(ssd_resnet34.enf) as sess:
     image = ssd_resnet34.preprocess("image/car.jpeg")
-    output = sess.run(image)
+    output = sess.run(image).numpy()
     ssd_resnet34.postprocess(output)
 ```
 

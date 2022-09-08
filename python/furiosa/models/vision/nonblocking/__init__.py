@@ -2,7 +2,7 @@ from typing import Any
 
 from furiosa.registry import Format, Metadata, Publication
 
-from ...utils import load_dvc
+from ...utils import load_dvc, load_dvc_generated
 from ...vision import resnet50, ssd_mobilenet, ssd_resnet34
 from ...vision.yolov5 import large as yolov5l
 from ...vision.yolov5 import medium as yolov5m
@@ -13,16 +13,32 @@ __all__ = [
     "SSDResNet34",
     "YOLOv5l",
     "resnet50",
-    "ssd_mobilenet_v1_5",
+    "ssd_mobilenet",
     "ssd_resnet34",
     "yolov5l",
 ]
 
 
-async def ResNet50(*args: Any, **kwargs: Any) -> resnet50.MLCommonsResNet50Model:
-    return resnet50.MLCommonsResNet50Model(
+_ENF = "enf"
+_DFG = "dfg"
+
+
+def __model_file(relative_path, truncated=True) -> str:
+    if truncated:
+        return f"{relative_path}_truncated.onnx"
+    else:
+        return relative_path
+
+
+async def ResNet50(use_native_post=False, *args: Any, **kwargs: Any) -> resnet50.ResNet50Model:
+
+    source_path = __model_file("models/mlcommons_resnet50_v1.5_int8.onnx", use_native_post)
+
+    return resnet50.ResNet50Model(
         name="ResNet50",
-        model=await load_dvc("models/mlcommons_resnet50_v1.5_int8.onnx"),
+        source=await load_dvc(source_path),
+        dfg=await load_dvc_generated(source_path, _DFG),
+        enf=await load_dvc_generated(source_path, _ENF),
         format=Format.ONNX,
         family="ResNet",
         version="v1.5",
@@ -36,10 +52,17 @@ async def ResNet50(*args: Any, **kwargs: Any) -> resnet50.MLCommonsResNet50Model
 
 
 # Object detection
-async def SSDMobileNet(*args: Any, **kwargs: Any) -> ssd_mobilenet.MLCommonsSSDSmallModel:
-    return ssd_mobilenet.MLCommonsSSDSmallModel(
+async def SSDMobileNet(
+    use_native_post=False, *args: Any, **kwargs: Any
+) -> ssd_mobilenet.SSDMobileNetModel:
+
+    source_path = __model_file("models/mlcommons_ssd_mobilenet_v1_int8.onnx", use_native_post)
+
+    return ssd_mobilenet.SSDMobileNetModel(
         name="MLCommonsSSDMobileNet",
-        model=await load_dvc("models/mlcommons_ssd_mobilenet_v1_int8.onnx"),
+        source=await load_dvc(source_path),
+        dfg=await load_dvc_generated(source_path, _DFG),
+        enf=await load_dvc_generated(source_path, _ENF),
         format=Format.ONNX,
         family="MobileNetV1",
         version="v1.1",
@@ -52,10 +75,17 @@ async def SSDMobileNet(*args: Any, **kwargs: Any) -> ssd_mobilenet.MLCommonsSSDS
     )
 
 
-async def SSDResNet34(*args: Any, **kwargs: Any) -> ssd_resnet34.MLCommonsSSDLargeModel:
-    return ssd_resnet34.MLCommonsSSDLargeModel(
+async def SSDResNet34(
+    use_native_post=False, *args: Any, **kwargs: Any
+) -> ssd_resnet34.SSDResNet34Model:
+
+    source_path = __model_file("models/mlcommons_ssd_resnet34_int8.onnx", use_native_post)
+
+    return ssd_resnet34.SSDResNet34Model(
         name="MLCommonsSSDResNet34",
-        model=await load_dvc("models/mlcommons_ssd_resnet34_int8.onnx"),
+        source=await load_dvc(source_path),
+        dfg=await load_dvc_generated(source_path, _DFG),
+        enf=await load_dvc_generated(source_path, _ENF),
         format=Format.ONNX,
         family="ResNet",
         version="v1.1",
@@ -71,9 +101,12 @@ async def SSDResNet34(*args: Any, **kwargs: Any) -> ssd_resnet34.MLCommonsSSDLar
 
 
 async def YOLOv5l(*args: Any, **kwargs: Any) -> yolov5l.YoloV5LargeModel:
+    source_path = "models/yolov5l_int8.onnx"
     return yolov5l.YoloV5LargeModel(
         name="YOLOv5Large",
-        model=await load_dvc("models/yolov5l_int8.onnx"),
+        source=await load_dvc(source_path),
+        dfg=await load_dvc_generated(source_path, _DFG),
+        enf=await load_dvc_generated(source_path, _ENF),
         format=Format.ONNX,
         family="YOLOv5",
         version="v5",
@@ -87,9 +120,12 @@ async def YOLOv5l(*args: Any, **kwargs: Any) -> yolov5l.YoloV5LargeModel:
 
 
 async def YOLOv5m(*args: Any, **kwargs: Any) -> yolov5m.YoloV5MediumModel:
+    source_path = "models/yolov5m_int8.onnx"
     return yolov5m.YoloV5MediumModel(
         name="YOLOv5Medium",
-        model=await load_dvc("models/yolov5m_int8.onnx"),
+        model=await load_dvc(source_path),
+        dfg=await load_dvc_generated(source_path, _DFG),
+        enf=await load_dvc_generated(source_path, _ENF),
         format=Format.ONNX,
         family="YOLOv5",
         version="v5",

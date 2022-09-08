@@ -1,63 +1,76 @@
 #!/bin/bash
 set -e
 
-# Install furiosa compiler husk if necessary
-if [ -x "$(command -v foo)" ]; then
-	echo "[+] Installing furiosa-sdk pip package"
-	pip install furiosa-sdk
-fi
+MODEL_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-# Save results in `generated` directory (create if needed)
-mkdir -p generated
-cd generated
+ONNX_FILES=($(ls $MODEL_DIR/*.onnx))
+PACKAGE_VERSION=$(apt list furiosa-libcompiler -a 2> /dev/null | grep installed | awk '{print $2}')
+COMPILER_VERSION=$(furiosa compile --version | grep "compiler" | awk '{print $2}')
+COMPILER_REVISION=$(furiosa compile --version | grep "compiler" | grep -Eo 'rev: ([a-z]|[0-9])+' | cut -b 6-)
+COMPILER_FULL_VERSION=${COMPILER_VERSION}_${COMPILER_REVISION}
 
-onnxes=$(find .. -name "*.onnx")
-printf "[+] Target onnx files:\n$onnxes\n\n"
+echo "[+] Detected version of compiler: $COMPILER_VERSION (rev. $COMPILER_REVISION)"
+echo "[+] Installed version of compiler package: $PACKAGE_VERSION"
+echo "[+] Found ${#ONNX_FILES[@]} ONNX Files:"
+for INDEX in ${!ONNX_FILES[@]};do
+  echo " [$(expr ${INDEX} + 1)] "$(basename -- ${ONNX_FILES[INDEX]})
+done
 
-version=$(apt show furiosa-libcompiler | grep -E "^Version: " | cut -b 10-)
-echo "[+] Compiler version from apt: $version"
-revision=$(furiosa compile --version | grep "compiler" | grep -Eo 'rev: ([a-z]|[0-9])+' | cut -b 6-)
-echo "[+] Compiler revision: $revision)"
-mkdir -p $version\_$revision
-cd $version\_$revision
-for onnx in $onnxes; do
-	stem=$(basename ../$onnx .onnx)
-	dirn=$(dirname ../$onnx)
+GENERATED_DIR=${MODEL_DIR}/generated/${COMPILER_FULL_VERSION}
+mkdir -p ${GENERATED_DIR}
+echo "[+] Output directory: ${GENERATED_DIR}"
 
-	# Set compiler config if exists
-	if ls $dirn/*.yml 1> /dev/null 2>&1; then
-		config_exists=true
-		config=$(ls $dirn/*.yml)
-		echo "[+] Compiler config file found for $stem: $config"
-	else
-		config_exists=false
-		echo "[-] Compiler config file not found for $stem"
-	fi
+function compile() {
+  OUTPUT_PATH=$1
+  FORMAT=$2
 
-	# Single pe
-	# filename=$stem\_$revision\_warboy.enf
-	# if ! [ -f $filename ]; then
-	# 	if [ "$config_exists" = true ]; then
-	# 		( set -x; NPU_COMPILER_CONFIG_PATH=$config furiosa compile --target-npu warboy ../$onnx -o $filename )
-	# 	else
-	# 		( set -x; furiosa compile --target-npu warboy ../$onnx -o $filename )
-	# 	fi
-	# else
-	# 	echo "[+] $filename found, skipping.."
-	# fi
+  if [ -f $OUTPUT_PATH ]; then
+    echo " ... (Skipped)"
+  else
+    echo " ... (Running)"
 
-	# Fusioned pe
-	dfg_filename=$stem\_$revision\_warboy_2pe.dfg
-	enf_filename=$stem\_$revision\_warboy_2pe.enf
-	if [ ! -f $enf_filename ] || [ ! -f $dfg_filename ] ; then
-		if [ "$config_exists" = true ]; then
-			( set -x; NPU_COMPILER_CONFIG_PATH=$config furiosa compile --target-ir dfg --target-npu warboy-2pe ../$onnx -o $dfg_filename )
-			( set -x; NPU_COMPILER_CONFIG_PATH=$config furiosa compile --target-npu warboy-2pe ../$onnx -o $enf_filename )
-		else
-			( set -x; furiosa compile --target-ir dfg --target-npu warboy-2pe ../$onnx -o $dfg_filename )
-			( set -x; furiosa compile --target-npu warboy-2pe ../$onnx -o $enf_filename )
-		fi
-	else
-		echo "[+] $enf_filename, $dfg_filename found, skipping.."
-	fi
+    if [ ! -z NPU_COMPILER_CONFIG_PATH ]; then
+      PREV_CONFIG=$NPU_COMPILER_CONFIG_PATH
+      unset NPU_COMPILER_CONFIG_PATH
+    fi
+
+    # Try to find the format-specific compiler config
+    IR_COMPILER_CONFIG=$MODEL_DIR/${FILENAME}.${FORMAT}.yaml
+    if [ -f $IR_COMPILER_CONFIG ]; then
+      export NPU_COMPILER_CONFIG_PATH=$IR_COMPILER_CONFIG
+      echo "    Using $(basename -- $NPU_COMPILER_CONFIG_PATH)"
+    fi
+
+    furiosa compile --target-npu warboy-2pe --target-ir ${FORMAT} $ONNX_PATH -o ${OUTPUT_PATH} &> /dev/null
+
+    if [ ! -z PREV_CONFIG ]; then
+      export NPU_COMPILER_CONFIG_PATH=$PREV_CONFIG
+      unset PREV_CONFIG
+    fi
+  fi
+}
+
+for INDEX in ${!ONNX_FILES[@]}; do
+  ONNX_PATH=${ONNX_FILES[INDEX]}
+	FULLNAME=$(basename -- "$ONNX_PATH")
+  FILENAME="${FULLNAME%.*}"
+  OUTPUT_PATH_BASE=${GENERATED_DIR}/${FILENAME}
+
+  echo "[$(expr ${INDEX} + 1)/${#ONNX_FILES[@]}] Compiling $FULLNAME .."
+
+  # Try to find the compiler config for all IR formats
+  unset NPU_COMPILER_CONFIG_PATH
+  if [ -f $MODEL_DIR/${FILENAME}.yaml ]; then
+    export NPU_COMPILER_CONFIG_PATH=$MODEL_DIR/$MODEL_DIR/${FILENAME}.yaml
+    echo "  Compiler config found at $(basename -- $NPU_COMPILER_CONFIG_PATH)"
+  fi
+
+	DFG_PATH=${OUTPUT_PATH_BASE}_warboy_2pe.dfg
+	ENF_PATH=${OUTPUT_PATH_BASE}_warboy_2pe.enf
+
+  printf " [Task 1/2] Generating $(basename -- $DFG_PATH)"
+	compile $DFG_PATH dfg
+
+  printf " [Task 2/2] Generating $(basename -- $ENF_PATH)"
+  compile $ENF_PATH enf
 done

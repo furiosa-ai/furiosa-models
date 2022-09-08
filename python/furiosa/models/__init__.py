@@ -1,7 +1,4 @@
 """Furiosa Models"""
-from . import vision
+from . import errors, vision
 
-# NOTE: Import rust bindings here
-from .furiosa_models_vision_native import *
-
-__all__ = ["vision"]
+__all__ = ["errors", "vision"]

@@ -8,7 +8,9 @@ from furiosa.models.vision import nonblocking
 
 def sanity_check_for_dvc_file(model, dvc_file_path: str):
     assert model
-    assert yaml.safe_load(open(dvc_file_path).read())["outs"][0]["size"] == len(model.model)
+    assert model.dfg
+    assert model.enf
+    assert yaml.safe_load(open(dvc_file_path).read())["outs"][0]["size"] == len(model.source)
 
 
 @pytest.mark.asyncio
