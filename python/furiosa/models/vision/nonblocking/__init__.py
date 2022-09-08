@@ -78,7 +78,7 @@ async def YOLOv5l(*args: Any, **kwargs: Any) -> yolov5l.YoloV5LargeModel:
         family="YOLOv5",
         version="v5",
         metadata=Metadata(
-            description="Yolo v5 large model",
+            description="YOLOv5 large model",
             publication=Publication(url="https://github.com/ultralytics/yolov5"),
         ),
         *args,
@@ -94,7 +94,7 @@ async def YOLOv5m(*args: Any, **kwargs: Any) -> yolov5m.YoloV5MediumModel:
         family="YOLOv5",
         version="v5",
         metadata=Metadata(
-            description="Yolo v5 medium model",
+            description="YOLOv5 medium model",
             publication=Publication(url="https://github.com/ultralytics/yolov5"),
         ),
         *args,

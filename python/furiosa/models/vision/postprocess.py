@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Sequence
 
 import numpy as np
 
@@ -157,3 +157,50 @@ def nms_internal_ops_fast(
         List[int]: the list of indices of the element filtered by NMS, sorted in decreasing order of scores.
     """
     return _nms_internal_ops_fast_py(boxes, scores, iou_threshold, eps)
+
+
+def collate(data: Sequence[Sequence[np.array]], batch_axis=0) -> List[np.array]:
+    """This function converts a list of an numpy.array list into a batch type numpy array.
+       The batch axis is specified according to the batch_axis.
+
+    Args:
+        data (List[List[np.array]]): a list of numpy.array list. The shape axis of each numpy.array must be 1.
+        batch_axis (int, optional): batch axis. Defaults to 0.
+
+    Returns:
+        List[np.array]: a batch numpy array list.
+
+    Examples:
+        >>> arrays = [
+            [np.random.randn(1, 3, 4), np.random.randn(1, 2, 5)],
+            [np.random.randn(1, 3, 4), np.random.randn(1, 2, 5)],
+            [np.random.randn(1, 3, 4), np.random.randn(1, 2, 5)],
+        ]
+        >>> batch_arrays = collate(arrays, batch_axis=0)
+        >>> assert len(batch_arrays)==2
+        >>> assert batch_arrays[0].shape==(3, 3, 4)
+        >>> assert batch_arrays[1].shape==(3, 2, 5)
+    """
+    num_batch = len(data)
+    if num_batch == 0:
+        return []
+    num_feat = len(data[0])
+    batch_list = [None] * num_feat
+    for f in range(num_feat):
+        batch_feat = []
+        for i in range(num_batch):
+            batch_feat.append(data[i][f])
+        batch_list[f] = np.concatenate(batch_feat, axis=batch_axis)
+    return batch_list
+
+
+def test_collate():
+    arrays = [
+        [np.random.randn(1, 3, 4), np.random.randn(1, 2, 5)],
+        [np.random.randn(1, 3, 4), np.random.randn(1, 2, 5)],
+        [np.random.randn(1, 3, 4), np.random.randn(1, 2, 5)],
+    ]
+    batch_arrays = collate(arrays, batch_axis=0)
+    assert len(batch_arrays) == 2
+    assert batch_arrays[0].shape == (3, 3, 4)
+    assert batch_arrays[1].shape == (3, 2, 5)
