@@ -14,11 +14,31 @@ from furiosa.runtime import session
 
 ssd_mobilenet = SSDMobileNet()
 
-with session.create(ssd_mobilenet.bytes) as sess:
+with session.create(ssd_mobilenet.enf) as sess:
     image = ssd_mobilenet.preprocess("image/car.jpeg")
     output = sess.run(image)
     ssd_mobilenet.postprocess(output)
 ```
+
+### NPU-optimized postprocessor support
+This model supports the NPU-optimized post-processing implementation.
+To learn more about this, please read [NPU-optimized Postprocessor](../native_postprocessor.md).
+
+*An usage example of native postprocessor for SSD MobileNet*
+```python
+from furiosa.models.vision import SSDMobileNet
+from furiosa.models.vision.ssd_mobilenet import preprocess, NativePostProcessor 
+from furiosa.runtime import session
+
+ssd_mobilenet = SSDMobileNet(native_postprocess=True)
+
+postprocessor = NativePostProcessor(ssd_mobilenet)
+with session.create(ssd_mobilenet.enf) as sess:
+    image, context = preprocess(["tests/assets/cat.jpg"])
+    output = sess.run(image).numpy()
+    postprocessor.eval(output, context=context)
+```
+
 
 ## Model inputs
 The input is a 3-channel image of 300x300 (height, width).
@@ -47,6 +67,7 @@ You can refer to `postprocess()` function to learn how to decode boxes, classes,
 | 9      | (1, 24, 2, 2)    | float32   | NCHW      |             |
 | 10     | (1, 546, 1, 1)   | float32   | NCHW      |             |
 | 11     | (1, 24, 1, 1)    | float32   | NCHW      |             |
+
 
 ## Source
 This model is originated from SSD MobileNet v1 in ONNX available at

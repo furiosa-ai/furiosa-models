@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Any, Dict, List, Sequence, Tuple
 
 import cv2
@@ -8,8 +9,16 @@ import numpy.typing as npt
 from furiosa.registry import Model
 
 from . import anchor_generator  # type: ignore[import]
+from .. import native
+from ...errors import ArtifactNotFound, FuriosaModelException
 from ..common.datasets import coco
-from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox, sigmoid
+from ..postprocess import (
+    LtrbBoundingBox,
+    ObjectDetectionResult,
+    PostProcessor,
+    calibration_ltrbbox,
+    sigmoid,
+)
 
 # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L155-L158
 PRIORS = np.concatenate(
@@ -41,10 +50,9 @@ class SSDSmallConstant(object):
     PRIORS_CENTER_Y = PRIORS_CENTER_Y
 
 
-class MLCommonsSSDSmallModel(Model):
+class SSDMobileNetModel(Model):
     """MLCommons MobileNet v1 model"""
 
-    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/tools/submission/submission-checker.py#L467
     pass
 
 
@@ -226,3 +234,43 @@ def postprocess(
             )
         batch_results.append(predicted_result)
     return batch_results
+
+
+class SSDMobilePostProcessor(PostProcessor):
+    def eval(self, inputs: Sequence[numpy.ndarray], *args: Any, **kwargs: Any):
+        context = kwargs.get("context")
+        raw_results = self._native.eval(inputs)
+
+        results = []
+        for value, context in zip(raw_results, context):
+            width = context['width']
+            height = context['height']
+            left = value.left * width
+            right = value.right * width
+            top = value.top * height
+            bottom = value.bottom * height
+            results.append(
+                ObjectDetectionResult(
+                    index=value.class_id,
+                    label=CLASSES[value.class_id],
+                    score=value.score,
+                    boundingbox=LtrbBoundingBox(left=left, top=top, right=right, bottom=bottom),
+                )
+            )
+
+        return results
+
+
+class NativePostProcessor(SSDMobilePostProcessor):
+    def __init__(self, model: Model, version: str = "cpp"):
+        if not model.dfg:
+            raise ArtifactNotFound(model.name, "dfg")
+
+        if version == "cpp":
+            self._native = native.ssd_mobilenet.CppPostProcessor(model.dfg)
+        elif version == "rust":
+            self._native = native.ssd_mobilenet.RustPostProcessor(model.dfg)
+        else:
+            raise FuriosaModelException(f"Unknown post processor version: {version}")
+
+        super().__init__()

@@ -1,0 +1,3 @@
+[submodule "thirdparty/mlcommons"]
+	path = thirdparty/mlcommons
+	url = https://github.com/furiosa-ai/mlcommons.git

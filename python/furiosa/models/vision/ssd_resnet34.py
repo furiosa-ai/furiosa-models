@@ -237,7 +237,7 @@ class DefaultBoxes(object):
             return self.dboxes
 
 
-class MLCommonsSSDLargeModel(Model):
+class SSDResNet34Model(Model):
     pass
 
 

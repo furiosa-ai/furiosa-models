@@ -10,10 +10,10 @@ from furiosa.runtime import session
 @pytest.mark.asyncio
 async def test_mlcommons_ssd_resnet34_perf():
     m: Model = SSDResNet34()
-    test_image_path = "scripts/assets/cat.jpg"
+    test_image_path = "tests/assets/cat.jpg"
 
     assert len(CLASSES) == 81, f"Classes is 81, but {len(CLASSES)}"
-    sess = session.create(m.model, batch_size=2)
+    sess = session.create(m.source, batch_size=2)
     true_bbox = np.array(
         [
             [264.24792, 259.05603, 963.37756, 733.70935000000012],

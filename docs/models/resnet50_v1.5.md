@@ -13,9 +13,9 @@ from furiosa.runtime import session
 
 resnet50 = ResNet50()
 
-with session.create(resnet50.bytes) as sess:
+with session.create(resnet50.enf) as sess:
     image = resnet50.preprocess("image/car.jpeg")
-    output = sess.run(image)
+    output = sess.run(image).numpy()
     resnet50.postprocess(output)
 ```
 

@@ -6,7 +6,7 @@ setup(
     package_dir={"": "python"},
     rust_extensions=[
         RustExtension(
-            "furiosa.models.furiosa_models_native",
+            "furiosa.models.furiosa_models_vision_native",
             path="Cargo.toml",
             binding=Binding.PyO3,
             debug=False,

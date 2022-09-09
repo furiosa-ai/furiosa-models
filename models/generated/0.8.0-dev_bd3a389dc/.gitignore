@@ -1,0 +1,17 @@
+/mlcommons_resnet50_v1.5_int8_warboy_2pe.dfg
+/mlcommons_resnet50_v1.5_int8_warboy_2pe.enf
+/mlcommons_resnet50_v1.5_int8_truncated_warboy_2pe.dfg
+/mlcommons_resnet50_v1.5_int8_truncated_warboy_2pe.enf
+/mlcommons_ssd_mobilenet_v1_int8_warboy_2pe.dfg
+/mlcommons_ssd_mobilenet_v1_int8_warboy_2pe.enf
+/mlcommons_ssd_mobilenet_v1_int8.onnx_truncated_warboy_2pe.dfg
+/mlcommons_ssd_mobilenet_v1_int8.onnx_truncated_warboy_2pe.enf
+/mlcommons_ssd_resnet34_int8_warboy_2pe.dfg
+/mlcommons_ssd_resnet34_int8_warboy_2pe.enf
+/mlcommons_ssd_resnet34_int8.onnx_truncated_warboy_2pe.dfg
+/mlcommons_ssd_resnet34_int8.onnx_truncated_warboy_2pe.enf
+/yolov5l_int8_warboy_2pe.dfg
+/yolov5l_int8_warboy_2pe.enf
+/yolov5m_int8_warboy_2pe.dfg
+/yolov5m_int8_warboy_2pe.enf
+/mlcommons_ssd_mobilenet_v1_int8.onnx_truncated.dfg

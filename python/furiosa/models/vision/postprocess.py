@@ -1,7 +1,11 @@
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import List, Sequence
+from typing import Any, List, Sequence
 
+import numpy
 import numpy as np
+
+from furiosa.registry import Model
 
 
 def sigmoid(x: np.ndarray) -> np.ndarray:  # pylint: disable=invalid-name
@@ -33,3 +37,9 @@ class ObjectDetectionResult:
     score: float
     label: str
     index: int
+
+
+class PostProcessor(ABC):
+    @abstractmethod
+    def eval(self, inputs: Sequence[numpy.ndarray], *args: Any, **kwargs: Any):
+        pass
