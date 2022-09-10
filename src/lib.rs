@@ -1,5 +1,6 @@
 use pyo3::prelude::*;
 
+mod common;
 mod ssd_mobilenet;
 
 #[pymodule]
