@@ -1,12 +1,16 @@
-from typing import Any, List
+from typing import Any, List, Sequence
 
 import cv2
+import numpy
 import numpy as np
 
 from furiosa.registry import Model
 
-from .common.datasets import imagenet1k
-from .preprocess import center_crop, resize_with_aspect_ratio
+from .. import native
+from ...errors import ArtifactNotFound, FuriosaModelException
+from ..common.datasets import imagenet1k
+from ..postprocess import PostProcessor
+from ..preprocess import center_crop, resize_with_aspect_ratio
 
 CLASSES: List[str] = imagenet1k.ImageNet1k_CLASSES
 
@@ -36,3 +40,19 @@ def preprocess(image_path: str) -> np.array:
 
 def postprocess(output: Any) -> str:
     return CLASSES[int(output[0].numpy()) - 1]
+
+
+class Resnet50PostProcessor(PostProcessor):
+    def eval(self, inputs: Sequence[numpy.ndarray], *args: Any, **kwargs: Any):
+        context = kwargs.get("context")
+        return self._native.eval(inputs)
+
+
+class NativePostProcessor(Resnet50PostProcessor):
+    def __init__(self, model: Model):
+        if not model.dfg:
+            raise ArtifactNotFound(model.name, "dfg")
+
+        self._native = native.resnet50.PostProcessor(model.dfg)
+
+        super().__init__()
