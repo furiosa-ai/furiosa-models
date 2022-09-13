@@ -291,7 +291,7 @@ def _pick_best(detections, confidence_threshold):
 def postprocess(
     outputs: Sequence[np.ndarray],
     batch_preproc_params: Sequence[Dict[str, Any]],
-    confidence_threshold=0.3,
+    confidence_threshold=0.05,
 ) -> List[List[ObjectDetectionResult]]:
     if len(outputs) != NUM_OUTPUTS:
         raise Exception(f"output size must be {NUM_OUTPUTS}, but {len(outputs)}")
