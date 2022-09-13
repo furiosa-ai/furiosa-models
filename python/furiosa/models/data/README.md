@@ -11,12 +11,12 @@ export DPKG_VERSION=0.8.0-2+nightly-220827
 sudo apt-get install furiosa-libcompiler=${DPKG_VERSION} \
 furiosa-libnux=${DPKG_VERSION} \
 furiosa-libnux-extrinsic=${DPKG_VERSION}
-```   
+```
 
 ### Compiler Config
 You can optionally add a compiler config for each model or model's specific IR formats.
 
-If you want to set a compiler config for a `mlcommons_resnet50_v1.5_int8.onnx`, 
+If you want to set a compiler config for a `mlcommons_resnet50_v1.5_int8.onnx`,
 you need to add `mlcommons_resnet50_v1.5_int8.yaml` here.
 
 `enf-generator.sh` also allow to specify a compiler config for a certain IR format.
@@ -25,10 +25,10 @@ To specify a compiler config for dfg or enf, you can add the config file named `
 * ENF: `mlcommons_resnet50_v1.5_int8.enf.yaml`
 
 ### Run
-```sh 
+```sh
 $ enf_generator.sh
 
-./enf_generator.sh 
+./enf_generator.sh
 [+] Detected version of compiler: 0.8.0-dev (rev. bd3a389dc)
 [+] Installed version of compiler package: 0.8.0-2+nightly-220827
 [+] Found 8 ONNX Files:
