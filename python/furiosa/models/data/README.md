@@ -35,9 +35,9 @@ $ enf_generator.sh
  [1] mlcommons_resnet50_v1.5_int8.onnx
  [2] mlcommons_resnet50_v1.5_int8_truncated.onnx
  [3] mlcommons_ssd_mobilenet_v1_int8.onnx
- [4] mlcommons_ssd_mobilenet_v1_int8.onnx_truncated.onnx
+ [4] mlcommons_ssd_mobilenet_v1_int8_truncated.onnx
  [5] mlcommons_ssd_resnet34_int8.onnx
- [6] mlcommons_ssd_resnet34_int8.onnx_truncated.onnx
+ [6] mlcommons_ssd_resnet34_int8_truncated.onnx
  [7] yolov5l_int8.onnx
  [8] yolov5m_int8.onnx
 [+] Output directory: /home/hyunsik/Code/furiosa-models-2/models/generated/0.8.0-dev_bd3a389dc
