@@ -32,13 +32,13 @@ def __model_name(relative_path, truncated=True) -> str:
 
 async def ResNet50(use_native_post=False, *args: Any, **kwargs: Any) -> resnet50.ResNet50Model:
 
-    source_path = __model_name("mlcommons_resnet50_v1.5_int8", use_native_post)
+    model_name = __model_name("mlcommons_resnet50_v1.5_int8", use_native_post)
 
     return resnet50.ResNet50Model(
         name="ResNet50",
-        source=await resolve_file(source_path, _ONNX).read(),
-        dfg=await resolve_file(source_path, _DFG).read(),
-        enf=await resolve_file(source_path, _ENF).read(),
+        source=await resolve_file(model_name, _ONNX).read(),
+        dfg=await resolve_file(model_name, _DFG).read(),
+        enf=await resolve_file(model_name, _ENF).read(),
         format=Format.ONNX,
         family="ResNet",
         version="v1.5",
@@ -56,13 +56,13 @@ async def SSDMobileNet(
     use_native_post=False, *args: Any, **kwargs: Any
 ) -> ssd_mobilenet.SSDMobileNetModel:
 
-    source_path = __model_name("mlcommons_ssd_mobilenet_v1_int8", use_native_post)
+    model_name = __model_name("mlcommons_ssd_mobilenet_v1_int8", use_native_post)
 
     return ssd_mobilenet.SSDMobileNetModel(
         name="MLCommonsSSDMobileNet",
-        source=await resolve_file(source_path, _ONNX).read(),
-        dfg=await resolve_file(source_path, _DFG).read(),
-        enf=await resolve_file(source_path, _ENF).read(),
+        source=await resolve_file(model_name, _ONNX).read(),
+        dfg=await resolve_file(model_name, _DFG).read(),
+        enf=await resolve_file(model_name, _ENF).read(),
         format=Format.ONNX,
         family="MobileNetV1",
         version="v1.1",
@@ -79,13 +79,13 @@ async def SSDResNet34(
     use_native_post=False, *args: Any, **kwargs: Any
 ) -> ssd_resnet34.SSDResNet34Model:
 
-    source_path = __model_name("mlcommons_ssd_resnet34_int8", use_native_post)
+    model_name = __model_name("mlcommons_ssd_resnet34_int8", use_native_post)
 
     return ssd_resnet34.SSDResNet34Model(
         name="MLCommonsSSDResNet34",
-        source=await resolve_file(source_path, _ONNX).read(),
-        dfg=await resolve_file(source_path, _DFG).read(),
-        enf=await resolve_file(source_path, _ENF).read(),
+        source=await resolve_file(model_name, _ONNX).read(),
+        dfg=await resolve_file(model_name, _DFG).read(),
+        enf=await resolve_file(model_name, _ENF).read(),
         format=Format.ONNX,
         family="ResNet",
         version="v1.1",
@@ -101,12 +101,12 @@ async def SSDResNet34(
 
 
 async def YOLOv5l(*args: Any, **kwargs: Any) -> yolov5l.YoloV5LargeModel:
-    source_path = "yolov5l_int8"
+    model_name = "yolov5l_int8"
     return yolov5l.YoloV5LargeModel(
         name="YoloV5Large",
-        source=await resolve_file(source_path, _ONNX).read(),
-        dfg=await resolve_file(source_path, _DFG).read(),
-        enf=await resolve_file(source_path, _ENF).read(),
+        source=await resolve_file(model_name, _ONNX).read(),
+        dfg=await resolve_file(model_name, _DFG).read(),
+        enf=await resolve_file(model_name, _ENF).read(),
         format=Format.ONNX,
         family="Yolo",
         version="v5",
