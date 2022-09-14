@@ -55,7 +55,7 @@ def test_rust_post_processor():
 
     with session.create(model.enf) as sess:
         outputs = sess.run(images).numpy()
-        results = processor.eval(outputs, context=context)
+        results = processor.eval(outputs, context=context[0])
         assert len(results) == 1, "the number of outputs must be 1"
         assert_results(results)
 
@@ -68,6 +68,6 @@ def test_cpp_post_processor():
 
     with session.create(model.enf) as sess:
         outputs = sess.run(images).numpy()
-        results = processor.eval(outputs, context=context)
+        results = processor.eval(outputs, context=context[0])
         assert len(results) == 1, "the number of outputs must be 1"
         assert_results(results)
