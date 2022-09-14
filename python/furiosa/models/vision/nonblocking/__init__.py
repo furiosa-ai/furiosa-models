@@ -31,9 +31,7 @@ def __model_name(relative_path, truncated=True) -> str:
 
 
 async def ResNet50(use_native_post=False, *args: Any, **kwargs: Any) -> resnet50.ResNet50Model:
-
     model_name = __model_name("mlcommons_resnet50_v1.5_int8", use_native_post)
-
     return resnet50.ResNet50Model(
         name="ResNet50",
         source=await resolve_file(model_name, _ONNX).read(),
@@ -55,9 +53,7 @@ async def ResNet50(use_native_post=False, *args: Any, **kwargs: Any) -> resnet50
 async def SSDMobileNet(
     use_native_post=False, *args: Any, **kwargs: Any
 ) -> ssd_mobilenet.SSDMobileNetModel:
-
     model_name = __model_name("mlcommons_ssd_mobilenet_v1_int8", use_native_post)
-
     return ssd_mobilenet.SSDMobileNetModel(
         name="MLCommonsSSDMobileNet",
         source=await resolve_file(model_name, _ONNX).read(),
@@ -78,9 +74,7 @@ async def SSDMobileNet(
 async def SSDResNet34(
     use_native_post=False, *args: Any, **kwargs: Any
 ) -> ssd_resnet34.SSDResNet34Model:
-
     model_name = __model_name("mlcommons_ssd_resnet34_int8", use_native_post)
-
     return ssd_resnet34.SSDResNet34Model(
         name="MLCommonsSSDResNet34",
         source=await resolve_file(model_name, _ONNX).read(),
