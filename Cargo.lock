@@ -392,6 +392,7 @@ dependencies = [
 [[package]]
 name = "mlperf-postprocess"
 version = "0.1.0"
+source = "git+https://github.com/furiosa-ai/mlperf-postprocess?branch=main#37403c9c9e9da05dc83928c8626d77c2d7e49aeb"
 dependencies = [
  "cbindgen",
  "cpp",
