@@ -1,49 +1,136 @@
+import os
+from pathlib import Path
+from typing import List
+
 import numpy as np
-import pytest
+from pycocotools.coco import COCO
+from pycocotools.cocoeval import COCOeval
+import tqdm
 
 from furiosa.models.vision import SSDResNet34
-from furiosa.models.vision.ssd_resnet34 import CLASSES, NUM_OUTPUTS, postprocess, preprocess
+from furiosa.models.vision.postprocess import ObjectDetectionResult
+from furiosa.models.vision.ssd_resnet34 import NativePostProcessor, postprocess, preprocess
 from furiosa.registry import Model
 from furiosa.runtime import session
 
+EXPECTED_ACCURACY = 0.21321479317934577  # e2e-testing's accuracy
 
-@pytest.mark.asyncio
-async def test_mlcommons_ssd_resnet34_perf():
-    m: Model = SSDResNet34()
-    test_image_path = "tests/assets/cat.jpg"
 
-    assert len(CLASSES) == 81, f"Classes is 81, but {len(CLASSES)}"
-    sess = session.create(m.source, batch_size=2)
-    true_bbox = np.array(
-        [
-            [264.24792, 259.05603, 963.37756, 733.70935000000012],
-            [221.0502, 123.12275, 770.9292, 666.22425],
-        ],
-        dtype=np.float32,
-    )
-    true_confidence = np.array([0.37563688, 0.8747512], dtype=np.float32)
+def load_coco_from_env_variable():
+    coco_val_images = os.environ.get('COCO_VAL_IMAGES')
+    coco_val_labels = os.environ.get('COCO_VAL_LABELS')
 
-    # For batch mode test, simply read two identical images.
-    batch_pre_image, batch_preproc_param = preprocess([test_image_path, test_image_path])
-    batch_feat = sess.run(batch_pre_image).numpy()
-    detected_result = postprocess(batch_feat, batch_preproc_param, confidence_threshold=0.3)
-    assert len(detected_result) == 2, "batch size must be 2"
-    detected_result = detected_result[0]  # due to duplicated input image
+    if coco_val_images is None or coco_val_labels is None:
+        raise Exception("Environment variables not set")
 
-    assert len(detected_result) == 2, "ssd_resnet34 output shape must be 2"
-    assert [detected_result[0].label, detected_result[1].label] == [
-        'cat',
-        'cat',
-    ], f"wrong classid: {detected_result[0].label}, {detected_result[1].label}, expected [cat, cat]"
-    assert (
-        np.sum(np.abs(np.array(list(detected_result[0].boundingbox)) - true_bbox[0])) < 1e-3
-    ), f"bbox is different from expected value: {true_bbox[0]}"
-    assert (
-        np.sum(np.abs(np.array(list(detected_result[1].boundingbox)) - true_bbox[1])) < 1e-3
-    ), f"bbox is different from expected value {true_bbox[1]}"
-    assert (
-        np.sum(
-            np.abs(np.array([detected_result[0].score, detected_result[1].score]) - true_confidence)
-        )
-        < 1e-3
-    ), "confidence is different from expected value"
+    coco = COCO(coco_val_labels)
+
+    return Path(coco_val_images), coco
+
+
+def test_mlcommons_ssd_resnet34_accuracy():
+    model: Model = SSDResNet34()
+
+    image_directory, coco = load_coco_from_env_variable()
+    detections = []
+
+    with session.create(model.source) as sess:
+        for image_src in tqdm.tqdm(coco.dataset["images"]):
+            image_path = str(image_directory / image_src["file_name"])
+            image, contexts = preprocess([image_path])
+            outputs = sess.run(image).numpy()
+            batch_result = postprocess(outputs, contexts, confidence_threshold=0.05)
+            result = np.squeeze(batch_result, axis=0)  # squeeze the batch axis
+
+            for res in result:
+                detection = {
+                    "image_id": image_src["id"],
+                    "category_id": res.index,
+                    "bbox": [
+                        res.boundingbox.left,
+                        res.boundingbox.top,
+                        (res.boundingbox.right - res.boundingbox.left),
+                        (res.boundingbox.bottom - res.boundingbox.top),
+                    ],
+                    "score": res.score,
+                }
+                detections.append(detection)
+    coco_detections = coco.loadRes(detections)
+    coco_eval = COCOeval(coco, coco_detections, iouType="bbox")
+    coco_eval.evaluate()
+    coco_eval.accumulate()
+    coco_eval.summarize()
+    print("mAP:", coco_eval.stats[0])
+    assert coco_eval.stats[0] == EXPECTED_ACCURACY, "Accuracy check failed"
+
+
+def test_mlcommons_ssd_resnet34_with_native_rust_pp_accuracy():
+    model = SSDResNet34(use_native_post=True)
+    processor = NativePostProcessor(model, version="rust")
+
+    image_directory, coco = load_coco_from_env_variable()
+    detections = []
+
+    with session.create(model.enf) as sess:
+        for image_src in tqdm.tqdm(coco.dataset["images"]):
+            image_path = str(image_directory / image_src["file_name"])
+            image, contexts = preprocess([image_path])
+            outputs = sess.run(image).numpy()
+            result = processor.eval(outputs, context=contexts[0])
+
+            for res in result:
+                detection = {
+                    "image_id": image_src["id"],
+                    "category_id": res.index,
+                    "bbox": [
+                        res.boundingbox.left,
+                        res.boundingbox.top,
+                        (res.boundingbox.right - res.boundingbox.left),
+                        (res.boundingbox.bottom - res.boundingbox.top),
+                    ],
+                    "score": res.score,
+                }
+                detections.append(detection)
+    coco_detections = coco.loadRes(detections)
+    coco_eval = COCOeval(coco, coco_detections, iouType="bbox")
+    coco_eval.evaluate()
+    coco_eval.accumulate()
+    coco_eval.summarize()
+    print("mAP:", coco_eval.stats[0])
+    assert coco_eval.stats[0] == EXPECTED_ACCURACY, "Accuracy check failed"
+
+
+def test_mlcommons_ssd_resnet34_with_native_cpp_pp_accuracy():
+    model = SSDResNet34(use_native_post=True)
+    processor = NativePostProcessor(model, version="cpp")
+
+    image_directory, coco = load_coco_from_env_variable()
+    detections = []
+
+    with session.create(model.enf) as sess:
+        for image_src in tqdm.tqdm(coco.dataset["images"]):
+            image_path = str(image_directory / image_src["file_name"])
+            image, contexts = preprocess([image_path])
+            outputs = sess.run(image).numpy()
+            result = processor.eval(outputs, context=contexts[0])
+
+            for res in result:
+                detection = {
+                    "image_id": image_src["id"],
+                    "category_id": res.index,
+                    "bbox": [
+                        res.boundingbox.left,
+                        res.boundingbox.top,
+                        (res.boundingbox.right - res.boundingbox.left),
+                        (res.boundingbox.bottom - res.boundingbox.top),
+                    ],
+                    "score": res.score,
+                }
+                detections.append(detection)
+    coco_detections = coco.loadRes(detections)
+    coco_eval = COCOeval(coco, coco_detections, iouType="bbox")
+    coco_eval.evaluate()
+    coco_eval.accumulate()
+    coco_eval.summarize()
+    print("mAP:", coco_eval.stats[0])
+    assert coco_eval.stats[0] == EXPECTED_ACCURACY, "Accuracy check failed"
