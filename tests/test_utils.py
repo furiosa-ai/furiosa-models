@@ -1,4 +1,4 @@
-from furiosa.models.utils import compiler_version, generated_artifact_path
+from furiosa.models.utils import compiler_version
 
 
 def test_compiler_version():

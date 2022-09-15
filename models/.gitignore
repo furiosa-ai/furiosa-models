@@ -1,8 +1,0 @@
-/mlcommons_resnet50_v1.5_int8.onnx
-/mlcommons_ssd_mobilenet_v1_int8.onnx
-/mlcommons_ssd_resnet34_int8.onnx
-/yolov5l_int8.onnx
-/yolov5m_int8.onnx
-/mlcommons_resnet50_v1.5_int8_truncated.onnx
-/mlcommons_ssd_resnet34_int8.onnx_truncated.onnx
-/mlcommons_ssd_mobilenet_v1_int8.onnx_truncated.onnx
