@@ -90,13 +90,7 @@ spec:
         python -m pip install --pre -e .[test]
         python -m pip install dvc[s3]
 
-        ln -s /dvc-cache/furiosa-models ./.dvc/cache
-        ln -s  /dvc-cache/compiler-cache/ ~/.cache/furiosa
-
         RUST_LOG=info python -m pytest -s
-
-        ls /dvc-cache/compiler-cache/compiler
-        ls ~/.cache/furiosa/compiler
 
       resources:
         requests:
@@ -107,3 +101,43 @@ spec:
           memory: 32Gi
           cpu: 16
           alpha.furiosa.ai/npu: 1
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: set-compiler-and-dvc-cache
+  namespace: ci-furiosa-models
+spec:
+  workspaces:
+    - name: source
+    - name: furiosa-apt-credential
+      mountPath: /etc/apt/auth.conf.d
+      readOnly: true
+    - name: furiosa-models-dvc-cache
+      mountPath: /dvc-cache
+    - name: aws-credential
+      mountPath: /root/.aws
+  params:
+    - name: image
+      description: The container image
+      default: python:3.9-bullseye
+  steps:
+    - name: test
+      image: $(params.image)
+      script: |
+        #!/usr/bin/env bash
+        set -e
+        set -x
+
+        cd /workspace/source
+
+        ln -s /dvc-cache/furiosa-models ./.dvc/cache
+        ln -s /dvc-cache/compiler-cache/ ~/.cache/furiosa
+
+      resources:
+        requests:
+          memory: 32Gi
+          cpu: 16 
+        limits:
+          memory: 32Gi
+          cpu: 16
