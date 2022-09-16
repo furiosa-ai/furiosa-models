@@ -15,6 +15,8 @@ from furiosa.registry import Model
 from furiosa.runtime import session
 
 EXPECTED_ACCURACY = 0.21321479317934577  # e2e-testing's accuracy
+EXPECTED_ACCURACY_RUST = 0.22013336390711905
+EXPECTED_ACCURACY_CPP = 0.22013360530400045
 
 
 def load_coco_from_env_variable():
@@ -110,7 +112,7 @@ def test_mlcommons_ssd_resnet34_with_native_rust_pp_accuracy():
     coco_eval.accumulate()
     coco_eval.summarize()
     print("mAP:", coco_eval.stats[0])
-    assert coco_eval.stats[0] == EXPECTED_ACCURACY, "Accuracy check failed"
+    assert coco_eval.stats[0] == EXPECTED_ACCURACY_RUST, "Accuracy check failed"
 
 
 def test_mlcommons_ssd_resnet34_with_native_cpp_pp_accuracy():
@@ -152,4 +154,4 @@ def test_mlcommons_ssd_resnet34_with_native_cpp_pp_accuracy():
     coco_eval.accumulate()
     coco_eval.summarize()
     print("mAP:", coco_eval.stats[0])
-    assert coco_eval.stats[0] == EXPECTED_ACCURACY, "Accuracy check failed"
+    assert coco_eval.stats[0] == EXPECTED_ACCURACY_CPP, "Accuracy check failed"
