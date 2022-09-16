@@ -68,6 +68,9 @@ spec:
           - name: furiosa-apt-credential
             secret:
               secretName: furiosa-apt-credential
+          - name: aws-credential
+            secret:
+              secretName: aws-credential
           - name: furiosa-models-dvc-cache
             persistentVolumeClaim:
               claimName: furiosa-models-dvc-cache

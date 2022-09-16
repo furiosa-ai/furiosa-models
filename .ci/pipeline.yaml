@@ -24,6 +24,8 @@ spec:
   workspaces:
     - name: furiosa-apt-credential
       description: APT credential for FuriosaAI private repository
+    - name: aws-credential
+      description: AWS credentials for s3 access
     - name: furiosa-models-dvc-cache
       description: furiosa-models dvc cache
     - name: source
@@ -84,6 +86,8 @@ spec:
         workspace: furiosa-apt-credential
       - name: furiosa-models-dvc-cache
         workspace: furiosa-models-dvc-cache
+      - name: aws-credential
+        workspace: aws-credential
     runAfter:
       - clone
 

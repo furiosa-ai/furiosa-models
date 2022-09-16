@@ -43,6 +43,8 @@ spec:
       readOnly: true
     - name: furiosa-models-dvc-cache
       mountPath: /dvc-cache
+    - name: aws-credential
+      mountPath: /root/.aws
   params:
     - name: image
       description: The container image
