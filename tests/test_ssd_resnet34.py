@@ -1,3 +1,4 @@
+import json
 import os
 from pathlib import Path
 from typing import List
@@ -33,6 +34,12 @@ def test_mlcommons_ssd_resnet34_accuracy():
 
     image_directory, coco = load_coco_from_env_variable()
     detections = []
+    instances_val2017 = Path(os.environ.get('COCO_VAL_LABELS'))
+    with open(instances_val2017, encoding="ascii") as file:
+        annotations = json.load(file)
+    label_to_category = {
+        label: category["id"] for label, category in enumerate(annotations["categories"], 1)
+    }
 
     with session.create(model.source) as sess:
         for image_src in tqdm.tqdm(coco.dataset["images"]):
@@ -45,7 +52,7 @@ def test_mlcommons_ssd_resnet34_accuracy():
             for res in result:
                 detection = {
                     "image_id": image_src["id"],
-                    "category_id": res.index,
+                    "category_id": label_to_category[res.index],
                     "bbox": [
                         res.boundingbox.left,
                         res.boundingbox.top,
@@ -70,6 +77,12 @@ def test_mlcommons_ssd_resnet34_with_native_rust_pp_accuracy():
 
     image_directory, coco = load_coco_from_env_variable()
     detections = []
+    instances_val2017 = Path(os.environ.get('COCO_VAL_LABELS'))
+    with open(instances_val2017, encoding="ascii") as file:
+        annotations = json.load(file)
+    label_to_category = {
+        label: category["id"] for label, category in enumerate(annotations["categories"], 1)
+    }
 
     with session.create(model.enf) as sess:
         for image_src in tqdm.tqdm(coco.dataset["images"]):
@@ -81,7 +94,7 @@ def test_mlcommons_ssd_resnet34_with_native_rust_pp_accuracy():
             for res in result:
                 detection = {
                     "image_id": image_src["id"],
-                    "category_id": res.index,
+                    "category_id": label_to_category[res.index],
                     "bbox": [
                         res.boundingbox.left,
                         res.boundingbox.top,
@@ -106,6 +119,12 @@ def test_mlcommons_ssd_resnet34_with_native_cpp_pp_accuracy():
 
     image_directory, coco = load_coco_from_env_variable()
     detections = []
+    instances_val2017 = Path(os.environ.get('COCO_VAL_LABELS'))
+    with open(instances_val2017, encoding="ascii") as file:
+        annotations = json.load(file)
+    label_to_category = {
+        label: category["id"] for label, category in enumerate(annotations["categories"], 1)
+    }
 
     with session.create(model.enf) as sess:
         for image_src in tqdm.tqdm(coco.dataset["images"]):
@@ -117,7 +136,7 @@ def test_mlcommons_ssd_resnet34_with_native_cpp_pp_accuracy():
             for res in result:
                 detection = {
                     "image_id": image_src["id"],
-                    "category_id": res.index,
+                    "category_id": label_to_category[res.index],
                     "bbox": [
                         res.boundingbox.left,
                         res.boundingbox.top,
