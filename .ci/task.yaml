@@ -81,7 +81,7 @@ spec:
         chmod 600 ~/.netrc
         export PIP_EXTRA_INDEX_URL=https://internal-pypi.furiosa.dev/simple
         export TOOLCHAIN_VERSION=0.8.0-2+nightly-220827
-        apt update && apt-get install -y libonnxruntime furiosa-libhal-xrt \
+        apt update && apt-get install -y libonnxruntime furiosa-libhal-warboy \
             furiosa-libcompiler=$TOOLCHAIN_VERSION furiosa-libnux-extrinsic=$TOOLCHAIN_VERSION \
             furiosa-libnux=$TOOLCHAIN_VERSION
         python -m pip install --upgrade pip wheel setuptools Cython pytest pycocotools

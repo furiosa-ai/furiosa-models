@@ -61,7 +61,7 @@ spec:
           - pipelineTaskName: test
             taskPodTemplate:
               tolerations:
-              - key: "fpga"
+              - key: "npu"
                 operator: "Exists"
                 effect: "NoSchedule"
         workspaces:
