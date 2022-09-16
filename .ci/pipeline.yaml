@@ -9,7 +9,7 @@ spec:
       description: The git repository name
     - name: gitRepository
       description: The git repository that hosts context and Dockerfile
-      default: git@github.com:furiosa-ai/furiosa-models-experimental.git
+      default: git@github.com:furiosa-ai/furiosa-models.git
     - name: gitRevision
       description: The Git revision to be used.
       default: master
