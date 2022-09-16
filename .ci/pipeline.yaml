@@ -23,6 +23,8 @@ spec:
   workspaces:
     - name: furiosa-apt-credential
       description: APT credential for FuriosaAI private repository
+    - name: furiosa-models-dvc-cache
+      description: furiosa-models dvc cache
     - name: source
       description: Workspace where the git repo is prepared for testing
 
@@ -79,6 +81,8 @@ spec:
         workspace: source
       - name: furiosa-apt-credential
         workspace: furiosa-apt-credential
+      - name: furiosa-models-dvc-cache
+        workspace: furiosa-models-dvc-cache
     runAfter:
       - clone
 

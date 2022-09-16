@@ -1,5 +1,8 @@
 [core]
     remote = origin
+[cache]
+    type = "hardlink,symlink"
+    dir = cache
 ['remote "origin"']
     url = https://furiosa-public-artifacts.s3.amazonaws.com/furiosa-artifacts
 ['remote "s3origin"']

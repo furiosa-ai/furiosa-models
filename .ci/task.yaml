@@ -41,6 +41,8 @@ spec:
     - name: furiosa-apt-credential
       mountPath: /etc/apt/auth.conf.d
       readOnly: true
+    - name: furiosa-models-dvc-cache
+      mountPath: /dvc-cache
   params:
     - name: image
       description: The container image
@@ -82,11 +84,16 @@ spec:
             furiosa-libcompiler furiosa-libnux-extrinsic furiosa-libnux
         python -m pip install --upgrade pip wheel setuptools Cython pytest pycocotools
         python -m pip install --pre -e .[test]
+        python -m pip install dvc[s3]
+
+        ln -s /dvc-cache/furiosa-models ./.dvc/cache
         python -m pytest -s
       resources:
         requests:
           memory: 32Gi
           cpu: 16 
+          alpha.furiosa.ai/npu: 1
         limits:
           memory: 32Gi
           cpu: 16
+          alpha.furiosa.ai/npu: 1
