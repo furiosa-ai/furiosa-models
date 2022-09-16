@@ -184,9 +184,9 @@ spec:
     - name: depth
       value: $(params.gitCloneDepth)
 
-  - name: set-compiler-and-dvc-cache
+  - name: set-dvc-cache
     taskRef:
-      name: set-compiler-and-dvc-cache
+      name: set-dvc-cache
     workspaces:
       - name: source
         workspace: source
@@ -212,7 +212,7 @@ spec:
       - name: aws-credential
         workspace: aws-credential
     runAfter:
-      - set-compiler-and-dvc-cache
+      - set-dvc-cache
 
   finally:
   - name: set-status-success

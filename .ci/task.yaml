@@ -105,7 +105,7 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: set-compiler-and-dvc-cache
+  name: set-dvc-cache
   namespace: ci-furiosa-models
 spec:
   workspaces:
@@ -122,7 +122,7 @@ spec:
       description: The container image
       default: python:3.9-bullseye
   steps:
-    - name: set-compiler-and-dvc-cache
+    - name: set-dvc-cache
       image: $(params.image)
       script: |
         #!/usr/bin/env bash
@@ -132,7 +132,6 @@ spec:
         cd /workspace/source
 
         ln -s /dvc-cache/furiosa-models ./.dvc/cache
-        ln -s /dvc-cache/compiler-cache/ ~/.cache/furiosa
 
       resources:
         requests:
