@@ -50,6 +50,9 @@ spec:
       image: $(params.image)
       script: |
         #!/usr/bin/env bash
+        set -e
+        set -x
+
         cd /workspace/source
         export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
 
@@ -75,17 +78,15 @@ spec:
 
         chmod 600 ~/.netrc
         export PIP_EXTRA_INDEX_URL=https://internal-pypi.furiosa.dev/simple
-        apt update && apt-get install -y libonnxruntime furiosa-libnpu-xrt \
-            furiosa-libcompiler
-        python -m pip install --upgrade pip wheel setuptools Cython
+        apt update && apt-get install -y libonnxruntime furiosa-libhal-xrt \
+            furiosa-libcompiler furiosa-libnux-extrinsic furiosa-libnux
+        python -m pip install --upgrade pip wheel setuptools Cython pytest pycocotools
         python -m pip install --pre -e .[test]
         python -m pytest -s
       resources:
         requests:
           memory: 32Gi
           cpu: 16 
-          alpha.furiosa.ai/npu: 1
         limits:
           memory: 32Gi
           cpu: 16
-          alpha.furiosa.ai/npu: 1
