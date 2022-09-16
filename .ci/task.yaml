@@ -89,7 +89,13 @@ spec:
         python -m pip install dvc[s3]
 
         ln -s /dvc-cache/furiosa-models ./.dvc/cache
-        python -m pytest -s
+        ln -s  /dvc-cache/compiler-cache/ ~/.cache/furiosa
+
+        RUST_LOG=info python -m pytest -s
+
+        ls /dvc-cache/compiler-cache/compiler
+        ls ~/.cache/furiosa/compiler
+
       resources:
         requests:
           memory: 32Gi
