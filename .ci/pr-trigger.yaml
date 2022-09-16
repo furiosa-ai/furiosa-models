@@ -2,7 +2,7 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: Trigger
 metadata:
   name: furiosa-models-ci-trigger
-#  namespace: ci-furiosa-models
+  namespace: ci-furiosa-models
   labels:
     ci.tekton.dev/trigger-type: github.pull-request
 spec:
@@ -23,7 +23,7 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
   name: furiosa-models-ci
-#  namespace: ci-furiosa-models
+  namespace: ci-furiosa-models
 spec:
   params:
   - name: repo_full_name

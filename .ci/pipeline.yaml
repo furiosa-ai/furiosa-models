@@ -2,6 +2,7 @@ apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: furiosa-models-ci
+  namespace: ci-furiosa-models
 spec:
   params:
     - name: repo_full_name
