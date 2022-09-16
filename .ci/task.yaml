@@ -33,7 +33,7 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: test
+  name: regression-test-with-npu
   namespace: ci-furiosa-models
 spec:
   workspaces:
@@ -50,7 +50,7 @@ spec:
       description: The container image
       default: python:3.9-bullseye
   steps:
-    - name: test
+    - name: regression-test-with-npu
       image: $(params.image)
       script: |
         #!/usr/bin/env bash
@@ -122,7 +122,7 @@ spec:
       description: The container image
       default: python:3.9-bullseye
   steps:
-    - name: test
+    - name: set-compiler-and-dvc-cache
       image: $(params.image)
       script: |
         #!/usr/bin/env bash

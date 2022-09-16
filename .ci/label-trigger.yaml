@@ -1,0 +1,265 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: Trigger
+metadata:
+  name: furiosa-models-regression-test
+  namespace: ci-furiosa-models
+  labels:
+    ci.tekton.dev/trigger-type: github.pull-request
+spec:
+  interceptors:
+    - cel:
+        filter: >-
+          body.repository.full_name in ['furiosa-ai/furiosa-models'] &&
+          body.action in ['labeled'] &&
+          body.label.name in ['tekton/regression-test']
+  bindings:
+    - ref: tekton-ci-github-base
+      kind: ClusterTriggerBinding
+    - ref: tekton-ci-webhook-pull-request
+      kind: ClusterTriggerBinding
+  template:
+    ref: furiosa-models-regression-test
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: furiosa-models-regression-test
+  namespace: ci-furiosa-models
+spec:
+  params:
+  - name: owner
+    description: The git repository owner
+  - name: repo
+    description: The git repository name
+  - name: repo_full_name
+    description: The git repository name
+  - name: gitRepository
+    description: The git repository that hosts context and Dockerfile
+  - name: gitRevision
+    description: The git revision to be used.
+  - name: gitShortRevision
+    description: The git short revision to be used.
+  - name: triggerContext
+    description: Trigger context came from status trigger binding
+  - name: headRef
+    description: The git head ref (branch name)
+  - name: headOwner
+    description: The git head owner (owner name of repo)
+  - name: prNumber
+    description: pr number
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        generateName: "regression-test-$(tt.params.triggerContext)-$(tt.params.gitShortRevision)-"
+      spec:
+        params:
+          - name: repo_full_name
+            value: "$(tt.params.repo_full_name)"
+          - name: gitRepository
+            value: "$(tt.params.gitRepository)"
+          - name: gitRevision
+            value: "$(tt.params.gitRevision)"
+          - name: gitShortRevision
+            value: "$(tt.params.gitShortRevision)"
+          - name: triggerContext
+            value: "regression-test-$(tt.params.triggerContext)"
+          - name: headRef
+            value: "$(tt.params.headRef)"
+          - name: headOwner
+            value: "$(tt.params.headOwner)"
+          - name: prNumber
+            value: "$(tt.params.prNumber)"
+        taskRunSpecs:
+          - pipelineTaskName: test-with-npu
+            taskPodTemplate:
+              tolerations:
+              - key: "npu"
+                operator: "Exists"
+                effect: "NoSchedule"
+              affinity:
+                nodeAffinity:
+                  requiredDuringSchedulingIgnoredDuringExecution:
+                    nodeSelectorTerms:
+                    - matchExpressions:
+                      - key: role
+                        operator: In
+                        values:
+                        - npu
+        workspaces:
+          - name: furiosa-apt-credential
+            secret:
+              secretName: furiosa-apt-credential
+          - name: aws-credential
+            secret:
+              secretName: aws-credential
+          - name: furiosa-models-dvc-cache
+            persistentVolumeClaim:
+              claimName: furiosa-models-dvc-cache
+          - name: source
+            volumeClaimTemplate:
+              spec:
+                accessModes:
+                  - ReadWriteMany
+                resources:
+                  requests:
+                    storage: 10Gi
+        serviceAccountName: build-bot
+        pipelineRef:
+          name: furiosa-models-regression-test
+        timeouts:
+          pipeline: 5h
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: furiosa-models-regression-test
+  namespace: ci-furiosa-models
+  annotations:
+    description: |
+      Run regression tests using NPU device.
+spec:
+  params:
+    - name: repo_full_name
+      description: The git repository name
+    - name: gitRepository
+      description: The git repository that hosts context and Dockerfile
+      default: git@github.com:furiosa-ai/furiosa-models.git
+    - name: gitRevision
+      description: The Git revision to be used.
+      default: master
+    - name: triggerContext
+      description: Trigger context came from status trigger binding
+    - name: headRef
+      description: The git head ref (branch name)
+    - name: headOwner
+      description: The git head owner (repo owner)
+    - name: prNumber
+      description: pr number
+    - name: gitCloneDepth
+      description: Number of commits in the change + 1
+      default: "1"
+  workspaces:
+    - name: furiosa-apt-credential
+      description: APT credential for FuriosaAI private repository
+    - name: aws-credential
+      description: AWS credentials for s3 access
+    - name: furiosa-models-dvc-cache
+      description: furiosa-models dvc cache
+    - name: source
+      description: Workspace where the git repo is prepared for testing
+  tasks:
+  - name: set-status-begin
+    taskRef:
+      name: github-set-status
+    params:
+    - name: REPO_FULL_NAME
+      value: $(params.repo_full_name)
+    - name: SHA
+      value: $(params.gitRevision)
+    - name: TARGET_URL
+      value: https://tekton.office.furiosa.in/#/namespaces/ci-furiosa-models/pipelineruns/$(context.pipelineRun.name)
+    - name: GITHUB_TOKEN_SECRET_NAME
+      value: "github-credential"
+    - name: GITHUB_TOKEN_SECRET_KEY
+      value: "password"
+    - name: DESCRIPTION
+      value: "begin"
+    - name: CONTEXT
+      value: "furiosa-models-regression-test"
+    - name: STATE
+      value: pending
+
+  - name: clone
+    taskRef:
+      name: git-clone
+    workspaces:
+      - name: output
+        workspace: source
+    params:
+    - name: url
+      value: $(params.gitRepository)
+    - name: revision
+      value: $(params.gitRevision)
+    - name: depth
+      value: $(params.gitCloneDepth)
+
+  - name: set-compiler-and-dvc-cache
+    taskRef:
+      name: set-compiler-and-dvc-cache
+    workspaces:
+      - name: source
+        workspace: source
+      - name: furiosa-apt-credential
+        workspace: furiosa-apt-credential
+      - name: furiosa-models-dvc-cache
+        workspace: furiosa-models-dvc-cache
+      - name: aws-credential
+        workspace: aws-credential
+    runAfter:
+      - clone
+
+  - name: regression-test-with-npu
+    taskRef:
+      name: regression-test-with-npu
+    workspaces:
+      - name: source
+        workspace: source
+      - name: furiosa-apt-credential
+        workspace: furiosa-apt-credential
+      - name: furiosa-models-dvc-cache
+        workspace: furiosa-models-dvc-cache
+      - name: aws-credential
+        workspace: aws-credential
+    runAfter:
+      - set-compiler-and-dvc-cache
+
+  finally:
+  - name: set-status-success
+    taskRef:
+      name: github-set-status
+    params:
+    - name: REPO_FULL_NAME
+      value: $(params.repo_full_name)
+    - name: SHA
+      value: $(params.gitRevision)
+    - name: TARGET_URL
+      value: https://tekton.office.furiosa.in/#/namespaces/ci-furiosa-models/pipelineruns/$(context.pipelineRun.name)
+    - name: GITHUB_TOKEN_SECRET_NAME
+      value: "github-credential"
+    - name: GITHUB_TOKEN_SECRET_KEY
+      value: "password"
+    - name: DESCRIPTION
+      value: "succeeded"
+    - name: CONTEXT
+      value: "furiosa-models-regression-test"
+    - name: STATE
+      value: success
+    when:
+    - input: $(tasks.status)
+      operator: notin
+      values: ["Failed"]
+  - name: set-status-failed
+    taskRef:
+      name: github-set-status
+    params:
+    - name: REPO_FULL_NAME
+      value: $(params.repo_full_name)
+    - name: SHA
+      value: $(params.gitRevision)
+    - name: TARGET_URL
+      value: https://tekton.office.furiosa.in/#/namespaces/ci-furiosa-models/pipelineruns/$(context.pipelineRun.name)
+    - name: GITHUB_TOKEN_SECRET_NAME
+      value: "github-credential"
+    - name: GITHUB_TOKEN_SECRET_KEY
+      value: "password"
+    - name: DESCRIPTION
+      value: "failed"
+    - name: CONTEXT
+      value: "furiosa-models-regression-test"
+    - name: STATE
+      value: failure
+    when:
+    - input: $(tasks.status)
+      operator: in
+      values: ["Failed"]

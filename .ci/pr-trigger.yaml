@@ -57,13 +57,6 @@ spec:
             value: "$(tt.params.triggerContext)"
           - name: headRef
             value: "$(tt.params.headRef)"
-        taskRunSpecs:
-          - pipelineTaskName: test
-            taskPodTemplate:
-              tolerations:
-              - key: "npu"
-                operator: "Exists"
-                effect: "NoSchedule"
         workspaces:
           - name: furiosa-apt-credential
             secret:

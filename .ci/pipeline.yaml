@@ -76,36 +76,6 @@ spec:
     runAfter:
       - clone
 
-  - name: set-compiler-and-dvc-cache
-    taskRef:
-      name: set-compiler-and-dvc-cache
-    workspaces:
-      - name: source
-        workspace: source
-      - name: furiosa-apt-credential
-        workspace: furiosa-apt-credential
-      - name: furiosa-models-dvc-cache
-        workspace: furiosa-models-dvc-cache
-      - name: aws-credential
-        workspace: aws-credential
-    runAfter:
-      - clone
-
-  - name: test
-    taskRef:
-      name: test
-    workspaces:
-      - name: source
-        workspace: source
-      - name: furiosa-apt-credential
-        workspace: furiosa-apt-credential
-      - name: furiosa-models-dvc-cache
-        workspace: furiosa-models-dvc-cache
-      - name: aws-credential
-        workspace: aws-credential
-    runAfter:
-      - set-compiler-and-dvc-cache
-
   finally:
   - name: set-status-success
     taskRef:
