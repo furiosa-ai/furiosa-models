@@ -1,5 +1,6 @@
-from box_decode import cbox_decode
 import numpy as np
+
+from .cbox_decode.box_decode import cbox_decode
 
 
 class BoxDecoderC(object):

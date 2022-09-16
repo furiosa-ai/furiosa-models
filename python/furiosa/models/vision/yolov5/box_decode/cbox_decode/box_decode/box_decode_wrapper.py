@@ -1,9 +1,12 @@
 import ctypes
 import os
+from sysconfig import get_config_var
 
 import numpy as np
 
-_clib = ctypes.CDLL(os.path.join(os.path.dirname(__file__), 'cbox_decode.so'))
+_clib = ctypes.CDLL(
+    os.path.join(os.path.dirname(__file__), 'cbox_decode' + get_config_var('EXT_SUFFIX'))
+)
 
 
 def _init():

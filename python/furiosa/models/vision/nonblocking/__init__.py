@@ -12,7 +12,7 @@ __all__ = [
     "SSDMobileNet",
     "SSDResNet34",
     "YOLOv5l",
-    "resnet50",
+    "YOLOv5m" "resnet50",
     "ssd_mobilenet",
     "ssd_resnet34",
     "yolov5l",
@@ -123,7 +123,7 @@ async def YOLOv5m(use_native_post=False, *args: Any, **kwargs: Any) -> yolov5m.Y
     source_path = __model_file("models/yolov5m_int8.onnx", use_native_post)
     return yolov5m.YoloV5MediumModel(
         name="YOLOv5Medium",
-        model=await load_dvc(source_path),
+        source=await load_dvc(source_path),
         # FIXME
         # dfg=await load_dvc_generated(source_path, _DFG),
         # enf=await load_dvc_generated(source_path, _ENF),
