@@ -328,7 +328,7 @@ def postprocess(
             bb_list = b.tolist()
             predicted_result.append(
                 ObjectDetectionResult(
-                    index=l,
+                    index=int(l),
                     label=CLASSES[l],
                     score=s,
                     boundingbox=LtrbBoundingBox(
