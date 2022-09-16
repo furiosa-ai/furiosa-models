@@ -41,7 +41,7 @@ class Encoder(object):
         self.scale_xy = torch.tensor(dboxes.scale_xy)
         self.scale_wh = torch.tensor(dboxes.scale_wh)
 
-    def decode_batch(self, bboxes_in, scores_in, criteria=0.45, max_output=200):
+    def decode_batch(self, bboxes_in, scores_in, criteria=0.50, max_output=200):
         self.dboxes = self.dboxes.to(bboxes_in)
         self.dboxes_xywh = self.dboxes_xywh.to(bboxes_in)
         bboxes, probs = scale_back_batch(
