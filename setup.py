@@ -27,5 +27,4 @@ setup(
     # rust extensions are not zip safe, just like C-extensions.
     zip_safe=False,
     install_requires=["numpy"],
-    # cmdclass={"build_ext": so_build_ext},
 )
