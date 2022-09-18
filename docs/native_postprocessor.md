@@ -5,8 +5,8 @@ Basically, furiosa-models includes pre/post-processing implementation in Python 
 They are reference implementations and can work with CPU and other accelerators like GPU.
 
 The native post processor is implemented in Rust and C++, and works with only FuriosaAI NPU.
-The implementation is designed to leverage FuriosaAI NPU's characteristics even for post-processing 
-and maximize the latency and throughput by using 
+The implementation is designed to leverage FuriosaAI NPU's characteristics even for post-processing
+and maximize the latency and throughput by using
 the characteristics of modern CPU architecture, such as CPU cache, SIMD instructions and CPU pipelining.
 
 *Table 1. Models that support native-postprocessors and their benchmark*
@@ -20,9 +20,9 @@ the characteristics of modern CPU architecture, such as CPU cache, SIMD instruct
 ### Usage
 
 To use native post processor, please pass `use_native_post=True` when a model is initialized.
-After then, you need to initialize `NativePostProcessor`. 
+After then, you need to initialize `NativePostProcessor`.
 To evaluate the postprocessing results, please call `NativePostProcessor.eval()`.
-The following is an example to use native post processor for [SSDMobileNet](models/ssd_mobilenet.md). 
+The following is an example to use native post processor for [SSDMobileNet](models/ssd_mobilenet.md).
 
 ```python
 from furiosa.models.vision import SSDMobileNet
