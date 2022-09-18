@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: format 
+  name: format-build-unittests
   namespace: ci-furiosa-models
 spec:
   workspaces:
@@ -16,11 +16,40 @@ spec:
       script: |
         #!/usr/bin/env bash
         cd /workspace/source
-        python -m pip install --upgrade pip wheel setuptools
-        pip install black isort
+        export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
 
-        isort --check --diff .
-        black --check --diff .
+        apt-get update && \
+        apt-get install -y apt-transport-https ca-certificates git gnupg curl \
+        build-essential pkg-config libssl-dev libclang-dev python3-dev cmake \
+        protobuf-compiler
+
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+        source "$HOME/.cargo/env"
+
+        apt-key adv --keyserver keyserver.ubuntu.com --recv-key 5F03AFA423A751913F249259814F888B20B09A7E && \
+        tee /etc/apt/sources.list.d/furiosa.list << EOF
+        deb [arch=amd64] https://internal-archive.furiosa.dev/ubuntu focal restricted
+        deb [arch=amd64] https://internal-archive.furiosa.dev/ubuntu focal-nightly restricted
+        EOF
+
+        tee ~/.netrc << EOF
+        machine internal-pypi.furiosa.dev
+          login 5443cbf9ddf14f82add047e0f7c4f881
+          password 97265462d7a0424d96345d03700c603a
+        EOF
+
+        chmod 600 ~/.netrc
+        export PIP_EXTRA_INDEX_URL=https://internal-pypi.furiosa.dev/simple
+        export TOOLCHAIN_VERSION=0.8.0-2+nightly-220827
+        apt update && apt-get install -y libonnxruntime furiosa-libhal-warboy \
+            furiosa-libcompiler=$TOOLCHAIN_VERSION furiosa-libnux-extrinsic=$TOOLCHAIN_VERSION \
+            furiosa-libnux=$TOOLCHAIN_VERSION
+        python -m pip install --upgrade pip wheel setuptools Cython pytest pycocotools
+        python -m pip install --pre -e .[test]
+
+        make lint
+        make build
+        make unit_tests
 
       resources:
         requests:
@@ -95,7 +124,7 @@ spec:
       resources:
         requests:
           memory: 32Gi
-          cpu: 16 
+          cpu: 16
           alpha.furiosa.ai/npu: 1
         limits:
           memory: 32Gi
@@ -130,7 +159,6 @@ spec:
         set -x
 
         cd /workspace/source
-
         ln -s /dvc-cache/furiosa-models ./.dvc/cache
 
       resources:

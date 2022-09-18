@@ -67,9 +67,9 @@ spec:
     - name: depth
       value: $(params.gitCloneDepth)
 
-  - name: format
+  - name: format-build-unittests
     taskRef:
-      name: format
+      name: format-build-unittests
     workspaces:
       - name: source
         workspace: source
