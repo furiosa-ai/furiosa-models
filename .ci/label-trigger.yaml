@@ -71,7 +71,7 @@ spec:
           - name: prNumber
             value: "$(tt.params.prNumber)"
         taskRunSpecs:
-          - pipelineTaskName: test-with-npu
+          - pipelineTaskName: regression-test-with-npu
             taskPodTemplate:
               tolerations:
               - key: "npu"

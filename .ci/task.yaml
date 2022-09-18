@@ -119,7 +119,7 @@ spec:
         python -m pip install --pre -e .[test]
         python -m pip install dvc[s3]
 
-        RUST_LOG=info python -m pytest -s
+        make regression_tests
 
       resources:
         requests:
