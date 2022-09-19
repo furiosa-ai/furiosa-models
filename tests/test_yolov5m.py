@@ -1,8 +1,8 @@
 # from dataclasses import astuple
 
-# from dataclasses import astuple
-
 import cv2
+
+# from helpers.util import draw_bboxes
 import numpy as np
 import pytest
 
@@ -11,13 +11,11 @@ from furiosa.models.vision.postprocess import collate
 from furiosa.models.vision.yolov5.medium import CLASSES, postprocess, preprocess
 from furiosa.runtime import session
 
-# from .helpers.util import draw_bboxes
-
 
 @pytest.mark.asyncio
 async def test_yolov5_small():
     m = await nonblocking.YOLOv5m()
-    test_image_path = "scripts/assets/yolov5-test.jpg"
+    test_image_path = "tests/assets/yolov5-test.jpg"
 
     assert len(CLASSES) == 10, "expected CLASS is 10"
 

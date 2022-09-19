@@ -8,10 +8,8 @@ setup(
     },
     ext_modules=[
         Extension(
-            "furiosa.models.vision.yolov5.box_decode.native",
-            [
-                "python/furiosa/models/vision/yolov5/box_decode/cbox_decode/box_decode/box_decode.cpp"
-            ],
+            "furiosa.models.vision.yolov5.native",
+            ["python/furiosa/models/vision/yolov5/cbox_decode/box_decode.cpp"],
             extra_compile_args=["-ffast-math", "-O3"],
             language="c++",
         ),
@@ -26,5 +24,4 @@ setup(
     ],
     # rust extensions are not zip safe, just like C-extensions.
     zip_safe=False,
-    install_requires=["numpy"],
 )

@@ -9,7 +9,7 @@ from furiosa.models.vision.postprocess import (
     nms_internal_ops_fast,
 )
 
-from .box_decode.box_decoder import BoxDecoderC
+from .box_decoder import BoxDecoderC
 
 _INPUT_SIZE = (640, 640)
 _GRID_CELL_OUTPUT_SHAPES = [(80, 80), (40, 40), (20, 20)]

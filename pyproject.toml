@@ -45,8 +45,12 @@ dependencies = [
     "segmentation_models_pytorch",
     "pretrainedmodels",
     "effdet",
+    "numpy",
 
 ]
+
+[tool.pytest.ini_options]
+norecursedirs = "tests/helpers"
 
 [project.optional-dependencies]
 test = [
