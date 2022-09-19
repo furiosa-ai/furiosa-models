@@ -4,4 +4,3 @@ outs:
   nfiles: 5000
   path: val2017
   remote: e2e-testing-data
-

@@ -3,4 +3,3 @@ outs:
   size: 19987840
   path: instances_val2017.json
   remote: e2e-testing-data
-
