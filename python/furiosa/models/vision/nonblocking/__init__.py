@@ -116,13 +116,12 @@ async def YOLOv5l(*args: Any, **kwargs: Any) -> yolov5l.YoloV5LargeModel:
 
 
 async def YOLOv5m(use_native_post=False, *args: Any, **kwargs: Any) -> yolov5m.YoloV5MediumModel:
-    source_path = __model_file("models/yolov5m_int8.onnx", use_native_post)
+    model_name = "yolov5m_int8"
     return yolov5m.YoloV5MediumModel(
         name="YOLOv5Medium",
-        source=await load_dvc(source_path),
-        # FIXME
-        # dfg=await load_dvc_generated(source_path, _DFG),
-        # enf=await load_dvc_generated(source_path, _ENF),
+        source=await resolve_file(model_name, _ONNX).read(),
+        dfg=await resolve_file(model_name, _DFG).read(),
+        enf=await resolve_file(model_name, _ENF).read(),
         format=Format.ONNX,
         family="YOLOv5",
         version="v5",
