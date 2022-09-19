@@ -25,8 +25,8 @@ function compile() {
   FORMAT=$2
 
   if [ -f $OUTPUT_PATH ]; then
-  #  echo " ... (Skipped)"
-  #else
+    echo " ... (Skipped)"
+  else
     echo " ... (Running)"
 
     if [ ! -z NPU_COMPILER_CONFIG_PATH ]; then
