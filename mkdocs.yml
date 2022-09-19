@@ -18,7 +18,7 @@ nav:
         - models/ssd_resnet34.md
 - blocking_and_nonblocking_api.md
 - "NPU-optimized Postprocessor": native_postprocessor.md
-- changelog.md
+- Changelog: changelog.md
 - Apache License 2.0: 'https://github.com/furiosa-ai/furiosa-models-experimental/blob/main/LICENSE'
 
 markdown_extensions:
@@ -27,3 +27,7 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+
+plugins:
+  - search
+  - mkdocstrings
