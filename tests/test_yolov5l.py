@@ -31,5 +31,5 @@ async def test_yolov5_large():
     assert len(detected_boxes) == 2, "batch axis is expected 2"
     # im_out = draw_bboxes(batch_im[0], list(map(astuple, detected_boxes[0])))
     # cv2.imwrite("yolov5l.jpg", im_out)
-    assert len(detected_boxes[0]) == 27, f"detected_boxes must be 27, got {len(detected_boxes[0])}"
+    assert len(detected_boxes[0]) == 26, f"detected_boxes must be 26, got {len(detected_boxes[0])}"
     sess.close()
