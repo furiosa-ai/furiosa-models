@@ -5,14 +5,12 @@ from furiosa.registry import Format, Metadata, Publication
 from ...utils import load_dvc, load_dvc_generated
 from ...vision import resnet50, ssd_mobilenet, ssd_resnet34
 from ...vision.yolov5 import large as yolov5l
-from ...vision.yolov5 import medium as yolov5m
 
 __all__ = [
     "ResNet50",
     "SSDMobileNet",
     "SSDResNet34",
     "YOLOv5l",
-    "YOLOv5m",
     "resnet50",
     "ssd_mobilenet",
     "ssd_resnet34",
@@ -101,40 +99,31 @@ async def SSDResNet34(
     )
 
 
-async def YOLOv5l(use_native_post=False, *args: Any, **kwargs: Any) -> yolov5l.YoloV5LargeModel:
-    source_path = __model_file("models/yolov5l_int8.onnx", use_native_post)
+async def YOLOv5l(*args: Any, **kwargs: Any) -> yolov5l.YoloV5LargeModel:
+    source_path = "models/yolov5l_int8.onnx"
     return yolov5l.YoloV5LargeModel(
-        name="YOLOv5Large",
+        name="YoloV5Large",
         source=await load_dvc(source_path),
         dfg=await load_dvc_generated(source_path, _DFG),
         enf=await load_dvc_generated(source_path, _ENF),
         format=Format.ONNX,
-        family="YOLOv5",
+        family="Yolo",
         version="v5",
         metadata=Metadata(
-            description="YOLOv5 large model",
+            description="Yolo v5 large model",
             publication=Publication(url="https://github.com/ultralytics/yolov5"),
         ),
-        *args,
-        **kwargs,
-    )
-
-
-async def YOLOv5m(use_native_post=False, *args: Any, **kwargs: Any) -> yolov5m.YoloV5MediumModel:
-    source_path = __model_file("models/yolov5m_int8.onnx", use_native_post)
-    return yolov5m.YoloV5MediumModel(
-        name="YOLOv5Medium",
-        source=await load_dvc(source_path),
-        # FIXME
-        # dfg=await load_dvc_generated(source_path, _DFG),
-        # enf=await load_dvc_generated(source_path, _ENF),
-        format=Format.ONNX,
-        family="YOLOv5",
-        version="v5",
-        metadata=Metadata(
-            description="YOLOv5 medium model",
-            publication=Publication(url="https://github.com/ultralytics/yolov5"),
-        ),
+        compiler_config={
+            "without_quantize": {
+                "parameters": [
+                    {
+                        "input_min": 0.0,
+                        "input_max": 1.0,
+                        "permute": [0, 2, 3, 1],  # "HWC" to "CHW"
+                    }
+                ]
+            },
+        },
         *args,
         **kwargs,
     )
