@@ -50,10 +50,9 @@ spec:
             furiosa-libnux=$TOOLCHAIN_VERSION
         python -m pip install --upgrade pip wheel setuptools Cython pytest pycocotools
         python -m pip install black isort
-        python -m pip install --pre -e .[test]
 
         make lint
-        make build
+        python -m pip install --pre --editable .[test]
         make unit_tests
 
       resources:

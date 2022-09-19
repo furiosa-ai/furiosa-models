@@ -7,10 +7,6 @@ lint:
 	cargo fmt --all --check
 	cargo -q clippy --all-targets -- -D rust_2018_idioms -D warnings
 
-.PHONY: build
-build:
-	python setup.py develop
-
 .PHONY: test
 test:
 	cargo test --release
