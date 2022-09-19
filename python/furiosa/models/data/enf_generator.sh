@@ -35,10 +35,7 @@ function compile() {
     fi
 
     # Try to find the format-specific compiler config
-    #IR_COMPILER_CONFIG=$MODEL_DIR/${FILENAME}.${FORMAT}.yaml # FIXME: 실제로는 yolov5l_int8.yaml
-    IR_COMPILER_CONFIG=$MODEL_DIR/${FILENAME}.yaml
-
-    echo "YAML: ${IR_COMPILER_CONFIG}"
+    IR_COMPILER_CONFIG=$MODEL_DIR/${FILENAME}.${FORMAT}.yaml
     if [ -f $IR_COMPILER_CONFIG ]; then
       export NPU_COMPILER_CONFIG_PATH=$IR_COMPILER_CONFIG
       echo "    Using $(basename -- $NPU_COMPILER_CONFIG_PATH)"
