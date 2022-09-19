@@ -6,6 +6,9 @@ metadata:
 spec:
   workspaces:
     - name: source
+    - name: furiosa-apt-credential
+      mountPath: /etc/apt/auth.conf.d
+      readOnly: true
   params:
     - name: image
       description: The container image to use black in
@@ -15,18 +18,19 @@ spec:
       image: $(params.image)
       script: |
         #!/usr/bin/env bash
+        set -e
+
         cd /workspace/source
         export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
 
-        apt-get update && \
-        apt-get install -y apt-transport-https ca-certificates git gnupg curl \
-        build-essential pkg-config libssl-dev libclang-dev python3-dev cmake \
-        protobuf-compiler
+        apt-get update && apt-get install -y build-essential pkg-config \
+        libssl-dev ca-certificates apt-transport-https libclang-dev \
+        python3-dev cmake protobuf-compiler gnupg
+        apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 814F888B20B09A7E
 
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
         source "$HOME/.cargo/env"
 
-        apt-key adv --keyserver keyserver.ubuntu.com --recv-key 5F03AFA423A751913F249259814F888B20B09A7E && \
         tee /etc/apt/sources.list.d/furiosa.list << EOF
         deb [arch=amd64] https://internal-archive.furiosa.dev/ubuntu focal restricted
         deb [arch=amd64] https://internal-archive.furiosa.dev/ubuntu focal-nightly restricted
@@ -37,9 +41,9 @@ spec:
           login 5443cbf9ddf14f82add047e0f7c4f881
           password 97265462d7a0424d96345d03700c603a
         EOF
-
         chmod 600 ~/.netrc
         export PIP_EXTRA_INDEX_URL=https://internal-pypi.furiosa.dev/simple
+
         export TOOLCHAIN_VERSION=0.8.0-2+nightly-220827
         apt update && apt-get install -y libonnxruntime furiosa-libhal-warboy \
             furiosa-libcompiler=$TOOLCHAIN_VERSION furiosa-libnux-extrinsic=$TOOLCHAIN_VERSION \

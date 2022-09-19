@@ -73,6 +73,8 @@ spec:
     workspaces:
       - name: source
         workspace: source
+      - name: furiosa-apt-credential
+        workspace: furiosa-apt-credential
     runAfter:
       - clone
 
