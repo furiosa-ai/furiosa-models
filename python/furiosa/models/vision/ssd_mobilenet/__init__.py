@@ -242,9 +242,9 @@ class SSDMobilePostProcessor(PostProcessor):
         raw_results = self._native.eval(inputs)
 
         results = []
-        for value, context in zip(raw_results, context):
-            width = context['width']
-            height = context['height']
+        width = context['width']
+        height = context['height']
+        for value in raw_results:
             left = value.left * width
             right = value.right * width
             top = value.top * height
