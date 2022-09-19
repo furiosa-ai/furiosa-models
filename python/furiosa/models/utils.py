@@ -5,10 +5,10 @@ import os
 from pathlib import Path
 from typing import Optional, Union
 
-import aiohttp
 import dvc.api
 
 from furiosa.common.native import DEFAULT_ENCODING, find_native_lib_path, find_native_libs
+from furiosa.common.thread import asynchronous
 
 from . import errors
 
@@ -75,37 +75,29 @@ class LocalFile(ResolvedFile):
         return self.uri.read_bytes()
 
 
-# TODO: Implement Cache
-class LocalCachedFile(ResolvedFile):
-    pass
-
-
 class DVCFile(ResolvedFile):
     def __init__(self, uri: Union[str, Path]):
-        self.uri = removesuffix(str(uri), ".dvc")
+        self.uri = Path(removesuffix(str(uri), ".dvc"))
 
     async def read(self):
         dvc_repo = os.environ.get("DVC_REPO", None)
         dvc_rev = os.environ.get("DVC_REV", None)
         module_logger.debug(f"DVC_URI={self.uri}, DVC_REPO={dvc_repo}, DVC_REV={dvc_rev}")
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.get(
-                    dvc.api.get_url(
-                        self.uri,
-                        repo=os.environ.get("DVC_REPO", None),
-                        rev=os.environ.get("DVC_REV", None),
-                    )
-                ) as resp:
-                    return await resp.read()
-            except Exception as e:
-                if is_onnx_file(self.uri):
-                    raise e
-                else:
-                    # It can happen in development phase
-                    module_logger.warning(f"{self.uri} is missing")
-                    module_logger.warning(e)
-                    return None
+        try:
+            return await asynchronous(dvc.api.read)(
+                str(self.uri.relative_to(Path.cwd())),
+                repo=os.environ.get("DVC_REPO", None),
+                rev=os.environ.get("DVC_REV", None),
+                mode="rb",
+            )
+        except Exception as e:
+            if is_onnx_file(self.uri):
+                raise e
+            else:
+                # It can happen in development phase
+                module_logger.warning(f"{self.uri} is missing")
+                module_logger.warning(e)
+                return None
 
 
 def resolve_file(src_name: str, extension: str, generated_suffix="_warboy_2pe") -> ResolvedFile:
@@ -122,11 +114,6 @@ def resolve_file(src_name: str, extension: str, generated_suffix="_warboy_2pe") 
     if full_path.exists():
         module_logger.debug(f"{full_path} exists, making LocalFile class")
         return LocalFile(full_path.resolve())
-
-    # Check it has been cached
-    # cached_file = CACHE_DIRECTORY_BASE / file_name
-    # if cached_file.exists():
-    #     return LocalCachedFile(cached_file)
 
     # .dvc file
     dvc_path = f'{str(full_path)}.dvc'

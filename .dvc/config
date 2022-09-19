@@ -5,3 +5,5 @@
 ['remote "s3origin"']
     url = s3://furiosa-public-artifacts/furiosa-artifacts
     acl = public-read
+['remote "e2e-testing-data"']
+    url = s3://furiosa-dvc-private/e2e-testing-data/
