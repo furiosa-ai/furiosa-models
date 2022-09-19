@@ -6,13 +6,13 @@ but the models are based on standard ONNX format. You can feel free to use all m
 
 ## <a name="AvailableModels"></a>Available Models
 
-| Model                                   | Task                 | Size | Accuracy | Latency (NPU) | Latency (CPU) |
-|-----------------------------------------|----------------------|------|----------|---------------|---------------|
-| [ResNet50](models/resnet50_v1.5.md)     | Image Classification | 25M  |          |               |               |
-| [SSDMobileNet](models/ssd_mobilenet.md) | Object Detection     | 7.2M |          |               |               |
-| [SSDResNet34](models/ssd_resnet34.md)   | Object Detection     | 20M  |          |               |               |
-| YOLOv5M                                 | Object Detection     | 21M  |          |               |               |
-| YOLOv5L                                 | Object Detection     | 46M  |          |               |               |
+| Model                                        | Task                 | Size | Accuracy | Latency (NPU) | Latency (CPU) |
+|----------------------------------------------|----------------------|------|----------|---------------|---------------|
+| [ResNet50](docs/models/resnet50_v1.5.md)     | Image Classification | 25M  |          |               |               |
+| [SSDMobileNet](docs/models/ssd_mobilenet.md) | Object Detection     | 7.2M |          |               |               |
+| [SSDResNet34](docs/models/ssd_resnet34.md)   | Object Detection     | 20M  |          |               |               |
+| YOLOv5M                                      | Object Detection     | 21M  |          |               |               |
+| YOLOv5L                                      | Object Detection     | 46M  |          |               |               |
 
 ## Installation
 You can quickly install Furiosa Models by using `pip` as following:
@@ -23,7 +23,7 @@ pip install 'furiosa-sdk[models]'
 Or you can build from the source code as following:
 
 ```
-git clone https://github.com/furiosa-ai/furiosa-models-experimental
+git clone https://github.com/furiosa-ai/furiosa-models
 pip install .
 ```
 
@@ -45,5 +45,5 @@ Also, you can learn about [Blocking and Non-blocking APIs](blocking_and_nonblock
 if you want to access the models with Asynchronous (AsyncIO) client library.
 
 ## See Also
-* [Furiosa Models - Github](https://github.com/furiosa-ai/furiosa-models-experimental)
+* [Furiosa Models - Github](https://github.com/furiosa-ai/furiosa-models)
 * [Furiosa SDK Documentation](https://furiosa-ai.github.io/docs/latest/en/)
