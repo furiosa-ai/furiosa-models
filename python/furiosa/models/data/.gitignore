@@ -1,0 +1,4 @@
+# Binary files expected to be managed with DVC
+*.onnx
+*.dfg
+*.enf

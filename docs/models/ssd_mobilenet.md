@@ -27,7 +27,7 @@ To learn more about this, please read [NPU-optimized Postprocessor](../native_po
 *An usage example of native postprocessor for SSD MobileNet*
 ```python
 from furiosa.models.vision import SSDMobileNet
-from furiosa.models.vision.ssd_mobilenet import preprocess, NativePostProcessor 
+from furiosa.models.vision.ssd_mobilenet import preprocess, NativePostProcessor
 from furiosa.runtime import session
 
 ssd_mobilenet = SSDMobileNet(native_postprocess=True)
@@ -49,7 +49,7 @@ The input is a 3-channel image of 300x300 (height, width).
 * Optimal Batch Size: <= 8
 
 ## Outputs
-The outputs are 12 `numpy.float32` tensors in various shapes as the following. 
+The outputs are 12 `numpy.float32` tensors in various shapes as the following.
 You can refer to `postprocess()` function to learn how to decode boxes, classes, and confidence scores.
 
 

@@ -1,6 +1,6 @@
 # ResNet50 v1.5
 
-ResNet50 v1.5 backbone model trained on ImageNet (224x224). 
+ResNet50 v1.5 backbone model trained on ImageNet (224x224).
 This model has been used since MLCommons v0.5.
 
 ## Usage
