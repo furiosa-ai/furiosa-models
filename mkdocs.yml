@@ -1,12 +1,12 @@
 site_name: Furiosa Models
 site_description: DNN Models optimized for FuriosaAI NPU
-site_url: https://furiosa-ai.github.io/furiosa-models-experimental
+site_url: https://furiosa-ai.github.io/furiosa-models
 
 theme:
   name: material
 
-repo_name: furiosa-ai/furiosa-models-experimental
-repo_url: https://github.com/furiosa-ai/furiosa-models-experimental
+repo_name: furiosa-ai/furiosa-models
+repo_url: https://github.com/furiosa-ai/furiosa-models
 
 nav:
 - Overview: index.md
@@ -19,7 +19,7 @@ nav:
 - blocking_and_nonblocking_api.md
 - "NPU-optimized Postprocessor": native_postprocessor.md
 - Changelog: changelog.md
-- Apache License 2.0: 'https://github.com/furiosa-ai/furiosa-models-experimental/blob/main/LICENSE'
+- Apache License 2.0: 'https://github.com/furiosa-ai/furiosa-models/blob/main/LICENSE'
 
 markdown_extensions:
   - pymdownx.highlight:
