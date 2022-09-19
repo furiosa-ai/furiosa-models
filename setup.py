@@ -8,7 +8,7 @@ setup(
     },
     ext_modules=[
         Extension(
-            "furiosa.models.vision.yolov5.box_decode.cbox_decode.box_decode.cbox_decode",
+            "furiosa.models.vision.yolov5.box_decode.native",
             [
                 "python/furiosa/models/vision/yolov5/box_decode/cbox_decode/box_decode/box_decode.cpp"
             ],
