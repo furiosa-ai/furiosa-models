@@ -93,6 +93,9 @@ spec:
           - name: aws-credential
             secret:
               secretName: aws-credential
+          - name: internal-pypi-secret
+            secret:
+              secretName: internal-pypi-secret
           - name: furiosa-models-dvc-cache
             persistentVolumeClaim:
               claimName: furiosa-models-dvc-cache
@@ -139,6 +142,7 @@ spec:
     - name: gitCloneDepth
       description: Number of commits in the change + 1
       default: "1"
+ 
   workspaces:
     - name: furiosa-apt-credential
       description: APT credential for FuriosaAI private repository
@@ -148,6 +152,9 @@ spec:
       description: furiosa-models dvc cache
     - name: source
       description: Workspace where the git repo is prepared for testing
+    - name: internal-pypi-secret
+      description: For internal pypi access
+
   tasks:
   - name: set-status-begin
     taskRef:
@@ -211,6 +218,9 @@ spec:
         workspace: furiosa-models-dvc-cache
       - name: aws-credential
         workspace: aws-credential
+      - name: internal-pypi-secret
+        workspace: internal-pypi-secret
+        subPath: .netrc
     runAfter:
       - set-dvc-cache
 

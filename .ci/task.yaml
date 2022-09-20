@@ -9,6 +9,8 @@ spec:
     - name: furiosa-apt-credential
       mountPath: /etc/apt/auth.conf.d
       readOnly: true
+    - name: internal-pypi-secret
+      mountPath: /root/.netrc
   params:
     - name: image
       description: The container image to use black in
@@ -36,12 +38,6 @@ spec:
         deb [arch=amd64] https://internal-archive.furiosa.dev/ubuntu focal-nightly restricted
         EOF
 
-        tee ~/.netrc << EOF
-        machine internal-pypi.furiosa.dev
-          login 5443cbf9ddf14f82add047e0f7c4f881
-          password 97265462d7a0424d96345d03700c603a
-        EOF
-        chmod 600 ~/.netrc
         export PIP_EXTRA_INDEX_URL=https://internal-pypi.furiosa.dev/simple
 
         export TOOLCHAIN_VERSION=0.8.0-2+nightly-220827
@@ -78,6 +74,8 @@ spec:
       mountPath: /dvc-cache
     - name: aws-credential
       mountPath: /root/.aws
+    - name: internal-pypi-secret
+      mountPath: /root/.netrc
   params:
     - name: image
       description: The container image
@@ -107,13 +105,6 @@ spec:
         deb [arch=amd64] https://internal-archive.furiosa.dev/ubuntu focal-nightly restricted
         EOF
 
-        tee ~/.netrc << EOF
-        machine internal-pypi.furiosa.dev
-          login 5443cbf9ddf14f82add047e0f7c4f881
-          password 97265462d7a0424d96345d03700c603a
-        EOF
-
-        chmod 600 ~/.netrc
         export PIP_EXTRA_INDEX_URL=https://internal-pypi.furiosa.dev/simple
         export TOOLCHAIN_VERSION=0.8.0-2+nightly-220827
         apt update && apt-get install -y libonnxruntime furiosa-libhal-warboy \

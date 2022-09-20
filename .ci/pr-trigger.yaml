@@ -64,6 +64,9 @@ spec:
           - name: aws-credential
             secret:
               secretName: aws-credential
+          - name: internal-pypi-secret
+            secret:
+              secretName: internal-pypi-secret
           - name: furiosa-models-dvc-cache
             persistentVolumeClaim:
               claimName: furiosa-models-dvc-cache
