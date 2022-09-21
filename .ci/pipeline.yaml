@@ -77,6 +77,8 @@ spec:
         workspace: source
       - name: furiosa-apt-credential
         workspace: furiosa-apt-credential
+      - name: furiosa-models-dvc-cache
+        workspace: furiosa-models-dvc-cache
       - name: internal-pypi-secret
         workspace: internal-pypi-secret
         subPath: .netrc

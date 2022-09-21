@@ -9,8 +9,11 @@ spec:
     - name: furiosa-apt-credential
       mountPath: /etc/apt/auth.conf.d
       readOnly: true
+    - name: furiosa-models-dvc-cache
+      mountPath: /dvc-cache
     - name: internal-pypi-secret
       mountPath: /root/.netrc
+      readOnly: true
   params:
     - name: image
       description: The container image to use black in
@@ -26,6 +29,10 @@ spec:
       script: |
         #!/usr/bin/env bash
         set -e
+
+        rm -rf /root/.cache/pip
+        mkdir -p /root/.cache
+        ln -s /dvc-cache/pip /root/.cache/pip
 
         cd /workspace/source
         export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
@@ -78,6 +85,7 @@ spec:
       mountPath: /root/.aws
     - name: internal-pypi-secret
       mountPath: /root/.netrc
+      readOnly: true
   params:
     - name: image
       description: The container image
@@ -94,6 +102,10 @@ spec:
         #!/usr/bin/env bash
         set -e
         set -x
+
+        rm -rf /root/.cache/pip
+        mkdir -p /root/.cache
+        ln -s /dvc-cache/pip /root/.cache/pip
 
         cd /workspace/source
         export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
