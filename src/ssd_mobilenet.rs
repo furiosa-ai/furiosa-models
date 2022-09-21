@@ -1,8 +1,6 @@
 use mlperf_postprocess::common::graph::create_graph_from_binary_with_header;
-use mlperf_postprocess::common::ssd_postprocess::{DetectionResult, Postprocess};
-use mlperf_postprocess::common::uninitialized_vec;
+use mlperf_postprocess::common::ssd_postprocess::Postprocess;
 use mlperf_postprocess::ssd_small as native;
-use numpy::PyArrayDyn;
 use pyo3::{
     self,
     exceptions::PyValueError,
@@ -10,6 +8,7 @@ use pyo3::{
     PyErr, PyResult, Python,
 };
 
+use crate::common::{convert_to_slices, PyDetectionResult};
 use crate::{pyclass, pymethods, pymodule};
 
 const OUTPUT_NUM: usize = 12;
@@ -44,103 +43,6 @@ pub(crate) fn ssd_mobilenet(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     Ok(())
 }
 
-#[pyclass]
-#[derive(Clone, Debug)]
-pub struct BoundingBox {
-    #[pyo3(get)]
-    left: f32,
-    #[pyo3(get)]
-    top: f32,
-    #[pyo3(get)]
-    right: f32,
-    #[pyo3(get)]
-    bottom: f32,
-}
-
-#[pymethods]
-impl BoundingBox {
-    fn __repr__(&self) -> String {
-        format!(
-            "BoundingBox(left: {}, top: {}, right: {}, bottom: {})",
-            self.left, self.top, self.right, self.bottom
-        )
-    }
-
-    fn __str__(&self) -> String {
-        format!(
-            "(left: {}, top: {}, right: {}, bottom: {})",
-            self.left, self.top, self.right, self.bottom
-        )
-    }
-}
-
-#[pyclass]
-#[derive(Debug)]
-pub struct PyDetectionResult {
-    #[pyo3(get)]
-    pub left: f32,
-    #[pyo3(get)]
-    pub right: f32,
-    #[pyo3(get)]
-    pub top: f32,
-    #[pyo3(get)]
-    pub bottom: f32,
-    #[pyo3(get)]
-    pub score: f32,
-    #[pyo3(get)]
-    pub class_id: i32,
-}
-
-#[pymethods]
-impl PyDetectionResult {
-    fn __repr__(&self) -> String {
-        format!("{:?}", self)
-    }
-
-    fn __str__(&self) -> String {
-        format!("{:?}", self)
-    }
-}
-
-impl PyDetectionResult {
-    pub fn new(r: DetectionResult) -> Self {
-        PyDetectionResult {
-            left: r.bbox.px1,
-            right: r.bbox.px2,
-            top: r.bbox.py1,
-            bottom: r.bbox.py2,
-            score: r.score,
-            class_id: r.class as i32,
-        }
-    }
-}
-
-fn convert_to_slices(inputs: &PyList) -> PyResult<Vec<&[u8]>> {
-    if inputs.len() != OUTPUT_NUM {
-        return Err(PyErr::new::<PyValueError, _>(format!(
-            "expected 12 input tensors but got {}",
-            inputs.len()
-        )));
-    }
-
-    let mut memories: Vec<&[u8]> = unsafe { uninitialized_vec(OUTPUT_NUM) };
-    for (index, tensor) in inputs.into_iter().enumerate() {
-        let tensor = tensor.downcast::<PyArrayDyn<i8>>()?;
-        if !tensor.is_c_contiguous() {
-            return Err(PyErr::new::<PyValueError, _>(
-                "{}th tensor is not C-contiguous".to_string(),
-            ));
-        }
-        let slice: &[u8] = unsafe {
-            let raw_slice = tensor.as_slice()?;
-            std::slice::from_raw_parts(raw_slice.as_ptr() as *const u8, raw_slice.len())
-        };
-        memories[index] = slice;
-    }
-
-    Ok(memories)
-}
-
 #[pymethods]
 impl RustPostProcessor {
     #[new]
@@ -160,6 +62,14 @@ impl RustPostProcessor {
     ///     List[PyDetectionResult]: Output tensors
     #[pyo3(text_signature = "(self, inputs: Sequence[numpy.ndarray])")]
     fn eval(&self, inputs: &PyList) -> PyResult<Vec<PyDetectionResult>> {
+        if inputs.len() != OUTPUT_NUM {
+            return Err(PyErr::new::<PyValueError, _>(format!(
+                "expected {} input tensors but got {}",
+                OUTPUT_NUM,
+                inputs.len()
+            )));
+        }
+
         let slices = convert_to_slices(inputs)?;
         Ok(self
             .0
@@ -190,6 +100,14 @@ impl CppPostProcessor {
     ///     List[PyDetectionResult]: Output tensors
     #[pyo3(text_signature = "(self, inputs: Sequence[numpy.ndarray])")]
     fn eval(&self, inputs: &PyList) -> PyResult<Vec<PyDetectionResult>> {
+        if inputs.len() != OUTPUT_NUM {
+            return Err(PyErr::new::<PyValueError, _>(format!(
+                "expected {} input tensors but got {}",
+                OUTPUT_NUM,
+                inputs.len()
+            )));
+        }
+
         let slices = convert_to_slices(inputs)?;
         Ok(self
             .0
