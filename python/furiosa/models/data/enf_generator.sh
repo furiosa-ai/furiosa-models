@@ -29,23 +29,18 @@ function compile() {
   else
     echo " ... (Running)"
 
-    if [ ! -z NPU_COMPILER_CONFIG_PATH ]; then
-      PREV_CONFIG=$NPU_COMPILER_CONFIG_PATH
-      unset NPU_COMPILER_CONFIG_PATH
-    fi
+    COMPILE_CMD="furiosa compile --target-npu warboy-2pe --target-ir ${FORMAT} $ONNX_PATH -o ${OUTPUT_PATH}"
 
     # Try to find the format-specific compiler config
     IR_COMPILER_CONFIG=$MODEL_DIR/${FILENAME}.${FORMAT}.yaml
     if [ -f $IR_COMPILER_CONFIG ]; then
-      export NPU_COMPILER_CONFIG_PATH=$IR_COMPILER_CONFIG
-      echo "    Using $(basename -- $NPU_COMPILER_CONFIG_PATH)"
-    fi
-
-    furiosa compile --target-npu warboy-2pe --target-ir ${FORMAT} $ONNX_PATH -o ${OUTPUT_PATH} &> /dev/null
-
-    if [ ! -z PREV_CONFIG ]; then
-      export NPU_COMPILER_CONFIG_PATH=$PREV_CONFIG
-      unset PREV_CONFIG
+      echo "    >> Overridden by $(basename -- $IR_COMPILER_CONFIG)"
+      env NPU_COMPILER_CONFIG_PATH=$IR_COMPILER_CONFIG bash -c "$COMPILE_CMD" &> /dev/null
+    else
+      if [ ! -z $NPU_COMPILER_CONFIG_PATH ]; then
+        echo "    >> Using $(basename -- $NPU_COMPILER_CONFIG_PATH)"
+      fi
+      $COMPILE_CMD &> /dev/null
     fi
   fi
 }
@@ -61,8 +56,8 @@ for INDEX in ${!ONNX_FILES[@]}; do
   # Try to find the compiler config for all IR formats
   unset NPU_COMPILER_CONFIG_PATH
   if [ -f $MODEL_DIR/${FILENAME}.yaml ]; then
-    export NPU_COMPILER_CONFIG_PATH=$MODEL_DIR/$MODEL_DIR/${FILENAME}.yaml
-    echo "  Compiler config found at $(basename -- $NPU_COMPILER_CONFIG_PATH)"
+    export NPU_COMPILER_CONFIG_PATH=$MODEL_DIR/${FILENAME}.yaml
+    echo "  > Compiler config found at $(basename -- $NPU_COMPILER_CONFIG_PATH)"
   fi
 
 	DFG_PATH=${OUTPUT_PATH_BASE}_warboy_2pe.dfg

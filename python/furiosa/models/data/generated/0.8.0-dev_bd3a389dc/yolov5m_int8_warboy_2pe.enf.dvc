@@ -1,4 +1,0 @@
-outs:
-- md5: dbf49c9cf8396d6f2dc3096d3d9d9e90
-  size: 53772250
-  path: yolov5m_int8_warboy_2pe.enf

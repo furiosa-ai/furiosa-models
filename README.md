@@ -23,7 +23,7 @@ pip install 'furiosa-sdk[models]'
 Or you can build from the source code as following:
 
 ```
-git clone https://github.com/furiosa-ai/furiosa-models-experimental
+git clone https://github.com/furiosa-ai/furiosa-models
 pip install .
 ```
 
@@ -45,5 +45,5 @@ Also, you can learn about [Blocking and Non-blocking APIs](blocking_and_nonblock
 if you want to access the models with Asynchronous (AsyncIO) client library.
 
 ## See Also
-* [Furiosa Models - Github](https://github.com/furiosa-ai/furiosa-models-experimental)
+* [Furiosa Models - Github](https://github.com/furiosa-ai/furiosa-models)
 * [Furiosa SDK Documentation](https://furiosa-ai.github.io/docs/latest/en/)

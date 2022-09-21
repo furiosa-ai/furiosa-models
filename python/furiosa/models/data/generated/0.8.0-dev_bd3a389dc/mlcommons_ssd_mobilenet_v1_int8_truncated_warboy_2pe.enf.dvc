@@ -1,4 +1,0 @@
-outs:
-- md5: f9747cb9dcc4cf70e04e62c4b915fdc5
-  size: 17944947
-  path: mlcommons_ssd_mobilenet_v1_int8_truncated_warboy_2pe.enf
