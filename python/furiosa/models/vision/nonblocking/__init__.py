@@ -5,12 +5,14 @@ from furiosa.registry import Format, Metadata, Publication
 from ...utils import resolve_file
 from ...vision import resnet50, ssd_mobilenet, ssd_resnet34
 from ...vision.yolov5 import large as yolov5l
+from ...vision.yolov5 import medium as yolov5m
 
 __all__ = [
     "ResNet50",
     "SSDMobileNet",
     "SSDResNet34",
     "YOLOv5l",
+    "YOLOv5m",
     "resnet50",
     "ssd_mobilenet",
     "ssd_resnet34",
@@ -99,26 +101,30 @@ async def YOLOv5l(*args: Any, **kwargs: Any) -> yolov5l.YoloV5LargeModel:
     return yolov5l.YoloV5LargeModel(
         name="YoloV5Large",
         source=await resolve_file(model_name, _ONNX).read(),
-        dfg=await resolve_file(model_name, _DFG).read(),
-        enf=await resolve_file(model_name, _ENF).read(),
         format=Format.ONNX,
-        family="Yolo",
+        family="YOLOv5",
         version="v5",
         metadata=Metadata(
-            description="Yolo v5 large model",
+            description="YOLOv5 large model",
             publication=Publication(url="https://github.com/ultralytics/yolov5"),
         ),
-        compiler_config={
-            "without_quantize": {
-                "parameters": [
-                    {
-                        "input_min": 0.0,
-                        "input_max": 1.0,
-                        "permute": [0, 2, 3, 1],  # "HWC" to "CHW"
-                    }
-                ]
-            },
-        },
+        *args,
+        **kwargs,
+    )
+
+
+async def YOLOv5m(use_native_post=False, *args: Any, **kwargs: Any) -> yolov5m.YoloV5MediumModel:
+    model_name = "yolov5m_int8"
+    return yolov5m.YoloV5MediumModel(
+        name="YOLOv5Medium",
+        source=await resolve_file(model_name, _ONNX).read(),
+        format=Format.ONNX,
+        family="YOLOv5",
+        version="v5",
+        metadata=Metadata(
+            description="YOLOv5 medium model",
+            publication=Publication(url="https://github.com/ultralytics/yolov5"),
+        ),
         *args,
         **kwargs,
     )
