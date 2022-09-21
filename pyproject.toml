@@ -46,9 +46,12 @@ dependencies = [
     "segmentation_models_pytorch",
     "pretrainedmodels",
     "effdet",
+    "numpy",
 
-    "cbox_decode @ git+https://github.com/furiosa-ai/furiosa-artifacts.git#subdirectory=furiosa/models/vision/yolov5/box_decode/cbox_decode"
 ]
+
+[tool.pytest.ini_options]
+norecursedirs = "tests/helpers"
 
 [project.optional-dependencies]
 test = [
