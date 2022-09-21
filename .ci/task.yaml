@@ -23,8 +23,6 @@ spec:
       env:
         - name: "PIP_EXTRA_INDEX_URL"
           value: "https://internal-pypi.furiosa.dev/simple"
-        - name: "TOOLCHAIN_VERSION"
-          value: "0.8.0-2+nightly-220827"
       image: $(params.image)
       script: |
         #!/usr/bin/env bash
@@ -35,18 +33,6 @@ spec:
         ln -s /dvc-cache/pip /root/.cache/pip
 
         cd /workspace/source
-        export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
-
-        apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 814F888B20B09A7E
-
-        tee /etc/apt/sources.list.d/furiosa.list << EOF
-        deb [arch=amd64] https://internal-archive.furiosa.dev/ubuntu focal restricted
-        deb [arch=amd64] https://internal-archive.furiosa.dev/ubuntu focal-nightly restricted
-        EOF
-
-        apt update && apt-get install -y libonnxruntime furiosa-libhal-warboy \
-            furiosa-libcompiler=$TOOLCHAIN_VERSION furiosa-libnux-extrinsic=$TOOLCHAIN_VERSION \
-            furiosa-libnux=$TOOLCHAIN_VERSION
 
         make lint
         pip3 install --pre --editable .[test]
@@ -87,8 +73,6 @@ spec:
       env:
         - name: "PIP_EXTRA_INDEX_URL"
           value: "https://internal-pypi.furiosa.dev/simple"
-        - name: "TOOLCHAIN_VERSION"
-          value: "0.8.0-2+nightly-220827"
       image: $(params.image)
       script: |
         #!/usr/bin/env bash
@@ -100,17 +84,7 @@ spec:
         ln -s /dvc-cache/pip /root/.cache/pip
 
         cd /workspace/source
-        export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
 
-        apt-key adv --keyserver keyserver.ubuntu.com --recv-key 5F03AFA423A751913F249259814F888B20B09A7E && \
-        tee /etc/apt/sources.list.d/furiosa.list << EOF
-        deb [arch=amd64] https://internal-archive.furiosa.dev/ubuntu focal restricted
-        deb [arch=amd64] https://internal-archive.furiosa.dev/ubuntu focal-nightly restricted
-        EOF
-
-        apt update && apt-get install -y libonnxruntime furiosa-libhal-warboy \
-            furiosa-libcompiler=$TOOLCHAIN_VERSION furiosa-libnux-extrinsic=$TOOLCHAIN_VERSION \
-            furiosa-libnux=$TOOLCHAIN_VERSION
         pip3 install --pre -e .[test]
 
         make regression_tests
