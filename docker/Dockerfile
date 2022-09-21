@@ -2,6 +2,7 @@ FROM rust:1-slim-bullseye
 
 ARG DEBIAN_FRONTEND=noninteractive
 
+RUN rustup component add rustfmt clippy
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential pkg-config \
