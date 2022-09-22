@@ -70,6 +70,8 @@ spec:
       mountPath: /root/.cache/pip
     - name: furiosa-models-compiler-cache
       mountPath: /root/.cache/furiosa
+    - name: furiosa-models-dataset
+      mountPath: /furiosa-models-dataset
   params:
     - name: image
       description: The container image
@@ -86,6 +88,7 @@ spec:
         set -x
 
         cd /workspace/source
+        ln -s /furiosa-models-dataset tests/data
 
         pip3 install --pre -e .[test]
 

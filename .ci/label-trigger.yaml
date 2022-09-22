@@ -113,6 +113,9 @@ spec:
           - name: furiosa-models-compiler-cache
             persistentVolumeClaim:
               claimName: furiosa-models-compiler-cache
+          - name: furiosa-models-dataset
+            persistentVolumeClaim:
+              claimName: furiosa-models-dataset
         serviceAccountName: build-bot
         pipelineRef:
           name: furiosa-models-regression-test
@@ -164,6 +167,8 @@ spec:
       description: furiosa-models pip cache
     - name: furiosa-models-compiler-cache
       description: furiosa-models compiler cache
+    - name: furiosa-models-dataset
+      description: Dataset required for the regression test
 
   tasks:
   - name: set-status-begin
@@ -235,6 +240,8 @@ spec:
         workspace: furiosa-models-pip-cache
       - name: furiosa-models-compiler-cache
         workspace: furiosa-models-compiler-cache
+      - name: furiosa-models-dataset
+        workspace: furiosa-models-dataset
     runAfter:
       - set-dvc-cache
 
