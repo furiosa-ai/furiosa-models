@@ -96,12 +96,12 @@ spec:
 
       resources:
         requests:
-          memory: 32Gi
-          cpu: 16
+          memory: 64Gi
+          cpu: 32
           alpha.furiosa.ai/npu: 1
         limits:
-          memory: 32Gi
-          cpu: 16
+          memory: 64Gi
+          cpu: 32
           alpha.furiosa.ai/npu: 1
 ---
 apiVersion: tekton.dev/v1beta1
@@ -136,8 +136,8 @@ spec:
 
       resources:
         requests:
-          memory: 32Gi
-          cpu: 16 
+          memory: 8Gi
+          cpu: 4
         limits:
-          memory: 32Gi
-          cpu: 16
+          memory: 8Gi
+          cpu: 4
