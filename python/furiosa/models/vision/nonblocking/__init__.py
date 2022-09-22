@@ -101,6 +101,8 @@ async def YOLOv5l(*args: Any, **kwargs: Any) -> yolov5l.YoloV5LargeModel:
     return yolov5l.YoloV5LargeModel(
         name="YoloV5Large",
         source=await resolve_file(model_name, _ONNX).read(),
+        dfg=await resolve_file(model_name, _DFG).read(),
+        enf=await resolve_file(model_name, _ENF).read(),
         format=Format.ONNX,
         family="YOLOv5",
         version="v5",
@@ -118,6 +120,8 @@ async def YOLOv5m(use_native_post=False, *args: Any, **kwargs: Any) -> yolov5m.Y
     return yolov5m.YoloV5MediumModel(
         name="YOLOv5Medium",
         source=await resolve_file(model_name, _ONNX).read(),
+        dfg=await resolve_file(model_name, _DFG).read(),
+        enf=await resolve_file(model_name, _ENF).read(),
         format=Format.ONNX,
         family="YOLOv5",
         version="v5",
