@@ -9,11 +9,17 @@ spec:
     - name: furiosa-apt-credential
       mountPath: /etc/apt/auth.conf.d
       readOnly: true
-    - name: furiosa-models-dvc-cache
-      mountPath: /dvc-cache
+    - name: aws-credential
+      mountPath: /root/.aws
     - name: internal-pypi-secret
       mountPath: /root/.netrc
       readOnly: true
+    - name: furiosa-models-dvc-cache
+      mountPath: /dvc-cache
+    - name: furiosa-models-pip-cache
+      mountPath: /root/.cache/pip
+    - name: furiosa-models-compiler-cache
+      mountPath: /root/.cache/furiosa
   params:
     - name: image
       description: The container image to use black in
@@ -27,10 +33,6 @@ spec:
       script: |
         #!/usr/bin/env bash
         set -e
-
-        rm -rf /root/.cache/pip
-        mkdir -p /root/.cache
-        ln -s /dvc-cache/pip /root/.cache/pip
 
         cd /workspace/source
 
@@ -57,13 +59,17 @@ spec:
     - name: furiosa-apt-credential
       mountPath: /etc/apt/auth.conf.d
       readOnly: true
-    - name: furiosa-models-dvc-cache
-      mountPath: /dvc-cache
     - name: aws-credential
       mountPath: /root/.aws
     - name: internal-pypi-secret
       mountPath: /root/.netrc
       readOnly: true
+    - name: furiosa-models-dvc-cache
+      mountPath: /dvc-cache
+    - name: furiosa-models-pip-cache
+      mountPath: /root/.cache/pip
+    - name: furiosa-models-compiler-cache
+      mountPath: /root/.cache/furiosa
   params:
     - name: image
       description: The container image
@@ -78,10 +84,6 @@ spec:
         #!/usr/bin/env bash
         set -e
         set -x
-
-        rm -rf /root/.cache/pip
-        mkdir -p /root/.cache
-        ln -s /dvc-cache/pip /root/.cache/pip
 
         cd /workspace/source
 
@@ -110,10 +112,10 @@ spec:
     - name: furiosa-apt-credential
       mountPath: /etc/apt/auth.conf.d
       readOnly: true
-    - name: furiosa-models-dvc-cache
-      mountPath: /dvc-cache
     - name: aws-credential
       mountPath: /root/.aws
+    - name: furiosa-models-dvc-cache
+      mountPath: /dvc-cache
   params:
     - name: image
       description: The container image

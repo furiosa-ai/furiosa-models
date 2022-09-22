@@ -58,6 +58,14 @@ spec:
           - name: headRef
             value: "$(tt.params.headRef)"
         workspaces:
+          - name: source
+            volumeClaimTemplate:
+              spec:
+                accessModes:
+                  - ReadWriteMany
+                resources:
+                  requests:
+                    storage: 10Gi
           - name: furiosa-apt-credential
             secret:
               secretName: furiosa-apt-credential
@@ -70,14 +78,12 @@ spec:
           - name: furiosa-models-dvc-cache
             persistentVolumeClaim:
               claimName: furiosa-models-dvc-cache
-          - name: source
-            volumeClaimTemplate:
-              spec:
-                accessModes:
-                  - ReadWriteMany
-                resources:
-                  requests:
-                    storage: 10Gi
+          - name: furiosa-models-pip-cache
+            persistentVolumeClaim:
+              claimName: furiosa-models-pip-cache
+          - name: furiosa-models-compiler-cache
+            persistentVolumeClaim:
+              claimName: furiosa-models-compiler-cache
         serviceAccountName: build-bot
         pipelineRef:
           name: furiosa-models-ci

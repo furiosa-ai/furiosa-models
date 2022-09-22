@@ -22,16 +22,20 @@ spec:
       default: "1"
 
   workspaces:
+    - name: source
+      description: Workspace where the git repo is prepared for testing
     - name: furiosa-apt-credential
       description: APT credential for FuriosaAI private repository
     - name: aws-credential
       description: AWS credentials for s3 access
-    - name: furiosa-models-dvc-cache
-      description: furiosa-models dvc cache
-    - name: source
-      description: Workspace where the git repo is prepared for testing
     - name: internal-pypi-secret
       description: For internal pypi access
+    - name: furiosa-models-dvc-cache
+      description: furiosa-models dvc cache
+    - name: furiosa-models-pip-cache
+      description: furiosa-models pip cache
+    - name: furiosa-models-compiler-cache
+      description: furiosa-models compiler cache
 
   tasks:
   - name: set-status-begin
@@ -77,11 +81,17 @@ spec:
         workspace: source
       - name: furiosa-apt-credential
         workspace: furiosa-apt-credential
-      - name: furiosa-models-dvc-cache
-        workspace: furiosa-models-dvc-cache
+      - name: aws-credential
+        workspace: aws-credential
       - name: internal-pypi-secret
         workspace: internal-pypi-secret
         subPath: .netrc
+      - name: furiosa-models-dvc-cache
+        workspace: furiosa-models-dvc-cache
+      - name: furiosa-models-pip-cache
+        workspace: furiosa-models-pip-cache
+      - name: furiosa-models-compiler-cache
+        workspace: furiosa-models-compiler-cache
     runAfter:
       - clone
 
