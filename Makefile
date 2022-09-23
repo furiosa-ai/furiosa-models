@@ -26,8 +26,10 @@ regression_tests:
 	dvc pull tests/data/coco/annotations/instances_val2017.json.dvc -r e2e-testing-data && \
 	dvc pull tests/data/imagenet/aux.dvc -r e2e-testing-data && \
 	dvc pull tests/data/imagenet/val.dvc -r e2e-testing-data && \
+	dvc pull tests/data/bdd100k_val.dvc -r e2e-testing-data && \
 	COCO_VAL_IMAGES=$$(realpath tests/data/coco/val2017) \
 	COCO_VAL_LABELS=$$(realpath tests/data/coco/annotations/instances_val2017.json) \
 	IMAGENET_VAL_IMAGES=$$(realpath tests/data/imagenet/val/) \
 	IMAGENET_VAL_LABELS=$$(realpath tests/data/imagenet/aux/val.txt) \
+	YOLOV5_DATASET_PATH=$$(realpath tests/data/bdd100k_val) \
 	pytest ./tests/accuracy/ -s
