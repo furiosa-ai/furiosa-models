@@ -12,7 +12,7 @@ from furiosa.models.vision.yolov5 import medium as yolov5m
 from furiosa.registry import Model
 from furiosa.runtime import session
 
-EXPECTED_MAP = 0.2507384841050027  # matches e2e-testing's map exactly
+EXPECTED_MAP = 0.279543358502077  # matches e2e-testing's map exactly
 
 
 def load_db_from_env_variable() -> Tuple[Path, bdd100k.Yolov5Dataset]:
