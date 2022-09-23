@@ -17,7 +17,7 @@ EXPECTED_MAP = 0.2795300193567763  # matches e2e-testing's map exactly
 
 def load_db_from_env_variable() -> Tuple[Path, bdd100k.Yolov5Dataset]:
     MUST_10K_LIMIT = 10000
-    databaset_path = os.environ.get('YOLOV5_DATASET_PATH')
+    databaset_path = os.environ.get('YOLOV5_DATASET_PATH', "./tests/data/bdd100k_val")
 
     if databaset_path is None:
         raise Exception("Environment variables not set: YOLOV5_DATASET_PATH")
