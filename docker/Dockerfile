@@ -19,7 +19,7 @@ RUN echo "deb [arch=amd64] https://internal-archive.furiosa.dev/ubuntu focal res
     echo "deb [arch=amd64] https://internal-archive.furiosa.dev/ubuntu focal-nightly restricted" \
         >> /etc/apt/sources.list.d/furiosa.list
 
-ARG TOOLCHAIN_VERSION=0.8.0-2+nightly-220827
+ARG TOOLCHAIN_VERSION=0.8.0-2+nightly-220918
 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 5F03AFA423A751913F249259814F888B20B09A7E
 RUN --mount=type=secret,id=furiosa.conf,dst=/etc/apt/auth.conf.d/furiosa.conf,required \
