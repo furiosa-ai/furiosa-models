@@ -27,3 +27,9 @@ regression_tests:
 	IMAGENET_VAL_IMAGES=$$(realpath tests/data/imagenet/val/) \
 	IMAGENET_VAL_LABELS=$$(realpath tests/data/imagenet/aux/val.txt) \
 	pytest ./tests/accuracy/ -s
+
+.PHONY: regression-test-ssd-resnet34
+regression-test-ssd-resnet34:
+	COCO_VAL_IMAGES=$$(realpath tests/data/coco/val2017) \
+	COCO_VAL_LABELS=$$(realpath tests/data/coco/annotations/instances_val2017.json) \
+	pytest ./tests/accuracy/test_ssd_resnet34_acc.py -s
