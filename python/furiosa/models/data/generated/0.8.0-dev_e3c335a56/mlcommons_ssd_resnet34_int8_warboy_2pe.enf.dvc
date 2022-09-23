@@ -1,0 +1,4 @@
+outs:
+- md5: 3847a7e56f0a63ade3c77f92bc9ed2ab
+  size: 27167912
+  path: mlcommons_ssd_resnet34_int8_warboy_2pe.enf
