@@ -76,6 +76,8 @@ spec:
     - name: image
       description: The container image
       default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:latest
+    - name: modelName
+      description: Name of the model to run the regression test
   steps:
     - name: regression-test-with-npu
       env:
@@ -92,7 +94,7 @@ spec:
 
         pip3 install --pre -e .[test]
 
-        make regression_tests
+        make regression-test-$(params.modelName)
 
       resources:
         requests:

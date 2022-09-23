@@ -8,15 +8,19 @@ metadata:
 spec:
   interceptors:
     - cel:
-        filter: >-
-          body.repository.full_name in ['furiosa-ai/furiosa-models'] &&
-          body.action in ['labeled'] &&
-          body.label.name in ['tekton/regression-test']
+        filter: "body.repository.full_name in ['furiosa-ai/furiosa-models']
+          && body.action in ['labeled']
+          && body.label.name.startsWith('tekton/regression-model-')"
+        overlays:
+        - key: modelName
+          expression: "body.label.name.replace('tekton/regression-model-', '')"
   bindings:
     - ref: tekton-ci-github-base
       kind: ClusterTriggerBinding
     - ref: tekton-ci-webhook-pull-request
       kind: ClusterTriggerBinding
+    - name: modelName
+      value: "$(extensions.modelName)"
   template:
     ref: furiosa-models-regression-test
 ---
@@ -47,11 +51,13 @@ spec:
     description: The git head owner (owner name of repo)
   - name: prNumber
     description: pr number
+  - name: modelName
+    description: Name of the model to run the regression test
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        generateName: "regression-test-$(tt.params.triggerContext)-$(tt.params.gitShortRevision)-"
+        generateName: "reg-$(tt.params.modelName)-$(tt.params.triggerContext)-$(tt.params.gitShortRevision)-"
       spec:
         params:
           - name: repo_full_name
@@ -70,6 +76,8 @@ spec:
             value: "$(tt.params.headOwner)"
           - name: prNumber
             value: "$(tt.params.prNumber)"
+          - name: modelName
+            value: "$(tt.params.modelName)"
         taskRunSpecs:
           - pipelineTaskName: regression-test-with-npu
             taskPodTemplate:
@@ -151,6 +159,8 @@ spec:
     - name: gitCloneDepth
       description: Number of commits in the change + 1
       default: "1"
+    - name: modelName
+      description: Name of the model to run the regression test
  
   workspaces:
     - name: source
@@ -224,6 +234,9 @@ spec:
   - name: regression-test-with-npu
     taskRef:
       name: regression-test-with-npu
+    params:
+    - name: modelName
+      value: $(params.modelName)
     workspaces:
       - name: source
         workspace: source
