@@ -55,7 +55,7 @@ def to_numpy(det_boxes: ObjectDetectionResult) -> np.ndarray:
     for b in det_boxes:
         box = b.boundingbox
         d.append([box.left, box.top, box.right, box.bottom, b.score, b.index])
-    return np.array(d)
+    return np.array(d, dtype=np.float32)
 
 
 class MAPMetricYolov5:

@@ -12,18 +12,18 @@ from furiosa.models.vision.yolov5 import large as yolov5l
 from furiosa.registry import Model
 from furiosa.runtime import session
 
-EXPECTED_MAP = 0.29551345515187283  # matches e2e-testing's map exactly
+EXPECTED_MAP = 0.29436973188130033  # matches e2e-testing's map exactly
 
 
 def load_db_from_env_variable() -> Tuple[Path, bdd100k.Yolov5Dataset]:
-    MUST_LIMIT_TO_VALIDATION = 1000
+    MUST_10K_LIMIT = 10000
     databaset_path = os.environ.get('YOLOV5_DATASET_PATH')
 
     if databaset_path is None:
         raise Exception("Environment variables not set: YOLOV5_DATASET_PATH")
 
     databaset_path = Path(databaset_path)
-    db = bdd100k.Yolov5Dataset(databaset_path, mode="val", limit=MUST_LIMIT_TO_VALIDATION)
+    db = bdd100k.Yolov5Dataset(databaset_path, mode="val", limit=MUST_10K_LIMIT)
 
     return databaset_path, db
 
@@ -43,12 +43,8 @@ def test_yolov5l_accuracy():
 
             batch_pre_img, batch_preproc_param = yolov5l.preprocess(
                 batch_im, input_color_format="bgr"
-            )
-            batch_feat = []
-            for pre_image in batch_pre_img:
-                batch_feat.append(sess.run(np.expand_dims(pre_image, axis=0)).numpy())
-
-            batch_feat = collate(batch_feat)
+            )  # single-batch
+            batch_feat = sess.run(np.expand_dims(batch_pre_img[0], axis=0)).numpy()
             detected_boxes = yolov5l.postprocess(
                 batch_feat, batch_preproc_param, conf_thres=0.001, iou_thres=0.6
             )
@@ -67,4 +63,4 @@ def test_yolov5l_accuracy():
     print("YOLOv5Large mAP50:", result['map50'])
     print("YOLOv5Large ap_class:", result['ap_class'])
     print("YOLOv5Large ap50_class:", result['ap50_class'])
-    assert abs(result['map'] - EXPECTED_MAP) < 1e-2, "Accuracy check failed"
+    assert abs(result['map'] - EXPECTED_MAP) < 1e-4, "Accuracy check failed"
