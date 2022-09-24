@@ -1,6 +1,0 @@
-outs:
-- md5: b681580a54b900b3cb44022fd1102ad5
-  size: 19987840
-  path: instances_val2017.json
-  remote: e2e-testing-data
-

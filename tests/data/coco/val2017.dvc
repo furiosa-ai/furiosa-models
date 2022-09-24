@@ -1,7 +1,0 @@
-outs:
-- md5: a0173f60761f977a5afe88aa2d75acb6.dir
-  size: 814705164
-  nfiles: 5000
-  path: val2017
-  remote: e2e-testing-data
-

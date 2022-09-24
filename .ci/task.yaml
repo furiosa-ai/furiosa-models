@@ -90,6 +90,8 @@ spec:
         set -x
 
         cd /workspace/source
+
+        rm -rf tests/data
         ln -s /furiosa-models-dataset tests/data
 
         pip3 install --pre -e .[test]
