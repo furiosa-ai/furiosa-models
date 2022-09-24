@@ -73,6 +73,21 @@ spec:
     - name: depth
       value: $(params.gitCloneDepth)
 
+  - name: set-dvc-cache
+    taskRef:
+      name: set-dvc-cache
+    workspaces:
+      - name: source
+        workspace: source
+      - name: furiosa-apt-credential
+        workspace: furiosa-apt-credential
+      - name: aws-credential
+        workspace: aws-credential
+      - name: furiosa-models-dvc-cache
+        workspace: furiosa-models-dvc-cache
+    runAfter:
+      - clone
+
   - name: format-build-unittests
     taskRef:
       name: format-build-unittests
@@ -93,7 +108,7 @@ spec:
       - name: furiosa-models-compiler-cache
         workspace: furiosa-models-compiler-cache
     runAfter:
-      - clone
+      - set-dvc-cache
 
   finally:
   - name: set-status-success
