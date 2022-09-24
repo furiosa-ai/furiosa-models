@@ -43,7 +43,7 @@ def test_mlcommons_ssd_resnet34_accuracy():
         label: category["id"] for label, category in enumerate(annotations["categories"], 1)
     }
 
-    with session.create(model.source) as sess:
+    with session.create(model.enf) as sess:
         for image_src in tqdm.tqdm(coco.dataset["images"]):
             image_path = str(image_directory / image_src["file_name"])
             image, contexts = preprocess([image_path])
