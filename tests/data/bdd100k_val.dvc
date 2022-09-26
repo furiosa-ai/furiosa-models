@@ -1,5 +1,0 @@
-outs:
-- md5: 65085a5a720b5836a4cfad702c2b4b42.dir
-  size: 595397111
-  nfiles: 20001
-  path: bdd100k_val
