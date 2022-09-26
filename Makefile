@@ -35,5 +35,5 @@ regression_tests:
 .PHONY: regression-test-yolov5
 regression-test-yolov5:
 	pytest -s ./tests/accuracy/test_yolov5l_acc.py	&&	\
-	pytest -s ./tests/accuracy/test_yolov5m_acc.py	&&	\
+	pytest -s ./tests/accuracy/test_yolov5m_acc.py
 
