@@ -4,13 +4,11 @@ This directory includes the model artifacts which are managed by DVC.
 
 ## DFG/ENF Generator
 *Pre-requisites*
+Please install necessary packages according to [Prerequisites](https://github.com/furiosa-ai/furiosa-models/wiki#prerequisites).
+
+Then, install the python dependencies as following:
 ```
 pip install -r furiosa-models/models/requirements.txt
-
-export DPKG_VERSION=0.8.0-2+nightly-220827
-sudo apt-get install furiosa-libcompiler=${DPKG_VERSION} \
-furiosa-libnux=${DPKG_VERSION} \
-furiosa-libnux-extrinsic=${DPKG_VERSION}
 ```
 
 ### Compiler Config
