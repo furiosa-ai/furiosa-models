@@ -26,3 +26,10 @@ regression_tests:
 	IMAGENET_VAL_IMAGES=$$(realpath tests/data/imagenet/val/) \
 	IMAGENET_VAL_LABELS=$$(realpath tests/data/imagenet/aux/val.txt) \
 	pytest ./tests/accuracy/ -s
+
+.PHONY: regression-test-yolov5
+regression-test-yolov5:
+	YOLOV5_DATASET_PATH=$$(realpath tests/data/bdd100k_val/) \
+	pytest -s ./tests/accuracy/test_yolov5l_acc.py	&&	\
+	pytest -s ./tests/accuracy/test_yolov5m_acc.py
+
