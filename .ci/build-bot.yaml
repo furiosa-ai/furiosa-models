@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: build-bot
+  namespace: ci-furiosa-models
+secrets:
+  - name: github-credential
+  - name: artifact-registry-next-gen-infra
+imagePullSecrets:
+  - name: artifact-registry-next-gen-infra

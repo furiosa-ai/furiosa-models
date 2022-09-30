@@ -5,11 +5,6 @@ lint:
 	isort --diff .
 	black --diff .
 	cargo fmt --all --check
-	cargo -q clippy --all-targets -- -D rust_2018_idioms -D warnings
-
-.PHONY: build
-build:
-	python setup.py develop
 
 .PHONY: test
 test:
@@ -33,3 +28,9 @@ regression-test-ssd-resnet34:
 	COCO_VAL_IMAGES=$$(realpath tests/data/coco/val2017) \
 	COCO_VAL_LABELS=$$(realpath tests/data/coco/annotations/instances_val2017.json) \
 	pytest ./tests/accuracy/test_ssd_resnet34_acc.py -s
+
+.PHONY: regression-test-yolov5
+regression-test-yolov5:
+	YOLOV5_DATASET_PATH=$$(realpath tests/data/bdd100k_val/) \
+	pytest -s ./tests/accuracy/test_yolov5l_acc.py	&&	\
+	pytest -s ./tests/accuracy/test_yolov5m_acc.py

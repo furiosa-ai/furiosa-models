@@ -1,0 +1,91 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: Trigger
+metadata:
+  name: furiosa-models-ci-trigger
+  namespace: ci-furiosa-models
+  labels:
+    ci.tekton.dev/trigger-type: github.pull-request
+spec:
+  interceptors:
+    - cel:
+        filter: >-
+          body.repository.full_name in ['furiosa-ai/furiosa-models'] &&
+          body.action in ['opened', 'synchronize']
+  bindings:
+    - ref: tekton-ci-github-base
+      kind: ClusterTriggerBinding
+    - ref: tekton-ci-webhook-pull-request
+      kind: ClusterTriggerBinding
+  template:
+    ref: furiosa-models-ci
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: furiosa-models-ci
+  namespace: ci-furiosa-models
+spec:
+  params:
+  - name: repo_full_name
+    description: The git repository name
+  - name: gitRepository
+    description: The git repository that hosts context and Dockerfile
+  - name: gitRevision
+    description: The git revision to be used.
+  - name: gitShortRevision
+    description: The git short revision to be used.
+  - name: triggerContext
+    description: Trigger context came from status trigger binding
+  - name: headRef
+    description: The git head ref (branch name)
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        generateName: "$(tt.params.triggerContext)-$(tt.params.gitShortRevision)-"
+      spec:
+        params:
+          - name: repo_full_name
+            value: "$(tt.params.repo_full_name)"
+          - name: gitRepository
+            value: "$(tt.params.gitRepository)"
+          - name: gitRevision
+            value: "$(tt.params.gitRevision)"
+          - name: gitShortRevision
+            value: "$(tt.params.gitShortRevision)"
+          - name: triggerContext
+            value: "$(tt.params.triggerContext)"
+          - name: headRef
+            value: "$(tt.params.headRef)"
+        workspaces:
+          - name: source
+            volumeClaimTemplate:
+              spec:
+                accessModes:
+                  - ReadWriteMany
+                resources:
+                  requests:
+                    storage: 10Gi
+          - name: furiosa-apt-credential
+            secret:
+              secretName: furiosa-apt-credential
+          - name: aws-credential
+            secret:
+              secretName: aws-credential
+          - name: internal-pypi-secret
+            secret:
+              secretName: internal-pypi-secret
+          - name: furiosa-models-dvc-cache
+            persistentVolumeClaim:
+              claimName: furiosa-models-dvc-cache
+          - name: furiosa-models-pip-cache
+            persistentVolumeClaim:
+              claimName: furiosa-models-pip-cache
+          - name: furiosa-models-compiler-cache
+            persistentVolumeClaim:
+              claimName: furiosa-models-compiler-cache
+        serviceAccountName: build-bot
+        pipelineRef:
+          name: furiosa-models-ci
+        timeouts:
+          pipeline: 3h

@@ -52,6 +52,7 @@ dependencies = [
 
 [tool.pytest.ini_options]
 norecursedirs = "tests/helpers"
+addopts = "-s --exitfirst"
 
 [project.optional-dependencies]
 test = [

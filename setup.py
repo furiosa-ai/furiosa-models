@@ -20,6 +20,7 @@ setup(
             path="Cargo.toml",
             binding=Binding.PyO3,
             debug=False,
+            rustc_flags=["-D", "warnings"],
         )
     ],
     # rust extensions are not zip safe, just like C-extensions.
