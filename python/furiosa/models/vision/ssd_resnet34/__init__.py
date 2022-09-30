@@ -3,6 +3,7 @@ from math import sqrt
 from typing import Any, Dict, List, Sequence, Tuple
 
 import cv2
+import numpy
 import numpy as np
 import numpy.typing as npt
 import torch
@@ -10,8 +11,10 @@ import torch.nn.functional as F
 
 from furiosa.registry import Model
 
-from .common.datasets import coco
-from .postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox
+from .. import native
+from ...errors import ArtifactNotFound, FuriosaModelException
+from ..common.datasets import coco
+from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, PostProcessor, calibration_ltrbbox
 
 
 ##Inspired by https://github.com/kuangliu/pytorch-ssd
@@ -38,7 +41,7 @@ class Encoder(object):
         self.scale_xy = torch.tensor(dboxes.scale_xy)
         self.scale_wh = torch.tensor(dboxes.scale_wh)
 
-    def decode_batch(self, bboxes_in, scores_in, criteria=0.45, max_output=200):
+    def decode_batch(self, bboxes_in, scores_in, criteria=0.50, max_output=200):
         self.dboxes = self.dboxes.to(bboxes_in)
         self.dboxes_xywh = self.dboxes_xywh.to(bboxes_in)
         bboxes, probs = scale_back_batch(
@@ -238,6 +241,8 @@ class DefaultBoxes(object):
 
 
 class SSDResNet34Model(Model):
+    """MLCommons SSD ResNet34 model"""
+
     pass
 
 
@@ -286,7 +291,7 @@ def _pick_best(detections, confidence_threshold):
 def postprocess(
     outputs: Sequence[np.ndarray],
     batch_preproc_params: Sequence[Dict[str, Any]],
-    confidence_threshold=0.3,
+    confidence_threshold=0.05,
 ) -> List[List[ObjectDetectionResult]]:
     if len(outputs) != NUM_OUTPUTS:
         raise Exception(f"output size must be {NUM_OUTPUTS}, but {len(outputs)}")
@@ -323,7 +328,7 @@ def postprocess(
             bb_list = b.tolist()
             predicted_result.append(
                 ObjectDetectionResult(
-                    index=l,
+                    index=int(l),
                     label=CLASSES[l],
                     score=s,
                     boundingbox=LtrbBoundingBox(
@@ -333,3 +338,43 @@ def postprocess(
             )
         batch_results.append(predicted_result)
     return batch_results
+
+
+class SSDResNet34PostProcessor(PostProcessor):
+    def eval(self, inputs: Sequence[numpy.ndarray], *args: Any, **kwargs: Any):
+        context = kwargs.get("context")
+        raw_results = self._native.eval(inputs)
+
+        results = []
+        width = context['width']
+        height = context['height']
+        for value in raw_results:
+            left = value.left * width
+            right = value.right * width
+            top = value.top * height
+            bottom = value.bottom * height
+            results.append(
+                ObjectDetectionResult(
+                    index=value.class_id,
+                    label=CLASSES[value.class_id],
+                    score=value.score,
+                    boundingbox=LtrbBoundingBox(left=left, top=top, right=right, bottom=bottom),
+                )
+            )
+
+        return results
+
+
+class NativePostProcessor(SSDResNet34PostProcessor):
+    def __init__(self, model: Model, version: str = "cpp"):
+        if not model.dfg:
+            raise ArtifactNotFound(model.name, "dfg")
+
+        if version == "cpp":
+            self._native = native.ssd_resnet34.CppPostProcessor(model.dfg)
+        elif version == "rust":
+            self._native = native.ssd_resnet34.RustPostProcessor(model.dfg)
+        else:
+            raise FuriosaModelException(f"Unknown post processor version: {version}")
+
+        super().__init__()
