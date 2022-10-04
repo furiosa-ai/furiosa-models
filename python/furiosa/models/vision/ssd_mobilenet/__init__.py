@@ -78,10 +78,7 @@ def preprocess(image_path_list: Sequence[str]) -> Tuple[npt.ArrayLike, List[Dict
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         width = image.shape[1]
         height = image.shape[0]
-        image = cv2.resize(image, (300, 300), interpolation=cv2.INTER_LINEAR)
-        image -= 127.5
-        image /= 127.5
-        image = image.transpose([2, 0, 1])
+        image = cv2.resize(image, (300, 300), interpolation=cv2.INTER_LINEAR).astype(np.uint8)
         batch_image.append(image)
         batch_preproc_param.append({"width": width, "height": height})
     return np.stack(batch_image, axis=0), batch_preproc_param
