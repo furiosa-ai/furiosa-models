@@ -1,0 +1,5 @@
+without_quantize:
+  parameters:
+  - input_max: 1.0
+    input_min: -1.0
+    permute: [0, 2, 3, 1]

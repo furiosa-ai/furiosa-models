@@ -1,4 +1,4 @@
 outs:
-- md5: d07a4c74d0d86868ed34525bbae3efa4
-  size: 7502815
+- md5: 9ea8b7c46f728ca328710076ff9f9aa6
+  size: 7502951
   path: mlcommons_ssd_mobilenet_v1_int8_truncated_warboy_2pe.dfg
