@@ -38,27 +38,12 @@ spec:
 
         make lint
         pip3 install --pre --editable .[test]
+        echo ""
+        echo "Starting Unit tests.... "
         make unit_tests
-
-      resources:
-        requests:
-          memory: 32Gi
-          cpu: 16
-        limits:
-          memory: 32Gi
-          cpu: 16
-    - name: examples
-      env:
-        - name: "PIP_EXTRA_INDEX_URL"
-          value: "https://internal-pypi.furiosa.dev/simple"
-      image: $(params.image)
-      script: |
-        #!/usr/bin/env bash
-        set -e
-
-        cd /workspace/source
-
-        pip3 install --pre --editable .[test]
+        
+        echo ""
+        echo "Starting Example tests.... "
         make examples
 
       resources:
