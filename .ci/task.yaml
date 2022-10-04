@@ -50,9 +50,11 @@ spec:
         requests:
           memory: 32Gi
           cpu: 16
+          alpha.furiosa.ai/npu: 1
         limits:
           memory: 32Gi
           cpu: 16
+          alpha.furiosa.ai/npu: 1
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
