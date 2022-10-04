@@ -51,6 +51,56 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
+  name: format-build-examples
+  namespace: ci-furiosa-models
+spec:
+  workspaces:
+    - name: source
+    - name: furiosa-apt-credential
+      mountPath: /etc/apt/auth.conf.d
+      readOnly: true
+    - name: aws-credential
+      mountPath: /root/.aws
+    - name: internal-pypi-secret
+      mountPath: /root/.netrc
+      readOnly: true
+    - name: furiosa-models-dvc-cache
+      mountPath: /dvc-cache
+    - name: furiosa-models-pip-cache
+      mountPath: /root/.cache/pip
+    - name: furiosa-models-compiler-cache
+      mountPath: /root/.cache/furiosa
+  params:
+    - name: image
+      description: The container image to use black in
+      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:latest
+  steps:
+    - name: format
+      env:
+        - name: "PIP_EXTRA_INDEX_URL"
+          value: "https://internal-pypi.furiosa.dev/simple"
+      image: $(params.image)
+      script: |
+        #!/usr/bin/env bash
+        set -e
+
+        cd /workspace/source
+
+        make lint
+        pip3 install --pre --editable .[test]
+        make examples
+
+      resources:
+        requests:
+          memory: 32Gi
+          cpu: 16
+        limits:
+          memory: 32Gi
+          cpu: 16
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
   name: regression-test-with-npu
   namespace: ci-furiosa-models
 spec:

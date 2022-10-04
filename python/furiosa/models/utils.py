@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import logging
 import os
 from pathlib import Path
-from typing import Optional, Union
+from typing import Dict, Optional, Union
 
 import dvc.api
 
@@ -12,7 +12,11 @@ from furiosa.common.thread import asynchronous
 
 from . import errors
 
-GENERATED_EXTENSIONS = ('dfg', 'enf')
+EXT_ONNX = "onnx"
+EXT_ENF = "enf"
+EXT_DFG = "dfg"
+
+GENERATED_EXTENSIONS = (EXT_DFG, EXT_ENF)
 DATA_DIRECTORY_BASE = Path(__file__).parent / "data"
 CACHE_DIRECTORY_BASE = Path(
     os.getenv(
@@ -100,6 +104,13 @@ class DVCFile(ResolvedFile):
                 return None
 
 
+def model_file_name(relative_path, truncated=True) -> str:
+    if truncated:
+        return f"{relative_path}_truncated"
+    else:
+        return relative_path
+
+
 def resolve_file(src_name: str, extension: str, generated_suffix="_warboy_2pe") -> ResolvedFile:
     # First check whether it is generated file or not
     if extension.lower() in GENERATED_EXTENSIONS:
@@ -122,3 +133,11 @@ def resolve_file(src_name: str, extension: str, generated_suffix="_warboy_2pe") 
         return DVCFile(Path(dvc_path))
 
     raise errors.ArtifactNotFound(src_name, extension)
+
+
+async def load_artifacts(name: str) -> Dict[str, bytes]:
+    artifacts = {}
+    for ext in [EXT_ONNX, EXT_DFG, EXT_ENF]:
+        artifacts[ext] = await resolve_file(name, ext).read()
+
+    return artifacts

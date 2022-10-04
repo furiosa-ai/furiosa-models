@@ -9,12 +9,16 @@ import numpy.typing as npt
 import torch
 import torch.nn.functional as F
 
-from furiosa.registry import Model
+from furiosa.common.thread import synchronous
+from furiosa.registry import Format, Metadata, Model, Publication
 
 from .. import native
 from ...errors import ArtifactNotFound, FuriosaModelException
+from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, load_artifacts, model_file_name
 from ..common.datasets import coco
 from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, PostProcessor, calibration_ltrbbox
+
+_ARTIFACT_NAME = "mlcommons_ssd_resnet34_int8"
 
 
 ##Inspired by https://github.com/kuangliu/pytorch-ssd
@@ -240,10 +244,39 @@ class DefaultBoxes(object):
             return self.dboxes
 
 
-class SSDResNet34Model(Model):
+class SSDResNet34(Model):
     """MLCommons SSD ResNet34 model"""
 
-    pass
+    @classmethod
+    def __load(cls, artifacts: Dict[str, bytes], *args, **kwargs):
+        return cls(
+            name="SSDResNet34",
+            source=artifacts[EXT_ONNX],
+            dfg=artifacts[EXT_DFG],
+            enf=artifacts[EXT_ENF],
+            format=Format.ONNX,
+            family="ResNet",
+            version="v1.1",
+            metadata=Metadata(
+                description="ResNet34 model for MLCommons v1.1",
+                publication=Publication(
+                    url="https://github.com/mlcommons/inference/tree/master/vision/classification_and_detection"
+                    # noqa: E501
+                ),
+            ),
+            *args,
+            **kwargs,
+        )
+
+    @classmethod
+    async def load_async(cls, use_native_post=True, *args, **kwargs) -> Model:
+        artifact_name = model_file_name(_ARTIFACT_NAME, use_native_post)
+        return cls.__load(await load_artifacts(artifact_name), *args, **kwargs)
+
+    @classmethod
+    def load(cls, use_native_post: bool = False, *args, **kwargs) -> Model:
+        artifact_name = model_file_name(_ARTIFACT_NAME, use_native_post)
+        return cls.__load(synchronous(load_artifacts)(artifact_name), *args, **kwargs)
 
 
 NUM_OUTPUTS: int = 12

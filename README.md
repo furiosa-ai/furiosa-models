@@ -32,7 +32,7 @@ You can simply access each model as following:
 ```python
 from furiosa.models.vision import ResNet50
 
-model = ResNet50()
+model = ResNet50.load()
 ```
 
 Each model in [available models](#AvailableModels) also provides the details 

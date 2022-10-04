@@ -6,11 +6,13 @@ import numpy
 import numpy as np
 import numpy.typing as npt
 
-from furiosa.registry import Model
+from furiosa.common.thread import synchronous
+from furiosa.registry import Format, Metadata, Model, Publication
 
 from . import anchor_generator  # type: ignore[import]
 from .. import native
 from ...errors import ArtifactNotFound, FuriosaModelException
+from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, load_artifacts, model_file_name, resolve_file
 from ..common.datasets import coco
 from ..postprocess import (
     LtrbBoundingBox,
@@ -42,6 +44,8 @@ PRIORS_CENTER_Y = PRIORS_Y1 + 0.5 * PRIORS_HEIGHTS
 
 del PRIORS_Y1, PRIORS_X1, PRIORS_Y2, PRIORS_X2, PRIORS
 
+_ARTIFACT_NAME = "mlcommons_ssd_mobilenet_v1_int8"
+
 
 class SSDSmallConstant(object):
     PRIORS_WIDTHS = PRIORS_WIDTHS
@@ -50,10 +54,36 @@ class SSDSmallConstant(object):
     PRIORS_CENTER_Y = PRIORS_CENTER_Y
 
 
-class SSDMobileNetModel(Model):
+class SSDMobileNet(Model):
     """MLCommons MobileNet v1 model"""
 
-    pass
+    @classmethod
+    def __load(cls, artifacts: Dict[str, bytes], *args, **kwargs):
+        return cls(
+            name="MLCommonsSSDMobileNet",
+            source=artifacts[EXT_ONNX],
+            dfg=artifacts[EXT_DFG],
+            enf=artifacts[EXT_ENF],
+            format=Format.ONNX,
+            family="MobileNetV1",
+            version="v1.1",
+            metadata=Metadata(
+                description="MobileNet v1 model for MLCommons v1.1",
+                publication=Publication(url="https://arxiv.org/abs/1704.04861.pdf"),
+            ),
+            *args,
+            **kwargs,
+        )
+
+    @classmethod
+    async def load_async(cls, use_native_post=True, *args, **kwargs) -> Model:
+        artifact_name = model_file_name(_ARTIFACT_NAME, use_native_post)
+        return cls.__load(await load_artifacts(artifact_name), *args, **kwargs)
+
+    @classmethod
+    def load(cls, use_native_post: bool = False, *args, **kwargs) -> Model:
+        artifact_name = model_file_name(_ARTIFACT_NAME, use_native_post)
+        return cls.__load(synchronous(load_artifacts)(artifact_name), *args, **kwargs)
 
 
 NUM_OUTPUTS: int = 12

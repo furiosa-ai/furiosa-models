@@ -3,7 +3,7 @@
 Attributes:
     CLASSES (List[str]): a list of class names
 """
-__all__ = ['CLASSES', 'preprocess', 'get_anchor_per_layer_count', 'postprocess', 'YoloV5LargeModel']
+__all__ = ['CLASSES', 'preprocess', 'get_anchor_per_layer_count', 'postprocess', 'YOLOv5l']
 
 import pathlib
 from typing import Any, Dict, List, Sequence
@@ -11,19 +11,50 @@ from typing import Any, Dict, List, Sequence
 import numpy as np
 import yaml
 
-from furiosa.registry import Model
+from furiosa.common.thread import synchronous
+from furiosa.registry import Format, Metadata, Model, Publication
 
 from . import core as _yolov5
+from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, load_artifacts, model_file_name
 
 with open(pathlib.Path(__file__).parent / "datasets/yolov5l/cfg.yaml", "r") as f:
     cfg = yaml.safe_load(f)
     _ANCHORS: np.array = np.float32(cfg["anchors"])
     _CLASS_NAMES: List[str] = cfg["class_names"]
 
+_ARTIFACT_NAME = "yolov5l_int8"
 _BOX_DECODER = _yolov5.boxdecoder(_CLASS_NAMES, _ANCHORS)
 
 
-class YoloV5LargeModel(Model):
+class YOLOv5l(Model):
+    @classmethod
+    def __load(cls, artifacts: Dict[str, bytes], *args, **kwargs):
+        return cls(
+            name="YoloV5Large",
+            source=artifacts[EXT_ONNX],
+            dfg=artifacts[EXT_DFG],
+            enf=artifacts[EXT_ENF],
+            format=Format.ONNX,
+            family="YOLOv5",
+            version="v5",
+            metadata=Metadata(
+                description="YOLOv5 large model",
+                publication=Publication(url="https://github.com/ultralytics/yolov5"),
+            ),
+            *args,
+            **kwargs,
+        )
+
+    @classmethod
+    async def load_async(cls, *args, **kwargs) -> Model:
+        artifact_name = model_file_name(_ARTIFACT_NAME, False)
+        return cls.__load(await load_artifacts(artifact_name), *args, **kwargs)
+
+    @classmethod
+    def load(cls, *args, **kwargs) -> Model:
+        artifact_name = model_file_name(_ARTIFACT_NAME, False)
+        return cls.__load(synchronous(load_artifacts)(artifact_name), *args, **kwargs)
+
     def compile_config(self, model_input_format="hwc"):
         return {
             "without_quantize": {

@@ -183,7 +183,8 @@ def collate(data: Sequence[Sequence[np.array]], batch_axis=0) -> List[np.array]:
         >>> assert batch_arrays[0].shape==(3, 3, 4)
         >>> assert batch_arrays[1].shape==(3, 2, 5)
     """
-    return [np.concatenate(x,axis=batch_axis) for x in zip(*data)]
+    return [np.concatenate(x, axis=batch_axis) for x in zip(*data)]
+
 
 def test_collate():
     arrays = [
