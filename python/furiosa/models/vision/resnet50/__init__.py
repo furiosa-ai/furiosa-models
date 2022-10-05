@@ -33,7 +33,7 @@ class ResNet50(Model):
             family="ResNet",
             version="v1.5",
             metadata=Metadata(
-                description="ResNet50 v1.5 int8 ImageNet-1K Accuracy 75.982% @ Top1",
+                description="ResNet50 v1.5 int8 ImageNet-1K",
                 publication=Publication(url="https://arxiv.org/abs/1512.03385.pdf"),
             ),
             *args,
