@@ -77,7 +77,7 @@ spec:
       description: The container image to use black in
       default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:latest
   steps:
-    - name: format
+    - name: run
       env:
         - name: "PIP_EXTRA_INDEX_URL"
           value: "https://internal-pypi.furiosa.dev/simple"
@@ -87,7 +87,7 @@ spec:
         set -e
         
         TOOLCHAIN_VERSION=$(apt-cache policy furiosa-libcompiler | grep Installed | awk '{print $2}')
-        apt-get update && apt-get install furiosa-libhal-sim=$TOOLCHAIN_VERSION
+        apt-get update && apt-get install -y furiosa-libhal-sim=$TOOLCHAIN_VERSION
 
         cd /workspace/source
 
