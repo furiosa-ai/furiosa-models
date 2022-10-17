@@ -12,7 +12,7 @@ test:
 	pytest ./tests -s
 
 unit_tests:
-	pytest ./tests/unit/ -s
+	DVC_REPO='https://github.com/furiosa-ai/furiosa-models' pytest ./tests/unit/ -s
 
 examples:
 	for f in $$(ls docs/examples/*.py); do echo"";echo "[TEST] $$f ..."; python3 $$f; done

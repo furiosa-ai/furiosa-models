@@ -81,7 +81,7 @@ class LocalFile(ResolvedFile):
 
 class DVCFile(ResolvedFile):
     def __init__(self, uri: Union[str, Path]):
-        self.uri = Path(removesuffix(str(uri), ".dvc"))
+        self.uri = Path(uri)
 
     async def read(self):
         dvc_repo = os.environ.get("DVC_REPO", None)
@@ -89,7 +89,7 @@ class DVCFile(ResolvedFile):
         module_logger.debug(f"DVC_URI={self.uri}, DVC_REPO={dvc_repo}, DVC_REV={dvc_rev}")
         try:
             return await asynchronous(dvc.api.read)(
-                str(self.uri.relative_to(Path.cwd())),
+                str(self.uri),
                 repo=os.environ.get("DVC_REPO", None),
                 rev=os.environ.get("DVC_REV", None),
                 mode="rb",
@@ -114,25 +114,25 @@ def model_file_name(relative_path, truncated=True) -> str:
 def resolve_file(src_name: str, extension: str, generated_suffix="_warboy_2pe") -> ResolvedFile:
     # First check whether it is generated file or not
     if extension.lower() in GENERATED_EXTENSIONS:
-        basepath = DATA_DIRECTORY_BASE / _generated_path_base()
+        generated_path_base = _generated_path_base()
+        if generated_path_base is None:
+            raise errors.VersionInfoNotFound()
         file_name = f'{src_name}{generated_suffix}.{extension}'
+        file_subpath = f'{generated_path_base}/{file_name}'
     else:
-        basepath = DATA_DIRECTORY_BASE
-        file_name = f'{src_name}.{extension}'
-    full_path = basepath / file_name
+        file_subpath = f'{src_name}.{extension}'
+    full_path = DATA_DIRECTORY_BASE / file_subpath
 
     # Find real file in data folder
     if full_path.exists():
         module_logger.debug(f"{full_path} exists, making LocalFile class")
         return LocalFile(full_path.resolve())
 
-    # .dvc file
-    dvc_path = f'{str(full_path)}.dvc'
-    if Path(dvc_path).exists():
-        module_logger.debug(f"{dvc_path} exists, making DVCFile class")
-        return DVCFile(Path(dvc_path))
-
-    raise errors.ArtifactNotFound(src_name, extension)
+    # Load from dvc
+    try:
+        return DVCFile(Path(f'python/furiosa/models/data/{file_subpath}'))
+    except Exception as e:
+        raise errors.ArtifactNotFound(src_name, extension) from e
 
 
 async def load_artifacts(name: str) -> Dict[str, bytes]:
