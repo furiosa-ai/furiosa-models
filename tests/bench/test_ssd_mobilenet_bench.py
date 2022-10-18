@@ -13,12 +13,8 @@ from furiosa.runtime import session
 
 
 def load_coco_from_env_variable():
-    coco_val_images = os.environ.get('COCO_VAL_IMAGES')
-    coco_val_labels = os.environ.get('COCO_VAL_LABELS')
-
-    if coco_val_images is None or coco_val_labels is None:
-        raise Exception("Environment variables not set")
-
+    coco_val_images = os.environ.get('COCO_VAL_IMAGES', './tests/data/coco/val2017')
+    coco_val_labels = os.environ.get('COCO_VAL_LABELS', './tests/data/coco/annotations/instances_val2017.json')
     coco = COCO(coco_val_labels)
 
     return Path(coco_val_images), coco
