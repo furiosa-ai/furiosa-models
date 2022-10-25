@@ -2,6 +2,14 @@ SHELL=/bin/bash -o pipefail
 
 .PHONY: examples doc lint test unit_tests regression_tests regression-test-ssd-resnet34 regression-test-yolov5
 
+check-docker-tag:
+ifndef DOCKER_TAG
+	$(error "DOCKER_TAG is not set")
+endif
+ifndef DOCKER_TAG
+	$(error "DOCKER_TAG is not set")
+endif
+
 lint:
 	isort --diff .
 	black --diff .
@@ -12,7 +20,7 @@ test:
 	pytest ./tests -s
 
 unit_tests:
-	DVC_REPO='https://github.com/furiosa-ai/furiosa-models' pytest ./tests/unit/ -s
+	pytest ./tests/unit/ -s
 
 examples:
 	for f in $$(ls docs/examples/*.py); do echo"";echo "[TEST] $$f ..."; python3 $$f; done
@@ -36,3 +44,9 @@ regression-test-yolov5:
 
 doc:
 	mkdocs build
+
+docker-build: check-docker-tag
+	DOCKER_BUILDKIT=1 docker build -t asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:${DOCKER_TAG} --secret id=furiosa.conf,src=/etc/apt/auth.conf.d/furiosa.conf -f docker/Dockerfile ./docker/
+
+docker-push:
+	docker push asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:${DOCKER_TAG}

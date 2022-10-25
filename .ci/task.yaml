@@ -23,7 +23,7 @@ spec:
   params:
     - name: image
       description: The container image to use black in
-      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:latest
+      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:221023
   steps:
     - name: format
       env:
@@ -73,7 +73,7 @@ spec:
   params:
     - name: image
       description: The container image to use black in
-      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:latest
+      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:221023
   steps:
     - name: run
       env:
@@ -83,7 +83,7 @@ spec:
       script: |
         #!/usr/bin/env bash
         set -e
-        
+
         TOOLCHAIN_VERSION=$(apt-cache policy furiosa-libcompiler | grep Installed | awk '{print $2}')
         apt-get update && apt-get install -y furiosa-libhal-sim=$TOOLCHAIN_VERSION
 
@@ -127,7 +127,7 @@ spec:
   params:
     - name: image
       description: The container image
-      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:latest
+      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:221023
     - name: modelName
       description: Name of the model to run the regression test
   steps:
@@ -178,7 +178,7 @@ spec:
   params:
     - name: image
       description: The container image
-      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:latest
+      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:221023
   steps:
     - name: set-dvc-cache
       image: $(params.image)
