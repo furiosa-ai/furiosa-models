@@ -6,9 +6,6 @@ check-docker-tag:
 ifndef DOCKER_TAG
 	$(error "DOCKER_TAG is not set")
 endif
-ifndef DOCKER_TAG
-	$(error "DOCKER_TAG is not set")
-endif
 
 lint:
 	isort --diff .
