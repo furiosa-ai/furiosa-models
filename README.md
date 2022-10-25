@@ -10,7 +10,7 @@ but the models are based on standard ONNX format. You can feel free to use all m
 |----------------------------------------------|----------------------|------|----------|---------------|---------------|
 | [ResNet50](docs/models/resnet50_v1.5.md)     | Image Classification | 25M  |          |               |               |
 | [SSDMobileNet](docs/models/ssd_mobilenet.md) | Object Detection     | 7.2M | mAP 0.228|               |               |
-| [SSDResNet34](docs/models/ssd_resnet34.md)   | Object Detection     | 20M  |          |               |               |
+| [SSDResNet34](docs/models/ssd_resnet34.md)   | Object Detection     | 20M  | mAP 0.220|               |               |
 | YOLOv5M                                      | Object Detection     | 21M  |          |               |               |
 | YOLOv5L                                      | Object Detection     | 46M  |          |               |               |
 

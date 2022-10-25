@@ -20,23 +20,19 @@ EXPECTED_ACCURACY_CPP = 0.22013360530400045
 
 
 def load_coco_from_env_variable():
-    coco_val_images = os.environ.get('COCO_VAL_IMAGES')
-    coco_val_labels = os.environ.get('COCO_VAL_LABELS')
-
-    if coco_val_images is None or coco_val_labels is None:
-        raise Exception("Environment variables not set")
-
+    coco_val_images = os.environ.get('COCO_VAL_IMAGES', 'tests/data/coco/val2017')
+    coco_val_labels = os.environ.get('COCO_VAL_LABELS', 'tests/data/coco/annotations/instances_val2017.json')
     coco = COCO(coco_val_labels)
 
     return Path(coco_val_images), coco
 
 
 def test_mlcommons_ssd_resnet34_accuracy():
-    model: Model = SSDResNet34()
+    model: Model = SSDResNet34.load()
 
     image_directory, coco = load_coco_from_env_variable()
     detections = []
-    instances_val2017 = Path(os.environ.get('COCO_VAL_LABELS'))
+    instances_val2017 = Path(os.environ.get('COCO_VAL_LABELS', 'tests/data/coco/annotations/instances_val2017.json'))
     with open(instances_val2017, encoding="ascii") as file:
         annotations = json.load(file)
     label_to_category = {
@@ -74,12 +70,12 @@ def test_mlcommons_ssd_resnet34_accuracy():
 
 
 def test_mlcommons_ssd_resnet34_with_native_rust_pp_accuracy():
-    model = SSDResNet34(use_native_post=True)
+    model = SSDResNet34.load(use_native_post=True)
     processor = NativePostProcessor(model, version="rust")
 
     image_directory, coco = load_coco_from_env_variable()
     detections = []
-    instances_val2017 = Path(os.environ.get('COCO_VAL_LABELS'))
+    instances_val2017 = Path(os.environ.get('COCO_VAL_LABELS', 'tests/data/coco/annotations/instances_val2017.json'))
     with open(instances_val2017, encoding="ascii") as file:
         annotations = json.load(file)
     label_to_category = {
@@ -116,12 +112,12 @@ def test_mlcommons_ssd_resnet34_with_native_rust_pp_accuracy():
 
 
 def test_mlcommons_ssd_resnet34_with_native_cpp_pp_accuracy():
-    model = SSDResNet34(use_native_post=True)
+    model = SSDResNet34.load(use_native_post=True)
     processor = NativePostProcessor(model, version="cpp")
 
     image_directory, coco = load_coco_from_env_variable()
     detections = []
-    instances_val2017 = Path(os.environ.get('COCO_VAL_LABELS'))
+    instances_val2017 = Path(os.environ.get('COCO_VAL_LABELS', 'tests/data/coco/annotations/instances_val2017.json'))
     with open(instances_val2017, encoding="ascii") as file:
         annotations = json.load(file)
     label_to_category = {
