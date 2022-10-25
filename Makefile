@@ -25,13 +25,6 @@ unit_tests:
 examples:
 	for f in $$(ls docs/examples/*.py); do echo"";echo "[TEST] $$f ..."; python3 $$f; done
 
-regression_tests:
-	COCO_VAL_IMAGES=$$(realpath tests/data/coco/val2017) \
-	COCO_VAL_LABELS=$$(realpath tests/data/coco/annotations/instances_val2017.json) \
-	IMAGENET_VAL_IMAGES=$$(realpath tests/data/imagenet/val/) \
-	IMAGENET_VAL_LABELS=$$(realpath tests/data/imagenet/aux/val.txt) \
-	pytest ./tests/accuracy/ -s
-
 regression-test-resnet50:
 	pytest ./tests/accuracy/test_resnet50_acc.py
 
