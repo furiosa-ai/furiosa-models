@@ -17,27 +17,21 @@ EXPECTED_MAP = 0.279543358502077
 
 def load_db_from_env_variable() -> Tuple[Path, bdd100k.Yolov5Dataset]:
     MUST_10K_LIMIT = 10000
-    databaset_path = os.environ.get('YOLOV5_DATASET_PATH', "./tests/data/bdd100k_val")
+    databaset_path = Path(os.environ.get('YOLOV5_DATASET_PATH', "./tests/data/bdd100k_val"))
 
-    if databaset_path is None:
-        raise Exception("Environment variables not set: YOLOV5_DATASET_PATH")
-
-    databaset_path = Path(databaset_path)
     db = bdd100k.Yolov5Dataset(databaset_path, mode="val", limit=MUST_10K_LIMIT)
 
     return databaset_path, db
 
 
 def test_yolov5m_accuracy():
-    model: Model = YOLOv5m()
+    model: Model = YOLOv5m.load()
 
     image_directory, yolov5db = load_db_from_env_variable()
 
     print(f"dataset_path: {image_directory}")
     metric = bdd100k.MAPMetricYolov5(num_classes=len(yolov5m.CLASSES))
-    with session.create(
-        model.source, compile_config=model.compile_config(model_input_format='hwc')
-    ) as sess:
+    with session.create(model.enf) as sess:
         for im, boxes_target, classes_target in tqdm(yolov5db):
             batch_im = [im]
 

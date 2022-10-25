@@ -35,7 +35,6 @@ regression-test-ssd-resnet34:
 	pytest ./tests/accuracy/test_ssd_resnet34_acc.py
 
 regression-test-yolov5:
-	YOLOV5_DATASET_PATH=$$(realpath tests/data/bdd100k_val/) \
 	pytest -s ./tests/accuracy/test_yolov5l_acc.py	&&	\
 	pytest -s ./tests/accuracy/test_yolov5m_acc.py
 
