@@ -18,12 +18,8 @@ EXPECTED_ACCURACY_NATIVE_CPP_PP = 0.22814002771459183
 
 
 def load_coco_from_env_variable():
-    coco_val_images = os.environ.get('COCO_VAL_IMAGES')
-    coco_val_labels = os.environ.get('COCO_VAL_LABELS')
-
-    if coco_val_images is None or coco_val_labels is None:
-        raise Exception("Environment variables not set")
-
+    coco_val_images = os.environ.get('COCO_VAL_IMAGES', 'tests/data/coco/val2017')
+    coco_val_labels = os.environ.get('COCO_VAL_LABELS', 'tests/data/coco/annotations/instances_val2017.json')
     coco = COCO(coco_val_labels)
 
     return Path(coco_val_images), coco
@@ -35,7 +31,7 @@ def test_mlcommons_ssd_mobilenet_accuracy():
     image_directory, coco = load_coco_from_env_variable()
     detections = []
 
-    with session.create(model.source) as sess:
+    with session.create(model.enf) as sess:
         for image_src in tqdm.tqdm(coco.dataset["images"]):
             image_path = str(image_directory / image_src["file_name"])
             image, contexts = preprocess([image_path])
@@ -66,7 +62,7 @@ def test_mlcommons_ssd_mobilenet_accuracy():
 
 
 def test_mlcommons_ssd_mobilenet_with_native_rust_pp_accuracy():
-    model = SSDMobileNet(use_native_post=True)
+    model = SSDMobileNet.load(use_native_post=True)
     processor = NativePostProcessor(model, version="rust")
 
     image_directory, coco = load_coco_from_env_variable()
@@ -102,7 +98,7 @@ def test_mlcommons_ssd_mobilenet_with_native_rust_pp_accuracy():
 
 
 def test_mlcommons_ssd_mobilenet_with_native_cpp_pp_accuracy():
-    model = SSDMobileNet(use_native_post=True)
+    model = SSDMobileNet.load(use_native_post=True)
     processor = NativePostProcessor(model, version="cpp")
 
     image_directory, coco = load_coco_from_env_variable()
