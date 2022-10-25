@@ -8,7 +8,7 @@ but the models are based on standard ONNX format. You can feel free to use all m
 
 | Model                                        | Task                 | Size | Accuracy | Latency (NPU) | Latency (CPU) |
 |----------------------------------------------|----------------------|------|----------|---------------|---------------|
-| [ResNet50](docs/models/resnet50_v1.5.md)     | Image Classification | 25M  |          |               |               |
+| [ResNet50](docs/models/resnet50_v1.5.md)     | Image Classification | 25M  | 76.002%  |               |               |
 | [SSDMobileNet](docs/models/ssd_mobilenet.md) | Object Detection     | 7.2M | mAP 0.228|               |               |
 | [SSDResNet34](docs/models/ssd_resnet34.md)   | Object Detection     | 20M  | mAP 0.220|               |               |
 | YOLOv5M                                      | Object Detection     | 21M  |          |               |               |

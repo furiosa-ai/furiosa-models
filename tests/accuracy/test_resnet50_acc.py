@@ -16,13 +16,8 @@ CLASSES: List[str] = imagenet1k.ImageNet1k_CLASSES
 
 
 def test_mlcommons_resnet50_accuracy():
-    imagenet_val_images = os.environ.get('IMAGENET_VAL_IMAGES')
-    imagenet_val_labels = os.environ.get('IMAGENET_VAL_LABELS')
-
-    if imagenet_val_images is None or imagenet_val_labels is None:
-        raise Exception("Environment variables not set")
-    imagenet_val_images = Path(imagenet_val_images)
-    imagenet_val_labels = Path(imagenet_val_labels)
+    imagenet_val_images = Path(os.environ.get('IMAGENET_VAL_IMAGES', 'tests/data/imagenet/val'))
+    imagenet_val_labels = Path(os.environ.get('IMAGENET_VAL_LABELS', 'tests/data/imagenet/aux/val.txt'))
 
     resnet50 = ResNet50.load()
 
@@ -33,7 +28,7 @@ def test_mlcommons_resnet50_accuracy():
             image_filename: int(label) for image_filename, label in (line.split() for line in file)
         }
 
-    with session.create(resnet50.source) as sess:
+    with session.create(resnet50.enf) as sess:
         for image_path in tqdm.tqdm(image_paths):
             image = preprocess(str(image_path))
             output = postprocess(sess.run(image).numpy())
@@ -50,13 +45,8 @@ def test_mlcommons_resnet50_accuracy():
 
 
 def test_mlcommons_resnet50_with_native_pp_accuracy():
-    imagenet_val_images = os.environ.get('IMAGENET_VAL_IMAGES')
-    imagenet_val_labels = os.environ.get('IMAGENET_VAL_LABELS')
-
-    if imagenet_val_images is None or imagenet_val_labels is None:
-        raise Exception("Environment variables not set")
-    imagenet_val_images = Path(imagenet_val_images)
-    imagenet_val_labels = Path(imagenet_val_labels)
+    imagenet_val_images = Path(os.environ.get('IMAGENET_VAL_IMAGES', 'tests/data/imagenet/val'))
+    imagenet_val_labels = Path(os.environ.get('IMAGENET_VAL_LABELS', 'tests/data/imagenet/aux/val.txt'))
 
     model = ResNet50.load(use_native_post=True)
     postprocessor = NativePostProcessor(model)

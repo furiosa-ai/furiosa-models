@@ -32,11 +32,14 @@ regression_tests:
 	IMAGENET_VAL_LABELS=$$(realpath tests/data/imagenet/aux/val.txt) \
 	pytest ./tests/accuracy/ -s
 
+regression-test-resnet50:
+	pytest ./tests/accuracy/test_resnet50_acc.py
+
 regression-test-ssd-mobilenet:
-	pytest ./tests/accuracy/test_ssd_mobilenet_acc.py -s
+	pytest ./tests/accuracy/test_ssd_mobilenet_acc.py
 
 regression-test-ssd-resnet34:
-	pytest ./tests/accuracy/test_ssd_resnet34_acc.py -s
+	pytest ./tests/accuracy/test_ssd_resnet34_acc.py
 
 regression-test-yolov5:
 	YOLOV5_DATASET_PATH=$$(realpath tests/data/bdd100k_val/) \
