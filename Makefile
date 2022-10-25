@@ -1,11 +1,14 @@
 SHELL=/bin/bash -o pipefail
 
-.PHONY: examples doc lint test unit_tests regression_tests regression-test-ssd-resnet34 regression-test-yolov5
+.PHONY: examples doc lint test unit_tests regression_tests regression-test-ssd-resnet34 regression-test-yolov5 toolchain
 
 check-docker-tag:
 ifndef DOCKER_TAG
 	$(error "DOCKER_TAG is not set")
 endif
+
+toolchain:
+	env TOOLCHAIN_VERSION=0.8.0-2+nightly-221023 sh -c 'apt-get install -y --allow-downgrades furiosa-libcompiler=$$TOOLCHAIN_VERSION furiosa-libnux-extrinsic=$$TOOLCHAIN_VERSION furiosa-libnux=$$TOOLCHAIN_VERSION'
 
 lint:
 	isort --diff .
