@@ -8,7 +8,6 @@ from pycocotools.cocoeval import COCOeval
 import tqdm
 
 from furiosa.models.vision import SSDMobileNet
-from furiosa.models.vision.postprocess import ObjectDetectionResult
 from furiosa.models.vision.ssd_mobilenet import NativePostProcessor, postprocess, preprocess
 from furiosa.registry import Model
 from furiosa.runtime import session
@@ -31,7 +30,7 @@ def load_coco_from_env_variable():
 
 
 def test_mlcommons_ssd_mobilenet_accuracy():
-    model: Model = SSDMobileNet()
+    model: Model = SSDMobileNet.load()
 
     image_directory, coco = load_coco_from_env_variable()
     detections = []

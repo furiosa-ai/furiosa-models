@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 import pytest
 
-from furiosa.models.vision import nonblocking
+from furiosa.models.vision import YOLOv5l
 from furiosa.models.vision.postprocess import collate
 from furiosa.models.vision.yolov5.large import CLASSES, postprocess, preprocess
 from furiosa.runtime import session
@@ -14,7 +14,7 @@ from furiosa.runtime import session
 
 @pytest.mark.asyncio
 async def test_yolov5_large():
-    m = await nonblocking.YOLOv5l()
+    m = await YOLOv5l.load_async()
     test_image_path = "tests/assets/yolov5-test.jpg"
 
     assert len(CLASSES) == 10, "expected CLASS is 10"

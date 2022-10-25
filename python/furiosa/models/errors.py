@@ -16,3 +16,12 @@ class ArtifactNotFound(FuriosaModelException):
 
     def __init__(self, model_name: str, ir: str):
         super().__init__(f"'{ir} for {model_name} is required, but missing'")
+
+
+class VersionInfoNotFound(FuriosaModelException):
+    """Could not retrieve compiler version information"""
+
+    def __init__(self):
+        super().__init__(
+            f"Could not retrieve furiosa compiler information. Try: `pip install furiosa-sdk`."
+        )

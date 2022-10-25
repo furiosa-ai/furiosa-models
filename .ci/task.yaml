@@ -23,7 +23,7 @@ spec:
   params:
     - name: image
       description: The container image to use black in
-      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:latest
+      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:221023
   steps:
     - name: format
       env:
@@ -39,6 +39,58 @@ spec:
         make lint
         pip3 install --pre --editable .[test]
         make unit_tests
+
+      resources:
+        requests:
+          memory: 32Gi
+          cpu: 16
+        limits:
+          memory: 32Gi
+          cpu: 16
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: test-examples
+  namespace: ci-furiosa-models
+spec:
+  workspaces:
+    - name: source
+    - name: furiosa-apt-credential
+      mountPath: /etc/apt/auth.conf.d
+      readOnly: true
+    - name: aws-credential
+      mountPath: /root/.aws
+    - name: internal-pypi-secret
+      mountPath: /root/.netrc
+      readOnly: true
+    - name: furiosa-models-dvc-cache
+      mountPath: /dvc-cache
+    - name: furiosa-models-pip-cache
+      mountPath: /root/.cache/pip
+    - name: furiosa-models-compiler-cache
+      mountPath: /root/.cache/furiosa
+  params:
+    - name: image
+      description: The container image to use black in
+      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:221023
+  steps:
+    - name: run
+      env:
+        - name: "PIP_EXTRA_INDEX_URL"
+          value: "https://internal-pypi.furiosa.dev/simple"
+      image: $(params.image)
+      script: |
+        #!/usr/bin/env bash
+        set -e
+
+        TOOLCHAIN_VERSION=$(apt-cache policy furiosa-libcompiler | grep Installed | awk '{print $2}')
+        apt-get update && apt-get install -y furiosa-libhal-sim=$TOOLCHAIN_VERSION
+
+        cd /workspace/source
+
+        pip3 install --pre .
+        NPU_GLOBAL_CONFIG_PATH=warboy-2pe make examples
 
       resources:
         requests:
@@ -75,7 +127,7 @@ spec:
   params:
     - name: image
       description: The container image
-      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:latest
+      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:221023
     - name: modelName
       description: Name of the model to run the regression test
   steps:
@@ -126,7 +178,7 @@ spec:
   params:
     - name: image
       description: The container image
-      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:latest
+      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:221023
   steps:
     - name: set-dvc-cache
       image: $(params.image)

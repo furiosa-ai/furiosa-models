@@ -8,16 +8,7 @@ This model has been used since MLCommons v0.5.
 ### Using Furiosa SDK
 
 ```python
-from furiosa.models.vision import SSDResNet34
-from furiosa.models.vision import ssd_resnet34
-from furiosa.runtime import session
-
-ssd_resnet34 = SSDResNet34()
-
-with session.create(ssd_resnet34.enf) as sess:
-    image = ssd_resnet34.preprocess("image/car.jpeg")
-    output = sess.run(image).numpy()
-    ssd_resnet34.postprocess(output)
+--8<-- "docs/examples/ssd_resnet34.py"
 ```
 
 ## Model inputs

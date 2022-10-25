@@ -7,16 +7,7 @@ This model has been used since MLCommons v0.5.
 
 ### Using Furiosa SDK
 ```python
-from furiosa.models.vision import ResNet50
-from furiosa.models.vision import resnet50
-from furiosa.runtime import session
-
-resnet50 = ResNet50()
-
-with session.create(resnet50.enf) as sess:
-    image = resnet50.preprocess("image/car.jpeg")
-    output = sess.run(image).numpy()
-    resnet50.postprocess(output)
+--8<-- "docs/examples/resnet50.py"
 ```
 
 ## Model inputs

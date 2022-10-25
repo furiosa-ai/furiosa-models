@@ -24,7 +24,7 @@ def test_mlcommons_resnet50_accuracy():
     imagenet_val_images = Path(imagenet_val_images)
     imagenet_val_labels = Path(imagenet_val_labels)
 
-    resnet50 = ResNet50()
+    resnet50 = ResNet50.load()
 
     correct_predictions, incorrect_predictions = 0, 0
     image_paths = list(imagenet_val_images.glob("*.[Jj][Pp][Ee][Gg]"))
@@ -36,7 +36,7 @@ def test_mlcommons_resnet50_accuracy():
     with session.create(resnet50.source) as sess:
         for image_path in tqdm.tqdm(image_paths):
             image = preprocess(str(image_path))
-            output = postprocess(sess.run(image))
+            output = postprocess(sess.run(image).numpy())
 
             if output == CLASSES[image_filename_to_label[image_path.name]]:
                 correct_predictions += 1
@@ -58,7 +58,7 @@ def test_mlcommons_resnet50_with_native_pp_accuracy():
     imagenet_val_images = Path(imagenet_val_images)
     imagenet_val_labels = Path(imagenet_val_labels)
 
-    model = ResNet50(use_native_post=True)
+    model = ResNet50.load(use_native_post=True)
     postprocessor = NativePostProcessor(model)
 
     correct_predictions, incorrect_predictions = 0, 0

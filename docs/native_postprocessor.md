@@ -25,15 +25,5 @@ To evaluate the postprocessing results, please call `NativePostProcessor.eval()`
 The following is an example to use native post processor for [SSDMobileNet](models/ssd_mobilenet.md).
 
 ```python
-from furiosa.models.vision import SSDMobileNet
-from furiosa.models.vision.ssd_mobilenet import preprocess, NativePostProcessor
-from furiosa.runtime import session
-
-ssd_mobilenet = SSDMobileNet(use_native_post=True)
-
-postprocessor = NativePostProcessor(ssd_mobilenet)
-with session.create(ssd_mobilenet.enf) as sess:
-    image, context = preprocess(["tests/assets/cat.jpg"])
-    output = sess.run(image).numpy()
-    postprocessor.eval(output, context=context)
+--8<-- "docs/examples/ssd_mobilenet_native.py"
 ```
