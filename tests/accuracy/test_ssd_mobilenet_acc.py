@@ -19,7 +19,9 @@ EXPECTED_ACCURACY_NATIVE_CPP_PP = 0.22814002771459183
 
 def load_coco_from_env_variable():
     coco_val_images = os.environ.get('COCO_VAL_IMAGES', 'tests/data/coco/val2017')
-    coco_val_labels = os.environ.get('COCO_VAL_LABELS', 'tests/data/coco/annotations/instances_val2017.json')
+    coco_val_labels = os.environ.get(
+        'COCO_VAL_LABELS', 'tests/data/coco/annotations/instances_val2017.json'
+    )
     coco = COCO(coco_val_labels)
 
     return Path(coco_val_images), coco
