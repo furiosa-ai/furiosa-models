@@ -50,7 +50,7 @@ def test_mlcommons_resnet50_accuracy(benchmark):
         else:
             incorrect_predictions += 1
 
-    sess = session.create(model.enf)
+    sess = session.create(model)
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 
@@ -95,7 +95,7 @@ def test_mlcommons_resnet50_with_native_pp_accuracy(benchmark):
         else:
             incorrect_predictions += 1
 
-    sess = session.create(model.enf)
+    sess = session.create(model)
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 

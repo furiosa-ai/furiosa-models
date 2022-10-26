@@ -20,7 +20,8 @@ async def test_yolov5_small():
     assert len(CLASSES) == 10, "expected CLASS is 10"
 
     batch_im = [cv2.imread(test_image_path), cv2.imread(test_image_path)]
-    sess = session.create(m.source, compile_config=m.compile_config(model_input_format='hwc'))
+    compiler_config = m.compiler_config(model_input_format='hwc')
+    sess = session.create(m, compiler_config=compiler_config)
     batch_pre_img, batch_preproc_param = preprocess(batch_im, input_color_format="bgr")
     batch_feat = []
     for pre_image in batch_pre_img:
