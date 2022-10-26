@@ -163,6 +163,35 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
+  name: regression-test-report
+  namespace: ci-furiosa-models
+spec:
+  workspaces:
+    - name: source
+  params:
+    - name: image
+      description: The container image
+      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:221023
+  steps:
+    - name: regression-test-report
+      image: $(params.image)
+      script: |
+        #!/usr/bin/env bash
+        pip install --quiet pytest-benchmark
+
+        py.test-benchmark compare
+
+      resources:
+        requests:
+          memory: 8Gi
+          cpu: 4
+        limits:
+          memory: 8Gi
+          cpu: 4
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
   name: set-dvc-cache
   namespace: ci-furiosa-models
 spec:
