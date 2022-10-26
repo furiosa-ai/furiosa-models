@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Dict, List, Sequence, Tuple
+from typing import Any, Dict, List, Sequence, Tuple, Union
 
 import cv2
 import numpy
@@ -91,16 +91,19 @@ CLASSES = coco.MobileNetSSD_CLASSES
 NUM_CLASSES = len(CLASSES) - 1  # remove background
 
 
-def preprocess(image_path_list: Sequence[str]) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
+def preprocess(
+    image_path_list: Sequence[Union[str, np.ndarray]]
+) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
     """Read and preprocess an image located at image_path."""
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L49-L51
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L242-L249
     batch_image = []
     batch_preproc_param = []
-    for image_path in image_path_list:
-        image = cv2.imread(image_path)
-        if image is None:
-            raise FileNotFoundError(image_path)
+    for image in image_path_list:
+        if type(image) == str:
+            image = cv2.imread(image)
+            if image is None:
+                raise FileNotFoundError(image)
         image = np.array(image, dtype=np.float32)
         if len(image.shape) < 3 or image.shape[2] != 3:
             image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
