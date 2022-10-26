@@ -13,8 +13,8 @@ toolchain:
 	env TOOLCHAIN_VERSION=0.8.0-2+nightly-221023 sh -c 'apt-get install -y --allow-downgrades furiosa-libcompiler=$$TOOLCHAIN_VERSION furiosa-libnux-extrinsic=$$TOOLCHAIN_VERSION furiosa-libnux=$$TOOLCHAIN_VERSION'
 
 lint:
-	isort --diff .
-	black --diff .
+	isort --diff --check .
+	black --diff --check .
 	cargo fmt --all --check
 
 test:
