@@ -1,3 +1,4 @@
+from asyncore import read
 import os
 from pathlib import Path
 from typing import Tuple
@@ -12,7 +13,7 @@ from furiosa.models.vision.yolov5 import medium as yolov5m
 from furiosa.registry import Model
 from furiosa.runtime import session
 
-EXPECTED_MAP = 0.279543358502077
+EXPECTED_MAP = 0.2803325282086983
 
 
 def load_db_from_env_variable() -> Tuple[Path, bdd100k.Yolov5Dataset]:
@@ -24,37 +25,49 @@ def load_db_from_env_variable() -> Tuple[Path, bdd100k.Yolov5Dataset]:
     return databaset_path, db
 
 
-def test_yolov5m_accuracy():
+def test_yolov5m_accuracy(benchmark):
     model: Model = YOLOv5m.load()
 
     image_directory, yolov5db = load_db_from_env_variable()
 
     print(f"dataset_path: {image_directory}")
     metric = bdd100k.MAPMetricYolov5(num_classes=len(yolov5m.CLASSES))
-    with session.create(model.enf) as sess:
-        for im, boxes_target, classes_target in tqdm(yolov5db):
-            batch_im = [im]
 
-            batch_pre_img, batch_preproc_param = yolov5m.preprocess(
-                batch_im, input_color_format="bgr"
-            )  # single-batch
-            batch_feat = sess.run(np.expand_dims(batch_pre_img[0], axis=0)).numpy()
-            detected_boxes = yolov5m.postprocess(
-                batch_feat, batch_preproc_param, conf_thres=0.001, iou_thres=0.6
-            )
+    num_images = len(yolov5db)
+    yolov5db = iter(tqdm(yolov5db))
 
-            det_out = bdd100k.to_numpy(detected_boxes[0])
+    def read_image():
+        im, boxes_target, classes_target = next(yolov5db)
+        return (im, boxes_target, classes_target), {}
 
-            metric(
-                boxes_pred=det_out[:, :4],
-                scores_pred=det_out[:, 4],
-                classes_pred=det_out[:, 5],
-                boxes_target=boxes_target,
-                classes_target=classes_target,
-            )
+    def workload(im, boxes_target, classes_target):
+        batch_im = [im]
+
+        batch_pre_img, batch_preproc_param = yolov5m.preprocess(
+            batch_im, input_color_format="bgr"
+        )  # single-batch
+        batch_feat = sess.run(np.expand_dims(batch_pre_img[0], axis=0)).numpy()
+        detected_boxes = yolov5m.postprocess(
+            batch_feat, batch_preproc_param, conf_thres=0.001, iou_thres=0.6
+        )
+
+        det_out = bdd100k.to_numpy(detected_boxes[0])
+
+        metric(
+            boxes_pred=det_out[:, :4],
+            scores_pred=det_out[:, 4],
+            classes_pred=det_out[:, 5],
+            boxes_target=boxes_target,
+            classes_target=classes_target,
+        )
+
+    sess = session.create(model.enf)
+    benchmark.pedantic(workload, setup=read_image, rounds=num_images)
+    sess.close()
+
     result = metric.compute()
     print("YOLOv5Medium mAP:", result['map'])
     print("YOLOv5Medium mAP50:", result['map50'])
     print("YOLOv5Medium ap_class:", result['ap_class'])
     print("YOLOv5Medium ap50_class:", result['ap50_class'])
-    assert abs(result['map'] - EXPECTED_MAP) < 1e-3, "Accuracy check failed"
+    assert result['map'] == EXPECTED_MAP, "Accuracy check failed"

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Sequence
+from typing import Any, Dict, List, Sequence, Union
 
 import cv2
 import numpy
@@ -51,13 +51,14 @@ class ResNet50(Model):
         return cls.__load(synchronous(load_artifacts)(artifact_name), *args, **kwargs)
 
 
-def preprocess(image_path: str) -> np.array:
+def preprocess(image: Union[str, np.ndarray]) -> np.array:
     """Read and preprocess an image located at image_path."""
     # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/main.py#L37-L39
     # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L168-L184
-    image = cv2.imread(image_path)
-    if image is None:
-        raise FileNotFoundError(image_path)
+    if type(image) == str:
+        image = cv2.imread(image)
+        if image is None:
+            raise FileNotFoundError(image)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     image = resize_with_aspect_ratio(image, 224, 224, percent=87.5, interpolation=cv2.INTER_AREA)
     image = center_crop(image, 224, 224)
