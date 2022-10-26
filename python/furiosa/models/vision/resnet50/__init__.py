@@ -74,8 +74,8 @@ def postprocess(outputs: Sequence[numpy.ndarray]) -> str:
 
 
 class Resnet50PostProcessor(PostProcessor):
-    def eval(self, inputs: Sequence[numpy.ndarray], *args: Any, **kwargs: Any):
-        return self._native.eval(inputs)
+    def eval(self, inputs: Sequence[numpy.ndarray], *args: Any, **kwargs: Any) -> str:
+        return CLASSES[self._native.eval(inputs) - 1]
 
 
 class NativePostProcessor(Resnet50PostProcessor):
