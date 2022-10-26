@@ -258,7 +258,7 @@ class SSDResNet34(Model):
             family="ResNet",
             version="v1.1",
             metadata=Metadata(
-                description="ResNet34 model for MLCommons v1.1",
+                description="SSD ResNet34 model for MLCommons v1.1",
                 publication=Publication(
                     url="https://github.com/mlcommons/inference/tree/master/vision/classification_and_detection"
                     # noqa: E501

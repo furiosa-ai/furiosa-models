@@ -55,7 +55,7 @@ class SSDSmallConstant(object):
 
 
 class SSDMobileNet(Model):
-    """MLCommons MobileNet v1 model"""
+    """MLCommons SSD MobileNet model"""
 
     @classmethod
     def __load(cls, artifacts: Dict[str, bytes], *args, **kwargs):
@@ -68,7 +68,7 @@ class SSDMobileNet(Model):
             family="MobileNetV1",
             version="v1.1",
             metadata=Metadata(
-                description="MobileNet v1 model for MLCommons v1.1",
+                description="SSD MobileNet model for MLCommons v1.1",
                 publication=Publication(url="https://arxiv.org/abs/1704.04861.pdf"),
             ),
             *args,
