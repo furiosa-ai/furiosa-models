@@ -28,20 +28,20 @@ examples:
 	for f in $$(ls docs/examples/*.py); do echo"";echo "[TEST] $$f ..."; python3 $$f; done
 
 regression-test-all:
-	pytest ./tests/accuracy/
+	pytest ./tests/bench/
 
 regression-test-resnet50:
-	pytest ./tests/accuracy/test_resnet50_acc.py
+	pytest ./tests/bench/test_resnet50.py
 
 regression-test-ssd-mobilenet:
-	pytest ./tests/accuracy/test_ssd_mobilenet_acc.py
+	pytest ./tests/bench/test_ssd_mobilenet.py
 
 regression-test-ssd-resnet34:
-	pytest ./tests/accuracy/test_ssd_resnet34_acc.py
+	pytest ./tests/bench/test_ssd_resnet34.py
 
 regression-test-yolov5:
-	pytest -s ./tests/accuracy/test_yolov5l_acc.py	&&	\
-	pytest -s ./tests/accuracy/test_yolov5m_acc.py
+	pytest -s ./tests/bench/test_yolov5l.py	&&	\
+	pytest -s ./tests/bench/test_yolov5m.py
 
 doc:
 	mkdocs build
