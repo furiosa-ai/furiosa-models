@@ -1,6 +1,8 @@
 SHELL=/bin/bash -o pipefail
 
-.PHONY: examples doc lint test unit_tests regression_tests regression-test-ssd-resnet34 regression-test-yolov5 toolchain
+.PHONY: check-docker-tag toolchain lint test unit_tests examples regression-test-all \
+regression-test-resnet50 regression-test-ssd-mobilenet \
+regression-test-ssd-resnet34 regression-test-yolov5 doc docker-build docker-push
 
 check-docker-tag:
 ifndef DOCKER_TAG
@@ -24,6 +26,9 @@ unit_tests:
 
 examples:
 	for f in $$(ls docs/examples/*.py); do echo"";echo "[TEST] $$f ..."; python3 $$f; done
+
+regression-test-all:
+	pytest ./tests/accuracy/
 
 regression-test-resnet50:
 	pytest ./tests/accuracy/test_resnet50_acc.py
