@@ -1,15 +1,20 @@
 SHELL=/bin/bash -o pipefail
 
-.PHONY: examples doc lint test unit_tests regression_tests regression-test-ssd-resnet34 regression-test-yolov5
+.PHONY: check-docker-tag toolchain lint test unit_tests examples regression-test-all \
+regression-test-resnet50 regression-test-ssd-mobilenet \
+regression-test-ssd-resnet34 regression-test-yolov5 doc docker-build docker-push
 
 check-docker-tag:
 ifndef DOCKER_TAG
 	$(error "DOCKER_TAG is not set")
 endif
 
+toolchain:
+	env TOOLCHAIN_VERSION=0.8.0-2+nightly-221023 sh -c 'apt-get install -y --allow-downgrades furiosa-libcompiler=$$TOOLCHAIN_VERSION furiosa-libnux-extrinsic=$$TOOLCHAIN_VERSION furiosa-libnux=$$TOOLCHAIN_VERSION'
+
 lint:
-	isort --diff .
-	black --diff .
+	isort --diff --check .
+	black --diff --check .
 	cargo fmt --all --check
 
 test:
@@ -22,22 +27,21 @@ unit_tests:
 examples:
 	for f in $$(ls docs/examples/*.py); do echo"";echo "[TEST] $$f ..."; python3 $$f; done
 
-regression_tests:
-	COCO_VAL_IMAGES=$$(realpath tests/data/coco/val2017) \
-	COCO_VAL_LABELS=$$(realpath tests/data/coco/annotations/instances_val2017.json) \
-	IMAGENET_VAL_IMAGES=$$(realpath tests/data/imagenet/val/) \
-	IMAGENET_VAL_LABELS=$$(realpath tests/data/imagenet/aux/val.txt) \
-	pytest ./tests/accuracy/ -s
+regression-test-all:
+	pytest ./tests/bench/
+
+regression-test-resnet50:
+	pytest ./tests/bench/test_resnet50.py
+
+regression-test-ssd-mobilenet:
+	pytest ./tests/bench/test_ssd_mobilenet.py
 
 regression-test-ssd-resnet34:
-	COCO_VAL_IMAGES=$$(realpath tests/data/coco/val2017) \
-	COCO_VAL_LABELS=$$(realpath tests/data/coco/annotations/instances_val2017.json) \
-	pytest ./tests/accuracy/test_ssd_resnet34_acc.py -s
+	pytest ./tests/bench/test_ssd_resnet34.py
 
 regression-test-yolov5:
-	YOLOV5_DATASET_PATH=$$(realpath tests/data/bdd100k_val/) \
-	pytest -s ./tests/accuracy/test_yolov5l_acc.py	&&	\
-	pytest -s ./tests/accuracy/test_yolov5m_acc.py
+	pytest -s ./tests/bench/test_yolov5l.py	&&	\
+	pytest -s ./tests/bench/test_yolov5m.py
 
 doc:
 	mkdocs build

@@ -52,11 +52,12 @@ dependencies = [
 
 [tool.pytest.ini_options]
 norecursedirs = "tests/helpers"
-addopts = "-s --exitfirst"
+addopts = "-s --exitfirst --benchmark-autosave"
 
 [project.optional-dependencies]
 test = [
     "pytest",
+    "pytest-benchmark == 3.4.1",
     "pytest-asyncio ~= 0.17.2",
 ]
 

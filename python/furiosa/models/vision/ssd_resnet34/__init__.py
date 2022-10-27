@@ -1,6 +1,6 @@
 import itertools
 from math import sqrt
-from typing import Any, Dict, List, Sequence, Tuple
+from typing import Any, Dict, List, Sequence, Tuple, Union
 
 import cv2
 import numpy
@@ -260,7 +260,7 @@ class SSDResNet34(ObjectDetectionModel):
             family="ResNet",
             version="v1.1",
             metadata=Metadata(
-                description="ResNet34 model for MLCommons v1.1",
+                description="SSD ResNet34 model for MLCommons v1.1",
                 publication=Publication(
                     url="https://github.com/mlcommons/inference/tree/master/vision/classification_and_detection"
                     # noqa: E501
@@ -275,17 +275,20 @@ NUM_OUTPUTS: int = 12
 CLASSES = coco.MobileNetSSD_Large_CLASSES
 
 
-def preprocess(image_path_list: List[str]) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
+def preprocess(
+    image_path_list: List[Union[str, np.ndarray]]
+) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
     """Read and preprocess an image located at image_path."""
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L141
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L61-L63
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L252-L263
     batch_image = []
     batch_preproc_param = []
-    for image_path in image_path_list:
-        image = cv2.imread(image_path)
-        if image is None:
-            raise FileNotFoundError(image_path)
+    for image in image_path_list:
+        if type(image) == str:
+            image = cv2.imread(image)
+            if image is None:
+                raise FileNotFoundError(image)
         image = np.array(image, dtype=np.float32)
         if len(image.shape) < 3 or image.shape[2] != 3:
             image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
