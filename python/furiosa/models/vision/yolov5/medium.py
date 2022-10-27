@@ -17,7 +17,6 @@ from typing import Any, Dict, List, Sequence
 import numpy as np
 import yaml
 
-from furiosa.common.thread import synchronous
 from furiosa.registry import Format, Metadata, Publication
 
 from . import core as _yolov5

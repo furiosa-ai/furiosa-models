@@ -9,7 +9,6 @@ import numpy.typing as npt
 import torch
 import torch.nn.functional as F
 
-from furiosa.common.thread import synchronous
 from furiosa.registry import Format, Metadata, Publication
 
 from .. import native

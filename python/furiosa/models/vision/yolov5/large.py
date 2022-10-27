@@ -11,12 +11,11 @@ from typing import Any, Dict, List, Sequence
 import numpy as np
 import yaml
 
-from furiosa.common.thread import synchronous
-from furiosa.registry import Format, Metadata, Model, Publication
+from furiosa.registry import Format, Metadata, Publication
 
 from . import core as _yolov5
 from ...model import ObjectDetectionModel
-from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, load_artifacts, model_file_name
+from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
 
 with open(pathlib.Path(__file__).parent / "datasets/yolov5l/cfg.yaml", "r") as f:
     cfg = yaml.safe_load(f)
