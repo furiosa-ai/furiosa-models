@@ -84,14 +84,27 @@ class DVCFile(ResolvedFile):
         self.uri = Path(uri)
 
     async def read(self):
-        dvc_repo = os.environ.get("DVC_REPO", None)
-        dvc_rev = os.environ.get("DVC_REV", None)
-        module_logger.debug(f"DVC_URI={self.uri}, DVC_REPO={dvc_repo}, DVC_REV={dvc_rev}")
         try:
+            dvc_repo = os.environ.get("DVC_REPO", None)
+            dvc_rev = os.environ.get("DVC_REV", None)
+            module_logger.debug(f"DVC_URI={self.uri}, DVC_REPO={dvc_repo}, DVC_REV={dvc_rev}")
             return await asynchronous(dvc.api.read)(
                 str(self.uri),
-                repo=os.environ.get("DVC_REPO", None),
-                rev=os.environ.get("DVC_REV", None),
+                repo=dvc_repo,
+                rev=dvc_rev,
+                mode="rb",
+            )
+        except:
+            pass
+
+        try:
+            dvc_repo = os.environ.get("DVC_REPO", 'https://github.com/furiosa-ai/furiosa-models')
+            dvc_rev = os.environ.get("DVC_REV", None)
+            module_logger.debug(f"DVC_URI={self.uri}, DVC_REPO={dvc_repo}, DVC_REV={dvc_rev}")
+            return await asynchronous(dvc.api.read)(
+                str(self.uri),
+                repo=dvc_repo,
+                rev=dvc_rev,
                 mode="rb",
             )
         except Exception as e:
