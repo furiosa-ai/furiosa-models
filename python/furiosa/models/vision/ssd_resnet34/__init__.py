@@ -9,16 +9,14 @@ import numpy.typing as npt
 import torch
 import torch.nn.functional as F
 
-from furiosa.common.thread import synchronous
-from furiosa.registry import Format, Metadata, Model, Publication
+from furiosa.registry import Format, Metadata, Publication
 
 from .. import native
 from ...errors import ArtifactNotFound, FuriosaModelException
-from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, load_artifacts, model_file_name
+from ...model import ObjectDetectionModel
+from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
 from ..common.datasets import coco
 from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, PostProcessor, calibration_ltrbbox
-
-_ARTIFACT_NAME = "mlcommons_ssd_resnet34_int8"
 
 
 ##Inspired by https://github.com/kuangliu/pytorch-ssd
@@ -244,11 +242,15 @@ class DefaultBoxes(object):
             return self.dboxes
 
 
-class SSDResNet34(Model):
+class SSDResNet34(ObjectDetectionModel):
     """MLCommons SSD ResNet34 model"""
 
     @classmethod
-    def __load(cls, artifacts: Dict[str, bytes], *args, **kwargs):
+    def get_artifact_name(cls):
+        return "mlcommons_ssd_resnet34_int8"
+
+    @classmethod
+    def load_aux(cls, artifacts: Dict[str, bytes], *args, **kwargs):
         return cls(
             name="SSDResNet34",
             source=artifacts[EXT_ONNX],
@@ -267,16 +269,6 @@ class SSDResNet34(Model):
             *args,
             **kwargs,
         )
-
-    @classmethod
-    async def load_async(cls, use_native_post=True, *args, **kwargs) -> Model:
-        artifact_name = model_file_name(_ARTIFACT_NAME, use_native_post)
-        return cls.__load(await load_artifacts(artifact_name), *args, **kwargs)
-
-    @classmethod
-    def load(cls, use_native_post: bool = False, *args, **kwargs) -> Model:
-        artifact_name = model_file_name(_ARTIFACT_NAME, use_native_post)
-        return cls.__load(synchronous(load_artifacts)(artifact_name), *args, **kwargs)
 
 
 NUM_OUTPUTS: int = 12
@@ -399,7 +391,7 @@ class SSDResNet34PostProcessor(PostProcessor):
 
 
 class NativePostProcessor(SSDResNet34PostProcessor):
-    def __init__(self, model: Model, version: str = "cpp"):
+    def __init__(self, model: SSDResNet34, version: str = "cpp"):
         if not model.dfg:
             raise ArtifactNotFound(model.name, "dfg")
 
