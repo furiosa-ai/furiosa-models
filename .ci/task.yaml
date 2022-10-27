@@ -179,6 +179,7 @@ spec:
         #!/usr/bin/env bash
         pip install --quiet pytest-benchmark
 
+        cd /workspace/source
         py.test-benchmark compare
 
       resources:
