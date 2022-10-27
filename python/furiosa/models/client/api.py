@@ -36,6 +36,7 @@ def get_model_list(filter_func: Optional[Callable[..., bool]] = None) -> List[Li
         model = getattr(vision, model_name)
         if not filter_func(model):
             continue
+        # Model name, description, task type
         model_list.append([model_name, model.__doc__, model.__fields__["task_type"].default])
     return model_list
 
