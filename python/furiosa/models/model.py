@@ -28,6 +28,11 @@ class Model(ABC, RegistryModel):
         artifact_name = model_file_name(cls.get_artifact_name(), use_native_post)
         return cls.load_aux(synchronous(load_artifacts)(artifact_name), *args, **kwargs)
 
+    @property
+    @abstractmethod
+    def task_type(self) -> str:
+        ...
+
     # @abstractmethod
     # def preprocess(self, *args, **kwargs) -> Any:
     #     ...
@@ -38,8 +43,12 @@ class Model(ABC, RegistryModel):
 
 
 class ObjectDetectionModel(Model):
-    ...
+    @property
+    def task_type(self) -> str:
+        return 'Object detection'
 
 
 class ClassificationModel(Model):
-    ...
+    @property
+    def task_type(self) -> str:
+        return 'Image classification'
