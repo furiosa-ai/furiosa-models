@@ -17,24 +17,29 @@ from typing import Any, Dict, List, Sequence
 import numpy as np
 import yaml
 
-from furiosa.common.thread import synchronous
-from furiosa.registry import Format, Metadata, Model, Publication
+from furiosa.registry import Format, Metadata, Publication
 
 from . import core as _yolov5
-from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, load_artifacts, model_file_name
+from ...model import ObjectDetectionModel
+from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
 
 with open(pathlib.Path(__file__).parent / "datasets/yolov5m/cfg.yaml", "r") as f:
     cfg = yaml.safe_load(f)
     _ANCHORS: np.array = np.float32(cfg["anchors"])  # aspect ratio: (width, height)
     _CLASS_NAMES: List[str] = cfg["class_names"]
 
-_ARTIFACT_NAME = "yolov5m_int8"
 _BOX_DECODER = _yolov5.boxdecoder(_CLASS_NAMES, _ANCHORS)
 
 
-class YOLOv5m(Model):
+class YOLOv5m(ObjectDetectionModel):
+    """YOLOv5 Medium model"""
+
     @classmethod
-    def __load(cls, artifacts: Dict[str, bytes], *args, **kwargs):
+    def get_artifact_name(cls):
+        return "yolov5m_int8"
+
+    @classmethod
+    def load_aux(cls, artifacts: Dict[str, bytes], *args, **kwargs):
         return cls(
             name="YOLOv5Medium",
             source=artifacts[EXT_ONNX],
@@ -50,16 +55,6 @@ class YOLOv5m(Model):
             *args,
             **kwargs,
         )
-
-    @classmethod
-    async def load_async(cls, *args, **kwargs) -> Model:
-        artifact_name = model_file_name(_ARTIFACT_NAME, False)
-        return cls.__load(await load_artifacts(artifact_name), *args, **kwargs)
-
-    @classmethod
-    def load(cls, *args, **kwargs) -> Model:
-        artifact_name = model_file_name(_ARTIFACT_NAME, False)
-        return cls.__load(synchronous(load_artifacts)(artifact_name), *args, **kwargs)
 
     def compile_config(self, model_input_format="hwc"):
         return {

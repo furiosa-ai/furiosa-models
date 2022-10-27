@@ -4,26 +4,28 @@ import cv2
 import numpy
 import numpy as np
 
-from furiosa.common.thread import synchronous
-from furiosa.registry import Format, Metadata, Model, Publication
+from furiosa.registry import Format, Metadata, Publication
 
 from .. import native
 from ...errors import ArtifactNotFound
-from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, load_artifacts, model_file_name
+from ...model import ClassificationModel
+from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
 from ..common.datasets import imagenet1k
 from ..postprocess import PostProcessor
 from ..preprocess import center_crop, resize_with_aspect_ratio
 
 CLASSES: List[str] = imagenet1k.ImageNet1k_CLASSES
 
-_ARTIFACT_NAME = "mlcommons_resnet50_v1.5_int8"
 
-
-class ResNet50(Model):
+class ResNet50(ClassificationModel):
     """MLCommons ResNet50 model"""
 
     @classmethod
-    def __load(cls, artifacts: Dict[str, bytes], *args, **kwargs):
+    def get_artifact_name(cls):
+        return "mlcommons_resnet50_v1.5_int8"
+
+    @classmethod
+    def load_aux(cls, artifacts: Dict[str, bytes], *args, **kwargs):
         return cls(
             name="ResNet50",
             source=artifacts[EXT_ONNX],
@@ -39,16 +41,6 @@ class ResNet50(Model):
             *args,
             **kwargs,
         )
-
-    @classmethod
-    async def load_async(cls, use_native_post=False, *args, **kwargs) -> Model:
-        artifact_name = model_file_name(_ARTIFACT_NAME, use_native_post)
-        return cls.__load(await load_artifacts(artifact_name), *args, **kwargs)
-
-    @classmethod
-    def load(cls, use_native_post: bool = False, *args, **kwargs) -> Model:
-        artifact_name = model_file_name(_ARTIFACT_NAME, use_native_post)
-        return cls.__load(synchronous(load_artifacts)(artifact_name), *args, **kwargs)
 
 
 def preprocess(image: Union[str, np.ndarray]) -> np.array:
@@ -79,7 +71,7 @@ class Resnet50PostProcessor(PostProcessor):
 
 
 class NativePostProcessor(Resnet50PostProcessor):
-    def __init__(self, model: Model):
+    def __init__(self, model: ResNet50):
         if not model.dfg:
             raise ArtifactNotFound(model.name, "dfg")
 
