@@ -7,6 +7,7 @@ from typing import List
 from tabulate import tabulate
 
 from . import api
+from ..model import ObjectDetectionModel, ClassificationModel
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +67,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def print_model_list(table: List[List[str]]):
-    header = ["Model name", "Model description"]
+    header = ["Model name", "Model description", "Task type"]
     print(tabulate(table, headers=header, tablefmt="pretty"))
 
 
@@ -88,15 +89,23 @@ def resolve_input_paths(input_path: Path) -> List[str]:
 def main():
     args = parse_args()
     command: str = args.command
+    filter_type: str = args.type
     model: str = args.model
-    input_path: str = args.input
+
 
     if command == "list":
-        if model:
-            print(api.list_processes(model))
+        if filter_type is None:
+            filter_func = lambda _: True
+        elif "detect" in filter_type.lower():
+            filter_func = lambda x: issubclass(x, ObjectDetectionModel)
+        elif "classif" in filter_type.lower():
+            filter_func = lambda x: issubclass(x, ClassificationModel)
         else:
-            print_model_list(api.get_model_list())
+            filter_func = lambda _: True
+            logger.warn(f"Unknwon type filter {filter_type}, showing all models...")
+        print_model_list(api.get_model_list(filter_func=filter_func))
     elif command == "run":
+        input_path: str = args.input
         input_paths = resolve_input_paths(Path(input_path))
         model = api.get_model(model)
         if model is None:

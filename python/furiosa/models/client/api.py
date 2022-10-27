@@ -3,8 +3,9 @@ from typing import Callable, List, Optional
 
 from furiosa.models import vision
 from furiosa.models.vision import resnet50
-from furiosa.registry.model import Model
 from furiosa.runtime import session
+
+from ..model import Model
 
 
 def normalize(text: str) -> str:
@@ -35,13 +36,8 @@ def get_model_list(filter_func: Optional[Callable[..., bool]] = None) -> List[Li
         model = getattr(vision, model_name)
         if not filter_func(model):
             continue
-        model_list.append([model_name, model.__doc__])
+        model_list.append([model_name, model.__doc__, model.__fields__["task_type"].default])
     return model_list
-
-
-def list_processes(model_name: str):
-    # TODO: List available pre/postprocesses
-    ...
 
 
 def get_model(model_name: str) -> Optional[Model]:
