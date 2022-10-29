@@ -3,9 +3,11 @@ from dataclasses import dataclass
 import logging
 import os
 from pathlib import Path
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Tuple, Union
 
-import dvc.api
+import aiofiles
+import aiohttp
+import yaml
 
 from furiosa.common.native import DEFAULT_ENCODING, find_native_lib_path, find_native_libs
 from furiosa.common.thread import asynchronous
@@ -24,6 +26,9 @@ CACHE_DIRECTORY_BASE = Path(
         os.path.join(os.getenv("XDG_CACHE_HOME", "~/.cache"), "furiosa/models"),
     )
 )
+
+DVC_PUBLIC_HTTP_ENDPOINT = "https://furiosa-public-artifacts.s3.amazonaws.com/furiosa-artifacts"
+
 module_logger = logging.getLogger(__name__)
 
 
@@ -60,58 +65,66 @@ def removesuffix(base: str, suffix: str) -> str:
     return base
 
 
-def is_onnx_file(uri: Union[str, Path]) -> bool:
-    return str(uri).lower().endswith(".onnx")
-
-
-class ResolvedFile(ABC):
-    @abstractmethod
-    async def read(self):
-        ...
-
-
-class LocalFile(ResolvedFile):
-    def __init__(self, uri: Path):
-        self.uri = uri
-
-    async def read(self):
-        # Maybe we can use https://github.com/Tinche/aiofiles later
-        return self.uri.read_bytes()
-
-
-class DVCFile(ResolvedFile):
+class ArtifactResolver:
     def __init__(self, uri: Union[str, Path]):
         self.uri = Path(uri)
+        # Note: DVC_REPO is to locate local DVC directory not remote git repository
+        self.dvc_cache_path = os.environ.get("DVC_REPO", self.find_dvc_cache_directory(Path.cwd()))
+        if self.dvc_cache_path is not None:
+            if self.dvc_cache_path.is_symlink():
+                self.dvc_cache_path = self.dvc_cache_path.readlink()
+            module_logger.debug(f"Found DVC cache directory: {self.dvc_cache_path}")
+
+    @classmethod
+    def find_dvc_cache_directory(cls, path: Path) -> Optional[Path]:
+        if path is None or path == path.parent:
+            return None
+        if (path / ".dvc").is_dir():
+            return path / ".dvc" / "cache"
+        return cls.find_dvc_cache_directory(path.parent)
+
+    @staticmethod
+    def parse_dvc_file(file_path: Path) -> Tuple[str, str]:
+        md5sum = yaml.safe_load(open(f"{file_path}.dvc").read())["outs"][0]["md5"]
+        return md5sum[:2], md5sum[2:]
+
+    @staticmethod
+    def get_url(
+        directory: str, filename: str, http_endpoint: str = DVC_PUBLIC_HTTP_ENDPOINT
+    ) -> str:
+        return f"{http_endpoint}/{directory}/{filename}"
 
     async def read(self):
-        dvc_repo = os.environ.get("DVC_REPO", None)
-        dvc_rev = os.environ.get("DVC_REV", None)
-        module_logger.debug(f"DVC_URI={self.uri}, DVC_REPO={dvc_repo}, DVC_REV={dvc_rev}")
-        try:
-            return await asynchronous(dvc.api.read)(
-                str(self.uri),
-                repo=os.environ.get("DVC_REPO", None),
-                rev=os.environ.get("DVC_REV", None),
-                mode="rb",
-            )
-        except Exception as e:
-            if is_onnx_file(self.uri):
-                raise e
-            else:
-                # It can happen in development phase
-                module_logger.warning(f"{self.uri} is missing")
-                module_logger.warning(e)
-                return None
+        # Try to find real file (no DVC)
+        if Path(self.uri).exists():
+            module_logger.debug(f"Local file exists: {self.uri}")
+            async with aiofiles.open(self.uri, mode="rb") as f:
+                return await f.read()
+
+        module_logger.debug(f"{self.uri} not exists, resolving DVC")
+        directory, filename = self.parse_dvc_file(self.uri)
+        if self.dvc_cache_path is not None:
+            # DVC Cache hit
+            cached: Path = self.dvc_cache_path / directory / filename
+            if cached.exists():
+                module_logger.debug(f"DVC Cache hit: {cached}")
+                async with aiofiles.open(cached, mode="rb") as f:
+                    return await f.read()
+
+        # Fetch from remote
+        async with aiohttp.ClientSession() as session:
+            url = self.get_url(directory, filename)
+            module_logger.debug(f"Fetching from remote: {url}")
+            async with session.get(url) as resp:
+                return await resp.read()
 
 
 def model_file_name(relative_path, truncated=True) -> str:
-    if truncated:
-        return f"{relative_path}_truncated"
-    else:
-        return relative_path
+    suffix = "_truncated" if truncated else ""
+    return relative_path + suffix
 
 
-def resolve_file(src_name: str, extension: str, generated_suffix="_warboy_2pe") -> ResolvedFile:
+def resolve_file(src_name: str, extension: str, generated_suffix="_warboy_2pe") -> ArtifactResolver:
     # First check whether it is generated file or not
     if extension.lower() in GENERATED_EXTENSIONS:
         generated_path_base = _generated_path_base()
@@ -121,16 +134,10 @@ def resolve_file(src_name: str, extension: str, generated_suffix="_warboy_2pe") 
         file_subpath = f'{generated_path_base}/{file_name}'
     else:
         file_subpath = f'{src_name}.{extension}'
-    full_path = DATA_DIRECTORY_BASE / file_subpath
+    full_path = (DATA_DIRECTORY_BASE / file_subpath).resolve()
 
-    # Find real file in data folder
-    if full_path.exists():
-        module_logger.debug(f"{full_path} exists, making LocalFile class")
-        return LocalFile(full_path.resolve())
-
-    # Load from dvc
     try:
-        return DVCFile(Path(f'python/furiosa/models/data/{file_subpath}'))
+        return ArtifactResolver(f"{full_path}")
     except Exception as e:
         raise errors.ArtifactNotFound(src_name, extension) from e
 

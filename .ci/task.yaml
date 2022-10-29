@@ -37,7 +37,7 @@ spec:
         cd /workspace/source
 
         make lint
-        pip3 install --pre --editable .[test]
+        pip install --pre .[test]
         make unit_tests
 
       resources:
@@ -89,7 +89,7 @@ spec:
 
         cd /workspace/source
 
-        pip3 install --pre .
+        pip install --pre .
         NPU_GLOBAL_CONFIG_PATH=warboy-2pe make examples
 
       resources:
@@ -146,7 +146,7 @@ spec:
         rm -rf tests/data
         ln -s /furiosa-models-dataset tests/data
 
-        pip3 install --pre -e .[test]
+        pip install --pre .[test]
 
         make regression-test-$(params.modelName)
 
