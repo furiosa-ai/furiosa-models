@@ -7,7 +7,7 @@ from typing import List
 from tabulate import tabulate
 
 from . import api
-from ..model import ObjectDetectionModel, ClassificationModel
+from ..types import ImageClassificationModel, ObjectDetectionModel
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ EXAMPLE: str = """example:
     furiosa-models list --model SSDResNet34
 
     # Run SSDResNet34 for images in `./input` directory
-    furiosa-models run --model ssdresnet34 ./input/
+    furiosa-models run -m ssdresnet34 ./input/
 """
 
 
@@ -39,9 +39,6 @@ def parse_args() -> argparse.Namespace:
         required=True,
     )
 
-    # Note that common_parser is not used for `list` command
-    common_parser = argparse.ArgumentParser(add_help=False)
-
     list_parser = subparsers.add_parser(
         "list", help="See available models or pre/post-processes list"
     )
@@ -55,7 +52,7 @@ def parse_args() -> argparse.Namespace:
         help="Model name: if this argument is given, it will show the available pre/post processes",
     )
 
-    inference_parser = subparsers.add_parser("run", parents=[common_parser], help="Run Inference")
+    inference_parser = subparsers.add_parser("run", help="Run Inference")
     inference_parser.add_argument("-pre", "--preprocess", type=str, help="Set preprocess type")
     inference_parser.add_argument("-post", "--postprocess", type=str, help="Set postprocess type")
     inference_parser.add_argument(
@@ -72,8 +69,7 @@ def print_model_list(table: List[List[str]]):
 
 
 def resolve_input_paths(input_path: Path) -> List[str]:
-    # Process common arguments for running furiosa-models
-    # Create input file list
+    """Create input file list"""
     if input_path.is_file():
         return [str(input_path)]
     elif input_path.is_dir():
@@ -90,8 +86,7 @@ def main():
     args = parse_args()
     command: str = args.command
     filter_type: str = args.type
-    model: str = args.model
-
+    model_name: str = args.model
 
     if command == "list":
         if filter_type is None:
@@ -99,7 +94,7 @@ def main():
         elif "detect" in filter_type.lower():
             filter_func = lambda x: issubclass(x, ObjectDetectionModel)
         elif "classif" in filter_type.lower():
-            filter_func = lambda x: issubclass(x, ClassificationModel)
+            filter_func = lambda x: issubclass(x, ImageClassificationModel)
         else:
             filter_func = lambda _: True
             logger.warn(f"Unknwon type filter {filter_type}, showing all models...")
@@ -107,7 +102,7 @@ def main():
     elif command == "run":
         input_path: str = args.input
         input_paths = resolve_input_paths(Path(input_path))
-        model = api.get_model(model)
+        model = api.get_model(model_name)
         if model is None:
             logging.warn(f"Can't find model named {model}")
         api.run_inference(model, input_paths)

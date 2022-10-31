@@ -8,7 +8,7 @@ from furiosa.registry import Format, Metadata, Publication
 
 from .. import native
 from ...errors import ArtifactNotFound
-from ...model import ClassificationModel
+from ...types import ImageClassificationModel
 from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
 from ..common.datasets import imagenet1k
 from ..postprocess import PostProcessor
@@ -17,7 +17,7 @@ from ..preprocess import center_crop, resize_with_aspect_ratio
 CLASSES: List[str] = imagenet1k.ImageNet1k_CLASSES
 
 
-class ResNet50(ClassificationModel):
+class ResNet50(ImageClassificationModel):
     """MLCommons ResNet50 model"""
 
     @classmethod

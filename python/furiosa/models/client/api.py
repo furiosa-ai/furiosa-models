@@ -5,7 +5,7 @@ from furiosa.models import vision
 from furiosa.models.vision import resnet50
 from furiosa.runtime import session
 
-from ..model import Model
+from ..types import Model
 
 
 def normalize(text: str) -> str:
@@ -36,13 +36,16 @@ def get_model_list(filter_func: Optional[Callable[..., bool]] = None) -> List[Li
         model = getattr(vision, model_name)
         if not filter_func(model):
             continue
+        task_type = " ".join(
+            map(lambda x: x.capitalize(), model.__fields__["task_type"].default.name.split("_"))
+        )
         # Model name, description, task type
-        model_list.append([model_name, model.__doc__, model.__fields__["task_type"].default])
+        model_list.append([model_name, model.__doc__, task_type])
     return model_list
 
 
 def get_model(model_name: str) -> Optional[Model]:
-    """Get model for givne model name string
+    """Get model for given model name string
 
     Args:
         model_name: Model name

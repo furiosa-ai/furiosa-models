@@ -13,7 +13,7 @@ from furiosa.registry import Format, Metadata, Publication
 
 from .. import native
 from ...errors import ArtifactNotFound, FuriosaModelException
-from ...model import ObjectDetectionModel
+from ...types import ObjectDetectionModel
 from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
 from ..common.datasets import coco
 from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, PostProcessor, calibration_ltrbbox

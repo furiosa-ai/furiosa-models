@@ -1,10 +1,16 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from enum import IntEnum
+from typing import Any, Dict, Tuple
 
 from furiosa.common.thread import synchronous
 from furiosa.registry.model import Model as RegistryModel
 
 from .utils import load_artifacts, model_file_name
+
+
+class ModelTaskType(IntEnum):
+    object_detection = 0
+    image_classification = 1
 
 
 class Model(ABC, RegistryModel):
@@ -28,18 +34,28 @@ class Model(ABC, RegistryModel):
         artifact_name = model_file_name(cls.get_artifact_name(), use_native_post)
         return cls.load_aux(synchronous(load_artifacts)(artifact_name), *args, **kwargs)
 
-    # @abstractmethod
-    # def preprocess(self, *args, **kwargs) -> Any:
-    #     ...
+    @abstractmethod
+    def preprocess(self, *args, **kwargs) -> Any:
+        ...
 
-    # @abstractmethod
-    # def postprocess(self, *args, **kwargs) -> Any:
-    #     ...
-
-
-class ObjectDetectionModel(Model):
-    task_type = 'Object detection'
+    @abstractmethod
+    def postprocess(self, *args, **kwargs) -> Any:
+        ...
 
 
-class ClassificationModel(Model):
-    task_type = 'Image classification'
+class ContextedModel(Model, ABC):
+    @abstractmethod
+    def preprocess(self, *args, **kwargs) -> Tuple:
+        ...
+
+    @abstractmethod
+    def postprocess(self, *args, **kwargs) -> Any:
+        ...
+
+
+class ObjectDetectionModel(Model, ABC):
+    task_type: ModelTaskType = ModelTaskType.object_detection
+
+
+class ImageClassificationModel(Model, ABC):
+    task_type: ModelTaskType = ModelTaskType.image_classification
