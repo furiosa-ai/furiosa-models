@@ -1,8 +1,6 @@
 # from dataclasses import astuple
 
 import cv2
-
-# from helpers.util import draw_bboxes
 import numpy as np
 import pytest
 
@@ -29,7 +27,5 @@ async def test_yolov5_small():
     batch_feat = collate(batch_feat)
     detected_boxes = postprocess(batch_feat, batch_preproc_param)
     assert len(detected_boxes) == 2, "batch axis is expected 2"
-    # im_out = draw_bboxes(batch_im[0], list(map(astuple, detected_boxes[0])))
-    # cv2.imwrite("yolov5m.jpg", im_out)
     assert len(detected_boxes[0]) == 18, "detected_boxes must be 18"
     sess.close()
