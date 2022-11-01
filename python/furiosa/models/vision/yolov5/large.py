@@ -29,7 +29,7 @@ class YOLOv5l(ObjectDetectionModel):
     """YOLOv5 Large model"""
 
     @staticmethod
-    def get_compiler_config(model_input_format: str):
+    def _get_compiler_config(model_input_format: str):
         return {
             "without_quantize": {
                 "parameters": [
@@ -65,7 +65,7 @@ class YOLOv5l(ObjectDetectionModel):
                 description="YOLOv5 large model",
                 publication=Publication(url="https://github.com/ultralytics/yolov5"),
             ),
-            compiler_config=cls.get_compiler_config(model_input_format),
+            compiler_config=cls._get_compiler_config(model_input_format),
             *args,
             **kwargs,
         )

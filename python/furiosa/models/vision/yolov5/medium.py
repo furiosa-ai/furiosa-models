@@ -39,7 +39,7 @@ class YOLOv5m(ObjectDetectionModel):
         return "yolov5m_int8"
 
     @staticmethod
-    def get_compiler_config(model_input_format: str):
+    def _get_compiler_config(model_input_format: str):
         return {
             "without_quantize": {
                 "parameters": [
@@ -75,7 +75,7 @@ class YOLOv5m(ObjectDetectionModel):
                 description="YOLOv5 medium model",
                 publication=Publication(url="https://github.com/ultralytics/yolov5"),
             ),
-            compiler_config=cls.get_compiler_config(model_input_format),
+            compiler_config=cls._get_compiler_config(model_input_format),
             *args,
             **kwargs,
         )
