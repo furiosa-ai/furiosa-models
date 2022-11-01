@@ -9,11 +9,9 @@ import numpy.typing as npt
 import torch
 import torch.nn.functional as F
 
-from furiosa.registry import Format, Metadata, Publication
-
 from .. import native
 from ...errors import ArtifactNotFound, FuriosaModelException
-from ...model import ObjectDetectionModel
+from ...types import Format, Metadata, ObjectDetectionModel, Publication
 from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
 from ..common.datasets import coco
 from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, PostProcessor, calibration_ltrbbox
@@ -245,8 +243,8 @@ class DefaultBoxes(object):
 class SSDResNet34(ObjectDetectionModel):
     """MLCommons SSD ResNet34 model"""
 
-    @classmethod
-    def get_artifact_name(cls):
+    @staticmethod
+    def get_artifact_name():
         return "mlcommons_ssd_resnet34_int8"
 
     @classmethod

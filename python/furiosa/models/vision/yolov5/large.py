@@ -11,10 +11,8 @@ from typing import Any, Dict, List, Sequence
 import numpy as np
 import yaml
 
-from furiosa.registry import Format, Metadata, Publication
-
 from . import core as _yolov5
-from ...model import ObjectDetectionModel
+from ...types import Format, Metadata, ObjectDetectionModel, Publication
 from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
 
 with open(pathlib.Path(__file__).parent / "datasets/yolov5l/cfg.yaml", "r") as f:
@@ -28,8 +26,8 @@ _BOX_DECODER = _yolov5.boxdecoder(_CLASS_NAMES, _ANCHORS)
 class YOLOv5l(ObjectDetectionModel):
     """YOLOv5 Large model"""
 
-    @classmethod
-    def get_artifact_name(cls):
+    @staticmethod
+    def get_artifact_name():
         return "yolov5l_int8"
 
     @classmethod

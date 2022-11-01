@@ -6,12 +6,10 @@ import numpy
 import numpy as np
 import numpy.typing as npt
 
-from furiosa.registry import Format, Metadata, Publication
-
 from . import anchor_generator  # type: ignore[import]
 from .. import native
 from ...errors import ArtifactNotFound, FuriosaModelException
-from ...model import ObjectDetectionModel
+from ...types import Format, Metadata, ObjectDetectionModel, Publication
 from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
 from ..common.datasets import coco
 from ..postprocess import (
@@ -55,8 +53,8 @@ class SSDSmallConstant(object):
 class SSDMobileNet(ObjectDetectionModel):
     """MLCommons MobileNet v1 model"""
 
-    @classmethod
-    def get_artifact_name(cls):
+    @staticmethod
+    def get_artifact_name():
         return "mlcommons_ssd_mobilenet_v1_int8"
 
     @classmethod
