@@ -2,8 +2,9 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any, List, Sequence
 
-import numpy
 import numpy as np
+
+from ..types import PostProcessor
 
 
 @dataclass
@@ -196,9 +197,3 @@ def test_collate():
     assert len(batch_arrays) == 2
     assert batch_arrays[0].shape == (3, 3, 4)
     assert batch_arrays[1].shape == (3, 2, 5)
-
-
-class PostProcessor(ABC):
-    @abstractmethod
-    def eval(self, inputs: Sequence[numpy.ndarray], *args: Any, **kwargs: Any):
-        pass

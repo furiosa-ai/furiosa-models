@@ -9,16 +9,10 @@ import numpy.typing as npt
 from . import anchor_generator  # type: ignore[import]
 from .. import native
 from ...errors import ArtifactNotFound, FuriosaModelException
-from ...types import Format, Metadata, ObjectDetectionModel, Publication
+from ...types import Format, Metadata, ObjectDetectionModel, PostProcessor, Publication
 from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
 from ..common.datasets import coco
-from ..postprocess import (
-    LtrbBoundingBox,
-    ObjectDetectionResult,
-    PostProcessor,
-    calibration_ltrbbox,
-    sigmoid,
-)
+from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox, sigmoid
 
 # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L155-L158
 PRIORS = np.concatenate(

@@ -6,10 +6,9 @@ import numpy as np
 
 from .. import native
 from ...errors import ArtifactNotFound
-from ...types import Format, ImageClassificationModel, Metadata, Publication
+from ...types import Format, ImageClassificationModel, Metadata, PostProcessor, Publication
 from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
 from ..common.datasets import imagenet1k
-from ..postprocess import PostProcessor
 from ..preprocess import center_crop, resize_with_aspect_ratio
 
 CLASSES: List[str] = imagenet1k.ImageNet1k_CLASSES

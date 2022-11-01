@@ -1,15 +1,16 @@
 from abc import ABC, abstractmethod
 import datetime
 from enum import Enum, IntEnum
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional, Sequence, Union
 
+import numpy.typing as npt
 from pydantic import BaseConfig, BaseModel, Extra, Field
+from typing_extensions import TypeAlias
 
 from furiosa.common.thread import synchronous
-from furiosa.runtime.session import Session
+from furiosa.runtime.session import AsyncSession, Session
 
 from .utils import load_artifacts, model_file_name
-from .vision.postprocess import PostProcessor
 
 
 class Config(BaseConfig):
@@ -64,19 +65,49 @@ class ModelTaskType(IntEnum):
     image_classification = 1
 
 
-class PreProcessor:
-    ...
+# Context type alias
+Context: TypeAlias = Any
+
+
+class PreProcessor(ABC):
+    @abstractmethod
+    def eval(self, inputs: Sequence[npt.ArrayLike], *args, **kwargs):
+        ...
+
+
+class PostProcessor(ABC):
+    @abstractmethod
+    def eval(self, inputs: Sequence[npt.ArrayLike], *args, **kwargs):
+        ...
+
+
+class ContextedPreProcessor(ABC):
+    @abstractmethod
+    def eval(self, inputs: Sequence[npt.ArrayLike], context: Sequence[Context], *args, **kwargs):
+        ...
+
+
+class ContextedPostProcessor(ABC):
+    @abstractmethod
+    def eval(self, inputs: Sequence[npt.ArrayLike], context: Sequence[Context], *args, **kwargs):
+        ...
 
 
 class Processor:
-    preprocessor: Optional[PreProcessor]
-    postprocessor: Optional[PostProcessor]
+    preprocessor: PreProcessor
+    postprocessor: PostProcessor
+
+
+class ContextedProcessor:
+    preprocessor: ContextedPreProcessor
+    postprocessor: ContextedPostProcessor
 
 
 class Model(BaseModel, ABC):
     """Model for a Furiosa SDK."""
 
-    class Config(Config):
+    class Config(BaseConfig):
+        extra: Extra = Extra.forbid
         # To allow Session, Processor type
         arbitrary_types_allowed = True
 
@@ -97,8 +128,8 @@ class Model(BaseModel, ABC):
     compiler_config: Optional[Dict] = None
 
     # Runtime-related fields
-    _session: Optional[Session]
-    processor: Optional[Processor]
+    _session: Optional[Union[AsyncSession, Session]]
+    processor: Optional[Union[Processor, ContextedProcessor]]
 
     @staticmethod
     @abstractmethod

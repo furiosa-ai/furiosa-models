@@ -11,10 +11,10 @@ import torch.nn.functional as F
 
 from .. import native
 from ...errors import ArtifactNotFound, FuriosaModelException
-from ...types import Format, Metadata, ObjectDetectionModel, Publication
+from ...types import Format, Metadata, ObjectDetectionModel, PostProcessor, Publication
 from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
 from ..common.datasets import coco
-from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, PostProcessor, calibration_ltrbbox
+from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox
 
 
 ##Inspired by https://github.com/kuangliu/pytorch-ssd
