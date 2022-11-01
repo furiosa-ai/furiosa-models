@@ -1,69 +1,17 @@
 from abc import ABC, abstractmethod
-import datetime
-from enum import Enum, IntEnum
-from typing import Any, Dict, List, Optional, Sequence, Union
+from enum import IntEnum
+from typing import Any, Dict, Optional, Sequence, Tuple
 
 import numpy.typing as npt
-from pydantic import BaseConfig, BaseModel, Extra, Field
+from pydantic import BaseConfig, BaseModel, Extra
 from typing_extensions import TypeAlias
 
 from furiosa.common.thread import synchronous
-from furiosa.runtime.session import AsyncSession, Session
+from furiosa.registry.model import Format, Metadata
+from furiosa.registry.model import Model as RegistryModel
+from furiosa.registry.model import Publication
 
 from .utils import load_artifacts, model_file_name
-
-
-class Config(BaseConfig):
-    # Extra fields not permitted
-    extra: Extra = Extra.forbid
-
-
-class Format(str, Enum):
-    """Model binary format to represent the binary specified."""
-
-    ONNX = "onnx"
-    TFLite = "tflite"
-
-
-class Publication(BaseModel):
-    """Model publication information."""
-
-    __config__ = Config
-
-    authors: Optional[List[str]] = None
-    title: Optional[str] = None
-    publisher: Optional[str] = None
-    date: Optional[datetime.date] = None
-    url: Optional[str] = None
-
-
-class Metadata(BaseModel):
-    """Model metadata to understand a model."""
-
-    __config__ = Config
-
-    description: Optional[str] = None
-    publication: Optional[Publication] = None
-
-
-class Tags(BaseModel):
-    class Config:
-        extra = Extra.allow
-
-    content_type: Optional[str] = None
-
-
-class ModelTensor(BaseModel):
-    name: str
-    datatype: str
-    shape: List[int]
-    tags: Optional[Tags] = None
-
-
-class ModelTaskType(IntEnum):
-    object_detection = 0
-    image_classification = 1
-
 
 # Context type alias
 Context: TypeAlias = Any
@@ -71,65 +19,41 @@ Context: TypeAlias = Any
 
 class PreProcessor(ABC):
     @abstractmethod
-    def eval(self, inputs: Sequence[npt.ArrayLike], *args, **kwargs):
+    def __call__(
+        self, inputs: Any, *args, **kwargs
+    ) -> Tuple[Sequence[npt.ArrayLike], Sequence[Context]]:
         ...
 
 
 class PostProcessor(ABC):
     @abstractmethod
-    def eval(self, inputs: Sequence[npt.ArrayLike], *args, **kwargs):
+    def __call__(
+        self, inputs: Sequence[npt.ArrayLike], contexts: Sequence[Context], *args, **kwargs
+    ):
         ...
 
 
-class ContextedPreProcessor(ABC):
-    @abstractmethod
-    def eval(self, inputs: Sequence[npt.ArrayLike], context: Sequence[Context], *args, **kwargs):
-        ...
+class DataProcessor:
+    """Data pre/post processor with context (even if doesn't needed)"""
 
-
-class ContextedPostProcessor(ABC):
-    @abstractmethod
-    def eval(self, inputs: Sequence[npt.ArrayLike], context: Sequence[Context], *args, **kwargs):
-        ...
-
-
-class Processor:
     preprocessor: PreProcessor
     postprocessor: PostProcessor
 
 
-class ContextedProcessor:
-    preprocessor: ContextedPreProcessor
-    postprocessor: ContextedPostProcessor
+class ModelTaskType(IntEnum):
+    """Model's task type"""
+
+    OBJECT_DETECTION = 0
+    IMAGE_CLASSIFICATION = 1
 
 
-class Model(BaseModel, ABC):
-    """Model for a Furiosa SDK."""
-
+class Model(RegistryModel, BaseModel, ABC):
     class Config(BaseConfig):
         extra: Extra = Extra.forbid
         # To allow Session, Processor type
         arbitrary_types_allowed = True
 
-    name: str
-    source: bytes = Field(repr=False)
-    format: Format
-    dfg: Optional[bytes] = Field(repr=False)
-    enf: Optional[bytes] = Field(repr=False)
-
-    family: Optional[str] = None
-    version: Optional[str] = None
-
-    metadata: Optional[Metadata] = None
-
-    inputs: Optional[List[ModelTensor]] = []
-    outputs: Optional[List[ModelTensor]] = []
-
-    compiler_config: Optional[Dict] = None
-
-    # Runtime-related fields
-    _session: Optional[Union[AsyncSession, Session]]
-    processor: Optional[Union[Processor, ContextedProcessor]]
+    processor: Optional[DataProcessor] = None
 
     @staticmethod
     @abstractmethod
@@ -138,23 +62,35 @@ class Model(BaseModel, ABC):
 
     @classmethod
     @abstractmethod
-    def load_aux(cls, artifacts: Dict[str, bytes], *args, **kwargs):
+    def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool, *args, **kwargs):
         ...
 
     @classmethod
-    async def load_async(cls, use_native_post=False, *args, **kwargs) -> 'Model':
-        artifact_name = model_file_name(cls.get_artifact_name(), use_native_post)
-        return cls.load_aux(await load_artifacts(artifact_name), *args, **kwargs)
+    async def load_async(cls, use_native: bool = False, *args, **kwargs) -> 'Model':
+        artifact_name = model_file_name(cls.get_artifact_name(), use_native)
+        return cls.load_aux(await load_artifacts(artifact_name), use_native, *args, **kwargs)
 
     @classmethod
-    def load(cls, use_native_post: bool = False, *args, **kwargs) -> 'Model':
-        artifact_name = model_file_name(cls.get_artifact_name(), use_native_post)
-        return cls.load_aux(synchronous(load_artifacts)(artifact_name), *args, **kwargs)
+    def load(cls, use_native: bool = False, *args, **kwargs) -> 'Model':
+        artifact_name = model_file_name(cls.get_artifact_name(), use_native)
+        return cls.load_aux(synchronous(load_artifacts)(artifact_name), use_native, *args, **kwargs)
+
+    def preprocess(self, *args, **kwargs) -> Tuple[Sequence[npt.ArrayLike], Sequence[Context]]:
+        assert self.processor is not None
+        return self.processor.preprocessor(*args, **kwargs)
+
+    def postprocess(self, *args, **kwargs):
+        assert self.processor is not None
+        return self.processor.postprocessor(*args, **kwargs)
 
 
 class ObjectDetectionModel(Model, ABC):
-    task_type: ModelTaskType = ModelTaskType.object_detection
+    """Object Detection Model Base Class"""
+
+    task_type: ModelTaskType = ModelTaskType.OBJECT_DETECTION
 
 
 class ImageClassificationModel(Model, ABC):
-    task_type: ModelTaskType = ModelTaskType.image_classification
+    """Image Classification Model Base Class"""
+
+    task_type: ModelTaskType = ModelTaskType.IMAGE_CLASSIFICATION

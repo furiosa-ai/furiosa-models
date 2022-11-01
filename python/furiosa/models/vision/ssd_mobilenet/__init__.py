@@ -281,7 +281,7 @@ class SSDMobilePostProcessor(PostProcessor):
 class NativePostProcessor(SSDMobilePostProcessor):
     def __init__(self, model: SSDMobileNet, version: str = "cpp"):
         if not model.dfg:
-            raise ArtifactNotFound(model.name, "dfg")
+            raise ArtifactNotFound(model.name, EXT_DFG)
 
         if version == "cpp":
             self._native = native.ssd_mobilenet.CppPostProcessor(model.dfg)

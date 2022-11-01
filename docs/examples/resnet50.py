@@ -1,9 +1,11 @@
-from furiosa.models.vision import ResNet50, resnet50
+from furiosa.models.vision import ResNet50
 from furiosa.runtime import session
 
-model = ResNet50.load()
+image = "tests/assets/cat.jpg"
 
-with session.create(model.enf) as sess:
-    image = resnet50.preprocess("tests/assets/cat.jpg")
-    output = sess.run(image).numpy()
-    resnet50.postprocess(output)
+resnet50 = ResNet50.load(use_native=True)  # To make NativeProcessor
+with session.create(resnet50) as sess:
+    inputs, _ = resnet50.preprocess(image)
+    outputs = sess.run(inputs).numpy()
+    outputs = resnet50.postprocess(outputs)
+    print(outputs)

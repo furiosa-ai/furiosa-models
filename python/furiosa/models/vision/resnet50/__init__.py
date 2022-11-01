@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Sequence, Union
+from typing import Any, Dict, List, Sequence, Tuple, Union
 
 import cv2
 import numpy
@@ -6,7 +6,15 @@ import numpy as np
 
 from .. import native
 from ...errors import ArtifactNotFound
-from ...types import Format, ImageClassificationModel, Metadata, PostProcessor, Publication
+from ...types import (
+    DataProcessor,
+    Format,
+    ImageClassificationModel,
+    Metadata,
+    PostProcessor,
+    PreProcessor,
+    Publication,
+)
 from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
 from ..common.datasets import imagenet1k
 from ..preprocess import center_crop, resize_with_aspect_ratio
@@ -22,7 +30,13 @@ class ResNet50(ImageClassificationModel):
         return "mlcommons_resnet50_v1.5_int8"
 
     @classmethod
-    def load_aux(cls, artifacts: Dict[str, bytes], *args, **kwargs):
+    def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = True, *args, **kwargs):
+        if use_native:
+            if artifacts[EXT_DFG] is None:
+                raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
+            processor = Resnet50NativeProcessor(artifacts[EXT_DFG])
+        else:
+            processor = Resnet50PythonProcessor()
         return cls(
             name="ResNet50",
             source=artifacts[EXT_ONNX],
@@ -35,43 +49,53 @@ class ResNet50(ImageClassificationModel):
                 description="ResNet50 v1.5 int8 ImageNet-1K",
                 publication=Publication(url="https://arxiv.org/abs/1512.03385.pdf"),
             ),
-            *args,
+            processor=processor,
             **kwargs,
         )
 
 
-def preprocess(image: Union[str, np.ndarray]) -> np.array:
-    """Read and preprocess an image located at image_path."""
-    # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/main.py#L37-L39
-    # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L168-L184
-    if type(image) == str:
-        image = cv2.imread(image)
-        if image is None:
-            raise FileNotFoundError(image)
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    image = resize_with_aspect_ratio(image, 224, 224, percent=87.5, interpolation=cv2.INTER_AREA)
-    image = center_crop(image, 224, 224)
-    image = np.asarray(image, dtype=np.float32)
-    # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L178
-    image -= np.array([123.68, 116.78, 103.94], dtype=np.float32)
-    image = image.transpose([2, 0, 1])
-    return image[np.newaxis, ...]
+class Resnet50PreProcessor(PreProcessor):
+    @staticmethod
+    def __call__(inputs: Union[str, np.ndarray]) -> Tuple[np.array, None]:
+        """Read and preprocess an image located at image_path."""
+        # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/main.py#L37-L39
+        # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L168-L184
+        if type(inputs) == str:
+            inputs = cv2.imread(inputs)
+            if inputs is None:
+                raise FileNotFoundError(inputs)
+        inputs = cv2.cvtColor(inputs, cv2.COLOR_BGR2RGB)
+        inputs = resize_with_aspect_ratio(
+            inputs, 224, 224, percent=87.5, interpolation=cv2.INTER_AREA
+        )
+        inputs = center_crop(inputs, 224, 224)
+        inputs = np.asarray(inputs, dtype=np.float32)
+        # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L178
+        inputs -= np.array([123.68, 116.78, 103.94], dtype=np.float32)
+        inputs = inputs.transpose([2, 0, 1])
+        return inputs[np.newaxis, ...], None
 
 
-def postprocess(outputs: Sequence[numpy.ndarray]) -> str:
-    return CLASSES[int(outputs[0]) - 1]
+class Resnet50PythonPostProcessor(PostProcessor):
+    def __call__(self, inputs: Sequence[numpy.ndarray], *args, **kwargs) -> str:
+        return CLASSES[int(inputs[0]) - 1]
 
 
-class Resnet50PostProcessor(PostProcessor):
-    def eval(self, inputs: Sequence[numpy.ndarray], *args: Any, **kwargs: Any) -> str:
+class Resnet50NativePostProcessor(PostProcessor):
+    def __init__(self, dfg: bytes):
+        self._native = native.resnet50.PostProcessor(dfg)
+
+    def __call__(self, inputs: Sequence[numpy.ndarray], *args, **kwargs) -> str:
         return CLASSES[self._native.eval(inputs) - 1]
 
 
-class NativePostProcessor(Resnet50PostProcessor):
-    def __init__(self, model: ResNet50):
-        if not model.dfg:
-            raise ArtifactNotFound(model.name, "dfg")
+class Resnet50PythonProcessor(DataProcessor):
+    preprocessor: PreProcessor = Resnet50PreProcessor()
+    postprocessor: PostProcessor = Resnet50PythonPostProcessor()
 
-        self._native = native.resnet50.PostProcessor(model.dfg)
 
-        super().__init__()
+class Resnet50NativeProcessor(DataProcessor):
+    preprocessor: PreProcessor = Resnet50PreProcessor()
+
+    def __init__(self, dfg: bytes):
+        self.postprocessor = Resnet50NativePostProcessor(dfg)

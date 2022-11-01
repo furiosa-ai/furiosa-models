@@ -394,7 +394,7 @@ class SSDResNet34PostProcessor(PostProcessor):
 class NativePostProcessor(SSDResNet34PostProcessor):
     def __init__(self, model: SSDResNet34, version: str = "cpp"):
         if not model.dfg:
-            raise ArtifactNotFound(model.name, "dfg")
+            raise ArtifactNotFound(model.name, EXT_DFG)
 
         if version == "cpp":
             self._native = native.ssd_resnet34.CppPostProcessor(model.dfg)
