@@ -6,7 +6,7 @@ import numpy
 import numpy as np
 import numpy.typing as npt
 
-from furiosa.registry import Format, Metadata, Publication
+from furiosa.models.types import Format, Metadata, Publication
 
 from . import anchor_generator  # type: ignore[import]
 from .. import native

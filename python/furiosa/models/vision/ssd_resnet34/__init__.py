@@ -9,7 +9,7 @@ import numpy.typing as npt
 import torch
 import torch.nn.functional as F
 
-from furiosa.registry import Format, Metadata, Publication
+from furiosa.models.types import Format, Metadata, Publication
 
 from .. import native
 from ...errors import ArtifactNotFound, FuriosaModelException

@@ -7,10 +7,10 @@ import numpy as np
 from test_acc_util import bdd100k
 from tqdm import tqdm
 
+from furiosa.models.types import Model
 from furiosa.models.vision import YOLOv5m
 from furiosa.models.vision.postprocess import collate
 from furiosa.models.vision.yolov5 import medium as yolov5m
-from furiosa.registry import Model
 from furiosa.runtime import session
 
 EXPECTED_MAP = 0.2803325282086983

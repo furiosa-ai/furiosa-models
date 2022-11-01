@@ -11,10 +11,8 @@ from typing import Any, Dict, List, Sequence
 import numpy as np
 import yaml
 
-from furiosa.registry import Format, Metadata, Publication
-
 from . import core as _yolov5
-from ...types import ObjectDetectionModel
+from ...types import Format, Metadata, ObjectDetectionModel, Publication
 from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
 
 with open(pathlib.Path(__file__).parent / "datasets/yolov5l/cfg.yaml", "r") as f:

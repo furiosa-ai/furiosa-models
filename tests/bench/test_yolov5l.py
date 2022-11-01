@@ -6,10 +6,10 @@ import numpy as np
 from test_acc_util import bdd100k
 from tqdm import tqdm
 
+from furiosa.models.types import Model
 from furiosa.models.vision import YOLOv5l
 from furiosa.models.vision.postprocess import collate
 from furiosa.models.vision.yolov5 import large as yolov5l
-from furiosa.registry import Model
 from furiosa.runtime import session
 
 EXPECTED_MAP = 0.2952305335283671
@@ -58,7 +58,7 @@ def test_yolov5l_accuracy(benchmark):
             classes_target=classes_target,
         )
 
-    sess = session.create(model.enf)
+    sess = session.create(model)
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 

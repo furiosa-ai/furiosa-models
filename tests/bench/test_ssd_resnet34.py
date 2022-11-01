@@ -8,9 +8,9 @@ from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 import tqdm
 
+from furiosa.models.types import Model
 from furiosa.models.vision import SSDResNet34
 from furiosa.models.vision.ssd_resnet34 import NativePostProcessor, postprocess, preprocess
-from furiosa.registry import Model
 from furiosa.runtime import session
 
 EXPECTED_ACCURACY = 0.21321479317934577  # e2e-testing's accuracy

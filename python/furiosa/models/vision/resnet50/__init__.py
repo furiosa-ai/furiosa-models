@@ -4,7 +4,7 @@ import cv2
 import numpy
 import numpy as np
 
-from furiosa.registry import Format, Metadata, Publication
+from furiosa.models.types import Format, Metadata, Publication
 
 from .. import native
 from ...errors import ArtifactNotFound
