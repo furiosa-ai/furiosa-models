@@ -12,4 +12,4 @@ jobs:
         with:
           python-version: 3.x
       - run: pip install -r docs/requirements.txt
-      - run: mkdocs gh-deploy --force -d v0.8.0-dev
+      - run: mkdocs gh-deploy --force
