@@ -14,14 +14,13 @@ from furiosa.runtime import session
 
 @pytest.mark.asyncio
 async def test_yolov5_large():
-    m = await YOLOv5l.load_async()
+    m = await YOLOv5l.load_async(model_input_format='hwc')
     test_image_path = "tests/assets/yolov5-test.jpg"
 
     assert len(CLASSES) == 10, "expected CLASS is 10"
 
     batch_im = [cv2.imread(test_image_path), cv2.imread(test_image_path)]
-    compiler_config = m.compiler_config(model_input_format='hwc')
-    sess = session.create(m, compiler_config=compiler_config)
+    sess = session.create(m)
     batch_pre_img, batch_preproc_param = preprocess(batch_im, input_color_format="bgr")
     batch_feat = []
     for pre_image in batch_pre_img:

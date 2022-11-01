@@ -6,7 +6,7 @@ Attributes:
 __all__ = ['CLASSES', 'preprocess', 'get_anchor_per_layer_count', 'postprocess', 'YOLOv5l']
 
 import pathlib
-from typing import Any, Dict, List, Sequence
+from typing import Any, Dict, List, Optional, Sequence
 
 import numpy as np
 import yaml
@@ -28,29 +28,8 @@ _BOX_DECODER = _yolov5.boxdecoder(_CLASS_NAMES, _ANCHORS)
 class YOLOv5l(ObjectDetectionModel):
     """YOLOv5 Large model"""
 
-    @classmethod
-    def get_artifact_name(cls):
-        return "yolov5l_int8"
-
-    @classmethod
-    def load_aux(cls, artifacts: Dict[str, bytes], *args, **kwargs):
-        return cls(
-            name="YoloV5Large",
-            source=artifacts[EXT_ONNX],
-            dfg=artifacts[EXT_DFG],
-            enf=artifacts[EXT_ENF],
-            format=Format.ONNX,
-            family="YOLOv5",
-            version="v5",
-            metadata=Metadata(
-                description="YOLOv5 large model",
-                publication=Publication(url="https://github.com/ultralytics/yolov5"),
-            ),
-            *args,
-            **kwargs,
-        )
-
-    def compile_config(self, model_input_format="hwc"):
+    @staticmethod
+    def get_compiler_config(model_input_format: str):
         return {
             "without_quantize": {
                 "parameters": [
@@ -64,6 +43,32 @@ class YOLOv5l(ObjectDetectionModel):
                 ]
             }
         }
+
+    @classmethod
+    def get_artifact_name(cls):
+        return "yolov5l_int8"
+
+    @classmethod
+    def load_aux(
+        cls, artifacts: Dict[str, bytes], model_input_format: Optional[str] = None, *args, **kwargs
+    ):
+        # TODO: Resolve conflict when gets both model_input_format and compiler_config from user
+        return cls(
+            name="YoloV5Large",
+            source=artifacts[EXT_ONNX],
+            dfg=artifacts[EXT_DFG],
+            enf=artifacts[EXT_ENF],
+            format=Format.ONNX,
+            family="YOLOv5",
+            version="v5",
+            metadata=Metadata(
+                description="YOLOv5 large model",
+                publication=Publication(url="https://github.com/ultralytics/yolov5"),
+            ),
+            compiler_config=cls.get_compiler_config(model_input_format),
+            *args,
+            **kwargs,
+        )
 
 
 def get_anchor_per_layer_count() -> int:

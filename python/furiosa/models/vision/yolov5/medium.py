@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 import pathlib
-from typing import Any, Dict, List, Sequence
+from typing import Any, Dict, List, Optional, Sequence
 
 import numpy as np
 import yaml
@@ -38,25 +38,8 @@ class YOLOv5m(ObjectDetectionModel):
     def get_artifact_name(cls):
         return "yolov5m_int8"
 
-    @classmethod
-    def load_aux(cls, artifacts: Dict[str, bytes], *args, **kwargs):
-        return cls(
-            name="YOLOv5Medium",
-            source=artifacts[EXT_ONNX],
-            dfg=artifacts[EXT_DFG],
-            enf=artifacts[EXT_ENF],
-            format=Format.ONNX,
-            family="YOLOv5",
-            version="v5",
-            metadata=Metadata(
-                description="YOLOv5 medium model",
-                publication=Publication(url="https://github.com/ultralytics/yolov5"),
-            ),
-            *args,
-            **kwargs,
-        )
-
-    def compile_config(self, model_input_format="hwc"):
+    @staticmethod
+    def get_compiler_config(model_input_format: str):
         return {
             "without_quantize": {
                 "parameters": [
@@ -70,6 +53,32 @@ class YOLOv5m(ObjectDetectionModel):
                 ]
             }
         }
+
+    @classmethod
+    def get_artifact_name(cls):
+        return "yolov5m_int8"
+
+    @classmethod
+    def load_aux(
+        cls, artifacts: Dict[str, bytes], model_input_format: Optional[str] = None, *args, **kwargs
+    ):
+        # TODO: Resolve conflict when gets both model_input_format and compiler_config from user
+        return cls(
+            name="YOLOv5Medium",
+            source=artifacts[EXT_ONNX],
+            dfg=artifacts[EXT_DFG],
+            enf=artifacts[EXT_ENF],
+            format=Format.ONNX,
+            family="YOLOv5",
+            version="v5",
+            metadata=Metadata(
+                description="YOLOv5 medium model",
+                publication=Publication(url="https://github.com/ultralytics/yolov5"),
+            ),
+            compiler_config=cls.get_compiler_config(model_input_format),
+            *args,
+            **kwargs,
+        )
 
 
 def get_anchor_per_layer_count() -> int:
