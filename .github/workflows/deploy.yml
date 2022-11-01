@@ -12,4 +12,8 @@ jobs:
         with:
           python-version: 3.x
       - run: pip install -r docs/requirements.txt
-      - run: mkdocs gh-deploy --force -d v0.8.0-dev
+      - run: pip install .
+      - run: mkdocs build
+      - run: git checkout gh-pages
+      - run: mkdir -p v0.8.0-dev && cp -a site/* v0.8.0-dev
+      - run: git commit -m "${{ github.event.head_commit.message }}" && git push origin gh-pages -f
