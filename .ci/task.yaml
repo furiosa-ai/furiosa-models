@@ -23,7 +23,7 @@ spec:
   params:
     - name: image
       description: The container image to use black in
-      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:221023
+      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:v0.8.0
   steps:
     - name: format
       env:
@@ -73,7 +73,7 @@ spec:
   params:
     - name: image
       description: The container image to use black in
-      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:221023
+      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:v0.8.0
   steps:
     - name: run
       env:
@@ -127,7 +127,7 @@ spec:
   params:
     - name: image
       description: The container image
-      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:221023
+      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:v0.8.0
     - name: modelName
       description: Name of the model to run the regression test
   steps:
@@ -171,7 +171,7 @@ spec:
   params:
     - name: image
       description: The container image
-      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:221023
+      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:v0.8.0
   steps:
     - name: regression-test-report
       image: $(params.image)
@@ -208,7 +208,7 @@ spec:
   params:
     - name: image
       description: The container image
-      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:221023
+      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:v0.8.0
   steps:
     - name: set-dvc-cache
       image: $(params.image)

@@ -1,0 +1,4 @@
+outs:
+- md5: 6e4991d6e707a8cb504b2fd1a0e54a89
+  size: 22416625
+  path: yolov5m_int8_warboy_2pe.dfg
