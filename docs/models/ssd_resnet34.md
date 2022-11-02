@@ -10,7 +10,6 @@ This model has been used since MLCommons v0.5.
 * Source: This model is originated from SSD ResNet34 in ONNX available at
 [MLCommons - Supported Models](https://github.com/mlcommons/inference/tree/master/vision/classification_and_detection#supported-models).
 
-## Usage
 
 ## Usages
 === "Default"
