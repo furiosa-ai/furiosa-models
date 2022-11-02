@@ -6,13 +6,13 @@ Attributes:
 __all__ = [
     'CLASSES',
     'preprocess',
-    'get_anchor_per_layer_count',
+    '_get_anchor_per_layer_count',
     'postprocess',
     'YOLOv5m',
 ]
 
 import pathlib
-from typing import Any, Dict, List, Sequence
+from typing import Any, Dict, List, Sequence, Tuple
 
 import numpy as np
 import yaml
@@ -72,7 +72,7 @@ class YOLOv5m(ObjectDetectionModel):
         }
 
 
-def get_anchor_per_layer_count() -> int:
+def _get_anchor_per_layer_count() -> int:
     """Anchors per layers
 
     Returns:
@@ -82,7 +82,25 @@ def get_anchor_per_layer_count() -> int:
 
 
 CLASSES: List[str] = _CLASS_NAMES
-preprocess = _yolov5.preprocess
+
+
+def preprocess(
+    img_list: Sequence[np.ndarray], input_color_format: str
+) -> Tuple[np.ndarray, List[Dict[str, Any]]]:
+    """Yolov5 preprocess
+
+    Args:
+        img (Sequence[np.ndarray]): Color images have (Batch, Channel, Height, Width) dimensions.
+        input_color_format (str): a color format: rgb(Red,Green,Blue), bgr(Blue,Green,Red).
+
+    Returns:
+        Tuple[np.ndarray, List[Dict[str, Any]]]: a pre-processed image, scales and padded sizes(width,height) per images.
+            The first element is a preprocessing image, and a second element is a dictionary object to be used for postprocess.
+            'scale' key of the returned dict has a rescaled ratio per width(=target/width) and height(=target/height),
+            and the 'pad' key has padded width and height pixels. Specially, the last dictionary element of returing
+            tuple will be passed to postprocessing as a parameter to calculate predicted coordinates on normalized coordinates back to an input image cooridnates.
+    """
+    _yolov5.preprocess(img_list, input_color_format)
 
 
 def postprocess(
@@ -106,7 +124,7 @@ def postprocess(
     return _yolov5.postprocess(
         batch_feats,
         _BOX_DECODER,
-        get_anchor_per_layer_count(),
+        _get_anchor_per_layer_count(),
         _CLASS_NAMES,
         batch_preproc_param,
         conf_thres=conf_thres,

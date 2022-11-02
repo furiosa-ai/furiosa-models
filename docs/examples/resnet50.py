@@ -3,7 +3,7 @@ from furiosa.runtime import session
 
 model = ResNet50.load()
 
-with session.create(model.enf) as sess:
+with session.create(model) as sess:
     image = resnet50.preprocess("tests/assets/cat.jpg")
     output = sess.run(image).numpy()
     resnet50.postprocess(output)

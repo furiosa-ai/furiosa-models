@@ -209,7 +209,7 @@ def _box_area(left_top: np.ndarray, right_bottom: np.ndarray):
 
 def postprocess(
     outputs: Sequence[numpy.ndarray],
-    batch_preproc_params: Sequence[Dict[str, Any]],
+    context: Sequence[Dict[str, Any]],
     confidence_threshold: float = 0.3,
     iou_threshold: float = 0.6,
 ) -> List[List[ObjectDetectionResult]]:
@@ -234,7 +234,7 @@ def postprocess(
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L178-L185
     batch_results = []
     for scores, boxes, preproc_params in zip(
-        batch_scores, batch_boxes, batch_preproc_params
+        batch_scores, batch_boxes, context
     ):  # loop mini-batch
         width, height = preproc_params["width"], preproc_params["height"]
         boxes, labels, scores = _filter_results(

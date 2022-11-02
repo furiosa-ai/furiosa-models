@@ -1,49 +1,39 @@
 Furiosa Models
 ======================
-Furiosa Models provides DNN models including quantized pre-trained weights, model metadata, and 
-runtime configurations for FuriosaAI SDK and NPU. Basically, all models are specifically optimized for FuriosaAI NPU, 
-but the models are based on standard ONNX format. You can feel free to use all models for even CPU and GPU.
+Furiosa Models provides a set of public pre-trained, pre-quantized models with various metadata.
+You can use Furiosa Models for learning and demo purposes or for developing your applications.
 
-## <a name="AvailableModels"></a>Available Models
+Basically, all models are specifically optimized for FuriosaAI NPU,
+In addition, it includes pre-packaged post/processing functions and runtime configurations 
+optimized for FuriosaAI SDK and NPU. However, the models are standard ONNX or tflite models, 
+and they can run on even CPU and GPU.
 
-| Model                                        | Task                 | Size | Accuracy | Latency (NPU) | Latency (CPU) |
-|----------------------------------------------|----------------------|------|----------|---------------|---------------|
-| [ResNet50](docs/models/resnet50_v1.5.md)     | Image Classification | 25M  | 76.002%  |               |               |
-| [SSDMobileNet](docs/models/ssd_mobilenet.md) | Object Detection     | 7.2M | mAP 0.228|               |               |
-| [SSDResNet34](docs/models/ssd_resnet34.md)   | Object Detection     | 20M  | mAP 0.220|               |               |
-| YOLOv5M                                      | Object Detection     | 21M  | mAP 0.280|               |               |
-| YOLOv5L                                      | Object Detection     | 46M  | mAP 0.295|               |               |
+[https://github.com/furiosa-ai/furiosa-models](https://github.com/furiosa-ai/furiosa-models)
 
-## Installation
-You can quickly install Furiosa Models by using `pip` as following:
-```sh
-pip install 'furiosa-sdk[models]'
-```
+## Online Documentation
+You can find the latest furiosa-ai documentation 
+including programming guide, API reference, examples from the followings:
 
-Or you can build from the source code as following:
+* [Furiosa Models - Online Documentation](https://furiosa-ai.github.io/furiosa-models/latest/)
+* [Getting Started](https://furiosa-ai.github.io/furiosa-models/latest/getting_started.md)
+* [Model object and its Examples](https://furiosa-ai.github.io/furiosa-models/models_and_examples.md)
+* [Available Models](https://furiosa-ai.github.io/furiosa-models/latest/#available_models)
+* [Furiosa SDK - Tutorial and Code Examples](https://furiosa-ai.github.io/docs/latest/en/software/tutorials.html)
 
-```
-git clone https://github.com/furiosa-ai/furiosa-models
-pip install .
-```
 
-## Usage
-You can simply access each model as following:
-```python
-from furiosa.models.vision import ResNet50
+## <a name="Models"></a>Models
+The table summarizes all models in Furisoa Models. If you visit each model link, 
+you can find details about how to load the model, input and output tensors, and pre/post processings, and examples.
 
-model = ResNet50.load()
-```
-
-Each model in [available models](#AvailableModels) also provides the details 
-including how to access the model, input and output tensors, and pre/post processings.
-
-If you want to learn more about Furiosa SDK, you can refer to 
-[Furiosa SDK - Tutorial and Code Examples](https://furiosa-ai.github.io/docs/latest/en/software/tutorials.html)
-
-Also, you can learn about [Blocking and Non-blocking APIs](blocking_and_nonblocking_api.md) 
-if you want to access the models with Asynchronous (AsyncIO) client library.
+| Model                                   | Task                 | Size | Accuracy |
+|-----------------------------------------|----------------------|------|----------|
+| [ResNet50](models/resnet50_v1.5.md)     | Image Classification | 25M  | 76.002%  |
+| [SSDMobileNet](models/ssd_mobilenet.md) | Object Detection     | 7.2M | mAP 0.228|
+| [SSDResNet34](models/ssd_resnet34.md)   | Object Detection     | 20M  | mAP 0.220|
+| [YOLOv5M](models/yolov5m.md)            | Object Detection     | 21M  | mAP 0.280|
+| [YOLOv5L](models/yolov5l.md)            | Object Detection     | 46M  | mAP 0.295|
 
 ## See Also
+* [Furiosa Models - Documentation](https://furiosa-ai.github.io/furiosa-models/latest/)
 * [Furiosa Models - Github](https://github.com/furiosa-ai/furiosa-models)
 * [Furiosa SDK Documentation](https://furiosa-ai.github.io/docs/latest/en/)

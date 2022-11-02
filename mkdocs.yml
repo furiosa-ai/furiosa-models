@@ -3,31 +3,40 @@ site_description: DNN Models optimized for FuriosaAI NPU
 site_url: https://furiosa-ai.github.io/furiosa-models
 
 theme:
-  name: material
+  name: "material"
+  features:
+    - navigation.sections
 
 repo_name: furiosa-ai/furiosa-models
 repo_url: https://github.com/furiosa-ai/furiosa-models
 
 nav:
 - Overview: index.md
+- getting_started.md
+- model_object.md
 - Models:
-    - Image Classification:
-        - models/resnet50_v1.5.md
-    - Object Detection:
-        - models/ssd_mobilenet.md
-        - models/ssd_resnet34.md
-- blocking_and_nonblocking_api.md
+    - models/resnet50_v1.5.md
+    - models/ssd_mobilenet.md
+    - models/ssd_resnet34.md
+    - models/yolov5m.md
+    - models/yolov5l.md
 - "NPU-optimized Postprocessor": native_postprocessor.md
 - Changelog: changelog.md
 - Apache License 2.0: 'https://github.com/furiosa-ai/furiosa-models/blob/main/LICENSE'
 
 markdown_extensions:
+  - admonition
+  - codehilite
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
 
 plugins:
-  - search
-  - mkdocstrings
+- search
+- autorefs
+- mkdocstrings

@@ -1,12 +1,17 @@
-"""Yolov5l Module
+"""YOLOv5L
+
+YOLOv5 is the latest object detection model developed by [ultralytics]().
+
+Example:
+    a =
 
 Attributes:
     CLASSES (List[str]): a list of class names
 """
-__all__ = ['CLASSES', 'preprocess', 'get_anchor_per_layer_count', 'postprocess', 'YOLOv5l']
+__all__ = ['CLASSES', 'preprocess', '_get_anchor_per_layer_count', 'postprocess', 'YOLOv5l']
 
 import pathlib
-from typing import Any, Dict, List, Sequence
+from typing import Any, Dict, List, Sequence, Tuple
 
 import numpy as np
 import yaml
@@ -16,6 +21,7 @@ from furiosa.registry import Format, Metadata, Publication
 from . import core as _yolov5
 from ...model import ObjectDetectionModel
 from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
+from .core import preprocess
 
 with open(pathlib.Path(__file__).parent / "datasets/yolov5l/cfg.yaml", "r") as f:
     cfg = yaml.safe_load(f)
@@ -66,7 +72,7 @@ class YOLOv5l(ObjectDetectionModel):
         }
 
 
-def get_anchor_per_layer_count() -> int:
+def _get_anchor_per_layer_count() -> int:
     """Anchors per layers
 
     Returns:
@@ -76,7 +82,26 @@ def get_anchor_per_layer_count() -> int:
 
 
 CLASSES: List[str] = _CLASS_NAMES
-preprocess = _yolov5.preprocess
+"""Class names"""
+
+
+def preprocess(
+    img_list: Sequence[np.ndarray], input_color_format: str
+) -> Tuple[np.ndarray, List[Dict[str, Any]]]:
+    """Yolov5 preprocess
+
+    Args:
+        img (Sequence[np.ndarray]): Color images have (Batch, Channel, Height, Width) dimensions.
+        input_color_format (str): a color format: rgb(Red,Green,Blue), bgr(Blue,Green,Red).
+
+    Returns:
+        Tuple[np.ndarray, List[Dict[str, Any]]]: a pre-processed image, scales and padded sizes(width,height) per images.
+            The first element is a preprocessing image, and a second element is a dictionary object to be used for postprocess.
+            'scale' key of the returned dict has a rescaled ratio per width(=target/width) and height(=target/height),
+            and the 'pad' key has padded width and height pixels. Specially, the last dictionary element of returing
+            tuple will be passed to postprocessing as a parameter to calculate predicted coordinates on normalized coordinates back to an input image cooridnates.
+    """
+    return _yolov5.preprocess(img_list, input_color_format)
 
 
 def postprocess(
@@ -100,7 +125,7 @@ def postprocess(
     return _yolov5.postprocess(
         batch_feats,
         _BOX_DECODER,
-        get_anchor_per_layer_count(),
+        _get_anchor_per_layer_count(),
         _CLASS_NAMES,
         batch_preproc_param,
         conf_thres=conf_thres,

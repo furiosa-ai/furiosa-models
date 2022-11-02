@@ -4,7 +4,7 @@ from furiosa.runtime import session
 
 model = SSDMobileNet.load()
 
-with session.create(model) as sess:
+with session.create(model.source, batch_size=2) as sess:
     image, context = preprocess(["tests/assets/cat.jpg"])
     output = sess.run(image).numpy()
     postprocess(output, context=context)
