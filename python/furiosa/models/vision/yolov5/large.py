@@ -97,7 +97,7 @@ def preprocess(
 
     Returns:
         a pre-processed image, scales and padded sizes(width,height) per images.
-            The first element is a preprocessing image, and a second element is a dictionary object to be used for postprocess.
+            The first element is a preprocessed image, and the second element is a dictionary object to be used for postprocess.
             'scale' key of the returned dict has a rescaled ratio per width(=target/width) and height(=target/height),
             and the 'pad' key has padded width and height pixels. Specially, the last dictionary element of returing
             tuple will be passed to postprocessing as a parameter to calculate predicted coordinates on normalized
