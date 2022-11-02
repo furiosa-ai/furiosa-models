@@ -19,11 +19,11 @@ The input is a 3-channel image of 640, 640 (height, width).
 
 * Data Type: `numpy.uint8`
 * Tensor Shape: `[1, 640, 640, 3]`
-* Memory Format: NCHW, where
+* Memory Format: NHWC, where
     * N - batch size
-    * C - number of channels
     * H - image height
     * W - image width
+    * C - number of channels
 * Optimal Batch Size: 1
 
 ## Outputs
