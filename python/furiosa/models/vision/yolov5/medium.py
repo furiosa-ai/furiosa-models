@@ -102,7 +102,7 @@ def preprocess(
             tuple will be passed to postprocessing as a parameter to calculate predicted coordinates on normalized
             coordinates back to an input image coordinator.
     """
-    _yolov5.preprocess(images, color_format)
+    return _yolov5.preprocess(images, color_format)
 
 
 def postprocess(

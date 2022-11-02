@@ -13,7 +13,7 @@ and they can run even on CPU and GPU as well.
 ## Online Documentation
 If you are new, you can start from [Getting Started](https://furiosa-ai.github.io/furiosa-models/latest/getting_started.md).
 You can also find the latest online documents, 
-including programming guide, API reference, examples from the followings.
+including programming guide, API reference, examples from the followings:
 
 * [Furiosa Models - Documentation](https://furiosa-ai.github.io/furiosa-models/latest/)
 * [Model object and its Examples](https://furiosa-ai.github.io/furiosa-models/models_and_examples.md)

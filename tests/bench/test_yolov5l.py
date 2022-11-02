@@ -7,7 +7,6 @@ from test_acc_util import bdd100k
 from tqdm import tqdm
 
 from furiosa.models.vision import YOLOv5l
-from furiosa.models.vision.postprocess import collate
 from furiosa.models.vision.yolov5 import large as yolov5l
 from furiosa.registry import Model
 from furiosa.runtime import session
