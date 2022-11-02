@@ -275,16 +275,25 @@ NUM_OUTPUTS: int = 12
 CLASSES = coco.MobileNetSSD_Large_CLASSES
 
 
-def preprocess(
-    image_path_list: List[Union[str, np.ndarray]]
-) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
+def preprocess(images: List[Union[str, np.ndarray]]) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
+    """Preprocess input images to a batch of input tensors.
+
+    When the image file paths are passed, the image files should be standard image format, such as jpg, gif, png.
+
+    Args:
+        images (Sequence[Union[str, np.ndarray]]): A list of paths of image files
+            or a stacked image loaded as numpy through `cv2.imread()`
+
+    Returns:
+        3-channel images of 1200x1200 in NCHW format. Please find the details at 'Inputs of Model' section.
+    """
     """Read and preprocess an image located at image_path."""
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L141
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L61-L63
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L252-L263
     batch_image = []
     batch_preproc_param = []
-    for image in image_path_list:
+    for image in images:
         if type(image) == str:
             image = cv2.imread(image)
             if image is None:
@@ -317,13 +326,34 @@ def _pick_best(detections, confidence_threshold):
 
 
 def postprocess(
-    outputs: Sequence[np.ndarray],
+    model_outputs: Sequence[np.ndarray],
     batch_preproc_params: Sequence[Dict[str, Any]],
     confidence_threshold=0.05,
 ) -> List[List[ObjectDetectionResult]]:
-    if len(outputs) != NUM_OUTPUTS:
-        raise Exception(f"output size must be {NUM_OUTPUTS}, but {len(outputs)}")
-    classes, locations = outputs[:6], outputs[6:]
+    """Convert the outputs of this model to a list of bounding boxes, scores and labels
+
+    Arguments:
+        model_outputs (Sequence[numpy.ndarray]): the outputs of the model
+        context (Sequence[Dict[str, Any]]): context coming from `preprocess()`
+
+    Returns:
+        Detected Bounding Box and its score and label represented as `ObjectDetectionResult`.
+            To learn more about `ObjectDetectionResult`, 'Definition of ObjectDetectionResult' can be found below.
+
+    Definition of ObjectDetectionResult:
+        ::: furiosa.models.vision.postprocess.LtrbBoundingBox
+            options:
+                show_root_heading: false
+                show_source: true
+        ::: furiosa.models.vision.postprocess.ObjectDetectionResult
+            options:
+                show_root_heading: false
+                show_source: true
+    """
+
+    if len(model_outputs) != NUM_OUTPUTS:
+        raise Exception(f"output size must be {NUM_OUTPUTS}, but {len(model_outputs)}")
+    classes, locations = model_outputs[:6], model_outputs[6:]
 
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_r34.py#L317-L329
     classes = [np.reshape(cls, (cls.shape[0], 81, -1)) for cls in classes]
@@ -369,9 +399,9 @@ def postprocess(
 
 
 class SSDResNet34PostProcessor(PostProcessor):
-    def eval(self, inputs: Sequence[numpy.ndarray], *args: Any, **kwargs: Any):
+    def eval(self, model_outputs: Sequence[numpy.ndarray], *args: Any, **kwargs: Any):
         context = kwargs.get("context")
-        raw_results = self._native.eval(inputs)
+        raw_results = self._native.eval(model_outputs)
 
         results = []
         width = context['width']
@@ -394,6 +424,21 @@ class SSDResNet34PostProcessor(PostProcessor):
 
 
 class NativePostProcessor(SSDResNet34PostProcessor):
+    """Native postprocessing implementation optimized for NPU
+
+    This class provides another version of the postprocessing implementation
+    which is highly optimized for NPU. The implementation leverages the NPU IO architecture and runtime.
+
+    To use this implementation, when this model is loaded, the parameter `use_native_post=True`
+    should be passed to `load()` or `load_aync()`. Then, `NativePostProcess` object should
+    be created with the model object. `eval()` method should be called to postprocess.
+
+    !!! Examples
+        ```python
+        --8<-- "docs/examples/ssd_resnet34_native.py"
+        ```
+    """
+
     def __init__(self, model: SSDResNet34, version: str = "cpp"):
         if not model.dfg:
             raise ArtifactNotFound(model.name, "dfg")

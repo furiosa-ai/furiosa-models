@@ -1,29 +1,29 @@
 Furiosa Models
 ======================
-Furiosa Models provides a set of public pre-trained, pre-quantized models with various metadata.
-You can use Furiosa Models for learning and demo purposes or for developing your applications.
+`furiosa-models` is an open model zoo project for FuriosaAI NPU. 
+It provides a set of public pre-trained, pre-quantized models for learning and demo purposes or 
+for developing your applications.
 
-Basically, all models are specifically optimized for FuriosaAI NPU,
-In addition, it includes pre-packaged post/processing functions and runtime configurations 
-optimized for FuriosaAI SDK and NPU. However, the models are standard ONNX or tflite models, 
-and they can run on even CPU and GPU.
+`furisoa-models` also includes pre-packaged post/processing utilities, compiler configurations optimized
+for FuriosaAI NPU. However, all models are standard ONNX or tflite models, 
+and they can run even on CPU and GPU as well.
 
 [https://github.com/furiosa-ai/furiosa-models](https://github.com/furiosa-ai/furiosa-models)
 
 ## Online Documentation
-You can find the latest furiosa-ai documentation 
-including programming guide, API reference, examples from the followings:
+If you are new, you can start from [Getting Started](https://furiosa-ai.github.io/furiosa-models/latest/getting_started.md).
+You can also find the latest online documents, 
+including programming guide, API reference, examples from the followings.
 
-* [Furiosa Models - Online Documentation](https://furiosa-ai.github.io/furiosa-models/latest/)
-* [Getting Started](https://furiosa-ai.github.io/furiosa-models/latest/getting_started.md)
+* [Furiosa Models - Documentation](https://furiosa-ai.github.io/furiosa-models/latest/)
 * [Model object and its Examples](https://furiosa-ai.github.io/furiosa-models/models_and_examples.md)
-* [Available Models](https://furiosa-ai.github.io/furiosa-models/latest/#available_models)
+* [Model List](https://furiosa-ai.github.io/furiosa-models/latest/#model_list)
 * [Furiosa SDK - Tutorial and Code Examples](https://furiosa-ai.github.io/docs/latest/en/software/tutorials.html)
 
 
-## <a name="Models"></a>Models
-The table summarizes all models in Furisoa Models. If you visit each model link, 
-you can find details about how to load the model, input and output tensors, and pre/post processings, and examples.
+## <a name="model_list"></a>Model List
+The table summarizes all models available in `furiosa-models`. If you visit each model link, 
+you can find details about loading a model, their input and output tensors, and pre/post processings, and examples.
 
 | Model                                   | Task                 | Size | Accuracy |
 |-----------------------------------------|----------------------|------|----------|

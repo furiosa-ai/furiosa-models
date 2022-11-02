@@ -3,33 +3,37 @@
 SSD MobileNet v1 backbone model trained on COCO (300x300).
 This model has been used since MLCommons v0.5.
 
-## Usage
+## Overall
+* Framework: PyTorch
+* Model format: ONNX
+* Model task: Object detection
+* Source: This model is originated from SSD MobileNet v1 in ONNX available at
+[MLCommons - Supported Models](https://github.com/mlcommons/inference/tree/master/vision/classification_and_detection#supported-models).
 
-### Using Furiosa SDK
+## Usages
+=== "Default"
+    ```python
+    --8<-- "docs/examples/ssd_mobilenet.py"
+    ```
+ 
+=== "Native Postprocessor"
+    ```python
+    --8<-- "docs/examples/ssd_mobilenet_native.py"
+    ```
 
-```python
---8<-- "docs/examples/ssd_mobilenet.py"
-```
-
-### NPU-optimized postprocessor support
-This model supports the NPU-optimized post-processing implementation.
-To learn more about this, please read [NPU-optimized Postprocessor](../native_postprocessor.md).
-
-*A usage example of native postprocessor for SSD MobileNet*
-```python
---8<-- "docs/examples/ssd_mobilenet_native.py"
-```
-
-
-## Model inputs
+## Inputs of Model 
 The input is a 3-channel image of 300x300 (height, width).
 
 * Data Type: `numpy.float32`
 * Tensor Shape: `[1, 3, 300, 300]`
-* Memory Layout: NCHW
+* Memory Format: NCHW, where:
+    * N - batch size
+    * C - number of channels
+    * H - image height
+    * W - image width
 * Optimal Batch Size: <= 8
 
-## Outputs
+## Outputs of Model
 The outputs are 12 `numpy.float32` tensors in various shapes as the following.
 You can refer to `postprocess()` function to learn how to decode boxes, classes, and confidence scores.
 
@@ -49,7 +53,23 @@ You can refer to `postprocess()` function to learn how to decode boxes, classes,
 | 10     | (1, 546, 1, 1)   | float32   | NCHW      |             |
 | 11     | (1, 24, 1, 1)    | float32   | NCHW      |             |
 
+## Pre/Post processing
+`furiosa.models.vision.ssd_mobilenet` module provides a set of utilities 
+to convert images to input tensors and the model outputs to labels.
+  
+### `furiosa.models.vision.ssd_mobilenet.preprocess`
+::: furiosa.models.vision.ssd_mobilenet.preprocess
+    options:
+        show_root_heading: false
+### `furiosa.models.vision.ssd_mobilenet.postprocess`
+::: furiosa.models.vision.ssd_mobilenet.postprocess
+    options:
+        show_root_heading: false
+ 
+### `furiosa.models.vision.ssd_mobilenet.NativePostProcess`
+::: furiosa.models.vision.ssd_mobilenet.NativePostProcessor
+    options:
+        show_root_heading: false
+        show_bases: false
+        show_source: false
 
-## Source
-This model is originated from SSD MobileNet v1 in ONNX available at
-[MLCommons - Supported Models](https://github.com/mlcommons/inference/tree/master/vision/classification_and_detection#supported-models).

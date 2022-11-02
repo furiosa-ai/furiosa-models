@@ -44,7 +44,7 @@ def test_yolov5m_accuracy(benchmark):
         batch_im = [im]
 
         batch_pre_img, batch_preproc_param = yolov5m.preprocess(
-            batch_im, input_color_format="bgr"
+            batch_im, color_format="bgr"
         )  # single-batch
         batch_feat = sess.run(np.expand_dims(batch_pre_img[0], axis=0)).numpy()
         detected_boxes = yolov5m.postprocess(

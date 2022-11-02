@@ -3,21 +3,37 @@
 SSD ResNet34 backbone model trained on COCO (1200x1200).
 This model has been used since MLCommons v0.5.
 
+## Overall
+* Framework: PyTorch
+* Model format: ONNX
+* Model task: Object detection
+* Source: This model is originated from SSD ResNet34 in ONNX available at
+[MLCommons - Supported Models](https://github.com/mlcommons/inference/tree/master/vision/classification_and_detection#supported-models).
+
 ## Usage
 
-### Using Furiosa SDK
-
-```python
---8<-- "docs/examples/ssd_resnet34.py"
-```
+## Usages
+=== "Default"
+    ```python
+    --8<-- "docs/examples/ssd_resnet34.py"
+    ```
+ 
+=== "Native Postprocessor"
+    ```python
+    --8<-- "docs/examples/ssd_resnet34_native.py"
+    ```
 
 ## Model inputs
 The input is a 3-channel image of 300x300 (height, width).
 
 * Data Type: `numpy.float32`
 * Tensor Shape: `[1, 3, 1200, 1200]`
-* Memory Layout: NCHW
-* Optimal Batch Size: <= 1
+* Memory Format: NCHW, where
+    * N - batch size
+    * C - number of channels
+    * H - image height
+    * W - image width
+* Optimal Batch Size: 1
 
 ## Outputs
 The outputs are 12 `numpy.float32` tensors in various shapes as the following. 
@@ -38,6 +54,22 @@ You can refer to `postprocess()` function to learn how to decode boxes, classes,
 | 10     | (1, 16, 3, 3)    | float32   | NCHW      |             |
 | 11     | (1, 16, 3, 3)    | float32   | NCHW      |             |
 
-## Source
-This model is originated from SSD ResNet34 in ONNX available at
-[MLCommons - Supported Models](https://github.com/mlcommons/inference/tree/master/vision/classification_and_detection#supported-models).
+## Pre/Post processing
+`furiosa.models.vision.ssd_resnet34` module provides a set of utilities 
+to convert images to input tensors and the model outputs to labels.
+  
+### `furiosa.models.vision.ssd_resnet34.preprocess`
+::: furiosa.models.vision.ssd_resnet34.preprocess
+    options:
+        show_root_heading: false
+### `furiosa.models.vision.ssd_resnet34.postprocess`
+::: furiosa.models.vision.ssd_resnet34.postprocess
+    options:
+        show_root_heading: false
+ 
+### `furiosa.models.vision.ssd_resnet34.NativePostProcess`
+::: furiosa.models.vision.ssd_resnet34.NativePostProcessor
+    options:
+        show_root_heading: false
+        show_bases: false
+        show_source: false

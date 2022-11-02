@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import Any, Dict, List, Sequence, Tuple, Union
 
 import cv2
@@ -84,14 +83,26 @@ NUM_CLASSES = len(CLASSES) - 1  # remove background
 
 
 def preprocess(
-    image_path_list: Sequence[Union[str, np.ndarray]]
+    images: Sequence[Union[str, np.ndarray]]
 ) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
+    """Preprocess input images to a batch of input tensors.
+
+    When the image file paths are passed, the image files should be standard image format, such as jpg, gif, png.
+
+    Args:
+        images (Sequence[Union[str, np.ndarray]]): A list of paths of image files
+            or a stacked image loaded as numpy through `cv2.imread()`
+
+    Returns:
+        3-channel images of 300x300 in NCHW format. Please find the details at 'Inputs of Model' section.
+    """
+
     """Read and preprocess an image located at image_path."""
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L49-L51
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L242-L249
     batch_image = []
     batch_preproc_param = []
-    for image in image_path_list:
+    for image in images:
         if type(image) == str:
             image = cv2.imread(image)
             if image is None:
@@ -208,22 +219,43 @@ def _box_area(left_top: np.ndarray, right_bottom: np.ndarray):
 
 
 def postprocess(
-    outputs: Sequence[numpy.ndarray],
+    model_outputs: Sequence[numpy.ndarray],
     context: Sequence[Dict[str, Any]],
     confidence_threshold: float = 0.3,
     iou_threshold: float = 0.6,
 ) -> List[List[ObjectDetectionResult]]:
+    """Convert the outputs of this model to a list of bounding boxes, scores and labels
+
+    Arguments:
+        model_outputs (Sequence[numpy.ndarray]): the outputs of the model
+        context (Sequence[Dict[str, Any]]): context coming from `preprocess()`
+
+    Returns:
+        Detected Bounding Box and its score and label represented as `ObjectDetectionResult`.
+            To learn more about `ObjectDetectionResult`, 'Definition of ObjectDetectionResult' can be found below.
+
+    Definition of ObjectDetectionResult:
+        ::: furiosa.models.vision.postprocess.LtrbBoundingBox
+            options:
+                show_root_heading: false
+                show_source: true
+        ::: furiosa.models.vision.postprocess.ObjectDetectionResult
+            options:
+                show_root_heading: false
+                show_source: true
+    """
     assert (
-        len(outputs) == NUM_OUTPUTS
-    ), f"the number of model outputs must be {NUM_OUTPUTS}, but {len(outputs)}"
-    batch_size = outputs[0].shape[0]
+        len(model_outputs) == NUM_OUTPUTS
+    ), f"the number of model outputs must be {NUM_OUTPUTS}, but {len(model_outputs)}"
+    batch_size = model_outputs[0].shape[0]
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L94-L97
     class_logits = [
         output.transpose((0, 2, 3, 1)).reshape((batch_size, -1, NUM_CLASSES))
-        for output in outputs[0::2]
+        for output in model_outputs[0::2]
     ]
     box_regression = [
-        output.transpose((0, 2, 3, 1)).reshape((batch_size, -1, 4)) for output in outputs[1::2]
+        output.transpose((0, 2, 3, 1)).reshape((batch_size, -1, 4))
+        for output in model_outputs[1::2]
     ]
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L144-L166
     class_logits = np.concatenate(class_logits, axis=1)  # type: ignore[assignment]
@@ -233,9 +265,7 @@ def postprocess(
 
     # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L178-L185
     batch_results = []
-    for scores, boxes, preproc_params in zip(
-        batch_scores, batch_boxes, context
-    ):  # loop mini-batch
+    for scores, boxes, preproc_params in zip(batch_scores, batch_boxes, context):  # loop mini-batch
         width, height = preproc_params["width"], preproc_params["height"]
         boxes, labels, scores = _filter_results(
             scores,
@@ -262,9 +292,9 @@ def postprocess(
 
 
 class SSDMobilePostProcessor(PostProcessor):
-    def eval(self, inputs: Sequence[numpy.ndarray], *args: Any, **kwargs: Any):
+    def eval(self, model_outputs: Sequence[numpy.ndarray], *args: Any, **kwargs: Any):
         context = kwargs.get("context")
-        raw_results = self._native.eval(inputs)
+        raw_results = self._native.eval(model_outputs)
 
         results = []
         width = context['width']
@@ -287,6 +317,21 @@ class SSDMobilePostProcessor(PostProcessor):
 
 
 class NativePostProcessor(SSDMobilePostProcessor):
+    """Native postprocessing implementation optimized for NPU
+
+    This class provides another version of the postprocessing implementation
+    which is highly optimized for NPU. The implementation leverages the NPU IO architecture and runtime.
+
+    To use this implementation, when this model is loaded, the parameter `use_native_post=True`
+    should be passed to `load()` or `load_aync()`. Then, `NativePostProcess` object should
+    be created with the model object. `eval()` method should be called to postprocess.
+
+    !!! Examples
+        ```python
+        --8<-- "docs/examples/ssd_mobilenet_native.py"
+        ```
+    """
+
     def __init__(self, model: SSDMobileNet, version: str = "cpp"):
         if not model.dfg:
             raise ArtifactNotFound(model.name, "dfg")

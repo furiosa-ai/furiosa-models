@@ -200,5 +200,5 @@ def test_collate():
 
 class PostProcessor(ABC):
     @abstractmethod
-    def eval(self, inputs: Sequence[numpy.ndarray], *args: Any, **kwargs: Any):
+    def eval(self, model_outputs: Sequence[numpy.ndarray], *args: Any, **kwargs: Any):
         pass
