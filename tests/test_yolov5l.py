@@ -24,12 +24,13 @@ def create_session_senario(senario: str, m):
 @pytest.mark.parametrize("test_image_path,expected_batch_axis,expected_zero_index_detected_box", 
                          [("tests/assets/yolov5-test.jpg", 2, 27)])
 @pytest.mark.asyncio
-async def test_yolov5_large(session_senario: Callable, test_image_path: str, expected_batch_axis: int, expected_zero_index_detected_box: int):
+async def test_yolov5_large(session_test_senario: str, test_image_path: str, expected_batch_axis: int, expected_zero_index_detected_box: int):
+    print(f"Test Session Create Senario: {session_test_senario}")
     m = await YOLOv5l.load_async()
     assert len(CLASSES) == 10, "expected CLASS is 10"
 
     batch_im = [cv2.imread(test_image_path), cv2.imread(test_image_path)]
-    sess = session_senario(m)
+    sess = create_session_senario(session_test_senario,m)
     batch_pre_img, batch_preproc_param = preprocess(batch_im, input_color_format="bgr")
     batch_feat = []
     for pre_image in batch_pre_img:
