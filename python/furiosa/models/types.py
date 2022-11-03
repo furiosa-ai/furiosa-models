@@ -28,7 +28,7 @@ class PreProcessor(ABC):
 class PostProcessor(ABC):
     @abstractmethod
     def __call__(
-        self, inputs: Sequence[npt.ArrayLike], contexts: Sequence[Context], *args, **kwargs
+        self, session_outputs: Sequence[npt.ArrayLike], contexts: Sequence[Context], *args, **kwargs
     ):
         ...
 

@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Sequence, Tuple, Union
 
 import cv2
-import numpy
+import numpy.typing as npt
 import numpy as np
 
 from .. import native
@@ -50,13 +50,12 @@ class ResNet50(ImageClassificationModel):
                 publication=Publication(url="https://arxiv.org/abs/1512.03385.pdf"),
             ),
             processor=processor,
-            **kwargs,
         )
 
 
 class Resnet50PreProcessor(PreProcessor):
     @staticmethod
-    def __call__(inputs: Union[str, np.ndarray]) -> Tuple[np.array, None]:
+    def __call__(inputs: Union[str, npt.ArrayLike]) -> Tuple[np.array, None]:
         """Read and preprocess an image located at image_path."""
         # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/main.py#L37-L39
         # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L168-L184
@@ -77,16 +76,16 @@ class Resnet50PreProcessor(PreProcessor):
 
 
 class Resnet50PythonPostProcessor(PostProcessor):
-    def __call__(self, inputs: Sequence[numpy.ndarray], *args, **kwargs) -> str:
-        return CLASSES[int(inputs[0]) - 1]
+    def __call__(self, session_outputs: Sequence[npt.ArrayLike]) -> str:
+        return CLASSES[int(session_outputs[0]) - 1]
 
 
 class Resnet50NativePostProcessor(PostProcessor):
     def __init__(self, dfg: bytes):
         self._native = native.resnet50.PostProcessor(dfg)
 
-    def __call__(self, inputs: Sequence[numpy.ndarray], *args, **kwargs) -> str:
-        return CLASSES[self._native.eval(inputs) - 1]
+    def __call__(self, session_outputs: Sequence[npt.ArrayLike]) -> str:
+        return CLASSES[self._native.eval(session_outputs) - 1]
 
 
 class Resnet50PythonProcessor(DataProcessor):
