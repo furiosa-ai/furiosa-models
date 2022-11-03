@@ -52,6 +52,9 @@ dvc = [
     "dvc[s3]",
 ]
 
+[tool.pytest.ini_options]
+addopts = "--benchmark-autosave"
+
 [project.urls]
 Home = "https://furiosa.ai"
 Documentation = "https://github.com/furiosa-ai/furiosa-models"
