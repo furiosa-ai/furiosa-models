@@ -17,14 +17,14 @@ def sanity_check_for_dvc_file(model, dvc_file_path: str):
 
 def test_mlcommons_resnet50():
     sanity_check_for_dvc_file(
-        ResNet50.load(),
+        ResNet50.load(use_native=False),
         DATA_DIRECTORY_BASE / "mlcommons_resnet50_v1.5_int8.onnx.dvc",
     )
 
 
 def test_mlcommons_resnet50_native():
     sanity_check_for_dvc_file(
-        ResNet50.load(use_native_post=True),
+        ResNet50.load(use_native=True),
         DATA_DIRECTORY_BASE / "mlcommons_resnet50_v1.5_int8_truncated.onnx.dvc",
     )
 
@@ -39,7 +39,7 @@ async def test_mlcommons_resnet50_async():
 
 def test_ssd_mobilenet():
     sanity_check_for_dvc_file(
-        SSDMobileNet.load(),
+        SSDMobileNet.load(use_native=False),
         DATA_DIRECTORY_BASE / "mlcommons_ssd_mobilenet_v1_int8.onnx.dvc",
     )
 
