@@ -59,9 +59,6 @@ class YOLOv5l(ObjectDetectionModel):
             **kwargs,
         )
 
-    def compiler_config(self):
-        return
-
 
 def get_anchor_per_layer_count() -> int:
     """Anchors per layers
