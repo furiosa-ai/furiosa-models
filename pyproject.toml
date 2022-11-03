@@ -28,6 +28,7 @@ description = "Furiosa Models"
 requires-python = "~=3.7"
 dependencies = [
     "furiosa-common == 0.8.*",
+    "furiosa-registry == 0.8.*",
     "furiosa-runtime == 0.8.*",
 
     "aiofiles ~= 22.1.0",
