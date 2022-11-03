@@ -60,7 +60,7 @@ class YOLOv5l(ObjectDetectionModel):
         )
 
     def compiler_config(self):
-        return 
+        return
 
 
 def get_anchor_per_layer_count() -> int:
