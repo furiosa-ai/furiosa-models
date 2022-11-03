@@ -42,10 +42,6 @@ dependencies = [
     "numpy ~= 1.21",
 ]
 
-[tool.pytest.ini_options]
-norecursedirs = "tests/helpers"
-addopts = "-s --exitfirst --benchmark-autosave"
-
 [project.optional-dependencies]
 test = [
     "pytest",
