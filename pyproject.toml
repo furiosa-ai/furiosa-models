@@ -3,7 +3,7 @@ requires = ["setuptools", "wheel", "setuptools-rust"]
 
 [project]
 name = "furiosa-models"
-version = "0.9.0.dev"
+version = "0.9.0-dev"
 authors = [{ name = "FurioaAI Inc.", email = "pkg@furiosa.ai" }]
 readme = "README.md"
 license = { file = "LICENSE" }
