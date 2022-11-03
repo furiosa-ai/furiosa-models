@@ -42,6 +42,15 @@ class YOLOv5l(ObjectDetectionModel):
             format=Format.ONNX,
             family="YOLOv5",
             version="v5",
+            compiler_config={
+                "without_quantize": {
+                    "parameters": [
+                        {
+                            "permute": [0, 2, 3, 1],
+                        }
+                    ]
+                }
+            },
             metadata=Metadata(
                 description="YOLOv5 large model",
                 publication=Publication(url="https://github.com/ultralytics/yolov5"),
@@ -50,20 +59,8 @@ class YOLOv5l(ObjectDetectionModel):
             **kwargs,
         )
 
-    def compile_config(self, model_input_format="hwc"):
-        return {
-            "without_quantize": {
-                "parameters": [
-                    {
-                        "input_min": 0.0,
-                        "input_max": 1.0,
-                        "permute": [0, 2, 3, 1]
-                        if model_input_format == "hwc"
-                        else [0, 1, 2, 3],  # bchw
-                    }
-                ]
-            }
-        }
+    def compiler_config(self):
+        return 
 
 
 def get_anchor_per_layer_count() -> int:
