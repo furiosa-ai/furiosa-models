@@ -9,7 +9,6 @@ import tqdm
 
 from furiosa.models.types import Model
 from furiosa.models.vision import SSDMobileNet
-from furiosa.models.vision.ssd_mobilenet import NativePostProcessor, postprocess, preprocess
 from furiosa.runtime import session
 
 EXPECTED_ACCURACY = 0.22762065944402837  # matches e2e-testing's accuracy exactly
@@ -28,7 +27,7 @@ def load_coco_from_env_variable():
 
 
 def test_mlcommons_ssd_mobilenet_accuracy(benchmark):
-    model: Model = SSDMobileNet.load()
+    model: Model = SSDMobileNet.load(use_native=False)
 
     image_directory, coco = load_coco_from_env_variable()
     image_src_iter = iter(tqdm.tqdm(coco.dataset["images"]))
@@ -44,9 +43,9 @@ def test_mlcommons_ssd_mobilenet_accuracy(benchmark):
         return (image_src["id"], image), {}
 
     def workload(image_id, image):
-        image, contexts = preprocess([image])
+        image, contexts = model.preprocess([image])
         outputs = sess.run(image).numpy()
-        batch_result = postprocess(outputs, contexts, confidence_threshold=0.3)
+        batch_result = model.postprocess(outputs, contexts, confidence_threshold=0.3)
         result = np.squeeze(batch_result, axis=0)  # squeeze the batch axis
 
         for res in result:
@@ -63,7 +62,7 @@ def test_mlcommons_ssd_mobilenet_accuracy(benchmark):
             }
             detections.append(detection)
 
-    sess = session.create(model.enf)
+    sess = session.create(model)
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 
@@ -78,8 +77,7 @@ def test_mlcommons_ssd_mobilenet_accuracy(benchmark):
 
 
 def test_mlcommons_ssd_mobilenet_with_native_rust_pp_accuracy(benchmark):
-    model = SSDMobileNet.load(use_native_post=True)
-    processor = NativePostProcessor(model, version="rust")
+    model = SSDMobileNet.load(use_native=True, version="rust")
 
     image_directory, coco = load_coco_from_env_variable()
     image_src_iter = iter(tqdm.tqdm(coco.dataset["images"]))
@@ -95,9 +93,9 @@ def test_mlcommons_ssd_mobilenet_with_native_rust_pp_accuracy(benchmark):
         return (image_src["id"], image), {}
 
     def workload(image_id, image):
-        image, contexts = preprocess([image])
+        image, contexts = model.preprocess([image])
         outputs = sess.run(image).numpy()
-        result = processor.eval(outputs, context=contexts[0])
+        result = model.postprocess(outputs, contexts[0])
 
         for res in result:
             detection = {
@@ -113,7 +111,7 @@ def test_mlcommons_ssd_mobilenet_with_native_rust_pp_accuracy(benchmark):
             }
             detections.append(detection)
 
-    sess = session.create(model.enf)
+    sess = session.create(model)
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 
@@ -127,8 +125,7 @@ def test_mlcommons_ssd_mobilenet_with_native_rust_pp_accuracy(benchmark):
 
 
 def test_mlcommons_ssd_mobilenet_with_native_cpp_pp_accuracy(benchmark):
-    model = SSDMobileNet.load(use_native_post=True)
-    processor = NativePostProcessor(model, version="cpp")
+    model = SSDMobileNet.load(use_native=True, version="cpp")
 
     image_directory, coco = load_coco_from_env_variable()
     image_src_iter = iter(tqdm.tqdm(coco.dataset["images"]))
@@ -144,9 +141,9 @@ def test_mlcommons_ssd_mobilenet_with_native_cpp_pp_accuracy(benchmark):
         return (image_src["id"], image), {}
 
     def workload(image_id, image):
-        image, contexts = preprocess([image])
+        image, contexts = model.preprocess([image])
         outputs = sess.run(image).numpy()
-        result = processor.eval(outputs, context=contexts[0])
+        result = model.postprocess(outputs, contexts[0])
 
         for res in result:
             detection = {
@@ -162,7 +159,7 @@ def test_mlcommons_ssd_mobilenet_with_native_cpp_pp_accuracy(benchmark):
             }
             detections.append(detection)
 
-    sess = session.create(model.enf)
+    sess = session.create(model)
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 
