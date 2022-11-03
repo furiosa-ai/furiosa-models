@@ -12,9 +12,9 @@ import torch.nn.functional as F
 from .. import native
 from ...errors import ArtifactNotFound, FuriosaModelException
 from ...types import (
-    DataProcessor,
     Format,
     Metadata,
+    ModelProcessor,
     ObjectDetectionModel,
     PostProcessor,
     PreProcessor,
@@ -296,7 +296,7 @@ class SSDResNet34(ObjectDetectionModel):
 class SSDResNet34PreProcessor(PreProcessor):
     @staticmethod
     def __call__(
-        image_path_list: List[Union[str, np.ndarray]]
+        inputs: Sequence[Union[str, np.ndarray]]
     ) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
         """Read and preprocess an image located at image_path."""
         # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L141
@@ -304,7 +304,7 @@ class SSDResNet34PreProcessor(PreProcessor):
         # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L252-L263
         batch_image = []
         batch_preproc_param = []
-        for image in image_path_list:
+        for image in inputs:
             if type(image) == str:
                 image = cv2.imread(image)
                 if image is None:
@@ -386,7 +386,6 @@ class SSDResNet34PythonPostProcessor(PostProcessor):
 
 class SSDResNet34NativePostProcessor(PostProcessor):
     def __init__(self, dfg: bytes, version: str = "cpp"):
-        print(f"VERSION: {version}")
         if version == "cpp":
             self._native = native.ssd_resnet34.CppPostProcessor(dfg)
         elif version == "rust":
@@ -419,12 +418,12 @@ class SSDResNet34NativePostProcessor(PostProcessor):
         return results
 
 
-class SSDResNet34PythonProcessor(DataProcessor):
+class SSDResNet34PythonProcessor(ModelProcessor):
     preprocessor: PreProcessor = SSDResNet34PreProcessor()
     postprocessor: PostProcessor = SSDResNet34PythonPostProcessor()
 
 
-class SSDResNet34NativeProcessor(DataProcessor):
+class SSDResNet34NativeProcessor(ModelProcessor):
     preprocessor: PreProcessor = SSDResNet34PreProcessor()
 
     def __init__(self, dfg: bytes, version: str):

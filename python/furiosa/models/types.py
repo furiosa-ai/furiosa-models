@@ -33,7 +33,7 @@ class PostProcessor(ABC):
         ...
 
 
-class DataProcessor:
+class ModelProcessor:
     """Data pre/post processor with context (even if doesn't needed)"""
 
     preprocessor: PreProcessor
@@ -53,7 +53,7 @@ class Model(RegistryModel, BaseModel, ABC):
         # To allow Session, Processor type
         arbitrary_types_allowed = True
 
-    processor: Optional[DataProcessor] = None
+    processor: Optional[ModelProcessor] = None
 
     @staticmethod
     @abstractmethod

@@ -1,16 +1,16 @@
 from typing import Any, Dict, List, Sequence, Tuple, Union
 
 import cv2
-import numpy.typing as npt
 import numpy as np
+import numpy.typing as npt
 
 from .. import native
 from ...errors import ArtifactNotFound
 from ...types import (
-    DataProcessor,
     Format,
     ImageClassificationModel,
     Metadata,
+    ModelProcessor,
     PostProcessor,
     PreProcessor,
     Publication,
@@ -88,12 +88,12 @@ class Resnet50NativePostProcessor(PostProcessor):
         return CLASSES[self._native.eval(session_outputs) - 1]
 
 
-class Resnet50PythonProcessor(DataProcessor):
+class Resnet50PythonProcessor(ModelProcessor):
     preprocessor: PreProcessor = Resnet50PreProcessor()
     postprocessor: PostProcessor = Resnet50PythonPostProcessor()
 
 
-class Resnet50NativeProcessor(DataProcessor):
+class Resnet50NativeProcessor(ModelProcessor):
     preprocessor: PreProcessor = Resnet50PreProcessor()
 
     def __init__(self, dfg: bytes):
