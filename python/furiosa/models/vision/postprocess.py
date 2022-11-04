@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, List, Sequence
+from typing import Any, List, Sequence, Iterator
 
 import numpy as np
 
@@ -14,7 +14,7 @@ class CXcywhBoundingBox:
     width: float
     height: float
 
-    def __iter__(self) -> List[float]:
+    def __iter__(self) -> Iterator[float]:
         return iter([self.center_x, self.center_y, self.width, self.height])
 
 
@@ -25,7 +25,7 @@ class XywhBoundingBox:
     width: float
     height: float
 
-    def __iter__(self) -> List[float]:
+    def __iter__(self) -> Iterator[float]:
         return iter([self.x, self.y, self.width, self.height])
 
 
@@ -36,7 +36,7 @@ class LtrbBoundingBox:
     right: float
     bottom: float
 
-    def __iter__(self) -> List[float]:
+    def __iter__(self) -> Iterator[float]:
         return iter([self.left, self.top, self.right, self.bottom])
 
 
