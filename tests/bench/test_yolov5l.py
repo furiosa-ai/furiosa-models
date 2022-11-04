@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Tuple
 
 import numpy as np
-from test_acc_util import bdd100k
+from .test_acc_util import bdd100k
 from tqdm import tqdm
 
 from furiosa.models.types import Model
