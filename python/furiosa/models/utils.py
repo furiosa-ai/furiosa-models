@@ -124,11 +124,12 @@ def model_file_name(relative_path, truncated=True) -> str:
     return relative_path + suffix
 
 
-def resolve_file(src_name: str, extension: str, generated_suffix="_warboy_2pe") -> ArtifactResolver:
+async def resolve_file(src_name: str, extension: str, generated_suffix="_warboy_2pe") -> bytes:
     # First check whether it is generated file or not
     if extension.lower() in GENERATED_EXTENSIONS:
         generated_path_base = _generated_path_base()
         if generated_path_base is None:
+            # FIXME: Uncovered code path. Can we assume libnux is always installed?
             raise errors.VersionInfoNotFound()
         file_name = f'{src_name}{generated_suffix}.{extension}'
         file_subpath = f'{generated_path_base}/{file_name}'
@@ -137,14 +138,12 @@ def resolve_file(src_name: str, extension: str, generated_suffix="_warboy_2pe") 
     full_path = (DATA_DIRECTORY_BASE / file_subpath).resolve()
 
     try:
-        return ArtifactResolver(f"{full_path}")
+        return await ArtifactResolver(full_path).read()
     except Exception as e:
         raise errors.ArtifactNotFound(src_name, extension) from e
 
 
 async def load_artifacts(name: str) -> Dict[str, bytes]:
-    artifacts = {}
-    for ext in [EXT_ONNX, EXT_DFG, EXT_ENF]:
-        artifacts[ext] = await resolve_file(name, ext).read()
-
-    return artifacts
+    exts = [EXT_ONNX, EXT_DFG, EXT_ENF]
+    resolvers = map(partial(resolve_file, name), exts)
+    return dict((x, y) for x, y in zip(exts, await asyncio.gather(*resolvers)))
