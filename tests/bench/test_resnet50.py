@@ -41,7 +41,7 @@ def test_mlcommons_resnet50_accuracy(benchmark):
 
     def workload(image, answer):
         global correct_predictions, incorrect_predictions
-        image = model.preprocess(image)
+        image, _ = model.preprocess(image)
         output = model.postprocess(sess.run(image).numpy())
 
         if output == answer:
@@ -85,7 +85,7 @@ def test_mlcommons_resnet50_with_native_pp_accuracy(benchmark):
 
     def workload(image, answer):
         global correct_predictions, incorrect_predictions
-        image = model.preprocess(image)
+        image, _ = model.preprocess(image)
         output = model.postprocess(sess.run(image).numpy())
 
         if output == answer:
