@@ -90,8 +90,7 @@ def preprocess(
     When the image file paths are passed, the image files should be standard image format, such as jpg, gif, png.
 
     Args:
-        images (Sequence[Union[str, np.ndarray]]): A list of paths of image files
-            or a stacked image loaded as numpy through `cv2.imread()`
+        images: A list of paths of image files or a stacked image loaded as numpy through `cv2.imread()`
 
     Returns:
         3-channel images of 300x300 in NCHW format. Please find the details at 'Inputs of Model' section.
@@ -227,8 +226,8 @@ def postprocess(
     """Convert the outputs of this model to a list of bounding boxes, scores and labels
 
     Arguments:
-        model_outputs (Sequence[numpy.ndarray]): the outputs of the model
-        context (Sequence[Dict[str, Any]]): context coming from `preprocess()`
+        model_outputs: the outputs of the model
+        context: context coming from `preprocess()`
 
     Returns:
         Detected Bounding Box and its score and label represented as `ObjectDetectionResult`.

@@ -1,13 +1,6 @@
-"""
-
-
-# API Reference
-"""
-
 from typing import Any, Dict, List, Sequence, Union
 
 import cv2
-import numpy
 import numpy as np
 
 from furiosa.registry import Format, Metadata, Publication
@@ -55,7 +48,7 @@ def preprocess(image: Union[str, np.ndarray]) -> np.array:
     This function can take a standard image file (e.g., jpg, gif, png) and return a numpy array.
 
     Args:
-        image (Union[str, np.ndarray]): A path of an image or an image loaded as numpy from `cv2.imread()`
+        image: A path of an image or an image loaded as numpy from `cv2.imread()`
     """
     # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/main.py#L37-L39
     # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L168-L184
@@ -73,17 +66,17 @@ def preprocess(image: Union[str, np.ndarray]) -> np.array:
     return image[np.newaxis, ...]
 
 
-def postprocess(model_outputs: Sequence[numpy.ndarray]) -> str:
+def postprocess(model_outputs: Sequence[np.ndarray]) -> str:
     """Convert the outputs of a model to a label string, such as car and cat.
 
     Arguments:
-        model_outputs (Sequence[numpy.ndarray]): the outputs of the model
+        model_outputs: the outputs of the model
     """
     return CLASSES[int(model_outputs[0]) - 1]
 
 
 class Resnet50PostProcessor(PostProcessor):
-    def eval(self, model_outputs: Sequence[numpy.ndarray], *args: Any, **kwargs: Any) -> str:
+    def eval(self, model_outputs: Sequence[np.ndarray], *args: Any, **kwargs: Any) -> str:
         return CLASSES[self._native.eval(model_outputs) - 1]
 
 
