@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
+import asyncio
 from dataclasses import dataclass
+from functools import partial
 import logging
 import os
 from pathlib import Path
@@ -146,4 +148,4 @@ async def resolve_file(src_name: str, extension: str, generated_suffix="_warboy_
 async def load_artifacts(name: str) -> Dict[str, bytes]:
     exts = [EXT_ONNX, EXT_DFG, EXT_ENF]
     resolvers = map(partial(resolve_file, name), exts)
-    return dict((x, y) for x, y in zip(exts, await asyncio.gather(*resolvers)))
+    return {k: v for k, v in zip(exts, await asyncio.gather(*resolvers))}
