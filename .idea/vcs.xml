@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/thirdparty/mlcommons" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/thirdparty/mlcommons/loadgen" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/thirdparty/mlcommons/loadgen/inference" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/thirdparty/mlcommons/loadgen/inference/language/bert/DeepLearningExamples" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/thirdparty/mlcommons/loadgen/inference/language/bert/DeepLearningExamples/PyTorch/SpeechRecognition/Jasper/external/tensorrt-inference-server" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/thirdparty/mlcommons/loadgen/inference/language/bert/DeepLearningExamples/PyTorch/Translation/Transformer/cutlass" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/thirdparty/mlcommons/loadgen/inference/language/bert/DeepLearningExamples/PyTorch/Translation/Transformer/cutlass/tools/external/googletest" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/thirdparty/mlcommons/loadgen/inference/third_party/pybind" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/thirdparty/mlcommons/loadgen/inference/third_party/pybind/tools/clang" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/thirdparty/mlcommons/loadgen/inference/tools/submission/power-dev" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/thirdparty/mlcommons/loadgen/inference/vision/medical_imaging/3d-unet-brats19/nnUnet" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/thirdparty/mlcommons/npu-tools" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/thirdparty/mlcommons/npu-tools/crates/npu-models/data" vcs="Git" />
+  </component>
+</project>
