@@ -1,14 +1,12 @@
+from abc import ABC
 from typing import Any, Dict, List, Sequence, Tuple
 
 import cv2
 import numpy as np
+import numpy.typing as npt
 
-from furiosa.models.vision.postprocess import (
-    LtrbBoundingBox,
-    ObjectDetectionResult,
-    nms_internal_ops_fast,
-)
-
+from ...types import ModelProcessor, ObjectDetectionModel, PostProcessor, PreProcessor
+from ...vision.postprocess import LtrbBoundingBox, ObjectDetectionResult, nms_internal_ops_fast
 from .box_decoder import BoxDecoderC
 
 _INPUT_SIZE = (640, 640)
@@ -161,89 +159,120 @@ def boxdecoder(class_names: Sequence[str], anchors: np.ndarray) -> BoxDecoderC:
     )
 
 
-def preprocess(
-    img_list: Sequence[np.ndarray], input_color_format: str
-) -> Tuple[np.ndarray, List[Dict[str, Any]]]:
-    """Yolov5 preprocess
-
-    Args:
-        img (Sequence[np.ndarray]): Color images have (Batch, Channel, Height, Width) dimensions.
-        input_color_format (str): a color format: rgb(Red,Green,Blue), bgr(Blue,Green,Red).
-
-    Returns:
-        Tuple[np.ndarray, List[Dict[str, Any]]]: a pre-processed image, scales and padded sizes(width,height) per images.
-            The first element is a preprocessing image, and a second element is a dictionary object to be used for postprocess.
-            'scale' key of the returned dict has a rescaled ratio per width(=target/width) and height(=target/height),
-            and the 'pad' key has padded width and height pixels. Specially, the last dictionary element of returing
-            tuple will be passed to postprocessing as a parameter to calculate predicted coordinates on normalized coordinates back to an input image cooridnates.
-    """
-    # image format must be chw
-    batched_image = []
-    batched_proc_params = []
-    for i, img in enumerate(img_list):
-        img, (sx, sy), (padw, padh) = _resize(img, _INPUT_SIZE)
-
-        if input_color_format == "bgr":
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        assert sx == sy, "yolov5 must be the same rescale for width and height"
-        scale = sx
-        batched_image.append(img)
-        batched_proc_params.append({"scale": scale, "pad": (padw, padh)})
-
-    return np.stack(batched_image, axis=0), batched_proc_params
+class YOLOv5Base(ObjectDetectionModel, ABC):
+    @staticmethod
+    def get_compiler_config() -> Dict:
+        return {
+            "without_quantize": {
+                "parameters": [
+                    {
+                        "permute": [0, 2, 3, 1],
+                    }
+                ]
+            }
+        }
 
 
-def postprocess(
-    batch_feats: Sequence[np.ndarray],
-    box_decoder: BoxDecoderC,
-    anchor_per_layer_count: int,
-    class_names: Sequence[str],
-    batch_preproc_params: Sequence[Dict[str, Any]],
-    conf_thres: float = 0.25,
-    iou_thres: float = 0.45,
-) -> List[List[ObjectDetectionResult]]:
-    """Yolov5 PostProcess.
+class YOLOv5PreProcessor(PreProcessor):
+    @staticmethod
+    def __call__(
+        img_list: Sequence[np.ndarray], input_color_format: str
+    ) -> Tuple[np.ndarray, List[Dict[str, Any]]]:
+        """Yolov5 preprocess
 
-    Args:
-        batch_feats (Sequence[np.ndarray]): Model numpy version outputs. This numpy array expects to be in Batch x Features(the number anchors x (5+the number of clsss)) x N x N.
+        Args:
+            img (Sequence[np.ndarray]): Color images have (Batch, Channel, Height, Width) dimensions.
+            input_color_format (str): a color format: rgb(Red,Green,Blue), bgr(Blue,Green,Red).
+
+        Returns:
+            Tuple[np.ndarray, List[Dict[str, Any]]]: a pre-processed image, scales and padded sizes(width,height) per images.
+                The first element is a preprocessing image, and a second element is a dictionary object to be used for postprocess.
+                'scale' key of the returned dict has a rescaled ratio per width(=target/width) and height(=target/height),
+                and the 'pad' key has padded width and height pixels. Specially, the last dictionary element of returing
+                tuple will be passed to postprocessing as a parameter to calculate predicted coordinates on normalized coordinates back to an input image cooridnates.
+        """
+        # image format must be chw
+        batched_image = []
+        batched_proc_params = []
+        for i, img in enumerate(img_list):
+            img, (sx, sy), (padw, padh) = _resize(img, _INPUT_SIZE)
+
+            if input_color_format == "bgr":
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            assert sx == sy, "yolov5 must be the same rescale for width and height"
+            scale = sx
+            batched_image.append(img)
+            batched_proc_params.append({"scale": scale, "pad": (padw, padh)})
+
+        return np.stack(batched_image, axis=0), batched_proc_params
+
+
+class YOLOv5PostProcessor(PostProcessor):
+    def __init__(self, anchors: npt.ArrayLike, class_names: Sequence[str]):
+        """
         box_decoder (BoxDecoderC): A box decoder. It has several informations to decode: (xyxy, confidence threshold, anchor_grid, stride, number of classes).
         anchor_per_layer_count (int): The number of anchors per layers.
         class_names (Sequence[str]): A list of class names.
-        batch_preproc_params (Dict[str, Any]): The components manipulated by the preprocessor to be used for information recovery: image scaling ratio, padding size in width and height.
-        conf_threshold (float, optional): Confidence score threshold. The default to 0.25
-        iou_thres (float, optional): IoU threshold value for the NMS processing. The default to 0.45.
+        """
+        self.anchors = anchors
+        self.class_names = class_names
+        self.box_decoder = boxdecoder(class_names, anchors)
+        self.anchor_per_layer_count = anchors.shape[1]
 
-    Returns:
-        List[List[ObjectDetectionResult]]: Detected bounding boxes(class index, class name, score, 2D box coordinates(left,top,right,bottom)).
-            This ObjectDetectionResult inherits from dataclass, so that it could be converted to Tuple (by astuple funciton in the dataclass package).
-    """
+    def __call__(
+        self,
+        session_outputs: Sequence[np.ndarray],
+        contexts: Sequence[Dict[str, Any]],
+        conf_thres: float = 0.25,
+        iou_thres: float = 0.45,
+    ) -> List[List[ObjectDetectionResult]]:
+        """Yolov5 PostProcess.
 
-    batch_feats = [
-        _reshape_output(f, anchor_per_layer_count, len(class_names)) for f in batch_feats
-    ]
-    batched_boxes = box_decoder(batch_feats, conf_thres)
-    batched_boxes = _nms(batched_boxes, iou_thres)
+        Args:
+            session_outputs (Sequence[np.ndarray]): Model numpy version outputs. This numpy array expects to be in Batch x Features(the number anchors x (5+the number of clsss)) x N x N.
+            contexts (Dict[str, Any]): The components manipulated by the preprocessor to be used for information recovery: image scaling ratio, padding size in width and height.
+            conf_threshold (float, optional): Confidence score threshold. The default to 0.25
+            iou_thres (float, optional): IoU threshold value for the NMS processing. The default to 0.45.
 
-    batched_detected_boxes = []
-    for boxes, preproc_params in zip(batched_boxes, batch_preproc_params):
-        scale = preproc_params['scale']
-        padw, padh = preproc_params['pad']
-        detected_boxes = []
-        # rescale boxes
-        boxes[:, [0, 2]] = (1 / scale) * (boxes[:, [0, 2]] - padw)
-        boxes[:, [1, 3]] = (1 / scale) * (boxes[:, [1, 3]] - padh)
+        Returns:
+            List[List[ObjectDetectionResult]]: Detected bounding boxes(class index, class name, score, 2D box coordinates(left,top,right,bottom)).
+                This ObjectDetectionResult inherits from dataclass, so that it could be converted to Tuple (by astuple funciton in the dataclass package).
+        """
 
-        for box in boxes:
-            detected_boxes.append(
-                ObjectDetectionResult(
-                    index=int(box[5]),
-                    label=class_names[int(box[5])],
-                    score=box[4],
-                    boundingbox=LtrbBoundingBox(
-                        left=box[0], top=box[1], right=box[2], bottom=box[3]
-                    ),
+        session_outputs = [
+            _reshape_output(f, self.anchor_per_layer_count, len(self.class_names))
+            for f in session_outputs
+        ]
+        batched_boxes = self.box_decoder(session_outputs, conf_thres)
+        batched_boxes = _nms(batched_boxes, iou_thres)
+
+        batched_detected_boxes = []
+        for boxes, preproc_params in zip(batched_boxes, contexts):
+            scale = preproc_params['scale']
+            padw, padh = preproc_params['pad']
+            detected_boxes = []
+            # rescale boxes
+            boxes[:, [0, 2]] = (1 / scale) * (boxes[:, [0, 2]] - padw)
+            boxes[:, [1, 3]] = (1 / scale) * (boxes[:, [1, 3]] - padh)
+
+            for box in boxes:
+                detected_boxes.append(
+                    ObjectDetectionResult(
+                        index=int(box[5]),
+                        label=self.class_names[int(box[5])],
+                        score=box[4],
+                        boundingbox=LtrbBoundingBox(
+                            left=box[0], top=box[1], right=box[2], bottom=box[3]
+                        ),
+                    )
                 )
-            )
-        batched_detected_boxes.append(detected_boxes)
+            batched_detected_boxes.append(detected_boxes)
 
-    return batched_detected_boxes
+        return batched_detected_boxes
+
+
+class YOLOv5Processor(ModelProcessor):
+    preprocessor: PreProcessor = YOLOv5PreProcessor()
+
+    def __init__(self, anchors: npt.ArrayLike, class_names: Sequence[str]):
+        self.postprocessor = YOLOv5PostProcessor(anchors, class_names)

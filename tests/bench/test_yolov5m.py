@@ -10,7 +10,6 @@ from tqdm import tqdm
 from furiosa.models.types import Model
 from furiosa.models.vision import YOLOv5m
 from furiosa.models.vision.postprocess import collate
-from furiosa.models.vision.yolov5 import medium as yolov5m
 from furiosa.runtime import session
 
 EXPECTED_MAP = 0.2803325282086983
@@ -26,12 +25,12 @@ def load_db_from_env_variable() -> Tuple[Path, bdd100k.Yolov5Dataset]:
 
 
 def test_yolov5m_accuracy(benchmark):
-    model: Model = YOLOv5m.load()
+    model: YOLOv5m = YOLOv5m.load()
 
     image_directory, yolov5db = load_db_from_env_variable()
 
     print(f"dataset_path: {image_directory}")
-    metric = bdd100k.MAPMetricYolov5(num_classes=len(yolov5m.CLASSES))
+    metric = bdd100k.MAPMetricYolov5(num_classes=len(model.classes))
 
     num_images = len(yolov5db)
     yolov5db = iter(tqdm(yolov5db))
@@ -43,11 +42,11 @@ def test_yolov5m_accuracy(benchmark):
     def workload(im, boxes_target, classes_target):
         batch_im = [im]
 
-        batch_pre_img, batch_preproc_param = yolov5m.preprocess(
+        batch_pre_img, batch_preproc_param = model.preprocess(
             batch_im, input_color_format="bgr"
         )  # single-batch
         batch_feat = sess.run(np.expand_dims(batch_pre_img[0], axis=0)).numpy()
-        detected_boxes = yolov5m.postprocess(
+        detected_boxes = model.postprocess(
             batch_feat, batch_preproc_param, conf_thres=0.001, iou_thres=0.6
         )
 
@@ -61,7 +60,7 @@ def test_yolov5m_accuracy(benchmark):
             classes_target=classes_target,
         )
 
-    sess = session.create(model.enf)
+    sess = session.create(model)
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 

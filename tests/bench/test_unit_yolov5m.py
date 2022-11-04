@@ -6,7 +6,6 @@ import pytest
 
 from furiosa.models.vision import YOLOv5m
 from furiosa.models.vision.postprocess import collate
-from furiosa.models.vision.yolov5.medium import CLASSES, postprocess, preprocess
 from furiosa.runtime import session
 
 
@@ -34,17 +33,17 @@ async def test_yolov5_small(
     print(f"Test Session Create Senario: {session_test_senario}")
     m = await YOLOv5m.load_async()
 
-    assert len(CLASSES) == 10, "expected CLASS is 10"
+    assert len(m.classes) == 10, "expected CLASS is 10"
 
     batch_im = [cv2.imread(test_image_path), cv2.imread(test_image_path)]
     sess = create_session_senario(session_test_senario, m)
-    batch_pre_img, batch_preproc_param = preprocess(batch_im, input_color_format="bgr")
+    batch_pre_img, batch_preproc_param = m.preprocess(batch_im, input_color_format="bgr")
     batch_feat = []
     for pre_image in batch_pre_img:
         batch_feat.append(sess.run(np.expand_dims(pre_image, axis=0)).numpy())
 
     batch_feat = collate(batch_feat)
-    detected_boxes = postprocess(batch_feat, batch_preproc_param)
+    detected_boxes = m.postprocess(batch_feat, batch_preproc_param)
     assert (
         len(detected_boxes) == expected_batch_axis
     ), f"batch axis is expected {expected_batch_axis}"
