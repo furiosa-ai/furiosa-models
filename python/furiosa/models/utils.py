@@ -9,8 +9,8 @@ import aiofiles
 import aiohttp
 import yaml
 
-from furiosa.common.native import DEFAULT_ENCODING, find_native_lib_path, find_native_libs
-from furiosa.common.thread import asynchronous
+from furiosa.common.native import DEFAULT_ENCODING
+from furiosa.runtime._api.v1 import LIBNUX
 
 from . import errors
 
@@ -41,14 +41,10 @@ class CompilerVersion:
 def compiler_version() -> Optional[CompilerVersion]:
     # TODO - hacky version. Eventually,
     #  it should find a compiler version being used by runtime.
-    if find_native_lib_path("nux") is None:
-        return None
-    else:
-        libnux = find_native_libs("nux")
-        return CompilerVersion(
-            libnux.version().decode(DEFAULT_ENCODING),
-            libnux.git_short_hash().decode(DEFAULT_ENCODING),
-        )
+    return CompilerVersion(
+        LIBNUX.version().decode(DEFAULT_ENCODING),
+        LIBNUX.git_short_hash().decode(DEFAULT_ENCODING),
+    )
 
 
 def _generated_path_base() -> Optional[str]:
