@@ -150,7 +150,7 @@ def nms_internal_ops_fast(
        The criterion for the overlapping regions is when an intersect between two regions is greater than the iou threshold value.
 
     Args:
-        boxes (np.ndarray): A list of candiate boxes corresponding confidence score.
+        boxes (np.ndarray): A list of candidate boxes corresponding confidence score.
             They have to be in (left, top, right, bottom) format with left <= right and top <= bottom.
         scores (np.ndarray): scores for each candidate boxes. It's dimension has N x 1.
         iou_threshold (float): discards all overlapping boxes with the overlap > iou_threshold.

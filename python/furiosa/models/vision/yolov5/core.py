@@ -36,7 +36,7 @@ def _letterbox(
 
     Returns:
         Tuple[np.ndarray, Tuple[float, float], Tuple[int, int]]:
-        The first element is an padded-resized image. The second element is a resized image. The last element is padded sizes, respectivly width and height.
+        The first element is an padded-resized image. The second element is a resized image. The last element is padded sizes, respectively width and height.
     """
     # Resize and pad image while meeting stride-multiple constraints
     shape = im.shape[:2]  # current shape [height, width]
@@ -98,7 +98,7 @@ def _nms(
     for x in prediction:
         # Batched NMS
         if not class_agnostic:
-            class_index = x[:, 5:6] * max_wh  # classe index * max_wh
+            class_index = x[:, 5:6] * max_wh  # class index * max_wh
             # c = 0, offset 0 + (xyxy)
             # c = 1, +max_wh + (xyxy)
             # c = 2, +2*max_wh + (xyxy)
@@ -150,7 +150,7 @@ def boxdecoder(class_names: Sequence[str], anchors: np.ndarray) -> BoxDecoderC:
 
     Returns:
         BoxDecoderC Callable Instance. If the instance is called,
-            it returns an numpy.ndarray with batch x N x 6 propertie.
+            it returns an numpy.ndarray with batch x N x 6 properties.
     """
     return BoxDecoderC(
         nc=len(class_names),
@@ -188,8 +188,8 @@ class YOLOv5PreProcessor(PreProcessor):
             Tuple[np.ndarray, List[Dict[str, Any]]]: a pre-processed image, scales and padded sizes(width,height) per images.
                 The first element is a preprocessing image, and a second element is a dictionary object to be used for postprocess.
                 'scale' key of the returned dict has a rescaled ratio per width(=target/width) and height(=target/height),
-                and the 'pad' key has padded width and height pixels. Specially, the last dictionary element of returing
-                tuple will be passed to postprocessing as a parameter to calculate predicted coordinates on normalized coordinates back to an input image cooridnates.
+                and the 'pad' key has padded width and height pixels. Specially, the last dictionary element of returning
+                tuple will be passed to postprocessing as a parameter to calculate predicted coordinates on normalized coordinates back to an input image cooridinates.
         """
         # image format must be chw
         batched_image = []
@@ -210,7 +210,7 @@ class YOLOv5PreProcessor(PreProcessor):
 class YOLOv5PostProcessor(PostProcessor):
     def __init__(self, anchors: npt.ArrayLike, class_names: Sequence[str]):
         """
-        box_decoder (BoxDecoderC): A box decoder. It has several informations to decode: (xyxy, confidence threshold, anchor_grid, stride, number of classes).
+        box_decoder (BoxDecoderC): A box decoder. It has several information to decode: (xyxy, confidence threshold, anchor_grid, stride, number of classes).
         anchor_per_layer_count (int): The number of anchors per layers.
         class_names (Sequence[str]): A list of class names.
         """
@@ -236,7 +236,7 @@ class YOLOv5PostProcessor(PostProcessor):
 
         Returns:
             List[List[ObjectDetectionResult]]: Detected bounding boxes(class index, class name, score, 2D box coordinates(left,top,right,bottom)).
-                This ObjectDetectionResult inherits from dataclass, so that it could be converted to Tuple (by astuple funciton in the dataclass package).
+                This ObjectDetectionResult inherits from dataclass, so that it could be converted to Tuple (by astuple function in the dataclass package).
         """
 
         session_outputs = [

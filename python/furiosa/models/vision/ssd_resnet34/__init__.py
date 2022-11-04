@@ -31,7 +31,7 @@ CLASSES = coco.MobileNetSSD_Large_CLASSES
 ##Inspired by https://github.com/kuangliu/pytorch-ssd
 class Encoder(object):
     """
-    Transform between (bboxes, lables) <-> SSD output
+    Transform between (bboxes, labels) <-> SSD output
 
     dboxes: default boxes in size 8732 x 4,
         encoder: input ltrb format, output xywh format
