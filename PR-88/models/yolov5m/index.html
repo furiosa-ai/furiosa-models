@@ -422,6 +422,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#furiosa.models.vision.yolov5.medium.postprocess" class="md-nav__link">
+    furiosa.models.vision.yolov5.medium.postprocess
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -568,6 +575,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#furiosa.models.vision.yolov5.medium.postprocess" class="md-nav__link">
+    furiosa.models.vision.yolov5.medium.postprocess
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -601,18 +615,19 @@ You can find more details at https://github.com/ultralytics/yolov5.</p>
 <div class="admonition usage">
 <p class="admonition-title">Usage</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span> <span class="nn">cv2</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">from</span> <span class="nn">furiosa.models.vision</span> <span class="kn">import</span> <span class="n">YOLOv5m</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">from</span> <span class="nn">furiosa.models.vision.yolov5.medium</span> <span class="kn">import</span> <span class="n">postprocess</span><span class="p">,</span> <span class="n">preprocess</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="kn">from</span> <span class="nn">furiosa.runtime</span> <span class="kn">import</span> <span class="n">session</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">model</span> <span class="o">=</span> <span class="n">YOLOv5m</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">model</span><span class="p">)</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&quot;tests/assets/yolov5-test.jpg&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="nb">input</span><span class="p">,</span> <span class="n">context</span> <span class="o">=</span> <span class="n">preprocess</span><span class="p">([</span><span class="n">image</span><span class="p">],</span> <span class="n">color_format</span><span class="o">=</span><span class="s2">&quot;bgr&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">output</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">postprocess</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">from</span> <span class="nn">furiosa.models.vision</span> <span class="kn">import</span> <span class="n">YOLOv5m</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="kn">from</span> <span class="nn">furiosa.models.vision.yolov5.medium</span> <span class="kn">import</span> <span class="n">postprocess</span><span class="p">,</span> <span class="n">preprocess</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="kn">from</span> <span class="nn">furiosa.runtime</span> <span class="kn">import</span> <span class="n">session</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">model</span> <span class="o">=</span> <span class="n">YOLOv5m</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">model</span><span class="p">)</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&quot;tests/assets/yolov5-test.jpg&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">inputs</span><span class="p">,</span> <span class="n">context</span> <span class="o">=</span> <span class="n">preprocess</span><span class="p">([</span><span class="n">image</span><span class="p">],</span> <span class="n">color_format</span><span class="o">=</span><span class="s2">&quot;bgr&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">output</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="n">postprocess</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
 </code></pre></div>
 </div>
 <h2 id="model-inputs">Model inputs</h2>
@@ -624,7 +639,7 @@ You can find more details at https://github.com/ultralytics/yolov5.</p>
 <li>N - batch size</li>
 <li>H - image height</li>
 <li>W - image width</li>
-<li>C - number of channels    </li>
+<li>C - number of channels</li>
 </ul>
 </li>
 <li>Optimal Batch Size: 1</li>
@@ -672,71 +687,11 @@ to convert images to input tensors and the model outputs to object detection res
 <h3 id="furiosamodelsvisionyolov5mediumpreprocess"><code>furiosa.models.vision.yolov5.medium.preprocess</code></h3>
 
 
-<div class="doc doc-object doc-function">
+<div class="doc doc-object doc-attribute">
 
 
 <a id="furiosa.models.vision.yolov5.medium.preprocess"></a>
   <div class="doc doc-contents first">
-  
-      <p>Preprocess a batch of images in numpy</p>
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>images</code></td>
-          <td>
-                <code><span title="typing.Sequence">Sequence</span>[<span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>]</code>
-          </td>
-          <td><p>Color images have (NCHW: Batch, Channel, Height, Width) dimensions</p></td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>color_format</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td><p>'rgb' (Red,Green,Blue) or 'bgr' (Blue,Green,Red)</p></td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code><span title="typing.Tuple">Tuple</span>[<span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>, <span title="typing.List">List</span>[<span title="typing.Dict">Dict</span>[str, <span title="typing.Any">Any</span>]]]</code>
-          </td>
-          <td><p>a pre-processed image, scales and padded sizes(width,height) per images.
-The first element is a preprocessing image, and a second element is a dictionary object to be used for postprocess.
-'scale' key of the returned dict has a rescaled ratio per width(=target/width) and height(=target/height),
-and the 'pad' key has padded width and height pixels. Specially, the last dictionary element of returing
-tuple will be passed to postprocessing as a parameter to calculate predicted coordinates on normalized
-coordinates back to an input image coordinator.</p></td>
-        </tr>
-    </tbody>
-  </table>
-
   </div>
 
 </div><h3 id="furiosamodelsvisionyolov5mediumpostprocess"><code>furiosa.models.vision.yolov5.medium.postprocess</code></h3>
@@ -748,7 +703,7 @@ coordinates back to an input image coordinator.</p></td>
 <a id="furiosa.models.vision.yolov5.medium.postprocess"></a>
   <div class="doc doc-contents first">
   
-      <p>Convert the outputs of this model to a list of bounding boxes, scores and labels</p>
+      <p>Yolov5m Postprocess.</p>
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -762,7 +717,7 @@ coordinates back to an input image coordinator.</p></td>
     </thead>
     <tbody>
         <tr>
-          <td><code>model_outputs</code></td>
+          <td><code>batch_feats</code></td>
           <td>
                 <code><span title="typing.Sequence">Sequence</span>[<span title="numpy">np</span>.<span title="numpy.array">array</span>]</code>
           </td>
@@ -772,7 +727,7 @@ coordinates back to an input image coordinator.</p></td>
           </td>
         </tr>
         <tr>
-          <td><code>context</code></td>
+          <td><code>batch_preproc_param</code></td>
           <td>
                 <code><span title="typing.Dict">Dict</span>[str, <span title="typing.Any">Any</span>]</code>
           </td>
@@ -816,110 +771,13 @@ For example, it could be the reduction ratio of the image, the actual image widt
     <tbody>
         <tr>
           <td>
-                <code><span title="typing.List">List</span>[<span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="furiosa.models.vision.postprocess.ObjectDetectionResult" href="#furiosa.models.vision.postprocess.ObjectDetectionResult">ObjectDetectionResult</a>]]</code>
+                <code><span title="typing.List">List</span>[<span title="typing.List">List</span>[<span title="furiosa.models.vision.yolov5.core">_yolov5</span>.<span title="furiosa.models.vision.yolov5.core.ObjectDetectionResult">ObjectDetectionResult</span>]]</code>
           </td>
-          <td><p>Detected Bounding Box and its score and label represented as <code>ObjectDetectionResult</code>.
-To learn more about <code>ObjectDetectionResult</code>, 'Definition of ObjectDetectionResult' can be found below.</p></td>
+          <td><p>yolov5.ObjectDetectionResult: Detected Bounding Box and its score and label by Yolov5m.</p></td>
         </tr>
     </tbody>
   </table>
 
-<details class="definition-of-objectdetectionresult">
-  <summary>Definition of ObjectDetectionResult</summary>
-  <div class="doc doc-object doc-class">
-
-
-<a id="furiosa.models.vision.postprocess.LtrbBoundingBox"></a>
-  <div class="doc doc-contents first">
-
-
-
-        <details class="quote">
-          <summary>Source code in <code>furiosa/models/vision/postprocess.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span>
-<span class="normal"><a href="#__codelineno-0-34">34</a></span>
-<span class="normal"><a href="#__codelineno-0-35">35</a></span>
-<span class="normal"><a href="#__codelineno-0-36">36</a></span>
-<span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span>
-<span class="normal"><a href="#__codelineno-0-39">39</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="nd">@dataclass</span>
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="k">class</span> <span class="nc">LtrbBoundingBox</span><span class="p">:</span>
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a>    <span class="n">left</span><span class="p">:</span> <span class="nb">float</span>
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a>    <span class="n">top</span><span class="p">:</span> <span class="nb">float</span>
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a>    <span class="n">right</span><span class="p">:</span> <span class="nb">float</span>
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a>    <span class="n">bottom</span><span class="p">:</span> <span class="nb">float</span>
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a>
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a>    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a>        <span class="k">return</span> <span class="nb">iter</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bottom</span><span class="p">])</span>
-</code></pre></div></td></tr></table></div>
-        </details>
-
-  
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-<a id="furiosa.models.vision.postprocess.ObjectDetectionResult"></a>
-  <div class="doc doc-contents first">
-
-
-
-        <details class="quote">
-          <summary>Source code in <code>furiosa/models/vision/postprocess.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-88">88</a></span>
-<span class="normal"><a href="#__codelineno-0-89">89</a></span>
-<span class="normal"><a href="#__codelineno-0-90">90</a></span>
-<span class="normal"><a href="#__codelineno-0-91">91</a></span>
-<span class="normal"><a href="#__codelineno-0-92">92</a></span>
-<span class="normal"><a href="#__codelineno-0-93">93</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-88" name="__codelineno-0-88"></a><span class="nd">@dataclass</span>
-<a id="__codelineno-0-89" name="__codelineno-0-89"></a><span class="k">class</span> <span class="nc">ObjectDetectionResult</span><span class="p">:</span>
-<a id="__codelineno-0-90" name="__codelineno-0-90"></a>    <span class="n">boundingbox</span><span class="p">:</span> <span class="n">LtrbBoundingBox</span>
-<a id="__codelineno-0-91" name="__codelineno-0-91"></a>    <span class="n">score</span><span class="p">:</span> <span class="nb">float</span>
-<a id="__codelineno-0-92" name="__codelineno-0-92"></a>    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span>
-<a id="__codelineno-0-93" name="__codelineno-0-93"></a>    <span class="n">index</span><span class="p">:</span> <span class="nb">int</span>
-</code></pre></div></td></tr></table></div>
-        </details>
-
-  
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-  </div>
-
-</div>
-</details>
   </div>
 
 </div>

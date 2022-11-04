@@ -396,50 +396,43 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#unreleased" class="md-nav__link">
-    [Unreleased]
+  <a href="#080" class="md-nav__link">
+    [0.8.0]
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#003" class="md-nav__link">
-    [0.0.3]
-  </a>
-  
-    <nav class="md-nav" aria-label="[0.0.3]">
+    <nav class="md-nav" aria-label="[0.8.0]">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#added" class="md-nav__link">
-    Added
+  <a href="#new-features" class="md-nav__link">
+    New Features
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#changed" class="md-nav__link">
-    Changed
+  <a href="#improvements" class="md-nav__link">
+    Improvements
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    Tasks
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes" class="md-nav__link">
+    Bug Fixes
   </a>
   
 </li>
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#002" class="md-nav__link">
-    [0.0.2]
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#001" class="md-nav__link">
-    [0.0.1]
-  </a>
   
 </li>
       
@@ -493,50 +486,43 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#unreleased" class="md-nav__link">
-    [Unreleased]
+  <a href="#080" class="md-nav__link">
+    [0.8.0]
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#003" class="md-nav__link">
-    [0.0.3]
-  </a>
-  
-    <nav class="md-nav" aria-label="[0.0.3]">
+    <nav class="md-nav" aria-label="[0.8.0]">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#added" class="md-nav__link">
-    Added
+  <a href="#new-features" class="md-nav__link">
+    New Features
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#changed" class="md-nav__link">
-    Changed
+  <a href="#improvements" class="md-nav__link">
+    Improvements
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    Tasks
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes" class="md-nav__link">
+    Bug Fixes
   </a>
   
 </li>
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#002" class="md-nav__link">
-    [0.0.2]
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#001" class="md-nav__link">
-    [0.0.1]
-  </a>
   
 </li>
       
@@ -561,17 +547,38 @@
 
 
 <h1 id="changelog">Changelog</h1>
-<p>All notable changes to this project will be documented in this file.</p>
-<p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">keep a changelog</a>.</p>
-<h2 id="unreleased">[Unreleased]</h2>
-<h2 id="003">[0.0.3]</h2>
-<h3 id="added">Added</h3>
-<h3 id="changed">Changed</h3>
+<h2 id="080">[0.8.0]</h2>
+<h3 id="new-features">New Features</h3>
 <ul>
-<li>Furiosa Model now uses blocking API by default instead of non-blocking API</li>
+<li>Add ResNet50 model</li>
+<li>Add SSD ResNet34 model</li>
+<li>Add SSD MobileNet model</li>
+<li>Add YOLOv5l model</li>
+<li>Add YOLOv5m model</li>
 </ul>
-<h2 id="002">[0.0.2]</h2>
-<h2 id="001">[0.0.1]</h2>
+<h3 id="improvements">Improvements</h3>
+<ul>
+<li>Add native postprocessing implementation for ResNet50 #42</li>
+<li>Add native postprocessing implementation for SSD ResNet34 #45</li>
+<li>Add native postprocessing implementation for SSD MobileNet #16</li>
+<li>Refactor Model API to use classmethods to load models #66</li>
+<li>Make Model Zoo's ABC Model #78</li>
+<li>Retain only necessary python dependencies #81</li>
+<li>Improve enf_generator.sh and add enf, dfg models for e2e tests #33</li>
+<li>Add mkdocstrings to make API references #22</li>
+</ul>
+<h3 id="tasks">Tasks</h3>
+<ul>
+<li>Regresstion Test #61</li>
+<li>Attach Tekton CI #41</li>
+<li>Yolov5 L/M e2e testing code #22</li>
+<li>Change the documentation layout and add resnet34, resnet50, mobilenet details #33</li>
+<li>Replace maturin with setuptools-rust #26</li>
+</ul>
+<h3 id="bug-fixes">Bug Fixes</h3>
+<ul>
+<li>Resolve DVC directly #80</li>
+</ul>
 
 
 
