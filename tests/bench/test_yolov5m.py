@@ -4,13 +4,14 @@ from pathlib import Path
 from typing import Tuple
 
 import numpy as np
-from .test_acc_util import bdd100k
 from tqdm import tqdm
 
 from furiosa.models.types import Model
 from furiosa.models.vision import YOLOv5m
 from furiosa.models.vision.postprocess import collate
 from furiosa.runtime import session
+
+from .test_acc_util import bdd100k
 
 EXPECTED_MAP = 0.2803325282086983
 
