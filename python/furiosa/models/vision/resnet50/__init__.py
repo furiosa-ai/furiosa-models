@@ -76,16 +76,16 @@ class Resnet50PreProcessor(PreProcessor):
 
 
 class Resnet50PythonPostProcessor(PostProcessor):
-    def __call__(self, session_outputs: Sequence[npt.ArrayLike]) -> str:
-        return CLASSES[int(session_outputs[0]) - 1]
+    def __call__(self, model_outputs: Sequence[npt.ArrayLike]) -> str:
+        return CLASSES[int(model_outputs[0]) - 1]
 
 
 class Resnet50NativePostProcessor(PostProcessor):
     def __init__(self, dfg: bytes):
         self._native = native.resnet50.PostProcessor(dfg)
 
-    def __call__(self, session_outputs: Sequence[npt.ArrayLike]) -> str:
-        return CLASSES[self._native.eval(session_outputs) - 1]
+    def __call__(self, model_outputs: Sequence[npt.ArrayLike]) -> str:
+        return CLASSES[self._native.eval(model_outputs) - 1]
 
 
 class Resnet50PythonProcessor(ModelProcessor):

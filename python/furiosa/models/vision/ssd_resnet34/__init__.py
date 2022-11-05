@@ -333,13 +333,13 @@ class SSDResNet34PreProcessor(PreProcessor):
 class SSDResNet34PythonPostProcessor(PostProcessor):
     @staticmethod
     def __call__(
-        session_outputs: Sequence[np.ndarray],
+        model_outputs: Sequence[np.ndarray],
         contexts: Sequence[Dict[str, Any]],
         confidence_threshold=0.05,
     ) -> List[List[ObjectDetectionResult]]:
-        if len(session_outputs) != NUM_OUTPUTS:
-            raise Exception(f"output size must be {NUM_OUTPUTS}, but {len(session_outputs)}")
-        classes, locations = session_outputs[:6], session_outputs[6:]
+        if len(model_outputs) != NUM_OUTPUTS:
+            raise Exception(f"output size must be {NUM_OUTPUTS}, but {len(model_outputs)}")
+        classes, locations = model_outputs[:6], model_outputs[6:]
 
         # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_r34.py#L317-L329
         classes = [np.reshape(cls, (cls.shape[0], 81, -1)) for cls in classes]
@@ -393,10 +393,8 @@ class SSDResNet34NativePostProcessor(PostProcessor):
         else:
             raise FuriosaModelException(f"Unknown post processor version: {version}")
 
-    def __call__(
-        self, session_outputs: Sequence[numpy.ndarray], contexts: Sequence[Dict[str, Any]]
-    ):
-        raw_results = self._native.eval(session_outputs)
+    def __call__(self, model_outputs: Sequence[numpy.ndarray], contexts: Sequence[Dict[str, Any]]):
+        raw_results = self._native.eval(model_outputs)
 
         results = []
         width = contexts['width']

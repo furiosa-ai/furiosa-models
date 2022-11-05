@@ -1,7 +1,7 @@
 from furiosa.models.vision import SSDMobileNet
 from furiosa.runtime import session
 
-mobilenet = SSDMobileNet.load(use_native=False)
+mobilenet = SSDMobileNet.load()
 
 image = ["tests/assets/cat.jpg"]
 

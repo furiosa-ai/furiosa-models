@@ -218,23 +218,23 @@ class SSDMobileNetPreProcessor(PreProcessor):
 class SSDMobileNetPythonPostProcessor(PostProcessor):
     @staticmethod
     def __call__(
-        session_outputs: Sequence[numpy.ndarray],
+        model_outputs: Sequence[numpy.ndarray],
         contexts: Sequence[Dict[str, Any]],
         confidence_threshold: float = 0.3,
         iou_threshold: float = 0.6,
     ) -> List[List[ObjectDetectionResult]]:
         assert (
-            len(session_outputs) == NUM_OUTPUTS
-        ), f"the number of model outputs must be {NUM_OUTPUTS}, but {len(session_outputs)}"
-        batch_size = session_outputs[0].shape[0]
+            len(model_outputs) == NUM_OUTPUTS
+        ), f"the number of model outputs must be {NUM_OUTPUTS}, but {len(model_outputs)}"
+        batch_size = model_outputs[0].shape[0]
         # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L94-L97
         class_logits = [
             output.transpose((0, 2, 3, 1)).reshape((batch_size, -1, NUM_CLASSES))
-            for output in session_outputs[0::2]
+            for output in model_outputs[0::2]
         ]
         box_regression = [
             output.transpose((0, 2, 3, 1)).reshape((batch_size, -1, 4))
-            for output in session_outputs[1::2]
+            for output in model_outputs[1::2]
         ]
         # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L144-L166
         class_logits = np.concatenate(class_logits, axis=1)  # type: ignore[assignment]
@@ -281,10 +281,8 @@ class SSDMobileNetNativePostProcessor(PostProcessor):
         else:
             raise FuriosaModelException(f"Unknown post processor version: {version}")
 
-    def __call__(
-        self, session_outputs: Sequence[numpy.ndarray], contexts: Sequence[Dict[str, Any]]
-    ):
-        raw_results = self._native.eval(session_outputs)
+    def __call__(self, model_outputs: Sequence[numpy.ndarray], contexts: Sequence[Dict[str, Any]]):
+        raw_results = self._native.eval(model_outputs)
 
         results = []
         width = contexts['width']

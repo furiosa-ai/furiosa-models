@@ -221,7 +221,7 @@ class YOLOv5PostProcessor(PostProcessor):
 
     def __call__(
         self,
-        session_outputs: Sequence[np.ndarray],
+        model_outputs: Sequence[np.ndarray],
         contexts: Sequence[Dict[str, Any]],
         conf_thres: float = 0.25,
         iou_thres: float = 0.45,
@@ -229,7 +229,7 @@ class YOLOv5PostProcessor(PostProcessor):
         """Yolov5 PostProcess.
 
         Args:
-            session_outputs (Sequence[np.ndarray]): Model numpy version outputs. This numpy array expects to be in Batch x Features(the number anchors x (5+the number of clsss)) x N x N.
+            model_outputs (Sequence[np.ndarray]): Model numpy version outputs. This numpy array expects to be in Batch x Features(the number anchors x (5+the number of clsss)) x N x N.
             contexts (Dict[str, Any]): The components manipulated by the preprocessor to be used for information recovery: image scaling ratio, padding size in width and height.
             conf_threshold (float, optional): Confidence score threshold. The default to 0.25
             iou_thres (float, optional): IoU threshold value for the NMS processing. The default to 0.45.
@@ -239,11 +239,11 @@ class YOLOv5PostProcessor(PostProcessor):
                 This ObjectDetectionResult inherits from dataclass, so that it could be converted to Tuple (by astuple function in the dataclass package).
         """
 
-        session_outputs = [
+        model_outputs = [
             _reshape_output(f, self.anchor_per_layer_count, len(self.class_names))
-            for f in session_outputs
+            for f in model_outputs
         ]
-        batched_boxes = self.box_decoder(session_outputs, conf_thres)
+        batched_boxes = self.box_decoder(model_outputs, conf_thres)
         batched_boxes = _nms(batched_boxes, iou_thres)
 
         batched_detected_boxes = []
