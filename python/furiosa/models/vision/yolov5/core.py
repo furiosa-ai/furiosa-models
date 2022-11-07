@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Any, Dict, List, Sequence, Tuple
+from typing import Any, Dict, List, Sequence, Tuple, Union
 
 import cv2
 import numpy as np
@@ -176,7 +176,7 @@ class YOLOv5Base(ObjectDetectionModel, ABC):
 class YOLOv5PreProcessor(PreProcessor):
     @staticmethod
     def __call__(
-        img_list: Sequence[np.ndarray], input_color_format: str
+        inputs: Sequence[Union[str, np.ndarray]], input_color_format: str = 'bgr'
     ) -> Tuple[np.ndarray, List[Dict[str, Any]]]:
         """Yolov5 preprocess
 
@@ -194,7 +194,13 @@ class YOLOv5PreProcessor(PreProcessor):
         # image format must be chw
         batched_image = []
         batched_proc_params = []
-        for i, img in enumerate(img_list):
+        if isinstance(inputs, str):
+            inputs = [inputs]
+        for i, img in enumerate(inputs):
+            if type(img) == str:
+                img = cv2.imread(img)
+                if img is None:
+                    raise FileNotFoundError(img)
             img, (sx, sy), (padw, padh) = _resize(img, _INPUT_SIZE)
 
             if input_color_format == "bgr":

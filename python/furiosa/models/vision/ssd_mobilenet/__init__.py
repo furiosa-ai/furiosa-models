@@ -194,6 +194,8 @@ class SSDMobileNetPreProcessor(PreProcessor):
         # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L242-L249
         batch_image = []
         batch_preproc_param = []
+        if isinstance(inputs, str):
+            inputs = [inputs]
         for image in inputs:
             if type(image) == str:
                 image = cv2.imread(image)
