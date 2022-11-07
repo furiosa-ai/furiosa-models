@@ -88,9 +88,23 @@ spec:
     runAfter:
       - clone
 
-  - name: format-build-unittests
+  - name: format
     taskRef:
-      name: format-build-unittests
+      name: format
+    workspaces:
+      - name: source
+        workspace: source
+    params:
+    - name: logs
+      value: "https://grafana.office.furiosa.in/d/logs/kubernetes-pod-logs?orgId=1&var-pod=$(context.pipelineRun.name)-format"
+    - name: pod-resource-usage
+      value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-format-pod"
+    runAfter:
+      - clone
+
+  - name: unittests
+    taskRef:
+      name: unittests
     workspaces:
       - name: source
         workspace: source
@@ -109,9 +123,9 @@ spec:
         workspace: furiosa-models-compiler-cache
     params:
     - name: logs
-      value: "https://grafana.office.furiosa.in/d/logs/kubernetes-pod-logs?orgId=1&var-pod=$(context.pipelineRun.name)-format-build-unittests-pod"
+      value: "https://grafana.office.furiosa.in/d/logs/kubernetes-pod-logs?orgId=1&var-pod=$(context.pipelineRun.name)-unittests-pod"
     - name: pod-resource-usage
-      value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-format-build-unittests-pod"
+      value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-unittests-pod"
     runAfter:
       - set-dvc-cache
 
