@@ -9,20 +9,29 @@ import numpy.typing as npt
 import torch
 import torch.nn.functional as F
 
-from furiosa.registry import Format, Metadata, Publication
-
 from .. import native
 from ...errors import ArtifactNotFound, FuriosaModelException
-from ...model import ObjectDetectionModel
+from ...types import (
+    Format,
+    Metadata,
+    ModelProcessor,
+    ObjectDetectionModel,
+    PostProcessor,
+    PreProcessor,
+    Publication,
+)
 from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
 from ..common.datasets import coco
-from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, PostProcessor, calibration_ltrbbox
+from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox
+
+NUM_OUTPUTS: int = 12
+CLASSES = coco.MobileNetSSD_Large_CLASSES
 
 
 ##Inspired by https://github.com/kuangliu/pytorch-ssd
 class Encoder(object):
     """
-    Transform between (bboxes, lables) <-> SSD output
+    Transform between (bboxes, labels) <-> SSD output
 
     dboxes: default boxes in size 8732 x 4,
         encoder: input ltrb format, output xywh format
@@ -242,15 +251,29 @@ class DefaultBoxes(object):
             return self.dboxes
 
 
+def _pick_best(detections, confidence_threshold):
+    bboxes, classes, confidences = detections
+    best = np.argwhere(confidences > confidence_threshold).squeeze(axis=1)
+    return [pred[best].squeeze(axis=0) for pred in detections]
+
+
 class SSDResNet34(ObjectDetectionModel):
     """MLCommons SSD ResNet34 model"""
 
-    @classmethod
-    def get_artifact_name(cls):
+    @staticmethod
+    def get_artifact_name():
         return "mlcommons_ssd_resnet34_int8"
 
     @classmethod
-    def load_aux(cls, artifacts: Dict[str, bytes], *args, **kwargs):
+    def load_aux(
+        cls, artifacts: Dict[str, bytes], use_native: bool = True, *, version: str = "cpp"
+    ):
+        if use_native:
+            if artifacts[EXT_DFG] is None:
+                raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
+            processor = SSDResNet34NativeProcessor(artifacts[EXT_DFG], version)
+        else:
+            processor = SSDResNet34PythonProcessor()
         return cls(
             name="SSDResNet34",
             source=artifacts[EXT_ONNX],
@@ -266,116 +289,116 @@ class SSDResNet34(ObjectDetectionModel):
                     # noqa: E501
                 ),
             ),
-            *args,
-            **kwargs,
+            processor=processor,
         )
 
 
-NUM_OUTPUTS: int = 12
-CLASSES = coco.MobileNetSSD_Large_CLASSES
+class SSDResNet34PreProcessor(PreProcessor):
+    @staticmethod
+    def __call__(
+        inputs: Sequence[Union[str, np.ndarray]]
+    ) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
+        """Read and preprocess an image located at image_path."""
+        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L141
+        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L61-L63
+        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L252-L263
+        batch_image = []
+        batch_preproc_param = []
+        for image in inputs:
+            if type(image) == str:
+                image = cv2.imread(image)
+                if image is None:
+                    raise FileNotFoundError(image)
+            image = np.array(image, dtype=np.float32)
+            if len(image.shape) < 3 or image.shape[2] != 3:
+                image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+            else:
+                image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            width = image.shape[1]
+            height = image.shape[0]
+            image = cv2.resize(image, (1200, 1200), interpolation=cv2.INTER_LINEAR)
+            mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
+            std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+            image = image / 255.0 - mean
+            image = image / std
+            # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L143
+            # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/coco.py#L40
+            # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/coco.py#L91
+            image = image.transpose([2, 0, 1])
+            batch_image.append(image)
+            batch_preproc_param.append({"width": width, "height": height})
+        return np.stack(batch_image, axis=0), batch_preproc_param
 
 
-def preprocess(
-    image_path_list: List[Union[str, np.ndarray]]
-) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
-    """Read and preprocess an image located at image_path."""
-    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L141
-    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L61-L63
-    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L252-L263
-    batch_image = []
-    batch_preproc_param = []
-    for image in image_path_list:
-        if type(image) == str:
-            image = cv2.imread(image)
-            if image is None:
-                raise FileNotFoundError(image)
-        image = np.array(image, dtype=np.float32)
-        if len(image.shape) < 3 or image.shape[2] != 3:
-            image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-        else:
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        width = image.shape[1]
-        height = image.shape[0]
-        image = cv2.resize(image, (1200, 1200), interpolation=cv2.INTER_LINEAR)
-        mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
-        std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
-        image = image / 255.0 - mean
-        image = image / std
-        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L143
-        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/coco.py#L40
-        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/coco.py#L91
-        image = image.transpose([2, 0, 1])
-        batch_image.append(image)
-        batch_preproc_param.append({"width": width, "height": height})
-    return np.stack(batch_image, axis=0), batch_preproc_param
+class SSDResNet34PythonPostProcessor(PostProcessor):
+    @staticmethod
+    def __call__(
+        model_outputs: Sequence[np.ndarray],
+        contexts: Sequence[Dict[str, Any]],
+        confidence_threshold=0.05,
+    ) -> List[List[ObjectDetectionResult]]:
+        if len(model_outputs) != NUM_OUTPUTS:
+            raise Exception(f"output size must be {NUM_OUTPUTS}, but {len(model_outputs)}")
+        classes, locations = model_outputs[:6], model_outputs[6:]
 
+        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_r34.py#L317-L329
+        classes = [np.reshape(cls, (cls.shape[0], 81, -1)) for cls in classes]
+        locations = [np.reshape(loc, (loc.shape[0], 4, -1)) for loc in locations]
+        classes = np.concatenate(classes, axis=2)
+        locations = np.concatenate(locations, axis=2)
 
-def _pick_best(detections, confidence_threshold):
-    bboxes, classes, confidences = detections
-    best = np.argwhere(confidences > confidence_threshold).squeeze(axis=1)
-    return [pred[best].squeeze(axis=0) for pred in detections]
+        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_r34.py#L251-L253
+        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_r34.py#L350
+        # len(det_boxes: List[np.array]) = N batch
+        det_boxes, det_labels, det_scores = Encoder(
+            dboxes_R34_coco((1200, 1200), (3, 3, 2, 2, 2, 2))
+        ).decode_batch(torch.from_numpy(locations), torch.from_numpy(classes), 0.50, 200)
 
-
-def postprocess(
-    outputs: Sequence[np.ndarray],
-    batch_preproc_params: Sequence[Dict[str, Any]],
-    confidence_threshold=0.05,
-) -> List[List[ObjectDetectionResult]]:
-    if len(outputs) != NUM_OUTPUTS:
-        raise Exception(f"output size must be {NUM_OUTPUTS}, but {len(outputs)}")
-    classes, locations = outputs[:6], outputs[6:]
-
-    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_r34.py#L317-L329
-    classes = [np.reshape(cls, (cls.shape[0], 81, -1)) for cls in classes]
-    locations = [np.reshape(loc, (loc.shape[0], 4, -1)) for loc in locations]
-    classes = np.concatenate(classes, axis=2)
-    locations = np.concatenate(locations, axis=2)
-
-    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_r34.py#L251-L253
-    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_r34.py#L350
-    # len(det_boxes: List[np.array]) = N batch
-    det_boxes, det_labels, det_scores = Encoder(
-        dboxes_R34_coco((1200, 1200), (3, 3, 2, 2, 2, 2))
-    ).decode_batch(torch.from_numpy(locations), torch.from_numpy(classes), 0.50, 200)
-
-    # Pick the best boxes
-    # https://pytorch.org/hub/nvidia_deeplearningexamples_ssd/
-    # sometimes there are many boxes with localizaition and class probability distrituion.
-    batch_results = []
-    for boxes, labels, scores, preproc_params in zip(
-        det_boxes, det_labels, det_scores, batch_preproc_params
-    ):
-        width, height = preproc_params['width'], preproc_params['height']
-        boxes, labels, scores = _pick_best(
-            detections=(boxes, labels, scores),
-            confidence_threshold=confidence_threshold,
-        )
-        cal_boxes = calibration_ltrbbox(boxes, width, height)
-        predicted_result = []
-        for b, l, s in zip(cal_boxes, labels, scores):
-            bb_list = b.tolist()
-            predicted_result.append(
-                ObjectDetectionResult(
-                    index=int(l),
-                    label=CLASSES[l],
-                    score=s,
-                    boundingbox=LtrbBoundingBox(
-                        left=bb_list[0], top=bb_list[1], right=bb_list[2], bottom=bb_list[3]
-                    ),
-                )
+        # Pick the best boxes
+        # https://pytorch.org/hub/nvidia_deeplearningexamples_ssd/
+        # sometimes there are many boxes with localizaition and class probability distrituion.
+        batch_results = []
+        for boxes, labels, scores, preproc_params in zip(
+            det_boxes, det_labels, det_scores, contexts
+        ):
+            width, height = preproc_params['width'], preproc_params['height']
+            boxes, labels, scores = _pick_best(
+                detections=(boxes, labels, scores),
+                confidence_threshold=confidence_threshold,
             )
-        batch_results.append(predicted_result)
-    return batch_results
+            cal_boxes = calibration_ltrbbox(boxes, width, height)
+            predicted_result = []
+            for b, l, s in zip(cal_boxes, labels, scores):
+                bb_list = b.tolist()
+                predicted_result.append(
+                    ObjectDetectionResult(
+                        index=int(l),
+                        label=CLASSES[l],
+                        score=s,
+                        boundingbox=LtrbBoundingBox(
+                            left=bb_list[0], top=bb_list[1], right=bb_list[2], bottom=bb_list[3]
+                        ),
+                    )
+                )
+            batch_results.append(predicted_result)
+        return batch_results
 
 
-class SSDResNet34PostProcessor(PostProcessor):
-    def eval(self, inputs: Sequence[numpy.ndarray], *args: Any, **kwargs: Any):
-        context = kwargs.get("context")
-        raw_results = self._native.eval(inputs)
+class SSDResNet34NativePostProcessor(PostProcessor):
+    def __init__(self, dfg: bytes, version: str = "cpp"):
+        if version == "cpp":
+            self._native = native.ssd_resnet34.CppPostProcessor(dfg)
+        elif version == "rust":
+            self._native = native.ssd_resnet34.RustPostProcessor(dfg)
+        else:
+            raise FuriosaModelException(f"Unknown post processor version: {version}")
+
+    def __call__(self, model_outputs: Sequence[numpy.ndarray], contexts: Sequence[Dict[str, Any]]):
+        raw_results = self._native.eval(model_outputs)
 
         results = []
-        width = context['width']
-        height = context['height']
+        width = contexts['width']
+        height = contexts['height']
         for value in raw_results:
             left = value.left * width
             right = value.right * width
@@ -393,16 +416,13 @@ class SSDResNet34PostProcessor(PostProcessor):
         return results
 
 
-class NativePostProcessor(SSDResNet34PostProcessor):
-    def __init__(self, model: SSDResNet34, version: str = "cpp"):
-        if not model.dfg:
-            raise ArtifactNotFound(model.name, "dfg")
+class SSDResNet34PythonProcessor(ModelProcessor):
+    preprocessor: PreProcessor = SSDResNet34PreProcessor()
+    postprocessor: PostProcessor = SSDResNet34PythonPostProcessor()
 
-        if version == "cpp":
-            self._native = native.ssd_resnet34.CppPostProcessor(model.dfg)
-        elif version == "rust":
-            self._native = native.ssd_resnet34.RustPostProcessor(model.dfg)
-        else:
-            raise FuriosaModelException(f"Unknown post processor version: {version}")
 
-        super().__init__()
+class SSDResNet34NativeProcessor(ModelProcessor):
+    preprocessor: PreProcessor = SSDResNet34PreProcessor()
+
+    def __init__(self, dfg: bytes, version: str):
+        self.postprocessor = SSDResNet34NativePostProcessor(dfg, version)

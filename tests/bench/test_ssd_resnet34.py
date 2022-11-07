@@ -8,9 +8,8 @@ from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 import tqdm
 
+from furiosa.models.types import Model
 from furiosa.models.vision import SSDResNet34
-from furiosa.models.vision.ssd_resnet34 import NativePostProcessor, postprocess, preprocess
-from furiosa.registry import Model
 from furiosa.runtime import session
 
 EXPECTED_ACCURACY = 0.21321479317934577  # e2e-testing's accuracy
@@ -53,9 +52,9 @@ def test_mlcommons_ssd_resnet34_accuracy(benchmark):
         return (image_src["id"], image), {}
 
     def workload(image_id, image):
-        image, contexts = preprocess([image])
+        image, contexts = model.preprocess([image])
         outputs = sess.run(image).numpy()
-        batch_result = postprocess(outputs, contexts, confidence_threshold=0.05)
+        batch_result = model.postprocess(outputs, contexts, confidence_threshold=0.05)
         result = np.squeeze(batch_result, axis=0)  # squeeze the batch axis
 
         for res in result:
@@ -72,7 +71,7 @@ def test_mlcommons_ssd_resnet34_accuracy(benchmark):
             }
             detections.append(detection)
 
-    sess = session.create(model.enf)
+    sess = session.create(model)
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 
@@ -86,8 +85,7 @@ def test_mlcommons_ssd_resnet34_accuracy(benchmark):
 
 
 def test_mlcommons_ssd_resnet34_with_native_rust_pp_accuracy(benchmark):
-    model = SSDResNet34.load(use_native_post=True)
-    processor = NativePostProcessor(model, version="rust")
+    model = SSDResNet34.load(use_native=True, version="rust")
 
     image_directory, coco = load_coco_from_env_variable()
     instances_val2017 = Path(
@@ -111,9 +109,9 @@ def test_mlcommons_ssd_resnet34_with_native_rust_pp_accuracy(benchmark):
         return (image_src["id"], image), {}
 
     def workload(image_id, image):
-        image, contexts = preprocess([image])
+        image, contexts = model.preprocess([image])
         outputs = sess.run(image).numpy()
-        result = processor.eval(outputs, context=contexts[0])
+        result = model.postprocess(outputs, contexts[0])
 
         for res in result:
             detection = {
@@ -143,8 +141,7 @@ def test_mlcommons_ssd_resnet34_with_native_rust_pp_accuracy(benchmark):
 
 
 def test_mlcommons_ssd_resnet34_with_native_cpp_pp_accuracy(benchmark):
-    model = SSDResNet34.load(use_native_post=True)
-    processor = NativePostProcessor(model, version="cpp")
+    model = SSDResNet34.load(use_native=True, version="cpp")
 
     image_directory, coco = load_coco_from_env_variable()
     instances_val2017 = Path(
@@ -168,9 +165,9 @@ def test_mlcommons_ssd_resnet34_with_native_cpp_pp_accuracy(benchmark):
         return (image_src["id"], image), {}
 
     def workload(image_id, image):
-        image, contexts = preprocess([image])
+        image, contexts = model.preprocess([image])
         outputs = sess.run(image).numpy()
-        result = processor.eval(outputs, context=contexts[0])
+        result = model.postprocess(outputs, contexts[0])
 
         for res in result:
             detection = {
@@ -186,7 +183,7 @@ def test_mlcommons_ssd_resnet34_with_native_cpp_pp_accuracy(benchmark):
             }
             detections.append(detection)
 
-    sess = session.create(model.enf)
+    sess = session.create(model)
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 
