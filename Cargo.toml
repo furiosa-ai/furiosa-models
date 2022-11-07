@@ -10,6 +10,6 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 itertools = "0.10.3"
-mlperf-postprocess = { git = "https://github.com/furiosa-ai/mlperf-postprocess", branch = "main" }
+mlperf-postprocess = { git = "https://github.com/furiosa-ai/mlperf-postprocess", rev = "3c42797" }
 numpy = "0.16"
 pyo3 = { version = "0.16.6", features = ["extension-module"] }
