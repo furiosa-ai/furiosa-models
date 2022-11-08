@@ -63,15 +63,11 @@ You can find examples at [SSDResNet34 Usage](#SSDResNet34_Usage).
 ### `furiosa.models.vision.SSDResNet34.preprocess`
 ::: furiosa.models.vision.ssd_resnet34.SSDResNet34PreProcessor.__call__
     options:
-        show_root_heading: false
-        show_bases: false
         show_source: false
     
 ### `furiosa.models.vision.SSDResNet34.postprocess`
 ::: furiosa.models.vision.ssd_resnet34.SSDResNet34PreProcessor.__call__
     options:
-        show_root_heading: false
-        show_bases: false
         show_source: false
 
 ### <a href="NativePostProcessor"></a>Native Postprocessor

@@ -4,7 +4,7 @@ Furiosa Models
 It provides a set of public pre-trained, pre-quantized models for learning and demo purposes or 
 for developing your applications.
 
-`furisoa-models` also includes pre-packaged post/processing utilities, compiler configurations optimized
+`furiosa-models` also includes pre-packaged post/processing utilities, compiler configurations optimized
 for FuriosaAI NPU. However, all models are standard ONNX or tflite models, 
 and they can run even on CPU and GPU as well.
 

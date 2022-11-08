@@ -46,14 +46,10 @@ You can find examples at [YOLOv5m Usage](#YOLOv5m_Usage).
 ### `furiosa.models.vision.YOLOv5m.preprocess`
 ::: furiosa.models.vision.yolov5.core.YOLOv5PreProcessor.__call__
     options:
-        show_root_heading: false
-        show_bases: false
         show_source: false
     
 ### `furiosa.models.vision.ResNet34.postprocess`
 ::: furiosa.models.vision.yolov5.core.YOLOv5PostProcessor.__call__
     options:
-        show_root_heading: false
-        show_bases: false
         show_source: false
 

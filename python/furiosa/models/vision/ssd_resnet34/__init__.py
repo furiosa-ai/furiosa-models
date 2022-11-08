@@ -359,11 +359,9 @@ class SSDResNet34PythonPostProcessor(PostProcessor):
         Definition of ObjectDetectionResult:
             ::: furiosa.models.vision.postprocess.LtrbBoundingBox
                 options:
-                    show_root_heading: false
                     show_source: true
             ::: furiosa.models.vision.postprocess.ObjectDetectionResult
                 options:
-                    show_root_heading: false
                     show_source: true
         """
         if len(model_outputs) != NUM_OUTPUTS:
@@ -428,6 +426,7 @@ class SSDResNet34NativePostProcessor(PostProcessor):
         --8<-- "docs/examples/ssd_resnet34_native.py"
         ```
     """
+
     def __init__(self, dfg: bytes, version: str = "cpp"):
         if version == "cpp":
             self._native = native.ssd_resnet34.CppPostProcessor(dfg)

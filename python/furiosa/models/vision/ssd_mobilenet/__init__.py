@@ -244,11 +244,9 @@ class SSDMobileNetPythonPostProcessor(PostProcessor):
         Definitions of ObjectDetectionResult and LtrbBoundingBox:
             ::: furiosa.models.vision.postprocess.LtrbBoundingBox
                 options:
-                    show_root_heading: false
                     show_source: true
             ::: furiosa.models.vision.postprocess.ObjectDetectionResult
                 options:
-                    show_root_heading: false
                     show_source: true
         """
         assert (

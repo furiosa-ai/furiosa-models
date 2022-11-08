@@ -47,15 +47,11 @@ You can find examples at [ResNet50 Usage](#ResNet50_Usage).
 ### `furiosa.models.vision.ResNet50.preprocess`
 ::: furiosa.models.vision.resnet50.ResNet50PreProcessor.__call__
     options:
-        show_root_heading: false
-        show_bases: false
         show_source: false
     
 ### `furiosa.models.vision.ResNet50.postprocess`
 ::: furiosa.models.vision.resnet50.ResNet50PythonPostProcessor.__call__
     options:
-        show_root_heading: false
-        show_bases: false
         show_source: false
 
 ### <a href="NativePostProcessor"></a>Native Postprocessor

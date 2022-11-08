@@ -1,6 +1,6 @@
 # Model object
 
-In `furiosa-models` project, `Model` is the first class object, and  it represents a neural network model. 
+In `furiosa-models` project, `Model` is the first class object, and it represents a neural network model. 
 This document explains what [`Model`][furiosa.registry.Model] object offers and their usages.
 
 ## Loading a pre-trained model
@@ -34,8 +34,6 @@ In addition, a `Model` object has various metadata. The followings are all attri
 ### `furiosa.registry.Model`
 ::: furiosa.registry.Model
     options:
-        show_root_heading: false
-        show_bases: false
         show_source: true
 
 

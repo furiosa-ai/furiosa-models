@@ -14,7 +14,6 @@ nav:
 - Overview: index.md
 - getting_started.md
 - model_object.md
-- Pre/Postprocessing: pre_postprocessing.md
 - Models:
     - models/resnet50_v1.5.md
     - models/ssd_mobilenet.md
@@ -39,4 +38,10 @@ markdown_extensions:
 
 plugins:
 - search
-- mkdocstrings
+- mkdocstrings:
+    default_handler: python
+    handlers:
+      python:
+        options:
+          show_root_heading: false
+          show_bases: false

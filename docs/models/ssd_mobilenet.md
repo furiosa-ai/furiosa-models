@@ -63,15 +63,11 @@ You can find examples at [SSDMobileNet Usage](#SSDMobileNet_Usage).
 ### `furiosa.models.vision.SSDMobileNet.preprocess`
 ::: furiosa.models.vision.ssd_mobilenet.SSDMobileNetPreProcessor.__call__
     options:
-        show_root_heading: false
-        show_bases: false
         show_source: false
     
 ### `furiosa.models.vision.SSDMobileNet.postprocess`
 ::: furiosa.models.vision.ssd_mobilenet.SSDMobileNetPythonPostProcessor.__call__
     options:
-        show_root_heading: false
-        show_bases: false
         show_source: false
 
 ### <a href="NativePostProcessor"></a>Native Postprocessor

@@ -1,5 +1,5 @@
 # Getting Started
-This documentation explains how to install furiosa-models, how to use available models in furisoa-models, and
+This documentation explains how to install furiosa-models, how to use available models in furiosa-models, and
 how to explore the documents.
 
 ## Prerequisites

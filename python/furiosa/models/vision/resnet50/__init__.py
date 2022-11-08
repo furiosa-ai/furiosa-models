@@ -106,6 +106,7 @@ class ResNet50NativePostProcessor(PostProcessor):
         --8<-- "docs/examples/resnet50_native.py"
         ```
     """
+
     def __init__(self, dfg: bytes):
         self._native = native.resnet50.PostProcessor(dfg)
 
@@ -115,6 +116,7 @@ class ResNet50NativePostProcessor(PostProcessor):
 
 class ResNet50PythonProcessor(ModelProcessor):
     """abc"""
+
     preprocessor: PreProcessor = ResNet50PreProcessor()
     postprocessor: PostProcessor = ResNet50PythonPostProcessor()
 
