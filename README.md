@@ -8,7 +8,8 @@ for developing your applications.
 for FuriosaAI NPU. However, all models are standard ONNX or tflite models, 
 and they can run even on CPU and GPU as well.
 
-[https://github.com/furiosa-ai/furiosa-models](https://github.com/furiosa-ai/furiosa-models)
+## Releases
+* [v0.8.0](https://furiosa-ai.github.io/furiosa-models/changelog/)
 
 ## Online Documentation
 If you are new, you can start from [Getting Started](https://furiosa-ai.github.io/furiosa-models/latest/getting_started.md).

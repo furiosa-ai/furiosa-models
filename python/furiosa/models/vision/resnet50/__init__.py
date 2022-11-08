@@ -55,14 +55,8 @@ class ResNet50(ImageClassificationModel):
 
 
 class ResNet50PreProcessor(PreProcessor):
-    """Preprocess an input image to an input tensor of ResNet50.
-    This function can take a standard image file (e.g., jpg, gif, png) and return a numpy array.
-
-    Args:
-        image: A path of an image or an image loaded as numpy from `cv2.imread()`
-    """
     @staticmethod
-    def __call__(inputs: Union[str, npt.ArrayLike]) -> Tuple[np.array, None]:
+    def __call__(image: Union[str, npt.ArrayLike]) -> Tuple[np.array, None]:
         """Preprocess an input image to an input tensor of ResNet50.
         This function can take a standard image file (e.g., jpg, gif, png) and return a numpy array.
 
@@ -71,20 +65,20 @@ class ResNet50PreProcessor(PreProcessor):
         """
         # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/main.py#L37-L39
         # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L168-L184
-        if type(inputs) == str:
-            inputs = cv2.imread(inputs)
-            if inputs is None:
-                raise FileNotFoundError(inputs)
-        inputs = cv2.cvtColor(inputs, cv2.COLOR_BGR2RGB)
-        inputs = resize_with_aspect_ratio(
-            inputs, 224, 224, percent=87.5, interpolation=cv2.INTER_AREA
+        if type(image) == str:
+            image = cv2.imread(image)
+            if image is None:
+                raise FileNotFoundError(image)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = resize_with_aspect_ratio(
+            image, 224, 224, percent=87.5, interpolation=cv2.INTER_AREA
         )
-        inputs = center_crop(inputs, 224, 224)
-        inputs = np.asarray(inputs, dtype=np.float32)
+        image = center_crop(image, 224, 224)
+        image = np.asarray(image, dtype=np.float32)
         # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L178
-        inputs -= np.array([123.68, 116.78, 103.94], dtype=np.float32)
-        inputs = inputs.transpose([2, 0, 1])
-        return inputs[np.newaxis, ...], None
+        image -= np.array([123.68, 116.78, 103.94], dtype=np.float32)
+        image = image.transpose([2, 0, 1])
+        return image[np.newaxis, ...], None
 
 
 class ResNet50PythonPostProcessor(PostProcessor):
@@ -126,20 +120,6 @@ class ResNet50PythonProcessor(ModelProcessor):
 
 
 class ResNet50NativeProcessor(ModelProcessor):
-    """Native postprocessing implementation optimized for NPU
-
-    This class provides another version of the postprocessing implementation
-    which is highly optimized for NPU. The implementation leverages the NPU IO architecture and runtime.
-
-    To use this implementation, when this model is loaded, the parameter `use_native_post=True`
-    should be passed to `load()` or `load_aync()`. Then, `NativePostProcess` object should
-    be created with the model object. `eval()` method should be called to postprocess.
-
-    !!! Examples
-        ```python
-        --8<-- "docs/examples/resnet50_native.py"
-        ```
-    """
     preprocessor: PreProcessor = ResNet50PreProcessor()
 
     def __init__(self, dfg: bytes):

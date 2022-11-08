@@ -9,6 +9,7 @@ You can find more details at https://github.com/ultralytics/yolov5.
 * Model task: Object Detection
 * Source: This model is originated from https://github.com/ultralytics/yolov5.
 
+## <a name="YOLOv5m_Usage"></a>
 !!!Usage
     ```python
     --8<-- "docs/examples/yolov5m.py"
@@ -37,16 +38,22 @@ You can refer to `postprocess()` function to learn how to decode boxes, classes,
 | 2      | (1, 45, 20, 20)   | float32   | NCHW      |             |
 
 ## Pre/Post processing
-`furiosa.models.vision.yolov5.medium` module provides a set of utilities 
-to convert images to input tensors and the model outputs to object detection results.
-  
-### `furiosa.models.vision.yolov5.medium.preprocess`
-::: furiosa.models.vision.yolov5.medium.preprocess
+`furiosa.models.vision.YOLOv5m` class provides `preprocess` and `postprocess` methods.
+`preprocess` method converts input images to input tensors, and `postprocess` method converts 
+model output tensors to a list of bounding boxes, scores and labels. 
+You can find examples at [YOLOv5m Usage](#YOLOv5m_Usage).
+ 
+### `furiosa.models.vision.YOLOv5m.preprocess`
+::: furiosa.models.vision.yolov5.core.YOLOv5PreProcessor.__call__
     options:
         show_root_heading: false
+        show_bases: false
         show_source: false
-### `furiosa.models.vision.yolov5.medium.postprocess`
-::: furiosa.models.vision.yolov5.medium.postprocess
+    
+### `furiosa.models.vision.ResNet34.postprocess`
+::: furiosa.models.vision.yolov5.core.YOLOv5PostProcessor.__call__
     options:
         show_root_heading: false
+        show_bases: false
         show_source: false
+

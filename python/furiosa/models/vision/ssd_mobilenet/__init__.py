@@ -241,7 +241,7 @@ class SSDMobileNetPythonPostProcessor(PostProcessor):
             Detected Bounding Box and its score and label represented as `ObjectDetectionResult`.
                 To learn more about `ObjectDetectionResult`, 'Definition of ObjectDetectionResult' can be found below.
 
-        Definition of ObjectDetectionResult:
+        Definitions of ObjectDetectionResult and LtrbBoundingBox:
             ::: furiosa.models.vision.postprocess.LtrbBoundingBox
                 options:
                     show_root_heading: false
@@ -310,20 +310,6 @@ class SSDMobileNetNativePostProcessor(PostProcessor):
             raise FuriosaModelException(f"Unknown post processor version: {version}")
 
     def __call__(self, model_outputs: Sequence[numpy.ndarray], contexts: Sequence[Dict[str, Any]]):
-        """Native postprocessing implementation optimized for NPU
-
-        This class provides another version of the postprocessing implementation
-        which is highly optimized for NPU. The implementation leverages the NPU IO architecture and runtime.
-
-        To use this implementation, when this model is loaded, the parameter `use_native_post=True`
-        should be passed to `load()` or `load_aync()`. Then, `NativePostProcess` object should
-        be created with the model object. `eval()` method should be called to postprocess.
-
-        !!! Examples
-            ```python
-            --8<-- "docs/examples/ssd_mobilenet_native.py"
-            ```
-        """
         raw_results = self._native.eval(model_outputs)
 
         results = []

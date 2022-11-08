@@ -11,16 +11,17 @@ This model has been used since MLCommons v0.5.
 [MLCommons - Supported Models](https://github.com/mlcommons/inference/tree/master/vision/classification_and_detection#supported-models).
 
 
-## Usages
-=== "Default"
-    ```python
-    --8<-- "docs/examples/ssd_resnet34.py"
-    ```
- 
-=== "Native Postprocessor"
-    ```python
-    --8<-- "docs/examples/ssd_resnet34_native.py"
-    ```
+## <a name="SSDResNet34_Usage"></a>
+!!! Usages
+    === "Python Postprocessor"
+        ```python
+        --8<-- "docs/examples/ssd_resnet34.py"
+        ```
+     
+    === "Native Postprocessor"
+        ```python
+        --8<-- "docs/examples/ssd_resnet34_native.py"
+        ```
 
 ## Model inputs
 The input is a 3-channel image of 300x300 (height, width).
@@ -53,22 +54,34 @@ You can refer to `postprocess()` function to learn how to decode boxes, classes,
 | 10     | (1, 16, 3, 3)    | float32   | NCHW      |             |
 | 11     | (1, 16, 3, 3)    | float32   | NCHW      |             |
 
-## Pre/Post processing
-`furiosa.models.vision.ssd_resnet34` module provides a set of utilities 
-to convert images to input tensors and the model outputs to labels.
-  
-### `furiosa.models.vision.ssd_resnet34.preprocess`
-::: furiosa.models.vision.ssd_resnet34.preprocess
-    options:
-        show_root_heading: false
-### `furiosa.models.vision.ssd_resnet34.postprocess`
-::: furiosa.models.vision.ssd_resnet34.postprocess
-    options:
-        show_root_heading: false
+## Pre/Postprocessing
+`furiosa.models.vision.SSDResNet34` class provides `preprocess` and `postprocess` methods.
+`preprocess` method converts input images to input tensors, and `postprocess` method converts 
+model output tensors to a list of bounding boxes, scores and labels. 
+You can find examples at [SSDResNet34 Usage](#SSDResNet34_Usage).
  
-### `furiosa.models.vision.ssd_resnet34.NativePostProcess`
-::: furiosa.models.vision.ssd_resnet34.NativePostProcessor
+### `furiosa.models.vision.SSDResNet34.preprocess`
+::: furiosa.models.vision.ssd_resnet34.SSDResNet34PreProcessor.__call__
     options:
         show_root_heading: false
         show_bases: false
         show_source: false
+    
+### `furiosa.models.vision.SSDResNet34.postprocess`
+::: furiosa.models.vision.ssd_resnet34.SSDResNet34PreProcessor.__call__
+    options:
+        show_root_heading: false
+        show_bases: false
+        show_source: false
+
+### <a href="NativePostProcessor"></a>Native Postprocessor
+This class provides another version of the postprocessing implementation
+which is highly optimized for NPU. The implementation leverages the NPU IO architecture and runtime.
+
+To use this implementation, when this model is loaded, the parameter `use_native=True`
+should be passed to `load()` or `load_aync()`. The following is an example:
+
+!!! Example
+    ```python
+    --8<-- "docs/examples/ssd_resnet34_native.py"
+    ```

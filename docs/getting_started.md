@@ -22,12 +22,17 @@ You can quickly install Furiosa Models by using `pip` as following:
 pip install 'furiosa-models'
 ```
 
-Or you can build from the source code as following:
+??? "Building from Source Code (click to see)"
+    Or you can build from the source code as following:
 
-```
-git clone https://github.com/furiosa-ai/furiosa-models
-pip install .
-```
+    Building `furiosa-models` requires additional prerequisites:
+
+    * rust-toolchain (please refer to [rustup](https://rustup.rs/))
+    
+    ```
+    git clone https://github.com/furiosa-ai/furiosa-models
+    pip install .
+    ```
 
 ## Quick example and Guides
 
@@ -36,18 +41,18 @@ You can simply load a model and run through furiosa-sdk as following:
 --8<-- "docs/examples/ssd_mobilenet.py"
 ```
 
-This example 1) fetches the [SSDMobileNet](models/ssd_mobilenet.md) model, 2) create a `session`, 
-which is the main class of Furiosa Runtime which actually loads an ONNX/tflite model to NPU and run inferences,
-and 3) run an inference with pre/post processings.
+This example does:
 
-A `Model` instance is a Python object, including model artifacts and metadata.
+1. Loads the [SSDMobileNet](models/ssd_mobilenet.md) model
+1. Creates a `session` which is the main class of Furiosa Runtime which actually loads an ONNX/tflite model to NPU and run inferences
+1. Runs an inference with pre/post processings.
+
+A `Model` instance is a Python object, including model artifacts, metadata, and its pre/post processors.
 You can learn more about `Model` object at [Model object](model_object.md).
-Each mode has its own pre/post processing steps. 
-To learn about them, please refer to [Pre/Post processing](pre_postprocess.md).
 
 Also, you can find all available models at 
 [Available Models](https://furiosa-ai.github.io/furiosa-models/#available_models).
-Each model page includes the model information, input and output tensors, and pre/post processings, 
+Each model page includes the details of the model, input and output tensors, and pre/post processings, 
 and API reference.
 
 If you want to learn more about `furiosa.runtime.session` in Furiosa Runtime, please refer to

@@ -10,16 +10,17 @@ This model has been used since MLCommons v0.5.
 * Source: This model is originated from SSD MobileNet v1 in ONNX available at
 [MLCommons - Supported Models](https://github.com/mlcommons/inference/tree/master/vision/classification_and_detection#supported-models).
 
-## Usages
-=== "Default"
-    ```python
-    --8<-- "docs/examples/ssd_mobilenet.py"
-    ```
- 
-=== "Native Postprocessor"
-    ```python
-    --8<-- "docs/examples/ssd_mobilenet_native.py"
-    ```
+## <a name="SSDMobileNet_Usage"></a>
+!!! Usages
+    === "Python Postprocessor"
+        ```python
+        --8<-- "docs/examples/ssd_mobilenet.py"
+        ```
+     
+    === "Native Postprocessor"
+        ```python
+        --8<-- "docs/examples/ssd_mobilenet_native.py"
+        ```
 
 ## Inputs of Model 
 The input is a 3-channel image of 300x300 (height, width).
@@ -53,23 +54,34 @@ You can refer to `postprocess()` function to learn how to decode boxes, classes,
 | 10     | (1, 546, 1, 1)   | float32   | NCHW      |             |
 | 11     | (1, 24, 1, 1)    | float32   | NCHW      |             |
 
-## Pre/Post processing
-`furiosa.models.vision.ssd_mobilenet` module provides a set of utilities 
-to convert images to input tensors and the model outputs to labels.
-  
-### `furiosa.models.vision.ssd_mobilenet.preprocess`
-::: furiosa.models.vision.ssd_mobilenet.preprocess
-    options:
-        show_root_heading: false
-### `furiosa.models.vision.ssd_mobilenet.postprocess`
-::: furiosa.models.vision.ssd_mobilenet.postprocess
-    options:
-        show_root_heading: false
+## Pre/Postprocessing
+`furiosa.models.vision.SSDMobileNet` class provides `preprocess` and `postprocess` methods.
+`preprocess` method converts input images to input tensors, and `postprocess` method converts 
+model output tensors to a list of bounding boxes, scores and labels. 
+You can find examples at [SSDMobileNet Usage](#SSDMobileNet_Usage).
  
-### `furiosa.models.vision.ssd_mobilenet.NativePostProcess`
-::: furiosa.models.vision.ssd_mobilenet.NativePostProcessor
+### `furiosa.models.vision.SSDMobileNet.preprocess`
+::: furiosa.models.vision.ssd_mobilenet.SSDMobileNetPreProcessor.__call__
+    options:
+        show_root_heading: false
+        show_bases: false
+        show_source: false
+    
+### `furiosa.models.vision.SSDMobileNet.postprocess`
+::: furiosa.models.vision.ssd_mobilenet.SSDMobileNetPythonPostProcessor.__call__
     options:
         show_root_heading: false
         show_bases: false
         show_source: false
 
+### <a href="NativePostProcessor"></a>Native Postprocessor
+This class provides another version of the postprocessing implementation
+which is highly optimized for NPU. The implementation leverages the NPU IO architecture and runtime.
+
+To use this implementation, when this model is loaded, the parameter `use_native=True`
+should be passed to `load()` or `load_aync()`. The following is an example:
+
+!!! Example
+    ```python
+    --8<-- "docs/examples/ssd_mobilenet_native.py"
+    ```

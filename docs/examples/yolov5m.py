@@ -2,13 +2,12 @@ import cv2
 import numpy as np
 
 from furiosa.models.vision import YOLOv5m
-from furiosa.models.vision.yolov5.medium import postprocess, preprocess
 from furiosa.runtime import session
 
-model = YOLOv5m.load()
+yolov5m = YOLOv5m.load()
 
-with session.create(model) as sess:
+with session.create(yolov5m) as sess:
     image = cv2.imread("tests/assets/yolov5-test.jpg")
-    inputs, context = preprocess([image], color_format="bgr")
+    inputs, context = yolov5m.preprocess([image])
     output = sess.run(np.expand_dims(inputs[0], axis=0)).numpy()
-    postprocess(output, context=context)
+    yolov5m.postprocess(output, context=context)

@@ -14,6 +14,7 @@ nav:
 - Overview: index.md
 - getting_started.md
 - model_object.md
+- Pre/Postprocessing: pre_postprocessing.md
 - Models:
     - models/resnet50_v1.5.md
     - models/ssd_mobilenet.md
@@ -28,6 +29,7 @@ markdown_extensions:
   - codehilite
   - pymdownx.highlight:
       anchor_linenums: true
+  - pymdownx.details
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences

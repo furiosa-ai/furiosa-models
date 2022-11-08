@@ -176,13 +176,13 @@ class YOLOv5Base(ObjectDetectionModel, ABC):
 class YOLOv5PreProcessor(PreProcessor):
     @staticmethod
     def __call__(
-        img_list: Sequence[np.ndarray], input_color_format: str
+        img_list: Sequence[np.ndarray], color_format: str
     ) -> Tuple[np.ndarray, List[Dict[str, Any]]]:
         """Preprocess a batch of images in numpy
 
         Args:
             images (Sequence[np.ndarray]): Color images have (NCHW: Batch, Channel, Height, Width) dimensions.
-            input_color_format (str): 'rgb' (Red, Green, Blue) or 'bgr' (Blue, Green, Red).
+            color_format (str): 'rgb' (Red, Green, Blue) or 'bgr' (Blue, Green, Red).
 
         Returns:
             a pre-processed image, scales and padded sizes(width,height) per images.
@@ -198,7 +198,7 @@ class YOLOv5PreProcessor(PreProcessor):
         for i, img in enumerate(img_list):
             img, (sx, sy), (padw, padh) = _resize(img, _INPUT_SIZE)
 
-            if input_color_format == "bgr":
+            if color_format == "bgr":
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             assert sx == sy, "yolov5 must be the same rescale for width and height"
             scale = sx
