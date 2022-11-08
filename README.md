@@ -14,7 +14,7 @@ and they can run even on CPU and GPU as well.
 ## Online Documentation
 If you are new, you can start from [Getting Started](https://furiosa-ai.github.io/furiosa-models/latest/getting_started.md).
 You can also find the latest online documents, 
-including programming guide, API reference, examples from the followings:
+including programming guides, API references, and examples from the followings:
 
 * [Furiosa Models - Documentation](https://furiosa-ai.github.io/furiosa-models/latest/)
 * [Model object and its Examples](https://furiosa-ai.github.io/furiosa-models/models_and_examples.md)
@@ -24,7 +24,7 @@ including programming guide, API reference, examples from the followings:
 
 ## <a name="model_list"></a>Model List
 The table summarizes all models available in `furiosa-models`. If you visit each model link, 
-you can find details about loading a model, their input and output tensors, and pre/post processings, and examples.
+you can find details about loading a model, their input and output tensors, pre/post processings, and usage examples.
 
 | Model                                   | Task                 | Size | Accuracy                  |
 |-----------------------------------------| -------------------- | ---- |---------------------------|
