@@ -41,18 +41,5 @@ a class id. `postprocess()` can transform the class id to a single label.
 `furiosa.models.vision.resnet50` module provides a set of utilities 
 to convert images to input tensors and the model outputs to labels.
   
-### `furiosa.models.vision.resnet50.preprocess`
-::: furiosa.models.vision.resnet50.preprocess
-    options:
-        show_root_heading: false
-### `furiosa.models.vision.resnet50.postprocess`
-::: furiosa.models.vision.resnet50.postprocess
-    options:
-        show_root_heading: false
- 
-### `furiosa.models.vision.resnet50.NativePostProcess`
-::: furiosa.models.vision.resnet50.NativePostProcessor
-    options:
-        show_root_heading: false
-        show_bases: false
-        show_source: false
+### `furiosa.models.vision.resnet50.ResNet50PreProcessor`
+::: furiosa.models.vision.resnet50.ResNet50PreProcessor

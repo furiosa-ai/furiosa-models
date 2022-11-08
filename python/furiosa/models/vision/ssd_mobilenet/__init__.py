@@ -5,21 +5,25 @@ import numpy
 import numpy as np
 import numpy.typing as npt
 
-from furiosa.registry import Format, Metadata, Publication
-
 from . import anchor_generator  # type: ignore[import]
 from .. import native
 from ...errors import ArtifactNotFound, FuriosaModelException
-from ...model import ObjectDetectionModel
+from ...types import (
+    Format,
+    Metadata,
+    ModelProcessor,
+    ObjectDetectionModel,
+    PostProcessor,
+    PreProcessor,
+    Publication,
+)
 from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
 from ..common.datasets import coco
-from ..postprocess import (
-    LtrbBoundingBox,
-    ObjectDetectionResult,
-    PostProcessor,
-    calibration_ltrbbox,
-    sigmoid,
-)
+from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox, sigmoid
+
+NUM_OUTPUTS: int = 12
+CLASSES = coco.MobileNetSSD_CLASSES
+NUM_CLASSES = len(CLASSES) - 1  # remove background
 
 # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L155-L158
 PRIORS = np.concatenate(
@@ -42,84 +46,6 @@ PRIORS_CENTER_X = PRIORS_X1 + 0.5 * PRIORS_WIDTHS
 PRIORS_CENTER_Y = PRIORS_Y1 + 0.5 * PRIORS_HEIGHTS
 
 del PRIORS_Y1, PRIORS_X1, PRIORS_Y2, PRIORS_X2, PRIORS
-
-
-class SSDSmallConstant(object):
-    PRIORS_WIDTHS = PRIORS_WIDTHS
-    PRIORS_HEIGHTS = PRIORS_HEIGHTS
-    PRIORS_CENTER_X = PRIORS_CENTER_X
-    PRIORS_CENTER_Y = PRIORS_CENTER_Y
-
-
-class SSDMobileNet(ObjectDetectionModel):
-    """MLCommons MobileNet v1 model"""
-
-    @classmethod
-    def get_artifact_name(cls):
-        return "mlcommons_ssd_mobilenet_v1_int8"
-
-    @classmethod
-    def load_aux(cls, artifacts: Dict[str, bytes], *args, **kwargs):
-        return cls(
-            name="MLCommonsSSDMobileNet",
-            source=artifacts[EXT_ONNX],
-            dfg=artifacts[EXT_DFG],
-            enf=artifacts[EXT_ENF],
-            format=Format.ONNX,
-            family="MobileNetV1",
-            version="v1.1",
-            metadata=Metadata(
-                description="SSD MobileNet model for MLCommons v1.1",
-                publication=Publication(url="https://arxiv.org/abs/1704.04861.pdf"),
-            ),
-            *args,
-            **kwargs,
-        )
-
-
-NUM_OUTPUTS: int = 12
-CLASSES = coco.MobileNetSSD_CLASSES
-NUM_CLASSES = len(CLASSES) - 1  # remove background
-
-
-def preprocess(
-    images: Sequence[Union[str, np.ndarray]]
-) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
-    """Preprocess input images to a batch of input tensors.
-
-    When the image file paths are passed, the image files should be standard image format, such as jpg, gif, png.
-
-    Args:
-        images: A list of paths of image files or a stacked image loaded as numpy through `cv2.imread()`
-
-    Returns:
-        3-channel images of 300x300 in NCHW format. Please find the details at 'Inputs of Model' section.
-    """
-
-    """Read and preprocess an image located at image_path."""
-    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L49-L51
-    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L242-L249
-    batch_image = []
-    batch_preproc_param = []
-    for image in images:
-        if type(image) == str:
-            image = cv2.imread(image)
-            if image is None:
-                raise FileNotFoundError(image)
-        image = np.array(image, dtype=np.float32)
-        if len(image.shape) < 3 or image.shape[2] != 3:
-            image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-        else:
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        width = image.shape[1]
-        height = image.shape[0]
-        image = cv2.resize(image, (300, 300), interpolation=cv2.INTER_LINEAR)
-        image -= 127.5
-        image /= 127.5
-        image = image.transpose([2, 0, 1])
-        batch_image.append(image)
-        batch_preproc_param.append({"width": width, "height": height})
-    return np.stack(batch_image, axis=0), batch_preproc_param
 
 
 def _decode_boxes(rel_codes: np.ndarray) -> np.ndarray:
@@ -217,87 +143,192 @@ def _box_area(left_top: np.ndarray, right_bottom: np.ndarray):
     return width_height[..., 0] * width_height[..., 1]
 
 
-def postprocess(
-    model_outputs: Sequence[numpy.ndarray],
-    context: Sequence[Dict[str, Any]],
-    confidence_threshold: float = 0.3,
-    iou_threshold: float = 0.6,
-) -> List[List[ObjectDetectionResult]]:
-    """Convert the outputs of this model to a list of bounding boxes, scores and labels
+class SSDSmallConstant(object):
+    PRIORS_WIDTHS = PRIORS_WIDTHS
+    PRIORS_HEIGHTS = PRIORS_HEIGHTS
+    PRIORS_CENTER_X = PRIORS_CENTER_X
+    PRIORS_CENTER_Y = PRIORS_CENTER_Y
 
-    Arguments:
-        model_outputs: the outputs of the model
-        context: context coming from `preprocess()`
 
-    Returns:
-        Detected Bounding Box and its score and label represented as `ObjectDetectionResult`.
-            To learn more about `ObjectDetectionResult`, 'Definition of ObjectDetectionResult' can be found below.
+class SSDMobileNet(ObjectDetectionModel):
+    """MLCommons MobileNet v1 model"""
 
-    Definition of ObjectDetectionResult:
-        ::: furiosa.models.vision.postprocess.LtrbBoundingBox
-            options:
-                show_root_heading: false
-                show_source: true
-        ::: furiosa.models.vision.postprocess.ObjectDetectionResult
-            options:
-                show_root_heading: false
-                show_source: true
-    """
-    assert (
-        len(model_outputs) == NUM_OUTPUTS
-    ), f"the number of model outputs must be {NUM_OUTPUTS}, but {len(model_outputs)}"
-    batch_size = model_outputs[0].shape[0]
-    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L94-L97
-    class_logits = [
-        output.transpose((0, 2, 3, 1)).reshape((batch_size, -1, NUM_CLASSES))
-        for output in model_outputs[0::2]
-    ]
-    box_regression = [
-        output.transpose((0, 2, 3, 1)).reshape((batch_size, -1, 4))
-        for output in model_outputs[1::2]
-    ]
-    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L144-L166
-    class_logits = np.concatenate(class_logits, axis=1)  # type: ignore[assignment]
-    box_regression = np.concatenate(box_regression, axis=1)  # type: ignore[assignment]
-    batch_scores = sigmoid(class_logits)  # type: ignore[arg-type]
-    batch_boxes = _decode_boxes(box_regression)  # type: ignore[arg-type]
+    @staticmethod
+    def get_artifact_name():
+        return "mlcommons_ssd_mobilenet_v1_int8"
 
-    # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L178-L185
-    batch_results = []
-    for scores, boxes, preproc_params in zip(batch_scores, batch_boxes, context):  # loop mini-batch
-        width, height = preproc_params["width"], preproc_params["height"]
-        boxes, labels, scores = _filter_results(
-            scores,
-            boxes,
-            confidence_threshold=confidence_threshold,
-            iou_threshold=iou_threshold,
+    @classmethod
+    def load_aux(
+        cls, artifacts: Dict[str, bytes], use_native: bool = True, *, version: str = "cpp"
+    ):
+        if use_native:
+            if artifacts[EXT_DFG] is None:
+                raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
+            processor = SSDMobileNetNativeProcessor(artifacts[EXT_DFG], version)
+        else:
+            processor = SSDMobileNetPythonProcessor()
+        return cls(
+            name="MLCommonsSSDMobileNet",
+            source=artifacts[EXT_ONNX],
+            dfg=artifacts[EXT_DFG],
+            enf=artifacts[EXT_ENF],
+            format=Format.ONNX,
+            family="MobileNetV1",
+            version="v1.1",
+            metadata=Metadata(
+                description="SSD MobileNet model for MLCommons v1.1",
+                publication=Publication(url="https://arxiv.org/abs/1704.04861.pdf"),
+            ),
+            processor=processor,
         )
-        cal_boxes = calibration_ltrbbox(boxes, width, height)
-        predicted_result = []
-        for b, l, s in zip(cal_boxes, labels, scores):
-            bb_list = b.tolist()
-            predicted_result.append(
-                ObjectDetectionResult(
-                    index=l,
-                    label=CLASSES[l],
-                    score=s,
-                    boundingbox=LtrbBoundingBox(
-                        left=bb_list[0], top=bb_list[1], right=bb_list[2], bottom=bb_list[3]
-                    ),
-                )
+
+
+class SSDMobileNetPreProcessor(PreProcessor):
+    @staticmethod
+    def __call__(
+        inputs: Sequence[Union[str, np.ndarray]]
+    ) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
+        """Preprocess input images to a batch of input tensors.
+
+        When the image file paths are passed, the image files should be standard image format, such as jpg, gif, png.
+
+        Args:
+            images: A list of paths of image files or a stacked image loaded as numpy through `cv2.imread()`
+
+        Returns:
+            3-channel images of 300x300 in NCHW format. Please find the details at 'Inputs of Model' section.
+        """
+        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L49-L51
+        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L242-L249
+        batch_image = []
+        batch_preproc_param = []
+        for image in inputs:
+            if type(image) == str:
+                image = cv2.imread(image)
+                if image is None:
+                    raise FileNotFoundError(image)
+            image = np.array(image, dtype=np.float32)
+            if len(image.shape) < 3 or image.shape[2] != 3:
+                image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+            else:
+                image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            width = image.shape[1]
+            height = image.shape[0]
+            image = cv2.resize(image, (300, 300), interpolation=cv2.INTER_LINEAR)
+            image -= 127.5
+            image /= 127.5
+            image = image.transpose([2, 0, 1])
+            batch_image.append(image)
+            batch_preproc_param.append({"width": width, "height": height})
+        return np.stack(batch_image, axis=0), batch_preproc_param
+
+
+class SSDMobileNetPythonPostProcessor(PostProcessor):
+    @staticmethod
+    def __call__(
+        model_outputs: Sequence[numpy.ndarray],
+        contexts: Sequence[Dict[str, Any]],
+        confidence_threshold: float = 0.3,
+        iou_threshold: float = 0.6,
+    ) -> List[List[ObjectDetectionResult]]:
+        """Convert the outputs of this model to a list of bounding boxes, scores and labels
+
+        Arguments:
+            model_outputs: the outputs of the model
+            context: context coming from `preprocess()`
+
+        Returns:
+            Detected Bounding Box and its score and label represented as `ObjectDetectionResult`.
+                To learn more about `ObjectDetectionResult`, 'Definition of ObjectDetectionResult' can be found below.
+
+        Definition of ObjectDetectionResult:
+            ::: furiosa.models.vision.postprocess.LtrbBoundingBox
+                options:
+                    show_root_heading: false
+                    show_source: true
+            ::: furiosa.models.vision.postprocess.ObjectDetectionResult
+                options:
+                    show_root_heading: false
+                    show_source: true
+        """
+        assert (
+            len(model_outputs) == NUM_OUTPUTS
+        ), f"the number of model outputs must be {NUM_OUTPUTS}, but {len(model_outputs)}"
+        batch_size = model_outputs[0].shape[0]
+        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L94-L97
+        class_logits = [
+            output.transpose((0, 2, 3, 1)).reshape((batch_size, -1, NUM_CLASSES))
+            for output in model_outputs[0::2]
+        ]
+        box_regression = [
+            output.transpose((0, 2, 3, 1)).reshape((batch_size, -1, 4))
+            for output in model_outputs[1::2]
+        ]
+        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L144-L166
+        class_logits = np.concatenate(class_logits, axis=1)  # type: ignore[assignment]
+        box_regression = np.concatenate(box_regression, axis=1)  # type: ignore[assignment]
+        batch_scores = sigmoid(class_logits)  # type: ignore[arg-type]
+        batch_boxes = _decode_boxes(box_regression)  # type: ignore[arg-type]
+
+        # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L178-L185
+        batch_results = []
+        for scores, boxes, preproc_params in zip(
+            batch_scores, batch_boxes, contexts
+        ):  # loop mini-batch
+            width, height = preproc_params["width"], preproc_params["height"]
+            boxes, labels, scores = _filter_results(
+                scores,
+                boxes,
+                confidence_threshold=confidence_threshold,
+                iou_threshold=iou_threshold,
             )
-        batch_results.append(predicted_result)
-    return batch_results
+            cal_boxes = calibration_ltrbbox(boxes, width, height)
+            predicted_result = []
+            for b, l, s in zip(cal_boxes, labels, scores):
+                bb_list = b.tolist()
+                predicted_result.append(
+                    ObjectDetectionResult(
+                        index=l,
+                        label=CLASSES[l],
+                        score=s,
+                        boundingbox=LtrbBoundingBox(
+                            left=bb_list[0], top=bb_list[1], right=bb_list[2], bottom=bb_list[3]
+                        ),
+                    )
+                )
+            batch_results.append(predicted_result)
+        return batch_results
 
 
-class SSDMobilePostProcessor(PostProcessor):
-    def eval(self, model_outputs: Sequence[numpy.ndarray], *args: Any, **kwargs: Any):
-        context = kwargs.get("context")
+class SSDMobileNetNativePostProcessor(PostProcessor):
+    def __init__(self, dfg: bytes, version: str = "cpp"):
+        if version == "cpp":
+            self._native = native.ssd_mobilenet.CppPostProcessor(dfg)
+        elif version == "rust":
+            self._native = native.ssd_mobilenet.RustPostProcessor(dfg)
+        else:
+            raise FuriosaModelException(f"Unknown post processor version: {version}")
+
+    def __call__(self, model_outputs: Sequence[numpy.ndarray], contexts: Sequence[Dict[str, Any]]):
+        """Native postprocessing implementation optimized for NPU
+
+        This class provides another version of the postprocessing implementation
+        which is highly optimized for NPU. The implementation leverages the NPU IO architecture and runtime.
+
+        To use this implementation, when this model is loaded, the parameter `use_native_post=True`
+        should be passed to `load()` or `load_aync()`. Then, `NativePostProcess` object should
+        be created with the model object. `eval()` method should be called to postprocess.
+
+        !!! Examples
+            ```python
+            --8<-- "docs/examples/ssd_mobilenet_native.py"
+            ```
+        """
         raw_results = self._native.eval(model_outputs)
 
         results = []
-        width = context['width']
-        height = context['height']
+        width = contexts['width']
+        height = contexts['height']
         for value in raw_results:
             left = value.left * width
             right = value.right * width
@@ -315,31 +346,13 @@ class SSDMobilePostProcessor(PostProcessor):
         return results
 
 
-class NativePostProcessor(SSDMobilePostProcessor):
-    """Native postprocessing implementation optimized for NPU
+class SSDMobileNetPythonProcessor(ModelProcessor):
+    preprocessor: PreProcessor = SSDMobileNetPreProcessor()
+    postprocessor: PostProcessor = SSDMobileNetPythonPostProcessor()
 
-    This class provides another version of the postprocessing implementation
-    which is highly optimized for NPU. The implementation leverages the NPU IO architecture and runtime.
 
-    To use this implementation, when this model is loaded, the parameter `use_native_post=True`
-    should be passed to `load()` or `load_aync()`. Then, `NativePostProcess` object should
-    be created with the model object. `eval()` method should be called to postprocess.
+class SSDMobileNetNativeProcessor(ModelProcessor):
+    preprocessor: PreProcessor = SSDMobileNetPreProcessor()
 
-    !!! Examples
-        ```python
-        --8<-- "docs/examples/ssd_mobilenet_native.py"
-        ```
-    """
-
-    def __init__(self, model: SSDMobileNet, version: str = "cpp"):
-        if not model.dfg:
-            raise ArtifactNotFound(model.name, "dfg")
-
-        if version == "cpp":
-            self._native = native.ssd_mobilenet.CppPostProcessor(model.dfg)
-        elif version == "rust":
-            self._native = native.ssd_mobilenet.RustPostProcessor(model.dfg)
-        else:
-            raise FuriosaModelException(f"Unknown post processor version: {version}")
-
-        super().__init__()
+    def __init__(self, dfg: bytes, version: str):
+        self.postprocessor = SSDMobileNetNativePostProcessor(dfg, version)

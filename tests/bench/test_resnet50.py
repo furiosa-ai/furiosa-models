@@ -7,7 +7,6 @@ import tqdm
 
 from furiosa.models.vision import ResNet50
 from furiosa.models.vision.common.datasets import imagenet1k
-from furiosa.models.vision.resnet50 import NativePostProcessor, postprocess, preprocess
 from furiosa.runtime import session
 
 # NOTE: e2e-testing = 76.126 %, mlperf submission = 76.106 %
@@ -22,7 +21,7 @@ def test_mlcommons_resnet50_accuracy(benchmark):
         os.environ.get('IMAGENET_VAL_LABELS', 'tests/data/imagenet/aux/val.txt')
     )
 
-    model = ResNet50.load()
+    model = ResNet50.load(use_native=False)
 
     image_paths = list(imagenet_val_images.glob("*.[Jj][Pp][Ee][Gg]"))
     with open(imagenet_val_labels, encoding="ascii") as file:
@@ -42,15 +41,15 @@ def test_mlcommons_resnet50_accuracy(benchmark):
 
     def workload(image, answer):
         global correct_predictions, incorrect_predictions
-        image = preprocess(image)
-        output = postprocess(sess.run(image).numpy())
+        image, _ = model.preprocess(image)
+        output = model.postprocess(sess.run(image).numpy())
 
         if output == answer:
             correct_predictions += 1
         else:
             incorrect_predictions += 1
 
-    sess = session.create(model.enf)
+    sess = session.create(model)
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 
@@ -66,8 +65,7 @@ def test_mlcommons_resnet50_with_native_pp_accuracy(benchmark):
         os.environ.get('IMAGENET_VAL_LABELS', 'tests/data/imagenet/aux/val.txt')
     )
 
-    model = ResNet50.load(use_native_post=True)
-    postprocessor = NativePostProcessor(model)
+    model = ResNet50.load(use_native=True)
 
     image_paths = list(imagenet_val_images.glob("*.[Jj][Pp][Ee][Gg]"))
     with open(imagenet_val_labels, encoding="ascii") as file:
@@ -87,15 +85,15 @@ def test_mlcommons_resnet50_with_native_pp_accuracy(benchmark):
 
     def workload(image, answer):
         global correct_predictions, incorrect_predictions
-        image = preprocess(image)
-        output = postprocessor.eval(sess.run(image).numpy())
+        image, _ = model.preprocess(image)
+        output = model.postprocess(sess.run(image).numpy())
 
         if output == answer:
             correct_predictions += 1
         else:
             incorrect_predictions += 1
 
-    sess = session.create(model.enf)
+    sess = session.create(model)
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 

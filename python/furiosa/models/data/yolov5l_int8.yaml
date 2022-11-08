@@ -1,8 +1,6 @@
 without_quantize:
   parameters:
-  - input_max: 1.0
-    input_min: 0.0
-    permute:
+  - permute:
       - 0
       - 2
       - 3

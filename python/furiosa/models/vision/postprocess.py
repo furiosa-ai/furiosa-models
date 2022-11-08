@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, List, Sequence
+from typing import Any, Iterator, List, Sequence
 
-import numpy
 import numpy as np
+
+from ..types import PostProcessor
 
 
 @dataclass
@@ -13,7 +14,7 @@ class CXcywhBoundingBox:
     width: float
     height: float
 
-    def __iter__(self) -> List[float]:
+    def __iter__(self) -> Iterator[float]:
         return iter([self.center_x, self.center_y, self.width, self.height])
 
 
@@ -24,7 +25,7 @@ class XywhBoundingBox:
     width: float
     height: float
 
-    def __iter__(self) -> List[float]:
+    def __iter__(self) -> Iterator[float]:
         return iter([self.x, self.y, self.width, self.height])
 
 
@@ -35,7 +36,7 @@ class LtrbBoundingBox:
     right: float
     bottom: float
 
-    def __iter__(self) -> List[float]:
+    def __iter__(self) -> Iterator[float]:
         return iter([self.left, self.top, self.right, self.bottom])
 
 
@@ -149,7 +150,7 @@ def nms_internal_ops_fast(
        The criterion for the overlapping regions is when an intersect between two regions is greater than the iou threshold value.
 
     Args:
-        boxes (np.ndarray): A list of candiate boxes corresponding confidence score.
+        boxes (np.ndarray): A list of candidate boxes corresponding confidence score.
             They have to be in (left, top, right, bottom) format with left <= right and top <= bottom.
         scores (np.ndarray): scores for each candidate boxes. It's dimension has N x 1.
         iou_threshold (float): discards all overlapping boxes with the overlap > iou_threshold.
@@ -196,9 +197,3 @@ def test_collate():
     assert len(batch_arrays) == 2
     assert batch_arrays[0].shape == (3, 3, 4)
     assert batch_arrays[1].shape == (3, 2, 5)
-
-
-class PostProcessor(ABC):
-    @abstractmethod
-    def eval(self, model_outputs: Sequence[numpy.ndarray], *args: Any, **kwargs: Any):
-        pass

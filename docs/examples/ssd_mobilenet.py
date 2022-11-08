@@ -1,10 +1,12 @@
 from furiosa.models.vision import SSDMobileNet
-from furiosa.models.vision.ssd_mobilenet import postprocess, preprocess
 from furiosa.runtime import session
 
-model = SSDMobileNet.load()
+mobilenet = SSDMobileNet.load()
 
-with session.create(model) as sess:
-    image, context = preprocess(["tests/assets/cat.jpg"])
-    output = sess.run(image).numpy()
-    postprocess(output, context=context)
+image = ["tests/assets/cat.jpg"]
+
+with session.create(mobilenet) as sess:
+    inputs, contexts = mobilenet.preprocess(image)
+    outputs = sess.run(inputs).numpy()
+    outputs = mobilenet.postprocess(outputs, contexts)
+    print(outputs)
