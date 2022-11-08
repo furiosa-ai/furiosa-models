@@ -1,11 +1,10 @@
 from furiosa.models.vision import ResNet50
-from furiosa.models.vision.resnet50 import NativePostProcessor, preprocess
 from furiosa.runtime import session
 
-model = ResNet50.load(use_native_post=True)
+image = "tests/assets/cat.jpg"
 
-postprocessor = NativePostProcessor(model)
-with session.create(model) as sess:
-    image = preprocess("tests/assets/cat.jpg")
-    output = sess.run(image).numpy()
-    postprocessor.eval(output)
+resnet50 = ResNet50.load(use_native=True)
+with session.create(resnet50) as sess:
+    inputs, _ = resnet50.preprocess(image)
+    outputs = sess.run(inputs).numpy()
+    resnet50.postprocess(outputs)

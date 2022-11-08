@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://furiosa-ai.github.io/furiosa-models/models/ssd_mobilenet/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.1, mkdocs-material-8.5.7">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.8">
     
     
       
@@ -24,7 +24,7 @@
       <link rel="stylesheet" href="../../assets/stylesheets/main.20d9efc8.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.815d1a91.min.css">
         
       
       
@@ -254,6 +254,21 @@
 
   
   
+  
+    <li class="md-nav__item">
+      <a href="../../pre_postprocessing.md" class="md-nav__link">
+        Pre/Postprocessing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
     
   
   
@@ -263,18 +278,18 @@
     <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
       
       
       
       
-        <label class="md-nav__link" for="__nav_4">
+        <label class="md-nav__link" for="__nav_5">
           Models
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Models" data-md-level="1">
-        <label class="md-nav__title" for="__nav_4">
+        <label class="md-nav__title" for="__nav_5">
           <span class="md-nav__icon md-icon"></span>
           Models
         </label>
@@ -341,8 +356,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#usages" class="md-nav__link">
-    Usages
+  <a href="#_1" class="md-nav__link">
+    
   </a>
   
 </li>
@@ -362,16 +377,16 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#prepost-processing" class="md-nav__link">
-    Pre/Post processing
+  <a href="#prepostprocessing" class="md-nav__link">
+    Pre/Postprocessing
   </a>
   
-    <nav class="md-nav" aria-label="Pre/Post processing">
+    <nav class="md-nav" aria-label="Pre/Postprocessing">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#furiosamodelsvisionssd_mobilenetpreprocess" class="md-nav__link">
-    furiosa.models.vision.ssd_mobilenet.preprocess
+  <a href="#furiosamodelsvisionssdmobilenetpreprocess" class="md-nav__link">
+    furiosa.models.vision.SSDMobileNet.preprocess
   </a>
   
 </li>
@@ -382,49 +397,29 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#furiosa.models.vision.ssd_mobilenet.preprocess" class="md-nav__link">
-    furiosa.models.vision.ssd_mobilenet.preprocess
+  <a href="#furiosa.models.vision.ssd_mobilenet.SSDMobileNetPreProcessor.__call__" class="md-nav__link">
+    furiosa.models.vision.ssd_mobilenet.SSDMobileNetPreProcessor.__call__
   </a>
   
-    <nav class="md-nav" aria-label="furiosa.models.vision.ssd_mobilenet.preprocess">
+    <nav class="md-nav" aria-label="furiosa.models.vision.ssd_mobilenet.SSDMobileNetPreProcessor.__call__">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#furiosamodelsvisionssd_mobilenetpostprocess" class="md-nav__link">
-    furiosa.models.vision.ssd_mobilenet.postprocess
+  <a href="#furiosamodelsvisionssdmobilenetpostprocess" class="md-nav__link">
+    furiosa.models.vision.SSDMobileNet.postprocess
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#native-postprocessor" class="md-nav__link">
+    Native Postprocessor
   </a>
   
 </li>
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#furiosa.models.vision.ssd_mobilenet.postprocess" class="md-nav__link">
-    furiosa.models.vision.ssd_mobilenet.postprocess
-  </a>
-  
-    <nav class="md-nav" aria-label="furiosa.models.vision.ssd_mobilenet.postprocess">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#furiosamodelsvisionssd_mobilenetnativepostprocess" class="md-nav__link">
-    furiosa.models.vision.ssd_mobilenet.NativePostProcess
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#furiosa.models.vision.ssd_mobilenet.NativePostProcessor" class="md-nav__link">
-    furiosa.models.vision.ssd_mobilenet.NativePostProcessor
-  </a>
   
 </li>
       
@@ -549,8 +544,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#usages" class="md-nav__link">
-    Usages
+  <a href="#_1" class="md-nav__link">
+    
   </a>
   
 </li>
@@ -570,16 +565,16 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#prepost-processing" class="md-nav__link">
-    Pre/Post processing
+  <a href="#prepostprocessing" class="md-nav__link">
+    Pre/Postprocessing
   </a>
   
-    <nav class="md-nav" aria-label="Pre/Post processing">
+    <nav class="md-nav" aria-label="Pre/Postprocessing">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#furiosamodelsvisionssd_mobilenetpreprocess" class="md-nav__link">
-    furiosa.models.vision.ssd_mobilenet.preprocess
+  <a href="#furiosamodelsvisionssdmobilenetpreprocess" class="md-nav__link">
+    furiosa.models.vision.SSDMobileNet.preprocess
   </a>
   
 </li>
@@ -590,49 +585,29 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#furiosa.models.vision.ssd_mobilenet.preprocess" class="md-nav__link">
-    furiosa.models.vision.ssd_mobilenet.preprocess
+  <a href="#furiosa.models.vision.ssd_mobilenet.SSDMobileNetPreProcessor.__call__" class="md-nav__link">
+    furiosa.models.vision.ssd_mobilenet.SSDMobileNetPreProcessor.__call__
   </a>
   
-    <nav class="md-nav" aria-label="furiosa.models.vision.ssd_mobilenet.preprocess">
+    <nav class="md-nav" aria-label="furiosa.models.vision.ssd_mobilenet.SSDMobileNetPreProcessor.__call__">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#furiosamodelsvisionssd_mobilenetpostprocess" class="md-nav__link">
-    furiosa.models.vision.ssd_mobilenet.postprocess
+  <a href="#furiosamodelsvisionssdmobilenetpostprocess" class="md-nav__link">
+    furiosa.models.vision.SSDMobileNet.postprocess
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#native-postprocessor" class="md-nav__link">
+    Native Postprocessor
   </a>
   
 </li>
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#furiosa.models.vision.ssd_mobilenet.postprocess" class="md-nav__link">
-    furiosa.models.vision.ssd_mobilenet.postprocess
-  </a>
-  
-    <nav class="md-nav" aria-label="furiosa.models.vision.ssd_mobilenet.postprocess">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#furiosamodelsvisionssd_mobilenetnativepostprocess" class="md-nav__link">
-    furiosa.models.vision.ssd_mobilenet.NativePostProcess
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#furiosa.models.vision.ssd_mobilenet.NativePostProcessor" class="md-nav__link">
-    furiosa.models.vision.ssd_mobilenet.NativePostProcessor
-  </a>
   
 </li>
       
@@ -667,35 +642,37 @@ This model has been used since MLCommons v0.5.</p>
 <li>Source: This model is originated from SSD MobileNet v1 in ONNX available at
 <a href="https://github.com/mlcommons/inference/tree/master/vision/classification_and_detection#supported-models">MLCommons - Supported Models</a>.</li>
 </ul>
-<h2 id="usages">Usages</h2>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Default</label><label for="__tabbed_1_2">Native Postprocessor</label></div>
+<h2 id="_1"><a name="SSDMobileNet_Usage"></a></h2>
+<div class="admonition usages">
+<p class="admonition-title">Usages</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Python Postprocessor</label><label for="__tabbed_1_2">Native Postprocessor</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">furiosa.models.vision</span> <span class="kn">import</span> <span class="n">SSDMobileNet</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span> <span class="nn">furiosa.models.vision.ssd_mobilenet</span> <span class="kn">import</span> <span class="n">postprocess</span><span class="p">,</span> <span class="n">preprocess</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">from</span> <span class="nn">furiosa.runtime</span> <span class="kn">import</span> <span class="n">session</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">model</span> <span class="o">=</span> <span class="n">SSDMobileNet</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">model</span><span class="p">)</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">image</span><span class="p">,</span> <span class="n">context</span> <span class="o">=</span> <span class="n">preprocess</span><span class="p">([</span><span class="s2">&quot;tests/assets/cat.jpg&quot;</span><span class="p">])</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">output</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">postprocess</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span> <span class="nn">furiosa.runtime</span> <span class="kn">import</span> <span class="n">session</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">image</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tests/assets/cat.jpg&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">mobilenet</span> <span class="o">=</span> <span class="n">SSDMobileNet</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">mobilenet</span><span class="p">)</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">inputs</span><span class="p">,</span> <span class="n">contexts</span> <span class="o">=</span> <span class="n">mobilenet</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">outputs</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">mobilenet</span><span class="o">.</span><span class="n">postprocess</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">contexts</span><span class="p">)</span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">furiosa.models.vision</span> <span class="kn">import</span> <span class="n">SSDMobileNet</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span> <span class="nn">furiosa.models.vision.ssd_mobilenet</span> <span class="kn">import</span> <span class="n">NativePostProcessor</span><span class="p">,</span> <span class="n">preprocess</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">from</span> <span class="nn">furiosa.runtime</span> <span class="kn">import</span> <span class="n">session</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">model</span> <span class="o">=</span> <span class="n">SSDMobileNet</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">use_native_post</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">postprocessor</span> <span class="o">=</span> <span class="n">NativePostProcessor</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">model</span><span class="p">)</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">image</span><span class="p">,</span> <span class="n">context</span> <span class="o">=</span> <span class="n">preprocess</span><span class="p">([</span><span class="s2">&quot;tests/assets/cat.jpg&quot;</span><span class="p">])</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="n">output</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="n">postprocessor</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span> <span class="nn">furiosa.runtime</span> <span class="kn">import</span> <span class="n">session</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">image</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tests/assets/cat.jpg&quot;</span><span class="p">]</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">mobilenet</span> <span class="o">=</span> <span class="n">SSDMobileNet</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">use_native</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">mobilenet</span><span class="p">)</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">inputs</span><span class="p">,</span> <span class="n">contexts</span> <span class="o">=</span> <span class="n">mobilenet</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">outputs</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="n">mobilenet</span><span class="o">.</span><span class="n">postprocess</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">contexts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </code></pre></div>
+</div>
 </div>
 </div>
 </div>
@@ -813,208 +790,160 @@ You can refer to <code>postprocess()</code> function to learn how to decode boxe
 </tr>
 </tbody>
 </table>
-<h2 id="prepost-processing">Pre/Post processing</h2>
-<p><code>furiosa.models.vision.ssd_mobilenet</code> module provides a set of utilities 
-to convert images to input tensors and the model outputs to labels.</p>
-<h3 id="furiosamodelsvisionssd_mobilenetpreprocess"><code>furiosa.models.vision.ssd_mobilenet.preprocess</code></h3>
+<h2 id="prepostprocessing">Pre/Postprocessing</h2>
+<p><code>furiosa.models.vision.SSDMobileNet</code> class provides <code>preprocess</code> and <code>postprocess</code> methods.
+<code>preprocess</code> method converts input images to input tensors, and <code>postprocess</code> method converts 
+model output tensors to a list of bounding boxes, scores and labels. 
+You can find examples at <a href="#SSDMobileNet_Usage">SSDMobileNet Usage</a>.</p>
+<h3 id="furiosamodelsvisionssdmobilenetpreprocess"><code>furiosa.models.vision.SSDMobileNet.preprocess</code></h3>
 
 
 <div class="doc doc-object doc-function">
 
 
-<a id="furiosa.models.vision.ssd_mobilenet.preprocess"></a>
+<a id="furiosa.models.vision.ssd_mobilenet.SSDMobileNetPreProcessor.__call__"></a>
   <div class="doc doc-contents first">
   
-      <p>Read and preprocess an image located at image_path.</p>
+      <p>Preprocess input images to a batch of input tensors.</p>
+<p>When the image file paths are passed, the image files should be standard image format, such as jpg, gif, png.</p>
 
-      <details class="quote">
-        <summary>Source code in <code>furiosa/models/vision/ssd_mobilenet/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-86"> 86</a></span>
-<span class="normal"><a href="#__codelineno-0-87"> 87</a></span>
-<span class="normal"><a href="#__codelineno-0-88"> 88</a></span>
-<span class="normal"><a href="#__codelineno-0-89"> 89</a></span>
-<span class="normal"><a href="#__codelineno-0-90"> 90</a></span>
-<span class="normal"><a href="#__codelineno-0-91"> 91</a></span>
-<span class="normal"><a href="#__codelineno-0-92"> 92</a></span>
-<span class="normal"><a href="#__codelineno-0-93"> 93</a></span>
-<span class="normal"><a href="#__codelineno-0-94"> 94</a></span>
-<span class="normal"><a href="#__codelineno-0-95"> 95</a></span>
-<span class="normal"><a href="#__codelineno-0-96"> 96</a></span>
-<span class="normal"><a href="#__codelineno-0-97"> 97</a></span>
-<span class="normal"><a href="#__codelineno-0-98"> 98</a></span>
-<span class="normal"><a href="#__codelineno-0-99"> 99</a></span>
-<span class="normal"><a href="#__codelineno-0-100">100</a></span>
-<span class="normal"><a href="#__codelineno-0-101">101</a></span>
-<span class="normal"><a href="#__codelineno-0-102">102</a></span>
-<span class="normal"><a href="#__codelineno-0-103">103</a></span>
-<span class="normal"><a href="#__codelineno-0-104">104</a></span>
-<span class="normal"><a href="#__codelineno-0-105">105</a></span>
-<span class="normal"><a href="#__codelineno-0-106">106</a></span>
-<span class="normal"><a href="#__codelineno-0-107">107</a></span>
-<span class="normal"><a href="#__codelineno-0-108">108</a></span>
-<span class="normal"><a href="#__codelineno-0-109">109</a></span>
-<span class="normal"><a href="#__codelineno-0-110">110</a></span>
-<span class="normal"><a href="#__codelineno-0-111">111</a></span>
-<span class="normal"><a href="#__codelineno-0-112">112</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-86" name="__codelineno-0-86"></a><span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span>
-<a id="__codelineno-0-87" name="__codelineno-0-87"></a>    <span class="n">image_path_list</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span>
-<a id="__codelineno-0-88" name="__codelineno-0-88"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]:</span>
-<a id="__codelineno-0-89" name="__codelineno-0-89"></a>    <span class="sd">&quot;&quot;&quot;Read and preprocess an image located at image_path.&quot;&quot;&quot;</span>
-<a id="__codelineno-0-90" name="__codelineno-0-90"></a>    <span class="c1"># https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L49-L51</span>
-<a id="__codelineno-0-91" name="__codelineno-0-91"></a>    <span class="c1"># https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L242-L249</span>
-<a id="__codelineno-0-92" name="__codelineno-0-92"></a>    <span class="n">batch_image</span> <span class="o">=</span> <span class="p">[]</span>
-<a id="__codelineno-0-93" name="__codelineno-0-93"></a>    <span class="n">batch_preproc_param</span> <span class="o">=</span> <span class="p">[]</span>
-<a id="__codelineno-0-94" name="__codelineno-0-94"></a>    <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">image_path_list</span><span class="p">:</span>
-<a id="__codelineno-0-95" name="__codelineno-0-95"></a>        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">image</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
-<a id="__codelineno-0-96" name="__codelineno-0-96"></a>            <span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
-<a id="__codelineno-0-97" name="__codelineno-0-97"></a>            <span class="k">if</span> <span class="n">image</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-98" name="__codelineno-0-98"></a>                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
-<a id="__codelineno-0-99" name="__codelineno-0-99"></a>        <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-<a id="__codelineno-0-100" name="__codelineno-0-100"></a>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
-<a id="__codelineno-0-101" name="__codelineno-0-101"></a>            <span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_GRAY2RGB</span><span class="p">)</span>
-<a id="__codelineno-0-102" name="__codelineno-0-102"></a>        <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-103" name="__codelineno-0-103"></a>            <span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2RGB</span><span class="p">)</span>
-<a id="__codelineno-0-104" name="__codelineno-0-104"></a>        <span class="n">width</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-<a id="__codelineno-0-105" name="__codelineno-0-105"></a>        <span class="n">height</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<a id="__codelineno-0-106" name="__codelineno-0-106"></a>        <span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">),</span> <span class="n">interpolation</span><span class="o">=</span><span class="n">cv2</span><span class="o">.</span><span class="n">INTER_LINEAR</span><span class="p">)</span>
-<a id="__codelineno-0-107" name="__codelineno-0-107"></a>        <span class="n">image</span> <span class="o">-=</span> <span class="mf">127.5</span>
-<a id="__codelineno-0-108" name="__codelineno-0-108"></a>        <span class="n">image</span> <span class="o">/=</span> <span class="mf">127.5</span>
-<a id="__codelineno-0-109" name="__codelineno-0-109"></a>        <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<a id="__codelineno-0-110" name="__codelineno-0-110"></a>        <span class="n">batch_image</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
-<a id="__codelineno-0-111" name="__codelineno-0-111"></a>        <span class="n">batch_preproc_param</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="n">width</span><span class="p">,</span> <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="n">height</span><span class="p">})</span>
-<a id="__codelineno-0-112" name="__codelineno-0-112"></a>    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">batch_image</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">batch_preproc_param</span>
-</code></pre></div></td></tr></table></div>
-      </details>
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>images</code></td>
+          <td>
+          </td>
+          <td><p>A list of paths of image files or a stacked image loaded as numpy through <code>cv2.imread()</code></p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="typing.Tuple">Tuple</span>[<span title="numpy.typing">npt</span>.<span title="numpy.typing.ArrayLike">ArrayLike</span>, <span title="typing.List">List</span>[<span title="typing.Dict">Dict</span>[str, <span title="typing.Any">Any</span>]]]</code>
+          </td>
+          <td><p>3-channel images of 300x300 in NCHW format. Please find the details at 'Inputs of Model' section.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
   </div>
 
-</div><h3 id="furiosamodelsvisionssd_mobilenetpostprocess"><code>furiosa.models.vision.ssd_mobilenet.postprocess</code></h3>
+</div><h3 id="furiosamodelsvisionssdmobilenetpostprocess"><code>furiosa.models.vision.SSDMobileNet.postprocess</code></h3>
 
 
 <div class="doc doc-object doc-function">
 
 
-<a id="furiosa.models.vision.ssd_mobilenet.postprocess"></a>
+<a id="furiosa.models.vision.ssd_mobilenet.SSDMobileNetPythonPostProcessor.__call__"></a>
+  <div class="doc doc-contents first">
+  
+      <p>Convert the outputs of this model to a list of bounding boxes, scores and labels</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>model_outputs</code></td>
+          <td>
+                <code><span title="typing.Sequence">Sequence</span>[numpy.<span title="numpy.ndarray">ndarray</span>]</code>
+          </td>
+          <td><p>the outputs of the model</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>context</code></td>
+          <td>
+          </td>
+          <td><p>context coming from <code>preprocess()</code></p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="typing.List">List</span>[<span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="furiosa.models.vision.postprocess.ObjectDetectionResult" href="../yolov5m/#furiosa.models.vision.postprocess.ObjectDetectionResult">ObjectDetectionResult</a>]]</code>
+          </td>
+          <td><p>Detected Bounding Box and its score and label represented as <code>ObjectDetectionResult</code>.
+To learn more about <code>ObjectDetectionResult</code>, 'Definition of ObjectDetectionResult' can be found below.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+<details class="definition-of-objectdetectionresult">
+  <summary>Definition of ObjectDetectionResult</summary>
+  <div class="doc doc-object doc-class">
+
+
+<a id="furiosa.models.vision.postprocess.LtrbBoundingBox"></a>
   <div class="doc doc-contents first">
 
-      <details class="quote">
-        <summary>Source code in <code>furiosa/models/vision/ssd_mobilenet/__init__.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-210">210</a></span>
-<span class="normal"><a href="#__codelineno-0-211">211</a></span>
-<span class="normal"><a href="#__codelineno-0-212">212</a></span>
-<span class="normal"><a href="#__codelineno-0-213">213</a></span>
-<span class="normal"><a href="#__codelineno-0-214">214</a></span>
-<span class="normal"><a href="#__codelineno-0-215">215</a></span>
-<span class="normal"><a href="#__codelineno-0-216">216</a></span>
-<span class="normal"><a href="#__codelineno-0-217">217</a></span>
-<span class="normal"><a href="#__codelineno-0-218">218</a></span>
-<span class="normal"><a href="#__codelineno-0-219">219</a></span>
-<span class="normal"><a href="#__codelineno-0-220">220</a></span>
-<span class="normal"><a href="#__codelineno-0-221">221</a></span>
-<span class="normal"><a href="#__codelineno-0-222">222</a></span>
-<span class="normal"><a href="#__codelineno-0-223">223</a></span>
-<span class="normal"><a href="#__codelineno-0-224">224</a></span>
-<span class="normal"><a href="#__codelineno-0-225">225</a></span>
-<span class="normal"><a href="#__codelineno-0-226">226</a></span>
-<span class="normal"><a href="#__codelineno-0-227">227</a></span>
-<span class="normal"><a href="#__codelineno-0-228">228</a></span>
-<span class="normal"><a href="#__codelineno-0-229">229</a></span>
-<span class="normal"><a href="#__codelineno-0-230">230</a></span>
-<span class="normal"><a href="#__codelineno-0-231">231</a></span>
-<span class="normal"><a href="#__codelineno-0-232">232</a></span>
-<span class="normal"><a href="#__codelineno-0-233">233</a></span>
-<span class="normal"><a href="#__codelineno-0-234">234</a></span>
-<span class="normal"><a href="#__codelineno-0-235">235</a></span>
-<span class="normal"><a href="#__codelineno-0-236">236</a></span>
-<span class="normal"><a href="#__codelineno-0-237">237</a></span>
-<span class="normal"><a href="#__codelineno-0-238">238</a></span>
-<span class="normal"><a href="#__codelineno-0-239">239</a></span>
-<span class="normal"><a href="#__codelineno-0-240">240</a></span>
-<span class="normal"><a href="#__codelineno-0-241">241</a></span>
-<span class="normal"><a href="#__codelineno-0-242">242</a></span>
-<span class="normal"><a href="#__codelineno-0-243">243</a></span>
-<span class="normal"><a href="#__codelineno-0-244">244</a></span>
-<span class="normal"><a href="#__codelineno-0-245">245</a></span>
-<span class="normal"><a href="#__codelineno-0-246">246</a></span>
-<span class="normal"><a href="#__codelineno-0-247">247</a></span>
-<span class="normal"><a href="#__codelineno-0-248">248</a></span>
-<span class="normal"><a href="#__codelineno-0-249">249</a></span>
-<span class="normal"><a href="#__codelineno-0-250">250</a></span>
-<span class="normal"><a href="#__codelineno-0-251">251</a></span>
-<span class="normal"><a href="#__codelineno-0-252">252</a></span>
-<span class="normal"><a href="#__codelineno-0-253">253</a></span>
-<span class="normal"><a href="#__codelineno-0-254">254</a></span>
-<span class="normal"><a href="#__codelineno-0-255">255</a></span>
-<span class="normal"><a href="#__codelineno-0-256">256</a></span>
-<span class="normal"><a href="#__codelineno-0-257">257</a></span>
-<span class="normal"><a href="#__codelineno-0-258">258</a></span>
-<span class="normal"><a href="#__codelineno-0-259">259</a></span>
-<span class="normal"><a href="#__codelineno-0-260">260</a></span>
-<span class="normal"><a href="#__codelineno-0-261">261</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-210" name="__codelineno-0-210"></a><span class="k">def</span> <span class="nf">postprocess</span><span class="p">(</span>
-<a id="__codelineno-0-211" name="__codelineno-0-211"></a>    <span class="n">outputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-<a id="__codelineno-0-212" name="__codelineno-0-212"></a>    <span class="n">batch_preproc_params</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
-<a id="__codelineno-0-213" name="__codelineno-0-213"></a>    <span class="n">confidence_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
-<a id="__codelineno-0-214" name="__codelineno-0-214"></a>    <span class="n">iou_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span>
-<a id="__codelineno-0-215" name="__codelineno-0-215"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ObjectDetectionResult</span><span class="p">]]:</span>
-<a id="__codelineno-0-216" name="__codelineno-0-216"></a>    <span class="k">assert</span> <span class="p">(</span>
-<a id="__codelineno-0-217" name="__codelineno-0-217"></a>        <span class="nb">len</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span> <span class="o">==</span> <span class="n">NUM_OUTPUTS</span>
-<a id="__codelineno-0-218" name="__codelineno-0-218"></a>    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;the number of model outputs must be </span><span class="si">{</span><span class="n">NUM_OUTPUTS</span><span class="si">}</span><span class="s2">, but </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-<a id="__codelineno-0-219" name="__codelineno-0-219"></a>    <span class="n">batch_size</span> <span class="o">=</span> <span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<a id="__codelineno-0-220" name="__codelineno-0-220"></a>    <span class="c1"># https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L94-L97</span>
-<a id="__codelineno-0-221" name="__codelineno-0-221"></a>    <span class="n">class_logits</span> <span class="o">=</span> <span class="p">[</span>
-<a id="__codelineno-0-222" name="__codelineno-0-222"></a>        <span class="n">output</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">NUM_CLASSES</span><span class="p">))</span>
-<a id="__codelineno-0-223" name="__codelineno-0-223"></a>        <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
-<a id="__codelineno-0-224" name="__codelineno-0-224"></a>    <span class="p">]</span>
-<a id="__codelineno-0-225" name="__codelineno-0-225"></a>    <span class="n">box_regression</span> <span class="o">=</span> <span class="p">[</span>
-<a id="__codelineno-0-226" name="__codelineno-0-226"></a>        <span class="n">output</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">outputs</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
-<a id="__codelineno-0-227" name="__codelineno-0-227"></a>    <span class="p">]</span>
-<a id="__codelineno-0-228" name="__codelineno-0-228"></a>    <span class="c1"># https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L144-L166</span>
-<a id="__codelineno-0-229" name="__codelineno-0-229"></a>    <span class="n">class_logits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">class_logits</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># type: ignore[assignment]</span>
-<a id="__codelineno-0-230" name="__codelineno-0-230"></a>    <span class="n">box_regression</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">box_regression</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># type: ignore[assignment]</span>
-<a id="__codelineno-0-231" name="__codelineno-0-231"></a>    <span class="n">batch_scores</span> <span class="o">=</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">class_logits</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type]</span>
-<a id="__codelineno-0-232" name="__codelineno-0-232"></a>    <span class="n">batch_boxes</span> <span class="o">=</span> <span class="n">_decode_boxes</span><span class="p">(</span><span class="n">box_regression</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type]</span>
-<a id="__codelineno-0-233" name="__codelineno-0-233"></a>
-<a id="__codelineno-0-234" name="__codelineno-0-234"></a>    <span class="c1"># https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L178-L185</span>
-<a id="__codelineno-0-235" name="__codelineno-0-235"></a>    <span class="n">batch_results</span> <span class="o">=</span> <span class="p">[]</span>
-<a id="__codelineno-0-236" name="__codelineno-0-236"></a>    <span class="k">for</span> <span class="n">scores</span><span class="p">,</span> <span class="n">boxes</span><span class="p">,</span> <span class="n">preproc_params</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
-<a id="__codelineno-0-237" name="__codelineno-0-237"></a>        <span class="n">batch_scores</span><span class="p">,</span> <span class="n">batch_boxes</span><span class="p">,</span> <span class="n">batch_preproc_params</span>
-<a id="__codelineno-0-238" name="__codelineno-0-238"></a>    <span class="p">):</span>  <span class="c1"># loop mini-batch</span>
-<a id="__codelineno-0-239" name="__codelineno-0-239"></a>        <span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="n">preproc_params</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">],</span> <span class="n">preproc_params</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-240" name="__codelineno-0-240"></a>        <span class="n">boxes</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">scores</span> <span class="o">=</span> <span class="n">_filter_results</span><span class="p">(</span>
-<a id="__codelineno-0-241" name="__codelineno-0-241"></a>            <span class="n">scores</span><span class="p">,</span>
-<a id="__codelineno-0-242" name="__codelineno-0-242"></a>            <span class="n">boxes</span><span class="p">,</span>
-<a id="__codelineno-0-243" name="__codelineno-0-243"></a>            <span class="n">confidence_threshold</span><span class="o">=</span><span class="n">confidence_threshold</span><span class="p">,</span>
-<a id="__codelineno-0-244" name="__codelineno-0-244"></a>            <span class="n">iou_threshold</span><span class="o">=</span><span class="n">iou_threshold</span><span class="p">,</span>
-<a id="__codelineno-0-245" name="__codelineno-0-245"></a>        <span class="p">)</span>
-<a id="__codelineno-0-246" name="__codelineno-0-246"></a>        <span class="n">cal_boxes</span> <span class="o">=</span> <span class="n">calibration_ltrbbox</span><span class="p">(</span><span class="n">boxes</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
-<a id="__codelineno-0-247" name="__codelineno-0-247"></a>        <span class="n">predicted_result</span> <span class="o">=</span> <span class="p">[]</span>
-<a id="__codelineno-0-248" name="__codelineno-0-248"></a>        <span class="k">for</span> <span class="n">b</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cal_boxes</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">scores</span><span class="p">):</span>
-<a id="__codelineno-0-249" name="__codelineno-0-249"></a>            <span class="n">bb_list</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-<a id="__codelineno-0-250" name="__codelineno-0-250"></a>            <span class="n">predicted_result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-<a id="__codelineno-0-251" name="__codelineno-0-251"></a>                <span class="n">ObjectDetectionResult</span><span class="p">(</span>
-<a id="__codelineno-0-252" name="__codelineno-0-252"></a>                    <span class="n">index</span><span class="o">=</span><span class="n">l</span><span class="p">,</span>
-<a id="__codelineno-0-253" name="__codelineno-0-253"></a>                    <span class="n">label</span><span class="o">=</span><span class="n">CLASSES</span><span class="p">[</span><span class="n">l</span><span class="p">],</span>
-<a id="__codelineno-0-254" name="__codelineno-0-254"></a>                    <span class="n">score</span><span class="o">=</span><span class="n">s</span><span class="p">,</span>
-<a id="__codelineno-0-255" name="__codelineno-0-255"></a>                    <span class="n">boundingbox</span><span class="o">=</span><span class="n">LtrbBoundingBox</span><span class="p">(</span>
-<a id="__codelineno-0-256" name="__codelineno-0-256"></a>                        <span class="n">left</span><span class="o">=</span><span class="n">bb_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">top</span><span class="o">=</span><span class="n">bb_list</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">right</span><span class="o">=</span><span class="n">bb_list</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">bottom</span><span class="o">=</span><span class="n">bb_list</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
-<a id="__codelineno-0-257" name="__codelineno-0-257"></a>                    <span class="p">),</span>
-<a id="__codelineno-0-258" name="__codelineno-0-258"></a>                <span class="p">)</span>
-<a id="__codelineno-0-259" name="__codelineno-0-259"></a>            <span class="p">)</span>
-<a id="__codelineno-0-260" name="__codelineno-0-260"></a>        <span class="n">batch_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">predicted_result</span><span class="p">)</span>
-<a id="__codelineno-0-261" name="__codelineno-0-261"></a>    <span class="k">return</span> <span class="n">batch_results</span>
+
+
+        <details class="quote">
+          <summary>Source code in <code>furiosa/models/vision/postprocess.py</code></summary>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-32">32</a></span>
+<span class="normal"><a href="#__codelineno-0-33">33</a></span>
+<span class="normal"><a href="#__codelineno-0-34">34</a></span>
+<span class="normal"><a href="#__codelineno-0-35">35</a></span>
+<span class="normal"><a href="#__codelineno-0-36">36</a></span>
+<span class="normal"><a href="#__codelineno-0-37">37</a></span>
+<span class="normal"><a href="#__codelineno-0-38">38</a></span>
+<span class="normal"><a href="#__codelineno-0-39">39</a></span>
+<span class="normal"><a href="#__codelineno-0-40">40</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="nd">@dataclass</span>
+<a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="k">class</span> <span class="nc">LtrbBoundingBox</span><span class="p">:</span>
+<a id="__codelineno-0-34" name="__codelineno-0-34"></a>    <span class="n">left</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-0-35" name="__codelineno-0-35"></a>    <span class="n">top</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-0-36" name="__codelineno-0-36"></a>    <span class="n">right</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-0-37" name="__codelineno-0-37"></a>    <span class="n">bottom</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-0-38" name="__codelineno-0-38"></a>
+<a id="__codelineno-0-39" name="__codelineno-0-39"></a>    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<a id="__codelineno-0-40" name="__codelineno-0-40"></a>        <span class="k">return</span> <span class="nb">iter</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bottom</span><span class="p">])</span>
 </code></pre></div></td></tr></table></div>
-      </details>
-  </div>
-
-</div><h3 id="furiosamodelsvisionssd_mobilenetnativepostprocess"><code>furiosa.models.vision.ssd_mobilenet.NativePostProcess</code></h3>
-
-
-<div class="doc doc-object doc-class">
-
-
-<a id="furiosa.models.vision.ssd_mobilenet.NativePostProcessor"></a>
-  <div class="doc doc-contents first">
-
-
-
+        </details>
 
   
 
@@ -1034,6 +963,72 @@ to convert images to input tensors and the model outputs to labels.</p>
 
   </div>
 
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+<a id="furiosa.models.vision.postprocess.ObjectDetectionResult"></a>
+  <div class="doc doc-contents first">
+
+
+
+        <details class="quote">
+          <summary>Source code in <code>furiosa/models/vision/postprocess.py</code></summary>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-89">89</a></span>
+<span class="normal"><a href="#__codelineno-0-90">90</a></span>
+<span class="normal"><a href="#__codelineno-0-91">91</a></span>
+<span class="normal"><a href="#__codelineno-0-92">92</a></span>
+<span class="normal"><a href="#__codelineno-0-93">93</a></span>
+<span class="normal"><a href="#__codelineno-0-94">94</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-89" name="__codelineno-0-89"></a><span class="nd">@dataclass</span>
+<a id="__codelineno-0-90" name="__codelineno-0-90"></a><span class="k">class</span> <span class="nc">ObjectDetectionResult</span><span class="p">:</span>
+<a id="__codelineno-0-91" name="__codelineno-0-91"></a>    <span class="n">boundingbox</span><span class="p">:</span> <span class="n">LtrbBoundingBox</span>
+<a id="__codelineno-0-92" name="__codelineno-0-92"></a>    <span class="n">score</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-0-93" name="__codelineno-0-93"></a>    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span>
+<a id="__codelineno-0-94" name="__codelineno-0-94"></a>    <span class="n">index</span><span class="p">:</span> <span class="nb">int</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+</details>
+  </div>
+
+</div><h3 id="native-postprocessor"><a href="NativePostProcessor"></a>Native Postprocessor</h3>
+<p>This class provides another version of the postprocessing implementation
+which is highly optimized for NPU. The implementation leverages the NPU IO architecture and runtime.</p>
+<p>To use this implementation, when this model is loaded, the parameter <code>use_native=True</code>
+should be passed to <code>load()</code> or <code>load_aync()</code>. The following is an example:</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span> <span class="nn">furiosa.models.vision</span> <span class="kn">import</span> <span class="n">SSDMobileNet</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span> <span class="nn">furiosa.runtime</span> <span class="kn">import</span> <span class="n">session</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">image</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tests/assets/cat.jpg&quot;</span><span class="p">]</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="n">mobilenet</span> <span class="o">=</span> <span class="n">SSDMobileNet</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">use_native</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">mobilenet</span><span class="p">)</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">inputs</span><span class="p">,</span> <span class="n">contexts</span> <span class="o">=</span> <span class="n">mobilenet</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">outputs</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="n">mobilenet</span><span class="o">.</span><span class="n">postprocess</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">contexts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</code></pre></div>
 </div>
 
 
@@ -1111,7 +1106,7 @@ to convert images to input tensors and the model outputs to labels.</p>
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.sections"], "search": "../../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.8492ddcf.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d6c3db9e.min.js"></script>
       
     
   </body>
