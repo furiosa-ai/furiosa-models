@@ -2,12 +2,13 @@ import argparse
 import logging
 from pathlib import Path
 import sys
-from typing import List
+from typing import Callable, List, Optional
 
 from tabulate import tabulate
+import yaml
 
 from . import api
-from ..types import ImageClassificationModel, ObjectDetectionModel
+from ..types import ImageClassificationModel, Model, ObjectDetectionModel
 
 logger = logging.getLogger(__name__)
 
@@ -18,11 +19,11 @@ EXAMPLE: str = """example:
     # List Object Detection models
     furiosa-models list -t detect
 
-    # List available pre/post-processes for SSDResNet34
-    furiosa-models list --model SSDResNet34
+    # Describe SSDResNet34 model
+    furiosa-models desc SSDResNet34
 
     # Run SSDResNet34 for images in `./input` directory
-    furiosa-models run -m ssdresnet34 ./input/
+    furiosa-models run ssd-resnet34 ./input/
 """
 
 
@@ -39,25 +40,18 @@ def parse_args() -> argparse.Namespace:
         required=True,
     )
 
-    list_parser = subparsers.add_parser(
-        "list", help="See available models or pre/post-processes list"
-    )
+    list_parser = subparsers.add_parser("list", help="See available models")
     list_parser.add_argument(
         "-t", "--type", type=str, help="Limits the task type (ex. classify, detect)"
     )
-    list_parser.add_argument(
-        "-m",
-        "--model",
-        type=str,
-        help="Model name: if this argument is given, it will show the available pre/post processes",
-    )
+
+    desc_parser = subparsers.add_parser("desc", help="See description of given model")
+    desc_parser.add_argument("model", type=str, help="Model name (ignore case)")
 
     inference_parser = subparsers.add_parser("run", help="Run Inference")
-    inference_parser.add_argument("-pre", "--preprocess", type=str, help="Set preprocess type")
-    inference_parser.add_argument("-post", "--postprocess", type=str, help="Set postprocess type")
-    inference_parser.add_argument(
-        "-m", "--model", type=str, help="Model name (ignore case)", required=True
-    )
+    # inference_parser.add_argument("-pre", "--preprocess", type=str, help="Set preprocess type")
+    # inference_parser.add_argument("-post", "--postprocess", type=str, help="Set postprocess type")
+    inference_parser.add_argument("model", type=str, help="Model name (ignore case)")
     inference_parser.add_argument("input", type=str, help="Input path (file or directory)")
 
     return parser.parse_args()
@@ -81,32 +75,48 @@ def resolve_input_paths(input_path: Path) -> List[str]:
             if p.suffix.lower() in image_extensions
         ]
     else:
-        # Error
-        print("error: invalid input path")
-        return sys.exit(1)
+        logger.warning(f"Invalid input path '{str(input_path)}'")
+        sys.exit(1)
+
+
+def get_filter(filter_type: Optional[str]) -> Callable[..., bool]:
+    if filter_type is None:
+        return lambda _: True
+    elif "detect" in filter_type.lower():
+        return lambda x: issubclass(x, ObjectDetectionModel)
+    elif "classif" in filter_type.lower():
+        return lambda x: issubclass(x, ImageClassificationModel)
+    else:
+        logger.warning(f"Unknown type filter '{filter_type}', showing all models...")
+        return lambda _: True
+
+
+def get_model_or_exit(model_name: str) -> Model:
+    model = api.get_model(model_name)
+    if model is None:
+        logging.warning(f"Model name '{model_name}' not found")
+        sys.exit(1)
+    return model
 
 
 def main():
     args = parse_args()
     command: str = args.command
-    model_name: str = args.model
 
     if command == "list":
         filter_type: str = args.type
-        if filter_type is None:
-            filter_func = lambda _: True
-        elif "detect" in filter_type.lower():
-            filter_func = lambda x: issubclass(x, ObjectDetectionModel)
-        elif "classif" in filter_type.lower():
-            filter_func = lambda x: issubclass(x, ImageClassificationModel)
-        else:
-            filter_func = lambda _: True
-            logger.warning(f"Unknwon type filter {filter_type}, showing all models...")
-        print_model_list(api.get_model_list(filter_func=filter_func))
+        print_model_list(api.get_model_list(filter_func=get_filter(filter_type)))
+    elif command == "desc":
+        model_name: str = args.model
+        model_cls = get_model_or_exit(model_name)
+        # TODO: Make dry load (to avoid resolving heavy artifacts)
+        model = model_cls.load()
+        include = {'name', 'format', 'family', 'version', 'metadata'}
+        print(yaml.dump(model.dict(include=include)), end="")
+        print(f"task type: {api.pretty_task_type(model)}")
     elif command == "run":
-        input_path: str = args.input
-        input_paths = resolve_input_paths(Path(input_path))
-        model = api.get_model(model_name)
-        if model is None:
-            logging.warning(f"Can't find model named {model}")
-        api.run_inference(model, input_paths)
+        model_name: str = args.model
+        _input_paths: str = args.input
+        input_paths = resolve_input_paths(Path(_input_paths))
+        model_cls = get_model_or_exit(model_name)
+        api.run_inference(model_cls, input_paths)

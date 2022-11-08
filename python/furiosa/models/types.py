@@ -19,17 +19,13 @@ Context: TypeAlias = Any
 
 class PreProcessor(ABC):
     @abstractmethod
-    def __call__(
-        self, inputs: Any, *args, **kwargs
-    ) -> Tuple[Sequence[npt.ArrayLike], Sequence[Context]]:
+    def __call__(self, inputs: Any) -> Tuple[Sequence[npt.ArrayLike], Sequence[Context]]:
         ...
 
 
 class PostProcessor(ABC):
     @abstractmethod
-    def __call__(
-        self, model_outputs: Sequence[npt.ArrayLike], contexts: Sequence[Context], *args, **kwargs
-    ):
+    def __call__(self, model_outputs: Sequence[npt.ArrayLike], contexts: Sequence[Context]) -> Any:
         ...
 
 
@@ -47,11 +43,12 @@ class ModelTaskType(IntEnum):
     IMAGE_CLASSIFICATION = 1
 
 
-class Model(RegistryModel, BaseModel, ABC):
+class Model(RegistryModel, ABC):
     class Config(BaseConfig):
         extra: Extra = Extra.forbid
         # To allow Session, Processor type
         arbitrary_types_allowed = True
+        use_enum_values = True
 
     processor: Optional[ModelProcessor] = None
 
