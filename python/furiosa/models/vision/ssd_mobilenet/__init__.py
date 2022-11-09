@@ -186,23 +186,26 @@ class SSDMobileNet(ObjectDetectionModel):
 class SSDMobileNetPreProcessor(PreProcessor):
     @staticmethod
     def __call__(
-        inputs: Sequence[Union[str, np.ndarray]]
+        images: Sequence[Union[str, np.ndarray]]
     ) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
         """Preprocess input images to a batch of input tensors.
 
-        When the image file paths are passed, the image files should be standard image format, such as jpg, gif, png.
-
         Args:
-            images: A list of paths of image files or a stacked image loaded as numpy through `cv2.imread()`
+            images: A list of paths of image files (e.g., JPEG, PNG)
+                or a stacked image loaded as a numpy array in BGR order or gray order.
 
         Returns:
-            3-channel images of 300x300 in NCHW format. Please find the details at 'Inputs of Model' section.
+            The first element is 3-channel images of 300x300 in NCHW format,
+                and the second element is a list of context about the original image metadata.
+                Please learn more about the outputs of preprocess (i.e., model inputs),
+                please refer to [Inputs](ssd_mobilenet.md#inputs).
+
         """
         # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L49-L51
         # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L242-L249
         batch_image = []
         batch_preproc_param = []
-        for image in inputs:
+        for image in images:
             if type(image) == str:
                 image = cv2.imread(image)
                 if image is None:
@@ -234,7 +237,8 @@ class SSDMobileNetPythonPostProcessor(PostProcessor):
         """Convert the outputs of this model to a list of bounding boxes, scores and labels
 
         Arguments:
-            model_outputs: the outputs of the model
+            model_outputs: the outputs of the model. To learn more about the output of model,
+                please refer to [Outputs](ssd_mobilenet.md#outputs).
             context: context coming from `preprocess()`
 
         Returns:

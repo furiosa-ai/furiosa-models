@@ -22,8 +22,8 @@ This model has been used since MLCommons v0.5.
         ```python
         --8<-- "docs/examples/ssd_resnet34_native.py"
         ```
-
-## Model inputs
+  
+## Inputs
 The input is a 3-channel image of 300x300 (height, width).
 
 * Data Type: `numpy.float32`
@@ -33,6 +33,7 @@ The input is a 3-channel image of 300x300 (height, width).
     * C - number of channels
     * H - image height
     * W - image width
+* Color Order: RGB
 * Optimal Batch Size: 1
 
 ## Outputs
@@ -66,7 +67,7 @@ You can find examples at [SSDResNet34 Usage](#SSDResNet34_Usage).
         show_source: false
     
 ### `furiosa.models.vision.SSDResNet34.postprocess`
-::: furiosa.models.vision.ssd_resnet34.SSDResNet34PreProcessor.__call__
+::: furiosa.models.vision.ssd_resnet34.SSDResNet34PythonPostProcessor.__call__
     options:
         show_source: false
 

@@ -57,11 +57,16 @@ class ResNet50(ImageClassificationModel):
 class ResNet50PreProcessor(PreProcessor):
     @staticmethod
     def __call__(image: Union[str, npt.ArrayLike]) -> Tuple[np.array, None]:
-        """Preprocess an input image to an input tensor of ResNet50.
-        This function can take a standard image file (e.g., jpg, gif, png) and return a numpy array.
+        """Convert an input image to a model input tensor
 
         Args:
-            image: A path of an image or an image loaded as numpy from `cv2.imread()`
+            image: A path of an image or
+                an image loaded as a numpy array in BGR order.
+
+        Returns:
+            The first element of tuple is a numpy array.
+                To learn more about the output of preprocess,
+                please refer to [Inputs](resnet50_v1.5.md#inputs).
         """
         # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/main.py#L37-L39
         # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L168-L184
@@ -85,28 +90,18 @@ class ResNet50PythonPostProcessor(PostProcessor):
     def __call__(self, model_outputs: Sequence[npt.ArrayLike]) -> str:
         """Convert the outputs of a model to a label string, such as car and cat.
 
-        Arguments:
-            model_outputs: the outputs of the model
+        Args:
+            model_outputs: the outputs of the model.
+                Please learn more about the output of model,
+                please refer to [Outputs](resnet50_v1.5.md#outputs).
+
+        Returns:
+            str: A classified label
         """
         return CLASSES[int(model_outputs[0]) - 1]
 
 
 class ResNet50NativePostProcessor(PostProcessor):
-    """Native postprocessing implementation optimized for NPU
-
-    This class provides another version of the postprocessing implementation
-    which is highly optimized for NPU. The implementation leverages the NPU IO architecture and runtime.
-
-    To use this implementation, when this model is loaded, the parameter `use_native_post=True`
-    should be passed to `load()` or `load_aync()`. Then, `NativePostProcess` object should
-    be created with the model object. `eval()` method should be called to postprocess.
-
-    !!! Examples
-        ```python
-        --8<-- "docs/examples/resnet50_native.py"
-        ```
-    """
-
     def __init__(self, dfg: bytes):
         self._native = native.resnet50.PostProcessor(dfg)
 
@@ -115,8 +110,6 @@ class ResNet50NativePostProcessor(PostProcessor):
 
 
 class ResNet50PythonProcessor(ModelProcessor):
-    """abc"""
-
     preprocessor: PreProcessor = ResNet50PreProcessor()
     postprocessor: PostProcessor = ResNet50PythonPostProcessor()
 

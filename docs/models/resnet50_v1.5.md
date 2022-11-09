@@ -22,8 +22,8 @@ This model has been used since MLCommons v0.5.
         ```python
         --8<-- "docs/examples/resnet50_native.py"
         ```
- 
-## Inputs of Model
+
+## Inputs
 The input is a 3-channel image of 224x224 (height, width).
 
 * Data Type: `numpy.float32`
@@ -33,12 +33,13 @@ The input is a 3-channel image of 224x224 (height, width).
     * C - number of channels
     * H - image height
     * W - image width
-* NPU Optimal Batch Size: <= 8
-
-## Output of Model
+* Color Order: BGR
+* Optimal Batch Size (minimum: 1): <= 8
+ 
+## Outputs
 The output is a `numpy.float32` tensor with the shape (`[1,]`), including
-a class id. `postprocess()` can transform the class id to a single label.
-
+a class id. `postprocess()` transforms the class id to a label string.
+ 
 ## Pre/Postprocessing
 `furiosa.models.vision.ResNet50` class provides `preprocess` and `postprocess` methods that 
 convert input images to input tensors and the model outputs to labels respectively. 

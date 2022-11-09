@@ -22,7 +22,7 @@ This model has been used since MLCommons v0.5.
         --8<-- "docs/examples/ssd_mobilenet_native.py"
         ```
 
-## Inputs of Model 
+## Inputs 
 The input is a 3-channel image of 300x300 (height, width).
 
 * Data Type: `numpy.float32`
@@ -32,12 +32,12 @@ The input is a 3-channel image of 300x300 (height, width).
     * C - number of channels
     * H - image height
     * W - image width
-* Optimal Batch Size: <= 8
+* Color Order: RGB
+* Optimal Batch Size (minimum: 1): <= 8
 
-## Outputs of Model
+## Outputs
 The outputs are 12 `numpy.float32` tensors in various shapes as the following.
 You can refer to `postprocess()` function to learn how to decode boxes, classes, and confidence scores.
-
 
 | Tensor | Shape            | Data Type | Data Type | Description |
 |--------|------------------|-----------|-----------|-------------|

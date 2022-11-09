@@ -296,24 +296,27 @@ class SSDResNet34(ObjectDetectionModel):
 class SSDResNet34PreProcessor(PreProcessor):
     @staticmethod
     def __call__(
-        inputs: Sequence[Union[str, np.ndarray]]
+        images: Sequence[Union[str, np.ndarray]]
     ) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
-        """Preprocess input images to a batch of input tensors.
-
-        When the image file paths are passed, the image files should be standard image format, such as jpg, gif, png.
+        """Preprocess input images to a batch of input tensors
 
         Args:
-            images: A list of paths of image files or a stacked image loaded as numpy through `cv2.imread()`
+            images: A list of paths of image files (e.g., JPEG, PNG)
+                or a stacked image loaded as a numpy array in BGR order or gray order.
 
         Returns:
-            3-channel images of 1200x1200 in NCHW format. Please find the details at 'Inputs of Model' section.
+            The first element is a list of 3-channel images of 1200x1200
+                in NCHW format, and the second element is a list of context about the original image metadata.
+                Please learn more about the outputs of preprocess (i.e., model inputs),
+                please refer to [Inputs](ssd_resnet34.md#inputs).
+
         """
         # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L141
         # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L61-L63
         # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L252-L263
         batch_image = []
         batch_preproc_param = []
-        for image in inputs:
+        for image in images:
             if type(image) == str:
                 image = cv2.imread(image)
                 if image is None:
@@ -348,15 +351,17 @@ class SSDResNet34PythonPostProcessor(PostProcessor):
     ) -> List[List[ObjectDetectionResult]]:
         """Convert the outputs of this model to a list of bounding boxes, scores and labels
 
-        Arguments:
-            model_outputs: the outputs of the model
+        Args:
+            model_outputs: the outputs of the model. To learn more about the output of model,
+                please refer to [Outputs](ssd_resnet34.md#outputs).
             context: context coming from `preprocess()`
 
         Returns:
-            Detected Bounding Box and its score and label represented as `ObjectDetectionResult`.
+            Detected Bounding Box and its score and label represented as
+                `ObjectDetectionResult`.
                 To learn more about `ObjectDetectionResult`, 'Definition of ObjectDetectionResult' can be found below.
 
-        Definition of ObjectDetectionResult:
+        Definition of ObjectDetectionResult and LtrbBoundingBox:
             ::: furiosa.models.vision.postprocess.LtrbBoundingBox
                 options:
                     show_source: true
@@ -412,21 +417,6 @@ class SSDResNet34PythonPostProcessor(PostProcessor):
 
 
 class SSDResNet34NativePostProcessor(PostProcessor):
-    """Native postprocessing implementation optimized for NPU
-
-    This class provides another version of the postprocessing implementation
-    which is highly optimized for NPU. The implementation leverages the NPU IO architecture and runtime.
-
-    To use this implementation, when this model is loaded, the parameter `use_native_post=True`
-    should be passed to `load()` or `load_aync()`. Then, `NativePostProcess` object should
-    be created with the model object. `eval()` method should be called to postprocess.
-
-    !!! Examples
-        ```python
-        --8<-- "docs/examples/ssd_resnet34_native.py"
-        ```
-    """
-
     def __init__(self, dfg: bytes, version: str = "cpp"):
         if version == "cpp":
             self._native = native.ssd_resnet34.CppPostProcessor(dfg)
