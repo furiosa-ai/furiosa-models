@@ -32,8 +32,8 @@ you can find details about loading a model, their input and output tensors, pre/
 | [ResNet50](models/resnet50_v1.5.md)     | Image Classification | 25M  | 76.002% (ImageNet1K-val)  |
 | [SSDMobileNet](models/ssd_mobilenet.md) | Object Detection     | 7.2M | mAP 0.228 (COCO 2017-val) |
 | [SSDResNet34](models/ssd_resnet34.md)   | Object Detection     | 20M  | mAP 0.220 (COCO 2017-val) |
-| [YOLOv5M](models/yolov5m.md)            | Object Detection     | 21M  | mAP 0.280                 |
-| [YOLOv5L](models/yolov5l.md)            | Object Detection     | 46M  | mAP 0.295                 |
+| [YOLOv5M](models/yolov5m.md)            | Object Detection     | 21M  | mAP 0.280 (Bdd100k-val)   |
+| [YOLOv5L](models/yolov5l.md)            | Object Detection     | 46M  | mAP 0.295 (Bdd100k-val)   |
 
 ## See Also
 * [Furiosa Models - Latest Documentation](https://furiosa-ai.github.io/furiosa-models/latest/)
