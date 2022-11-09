@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.8.0]
+## [0.8.0 - 2022-11-10]
 
 ### New Features
 - Add ResNet50 model

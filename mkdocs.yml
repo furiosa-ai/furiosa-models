@@ -14,7 +14,7 @@ nav:
 - Overview: index.md
 - getting_started.md
 - model_object.md
-- cli.md
+- command_tool.md
 - Models:
     - models/resnet50_v1.5.md
     - models/ssd_mobilenet.md
