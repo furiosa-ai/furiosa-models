@@ -354,7 +354,7 @@ class SSDResNet34PythonPostProcessor(PostProcessor):
         Args:
             model_outputs: the outputs of the model. To learn more about the output of model,
                 please refer to [Outputs](ssd_resnet34.md#outputs).
-            context: context coming from `preprocess()`
+            contexts: context coming from `preprocess()`
 
         Returns:
             Detected Bounding Box and its score and label represented as

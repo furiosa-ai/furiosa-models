@@ -239,7 +239,7 @@ class SSDMobileNetPythonPostProcessor(PostProcessor):
         Arguments:
             model_outputs: the outputs of the model. To learn more about the output of model,
                 please refer to [Outputs](ssd_mobilenet.md#outputs).
-            context: context coming from `preprocess()`
+            contexts: context coming from `preprocess()`
 
         Returns:
             Detected Bounding Box and its score and label represented as `ObjectDetectionResult`.
