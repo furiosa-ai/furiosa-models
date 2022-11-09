@@ -8,6 +8,6 @@ yolov5l = YOLOv5l.load()
 
 with session.create(yolov5l) as sess:
     image = cv2.imread("tests/assets/yolov5-test.jpg")
-    inputs, context = yolov5l.preprocess([image])
+    inputs, contexts = yolov5l.preprocess([image])
     output = sess.run(np.expand_dims(inputs[0], axis=0)).numpy()
-    yolov5l.postprocess(output, context=context)
+    yolov5l.postprocess(output, contexts=contexts)

@@ -30,7 +30,7 @@ The input is a 3-channel image of 640, 640 (height, width).
     * W - image width
     * C - number of channels
 * Color Order: RGB
-* Optimal Batch Size (minimum: 1): <= 8
+* Optimal Batch Size (minimum: 1): <= 4
 
 ## Outputs
 The outputs are 3 `numpy.float32` tensors in various shapes as the following. 
