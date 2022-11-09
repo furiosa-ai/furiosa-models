@@ -1,5 +1,6 @@
 from functools import partial
 import itertools
+import logging
 from math import sqrt
 from typing import Any, Dict, List, Sequence, Tuple, Type, Union
 
@@ -21,6 +22,8 @@ from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_lt
 
 NUM_OUTPUTS: int = 12
 CLASSES = coco.MobileNetSSD_Large_CLASSES
+
+logger = logging.getLogger(__name__)
 
 
 ##Inspired by https://github.com/kuangliu/pytorch-ssd
@@ -396,12 +399,12 @@ class SSDResNet34(ObjectDetectionModel):
     ):
         if use_native and artifacts[EXT_DFG] is None:
             raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
+
         if use_native:
-            postproc_type = Platform.RUST if version == "rust" else Platform.RuST
+            postproc_type = Platform.RUST if version.lower() == "rust" else Platform.CPP
         else:
             postproc_type = Platform.PYTHON
-
-        postproc_type = Platform.RUST if use_native else Platform.PYTHON
+        logger.debug(f"Using {postproc_type.name} postprocessor")
         postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type](
             artifacts[EXT_DFG]
         )

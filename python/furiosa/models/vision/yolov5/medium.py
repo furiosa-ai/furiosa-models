@@ -32,7 +32,7 @@ class YOLOv5m(YOLOv5Base):
         return "yolov5m_int8"
 
     @classmethod
-    def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = False):
+    def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = False, *args, **kwargs):
         if use_native:
             raise NotImplementedError("No native implementation for YOLOv5")
         return cls(

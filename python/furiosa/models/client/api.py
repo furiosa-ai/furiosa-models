@@ -51,8 +51,11 @@ def get_model_list(filter_func: Optional[Callable[..., bool]] = None) -> List[Li
         model = getattr(vision, model_name)
         if not filter_func(model):
             continue
-        # Model name, description, task type
-        model_list.append([model_name, model.__doc__, prettified_task_type(model)])
+        postprocs = ', '.join(
+            map(lambda x: x.name.capitalize(), get_field_default(model, "postprocessor_map").keys())
+        )
+        # Model name, description, task type, available post process implementations
+        model_list.append([model_name, model.__doc__, prettified_task_type(model), postprocs])
     return model_list
 
 
@@ -71,19 +74,23 @@ def get_model(model_name: str) -> Optional[Type[Model]]:
     return None
 
 
-def run_inferences(model_cls: Type[Model], input_paths: Sequence[str]):
+def run_inferences(model_cls: Type[Model], input_paths: Sequence[str], postprocess: Optional[str]):
     net_inference_times = []
-    model = model_cls.load()
+    postprocess = postprocess.lower() if postprocess is not None else postprocess
+    use_native = postprocess is not None and postprocess != "python"
+    version = postprocess if postprocess == "rust" or postprocess == "cpp" else None
+    model = model_cls.load(use_native=use_native, version=version)
     print(f"Running {len(input_paths)} inferences")
     with session.create(model) as sess:
         initial_time = perf_counter()
         for input_path in tqdm(input_paths):
-            input, context = model.preprocess(input_path)
+            input, contexts = model.preprocess(input_path)
             start_time = perf_counter()
             model_output = sess.run(input)
             net_inference_times.append(perf_counter() - start_time)
             model_output = model_output.numpy()  # To avoid calling __getitem__
-            _final_output = model.postprocess(model_output, context)
+            contexts = contexts[0] if contexts is not None and use_native else contexts
+            _final_output = model.postprocess(model_output, contexts)
         total_time_elapsed = perf_counter() - initial_time
     print(f"Total time elapsed: {total_time_elapsed:.5f} sec")
     average = sum(net_inference_times) / len(net_inference_times)

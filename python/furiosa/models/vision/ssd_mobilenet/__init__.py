@@ -1,5 +1,6 @@
 from enum import Enum
 from functools import partial
+import logging
 from typing import Any, Dict, List, Sequence, Tuple, Type, Union
 
 import cv2
@@ -20,6 +21,8 @@ from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_lt
 NUM_OUTPUTS: int = 12
 CLASSES = coco.MobileNetSSD_CLASSES
 NUM_CLASSES = len(CLASSES) - 1  # remove background
+
+logger = logging.getLogger(__name__)
 
 # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L155-L158
 PRIORS = np.concatenate(
@@ -287,12 +290,12 @@ class SSDMobileNet(ObjectDetectionModel):
     ):
         if use_native and artifacts[EXT_DFG] is None:
             raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
+
         if use_native:
-            postproc_type = Platform.RUST if version == "rust" else Platform.RuST
+            postproc_type = Platform.RUST if version.lower() == "rust" else Platform.CPP
         else:
             postproc_type = Platform.PYTHON
-
-        postproc_type = Platform.RUST if use_native else Platform.PYTHON
+        logger.debug(f"Using {postproc_type.name} postprocessor")
         postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type](
             artifacts[EXT_DFG]
         )

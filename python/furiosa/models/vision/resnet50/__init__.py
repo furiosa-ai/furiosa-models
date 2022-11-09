@@ -1,3 +1,4 @@
+import logging
 from typing import Any, Dict, List, Sequence, Tuple, Type, Union
 
 import cv2
@@ -14,6 +15,8 @@ from ..common.datasets import imagenet1k
 from ..preprocess import center_crop, resize_with_aspect_ratio
 
 CLASSES: List[str] = imagenet1k.ImageNet1k_CLASSES
+
+logger = logging.getLogger(__name__)
 
 
 class Resnet50PreProcessor(PreProcessor):
@@ -64,10 +67,11 @@ class ResNet50(ImageClassificationModel):
         return "mlcommons_resnet50_v1.5_int8"
 
     @classmethod
-    def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = True):
+    def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = True, *args, **kwargs):
         if use_native and artifacts[EXT_DFG] is None:
             raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
         postproc_type = Platform.RUST if use_native else Platform.PYTHON
+        logger.debug(f"Using {postproc_type.name} postprocessor")
         postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type](
             artifacts[EXT_DFG]
         )

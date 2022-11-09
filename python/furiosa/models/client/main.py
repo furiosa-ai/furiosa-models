@@ -49,8 +49,10 @@ def parse_args() -> argparse.Namespace:
     desc_parser.add_argument("model", type=str, help="Model name (ignore case)")
 
     inference_parser = subparsers.add_parser("run", help="Run Inference")
-    # inference_parser.add_argument("-pre", "--preprocess", type=str, help="Set preprocess type")
-    # inference_parser.add_argument("-post", "--postprocess", type=str, help="Set postprocess type")
+    inference_parser.add_argument("-v", "--verbose", action="store_true", help="Set verbose")
+    inference_parser.add_argument(
+        "-post", "--postprocess", type=str, help="Set postprocess implementation"
+    )
     inference_parser.add_argument("model", type=str, help="Model name (ignore case)")
     inference_parser.add_argument("input", type=str, help="Input path (file or directory)")
 
@@ -58,7 +60,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def get_model_list(table: List[List[str]]):
-    header = ["Model name", "Model description", "Task type"]
+    header = ["Model name", "Model description", "Task type", "Available postprocesses"]
     return tabulate(table, headers=header, tablefmt="pretty")
 
 
@@ -94,7 +96,7 @@ def get_filter(filter_type: Optional[str]) -> Callable[..., bool]:
 def get_model_or_exit(model_name: str) -> Model:
     model = api.get_model(model_name)
     if model is None:
-        logging.warning(f"Model name '{model_name}' not found")
+        logger.warning(f"Model name '{model_name}' not found")
         sys.exit(1)
     return model
 
@@ -105,7 +107,11 @@ def describe_model(model_cls: Model) -> str:
     include = {'name', 'format', 'family', 'version', 'metadata'}
     output = []
     output.append(yaml.dump(model.dict(include=include)))
-    output.append(f"task type: {api.prettified_task_type(model)}")
+    output.append(f"task type: {api.prettified_task_type(model)}\n")
+    available_postprocs = ', '.join(
+        map(lambda x: x.name.capitalize(), model.postprocessor_map.keys())
+    )
+    output.append(f"available postprocess versions: {available_postprocs}")
     return ''.join(output)
 
 
@@ -122,7 +128,12 @@ def main():
         print(describe_model(model_cls))
     elif command == "run":
         model_name: str = args.model
+        verbose: bool = args.verbose
         _input_paths: str = args.input
+        postprocess: Optional[str] = args.postprocess
+        if verbose:
+            logging.root.setLevel(logging.DEBUG)
         input_paths = resolve_input_paths(Path(_input_paths))
+        logger.debug(f"Collected input paths: {input_paths}")
         model_cls = get_model_or_exit(model_name)
-        api.run_inferences(model_cls, input_paths)
+        api.run_inferences(model_cls, input_paths, postprocess)
