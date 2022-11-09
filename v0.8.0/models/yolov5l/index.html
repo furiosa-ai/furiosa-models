@@ -254,6 +254,21 @@
 
   
   
+  
+    <li class="md-nav__item">
+      <a href="../../cli/" class="md-nav__link">
+        Command Line Tools
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
     
   
   
@@ -263,18 +278,18 @@
     <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
       
       
       
       
-        <label class="md-nav__link" for="__nav_4">
+        <label class="md-nav__link" for="__nav_5">
           Models
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Models" data-md-level="1">
-        <label class="md-nav__title" for="__nav_4">
+        <label class="md-nav__title" for="__nav_5">
           <span class="md-nav__icon md-icon"></span>
           Models
         </label>
@@ -390,8 +405,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#model-inputs" class="md-nav__link">
-    Model inputs
+  <a href="#inputs" class="md-nav__link">
+    Inputs
   </a>
   
 </li>
@@ -404,11 +419,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#prepost-processing" class="md-nav__link">
-    Pre/Post processing
+  <a href="#prepostprocessing" class="md-nav__link">
+    Pre/Postprocessing
   </a>
   
-    <nav class="md-nav" aria-label="Pre/Post processing">
+    <nav class="md-nav" aria-label="Pre/Postprocessing">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -529,8 +544,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#model-inputs" class="md-nav__link">
-    Model inputs
+  <a href="#inputs" class="md-nav__link">
+    Inputs
   </a>
   
 </li>
@@ -543,11 +558,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#prepost-processing" class="md-nav__link">
-    Pre/Post processing
+  <a href="#prepostprocessing" class="md-nav__link">
+    Pre/Postprocessing
   </a>
   
-    <nav class="md-nav" aria-label="Pre/Post processing">
+    <nav class="md-nav" aria-label="Pre/Postprocessing">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -605,6 +620,10 @@
 <h1 id="yolov5l">YOLOv5L</h1>
 <p>YOLOv5 is the one of the most popular object detection models developed by <a href="https://ultralytics.com/">Ultralytics</a>.
 You can find more details at https://github.com/ultralytics/yolov5.</p>
+<div align="center">
+    <img src="../../images/yolov5l_demo.jpg" title="YOLOv5l Example" width="640" />
+</div>
+
 <h2 id="overall">Overall</h2>
 <ul>
 <li>Framework: PyTorch</li>
@@ -630,7 +649,7 @@ You can find more details at https://github.com/ultralytics/yolov5.</p>
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">yolov5l</span><span class="o">.</span><span class="n">postprocess</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
 </code></pre></div>
 </div>
-<h2 id="model-inputs">Model inputs</h2>
+<h2 id="inputs">Inputs</h2>
 <p>The input is a 3-channel image of 640, 640 (height, width).</p>
 <ul>
 <li>Data Type: <code>numpy.uint8</code></li>
@@ -642,7 +661,8 @@ You can find more details at https://github.com/ultralytics/yolov5.</p>
 <li>C - number of channels</li>
 </ul>
 </li>
-<li>Optimal Batch Size: 1</li>
+<li>Color Order: RGB</li>
+<li>Optimal Batch Size (minimum: 1): &lt;= 2</li>
 </ul>
 <h2 id="outputs">Outputs</h2>
 <p>The outputs are 3 <code>numpy.float32</code> tensors in various shapes as the following. 
@@ -681,7 +701,7 @@ You can refer to <code>postprocess()</code> function to learn how to decode boxe
 </tr>
 </tbody>
 </table>
-<h2 id="prepost-processing">Pre/Post processing</h2>
+<h2 id="prepostprocessing">Pre/Postprocessing</h2>
 <p><code>furiosa.models.vision.YOLOv5l</code> class provides <code>preprocess</code> and <code>postprocess</code> methods.
 <code>preprocess</code> method converts input images to input tensors, and <code>postprocess</code> method converts 
 model output tensors to a list of bounding boxes, scores and labels. 
@@ -695,7 +715,7 @@ You can find examples at <a href="#YOLOv5l_Usage">YOLOv5l Usage</a>.</p>
 <a id="furiosa.models.vision.yolov5.core.YOLOv5PreProcessor.__call__"></a>
   <div class="doc doc-contents first">
   
-      <p>Preprocess a batch of images in numpy</p>
+      <p>Preprocess input images to a batch of input tensors</p>
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -719,13 +739,13 @@ You can find examples at <a href="#YOLOv5l_Usage">YOLOv5l Usage</a>.</p>
           </td>
         </tr>
         <tr>
-          <td><code>input_color_format</code></td>
+          <td><code>color_format</code></td>
           <td>
                 <code>str</code>
           </td>
-          <td><p>'rgb' (Red, Green, Blue) or 'bgr' (Blue, Green, Red).</p></td>
+          <td><p>'bgr' (default) or 'rgb'</p></td>
           <td>
-              <em>required</em>
+                <code>&#39;bgr&#39;</code>
           </td>
         </tr>
     </tbody>
@@ -745,10 +765,15 @@ You can find examples at <a href="#YOLOv5l_Usage">YOLOv5l Usage</a>.</p>
                 <code><span title="typing.Tuple">Tuple</span>[<span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>, <span title="typing.List">List</span>[<span title="typing.Dict">Dict</span>[str, <span title="typing.Any">Any</span>]]]</code>
           </td>
           <td><p>a pre-processed image, scales and padded sizes(width,height) per images.
-The first element is a preprocessed image, and the second element is a dictionary object to be used for postprocess.
-'scale' key of the returned dict has a rescaled ratio per width(=target/width) and height(=target/height),
-and the 'pad' key has padded width and height pixels. Specially, the last dictionary element of returing
-tuple will be passed to postprocessing as a parameter to calculate predicted coordinates on normalized
+The first element is a stacked numpy array containing a batch of images.
+To learn more about the outputs of preprocess (i.e., model inputs),
+please refer to <a href="./#inputs">YOLOv5l Inputs</a> or
+<a href="../yolov5m/#inputs">YOLOv5m Inputs</a>.</p>
+<p>The second element is a list of dict objects about the original images.
+Each dict object has the following keys. 'scale' key of the returned dict has a rescaled ratio
+per width(=target/width) and height(=target/height), and the 'pad' key has padded width and height
+pixels. Specially, the last dictionary element of returing tuple will be passed to postprocessing
+as a parameter to calculate predicted coordinates on normalized
 coordinates back to an input image coordinator.</p></td>
         </tr>
     </tbody>
@@ -781,17 +806,20 @@ coordinates back to an input image coordinator.</p></td>
         <tr>
           <td><code>model_outputs</code></td>
           <td>
-                <code><span title="typing.Sequence">Sequence</span>[<span title="numpy">np</span>.<span title="numpy.array">array</span>]</code>
+                <code><span title="typing.Sequence">Sequence</span>[<span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>]</code>
           </td>
-          <td><p>P3/8, P4/16, P5/32 features from yolov5l model.</p></td>
+          <td><p>P3/8, P4/16, P5/32 features from yolov5l model.
+To learn more about the outputs of preprocess (i.e., model inputs),
+please refer to <a href="./#outputs">YOLOv5l Outputs</a> or
+<a href="../yolov5m/#outputs">YOLOv5m Outputs</a>.</p></td>
           <td>
               <em>required</em>
           </td>
         </tr>
         <tr>
-          <td><code>context</code></td>
+          <td><code>contexts</code></td>
           <td>
-                <code><span title="typing.Dict">Dict</span>[str, <span title="typing.Any">Any</span>]</code>
+                <code><span title="typing.Sequence">Sequence</span>[<span title="typing.Dict">Dict</span>[str, <span title="typing.Any">Any</span>]]</code>
           </td>
           <td><p>A configuration for each image generated by the preprocessor.
 For example, it could be the reduction ratio of the image, the actual image width and height.</p></td>
@@ -800,13 +828,13 @@ For example, it could be the reduction ratio of the image, the actual image widt
           </td>
         </tr>
         <tr>
-          <td><code>conf_threshold</code></td>
+          <td><code>conf_thres</code></td>
           <td>
                 <code>float</code>
           </td>
           <td><p>Confidence score threshold. The default to 0.25</p></td>
           <td>
-              <em>required</em>
+                <code>0.25</code>
           </td>
         </tr>
         <tr>
@@ -836,13 +864,13 @@ For example, it could be the reduction ratio of the image, the actual image widt
                 <code><span title="typing.List">List</span>[<span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="furiosa.models.vision.postprocess.ObjectDetectionResult" href="../yolov5m/#furiosa.models.vision.postprocess.ObjectDetectionResult">ObjectDetectionResult</a>]]</code>
           </td>
           <td><p>Detected Bounding Box and its score and label represented as <code>ObjectDetectionResult</code>.
-To learn more about <code>ObjectDetectionResult</code>, 'Definition of ObjectDetectionResult' can be found below.</p></td>
+The details of <code>ObjectDetectionResult</code> can be found below.</p></td>
         </tr>
     </tbody>
   </table>
 
-<details class="definition-of-objectdetectionresult">
-  <summary>Definition of ObjectDetectionResult</summary>
+<details class="definition-of-objectdetectionresult-and-ltrbboundingbox">
+  <summary>Definition of ObjectDetectionResult and LtrbBoundingBox</summary>
   <div class="doc doc-object doc-class">
 
 

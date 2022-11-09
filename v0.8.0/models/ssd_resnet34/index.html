@@ -254,6 +254,21 @@
 
   
   
+  
+    <li class="md-nav__item">
+      <a href="../../cli/" class="md-nav__link">
+        Command Line Tools
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
     
   
   
@@ -263,18 +278,18 @@
     <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
       
       
       
       
-        <label class="md-nav__link" for="__nav_4">
+        <label class="md-nav__link" for="__nav_5">
           Models
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Models" data-md-level="1">
-        <label class="md-nav__title" for="__nav_4">
+        <label class="md-nav__title" for="__nav_5">
           <span class="md-nav__icon md-icon"></span>
           Models
         </label>
@@ -362,8 +377,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#model-inputs" class="md-nav__link">
-    Model inputs
+  <a href="#inputs" class="md-nav__link">
+    Inputs
   </a>
   
 </li>
@@ -409,19 +424,6 @@
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#furiosa.models.vision.ssd_resnet34.SSDResNet34PreProcessor.__call__" class="md-nav__link">
-    furiosa.models.vision.ssd_resnet34.SSDResNet34PreProcessor.__call__
-  </a>
-  
-    <nav class="md-nav" aria-label="furiosa.models.vision.ssd_resnet34.SSDResNet34PreProcessor.__call__">
-      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#native-postprocessor" class="md-nav__link">
@@ -549,8 +551,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#model-inputs" class="md-nav__link">
-    Model inputs
+  <a href="#inputs" class="md-nav__link">
+    Inputs
   </a>
   
 </li>
@@ -596,19 +598,6 @@
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#furiosa.models.vision.ssd_resnet34.SSDResNet34PreProcessor.__call__" class="md-nav__link">
-    furiosa.models.vision.ssd_resnet34.SSDResNet34PreProcessor.__call__
-  </a>
-  
-    <nav class="md-nav" aria-label="furiosa.models.vision.ssd_resnet34.SSDResNet34PreProcessor.__call__">
-      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#native-postprocessor" class="md-nav__link">
@@ -685,7 +674,7 @@ This model has been used since MLCommons v0.5.</p>
 </div>
 </div>
 </div>
-<h2 id="model-inputs">Model inputs</h2>
+<h2 id="inputs">Inputs</h2>
 <p>The input is a 3-channel image of 300x300 (height, width).</p>
 <ul>
 <li>Data Type: <code>numpy.float32</code></li>
@@ -697,6 +686,7 @@ This model has been used since MLCommons v0.5.</p>
 <li>W - image width</li>
 </ul>
 </li>
+<li>Color Order: RGB</li>
 <li>Optimal Batch Size: 1</li>
 </ul>
 <h2 id="outputs">Outputs</h2>
@@ -813,8 +803,7 @@ You can find examples at <a href="#SSDResNet34_Usage">SSDResNet34 Usage</a>.</p>
 <a id="furiosa.models.vision.ssd_resnet34.SSDResNet34PreProcessor.__call__"></a>
   <div class="doc doc-contents first">
   
-      <p>Preprocess input images to a batch of input tensors.</p>
-<p>When the image file paths are passed, the image files should be standard image format, such as jpg, gif, png.</p>
+      <p>Preprocess input images to a batch of input tensors</p>
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -830,8 +819,10 @@ You can find examples at <a href="#SSDResNet34_Usage">SSDResNet34 Usage</a>.</p>
         <tr>
           <td><code>images</code></td>
           <td>
+                <code><span title="typing.Sequence">Sequence</span>[<span title="typing.Union">Union</span>[str, <span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>]]</code>
           </td>
-          <td><p>A list of paths of image files or a stacked image loaded as numpy through <code>cv2.imread()</code></p></td>
+          <td><p>A list of paths of image files (e.g., JPEG, PNG)
+or a stacked image loaded as a numpy array in BGR order or gray order.</p></td>
           <td>
               <em>required</em>
           </td>
@@ -852,7 +843,10 @@ You can find examples at <a href="#SSDResNet34_Usage">SSDResNet34 Usage</a>.</p>
           <td>
                 <code><span title="typing.Tuple">Tuple</span>[<span title="numpy.typing">npt</span>.<span title="numpy.typing.ArrayLike">ArrayLike</span>, <span title="typing.List">List</span>[<span title="typing.Dict">Dict</span>[str, <span title="typing.Any">Any</span>]]]</code>
           </td>
-          <td><p>3-channel images of 1200x1200 in NCHW format. Please find the details at 'Inputs of Model' section.</p></td>
+          <td><p>The first element is a list of 3-channel images of 1200x1200
+in NCHW format, and the second element is a list of context about the original image metadata.
+Please learn more about the outputs of preprocess (i.e., model inputs),
+please refer to <a href="./#inputs">Inputs</a>.</p></td>
         </tr>
     </tbody>
   </table>
@@ -865,11 +859,10 @@ You can find examples at <a href="#SSDResNet34_Usage">SSDResNet34 Usage</a>.</p>
 <div class="doc doc-object doc-function">
 
 
-<a id="furiosa.models.vision.ssd_resnet34.SSDResNet34PreProcessor.__call__"></a>
+<a id="furiosa.models.vision.ssd_resnet34.SSDResNet34PythonPostProcessor.__call__"></a>
   <div class="doc doc-contents first">
   
-      <p>Preprocess input images to a batch of input tensors.</p>
-<p>When the image file paths are passed, the image files should be standard image format, such as jpg, gif, png.</p>
+      <p>Convert the outputs of this model to a list of bounding boxes, scores and labels</p>
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -883,10 +876,21 @@ You can find examples at <a href="#SSDResNet34_Usage">SSDResNet34 Usage</a>.</p>
     </thead>
     <tbody>
         <tr>
-          <td><code>images</code></td>
+          <td><code>model_outputs</code></td>
+          <td>
+                <code><span title="typing.Sequence">Sequence</span>[<span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>]</code>
+          </td>
+          <td><p>the outputs of the model. To learn more about the output of model,
+please refer to <a href="./#outputs">Outputs</a>.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>context</code></td>
           <td>
           </td>
-          <td><p>A list of paths of image files or a stacked image loaded as numpy through <code>cv2.imread()</code></p></td>
+          <td><p>context coming from <code>preprocess()</code></p></td>
           <td>
               <em>required</em>
           </td>
@@ -905,13 +909,111 @@ You can find examples at <a href="#SSDResNet34_Usage">SSDResNet34 Usage</a>.</p>
     <tbody>
         <tr>
           <td>
-                <code><span title="typing.Tuple">Tuple</span>[<span title="numpy.typing">npt</span>.<span title="numpy.typing.ArrayLike">ArrayLike</span>, <span title="typing.List">List</span>[<span title="typing.Dict">Dict</span>[str, <span title="typing.Any">Any</span>]]]</code>
+                <code><span title="typing.List">List</span>[<span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="furiosa.models.vision.postprocess.ObjectDetectionResult" href="../yolov5m/#furiosa.models.vision.postprocess.ObjectDetectionResult">ObjectDetectionResult</a>]]</code>
           </td>
-          <td><p>3-channel images of 1200x1200 in NCHW format. Please find the details at 'Inputs of Model' section.</p></td>
+          <td><p>Detected Bounding Box and its score and label represented as
+<code>ObjectDetectionResult</code>.
+To learn more about <code>ObjectDetectionResult</code>, 'Definition of ObjectDetectionResult' can be found below.</p></td>
         </tr>
     </tbody>
   </table>
 
+<details class="definition-of-objectdetectionresult-and-ltrbboundingbox">
+  <summary>Definition of ObjectDetectionResult and LtrbBoundingBox</summary>
+  <div class="doc doc-object doc-class">
+
+
+<a id="furiosa.models.vision.postprocess.LtrbBoundingBox"></a>
+  <div class="doc doc-contents first">
+
+
+
+        <details class="quote">
+          <summary>Source code in <code>furiosa/models/vision/postprocess.py</code></summary>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-32">32</a></span>
+<span class="normal"><a href="#__codelineno-0-33">33</a></span>
+<span class="normal"><a href="#__codelineno-0-34">34</a></span>
+<span class="normal"><a href="#__codelineno-0-35">35</a></span>
+<span class="normal"><a href="#__codelineno-0-36">36</a></span>
+<span class="normal"><a href="#__codelineno-0-37">37</a></span>
+<span class="normal"><a href="#__codelineno-0-38">38</a></span>
+<span class="normal"><a href="#__codelineno-0-39">39</a></span>
+<span class="normal"><a href="#__codelineno-0-40">40</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="nd">@dataclass</span>
+<a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="k">class</span> <span class="nc">LtrbBoundingBox</span><span class="p">:</span>
+<a id="__codelineno-0-34" name="__codelineno-0-34"></a>    <span class="n">left</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-0-35" name="__codelineno-0-35"></a>    <span class="n">top</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-0-36" name="__codelineno-0-36"></a>    <span class="n">right</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-0-37" name="__codelineno-0-37"></a>    <span class="n">bottom</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-0-38" name="__codelineno-0-38"></a>
+<a id="__codelineno-0-39" name="__codelineno-0-39"></a>    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<a id="__codelineno-0-40" name="__codelineno-0-40"></a>        <span class="k">return</span> <span class="nb">iter</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bottom</span><span class="p">])</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+<a id="furiosa.models.vision.postprocess.ObjectDetectionResult"></a>
+  <div class="doc doc-contents first">
+
+
+
+        <details class="quote">
+          <summary>Source code in <code>furiosa/models/vision/postprocess.py</code></summary>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-89">89</a></span>
+<span class="normal"><a href="#__codelineno-0-90">90</a></span>
+<span class="normal"><a href="#__codelineno-0-91">91</a></span>
+<span class="normal"><a href="#__codelineno-0-92">92</a></span>
+<span class="normal"><a href="#__codelineno-0-93">93</a></span>
+<span class="normal"><a href="#__codelineno-0-94">94</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-89" name="__codelineno-0-89"></a><span class="nd">@dataclass</span>
+<a id="__codelineno-0-90" name="__codelineno-0-90"></a><span class="k">class</span> <span class="nc">ObjectDetectionResult</span><span class="p">:</span>
+<a id="__codelineno-0-91" name="__codelineno-0-91"></a>    <span class="n">boundingbox</span><span class="p">:</span> <span class="n">LtrbBoundingBox</span>
+<a id="__codelineno-0-92" name="__codelineno-0-92"></a>    <span class="n">score</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-0-93" name="__codelineno-0-93"></a>    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span>
+<a id="__codelineno-0-94" name="__codelineno-0-94"></a>    <span class="n">index</span><span class="p">:</span> <span class="nb">int</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+</details>
   </div>
 
 </div><h3 id="native-postprocessor"><a href="NativePostProcessor"></a>Native Postprocessor</h3>
