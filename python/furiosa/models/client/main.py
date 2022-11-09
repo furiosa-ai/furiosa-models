@@ -57,9 +57,9 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def print_model_list(table: List[List[str]]):
+def get_model_list(table: List[List[str]]):
     header = ["Model name", "Model description", "Task type"]
-    print(tabulate(table, headers=header, tablefmt="pretty"))
+    return tabulate(table, headers=header, tablefmt="pretty")
 
 
 def resolve_input_paths(input_path: Path) -> List[str]:
@@ -99,24 +99,30 @@ def get_model_or_exit(model_name: str) -> Model:
     return model
 
 
+def describe_model(model_cls: Model) -> str:
+    # TODO: Make dry load (to avoid resolving heavy artifacts)
+    model = model_cls.load()
+    include = {'name', 'format', 'family', 'version', 'metadata'}
+    output = []
+    output.append(yaml.dump(model.dict(include=include)))
+    output.append(f"task type: {api.prettified_task_type(model)}")
+    return ''.join(output)
+
+
 def main():
     args = parse_args()
     command: str = args.command
 
     if command == "list":
         filter_type: str = args.type
-        print_model_list(api.get_model_list(filter_func=get_filter(filter_type)))
+        print(get_model_list(api.get_model_list(filter_func=get_filter(filter_type))))
     elif command == "desc":
         model_name: str = args.model
         model_cls = get_model_or_exit(model_name)
-        # TODO: Make dry load (to avoid resolving heavy artifacts)
-        model = model_cls.load()
-        include = {'name', 'format', 'family', 'version', 'metadata'}
-        print(yaml.dump(model.dict(include=include)), end="")
-        print(f"task type: {api.pretty_task_type(model)}")
+        print(describe_model(model_cls))
     elif command == "run":
         model_name: str = args.model
         _input_paths: str = args.input
         input_paths = resolve_input_paths(Path(_input_paths))
         model_cls = get_model_or_exit(model_name)
-        api.run_inference(model_cls, input_paths)
+        api.run_inferences(model_cls, input_paths)

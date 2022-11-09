@@ -9,9 +9,10 @@ from typing import Dict, List
 import numpy as np
 import yaml
 
-from ...types import Format, Metadata, Publication
+from furiosa.registry.model import Format, Metadata, Publication
+
 from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
-from .core import YOLOv5Base, YOLOv5Processor
+from .core import YOLOv5Base, YOLOv5PostProcessor, YOLOv5PreProcessor
 
 with open(pathlib.Path(__file__).parent / "datasets/yolov5l/cfg.yaml", "r") as f:
     configuration = yaml.safe_load(f)
@@ -31,7 +32,9 @@ class YOLOv5l(YOLOv5Base):
         return "yolov5l_int8"
 
     @classmethod
-    def load_aux(cls, artifacts: Dict[str, bytes], _use_native: bool):
+    def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = False):
+        if use_native:
+            raise NotImplementedError("No native implementation for YOLOv5")
         return cls(
             name="YoloV5Large",
             source=artifacts[EXT_ONNX],
@@ -45,5 +48,6 @@ class YOLOv5l(YOLOv5Base):
                 description="YOLOv5 large model",
                 publication=Publication(url="https://github.com/ultralytics/yolov5"),
             ),
-            processor=YOLOv5Processor(_ANCHORS, CLASSES),
+            preprocessor=YOLOv5PreProcessor(),
+            postprocessor=YOLOv5PostProcessor(_ANCHORS, CLASSES),
         )

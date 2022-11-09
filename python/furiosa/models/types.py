@@ -1,15 +1,13 @@
 from abc import ABC, abstractmethod
 from enum import IntEnum
-from typing import Any, Dict, Optional, Sequence, Tuple
+from typing import Any, Dict, Optional, Sequence, Tuple, Type
 
 import numpy.typing as npt
-from pydantic import BaseConfig, BaseModel, Extra
+from pydantic import BaseConfig, Extra
 from typing_extensions import TypeAlias
 
 from furiosa.common.thread import synchronous
-from furiosa.registry.model import Format, Metadata
 from furiosa.registry.model import Model as RegistryModel
-from furiosa.registry.model import Publication
 
 from .utils import load_artifacts, model_file_name
 
@@ -23,17 +21,22 @@ class PreProcessor(ABC):
         ...
 
 
+class Platform(IntEnum):
+    """Implemented platform"""
+
+    PYTHON = 0
+    C = 1
+    CPP = 2
+    RUST = 3
+
+
 class PostProcessor(ABC):
+    def __init__(self, *args, **kwargs):
+        ...
+
     @abstractmethod
     def __call__(self, model_outputs: Sequence[npt.ArrayLike], contexts: Sequence[Context]) -> Any:
         ...
-
-
-class ModelProcessor:
-    """Data pre/post processor with context (even if doesn't needed)"""
-
-    preprocessor: PreProcessor
-    postprocessor: PostProcessor
 
 
 class ModelTaskType(IntEnum):
@@ -50,7 +53,10 @@ class Model(RegistryModel, ABC):
         arbitrary_types_allowed = True
         use_enum_values = True
 
-    processor: Optional[ModelProcessor] = None
+    postprocessor_map: Optional[Dict[Platform, Type[PostProcessor]]] = None
+
+    preprocessor: Optional[PreProcessor] = None
+    postprocessor: Optional[PostProcessor] = None
 
     @staticmethod
     @abstractmethod
@@ -73,12 +79,12 @@ class Model(RegistryModel, ABC):
         return cls.load_aux(synchronous(load_artifacts)(artifact_name), use_native, *args, **kwargs)
 
     def preprocess(self, *args, **kwargs) -> Tuple[Sequence[npt.ArrayLike], Sequence[Context]]:
-        assert self.processor is not None
-        return self.processor.preprocessor(*args, **kwargs)
+        assert self.preprocessor is not None
+        return self.preprocessor(*args, **kwargs)
 
     def postprocess(self, *args, **kwargs):
-        assert self.processor is not None
-        return self.processor.postprocessor(*args, **kwargs)
+        assert self.postprocessor is not None
+        return self.postprocessor(*args, **kwargs)
 
 
 class ObjectDetectionModel(Model, ABC):

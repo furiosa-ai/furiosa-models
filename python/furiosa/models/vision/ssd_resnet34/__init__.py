@@ -1,6 +1,7 @@
+from functools import partial
 import itertools
 from math import sqrt
-from typing import Any, Dict, List, Sequence, Tuple, Union
+from typing import Any, Dict, List, Sequence, Tuple, Type, Union
 
 import cv2
 import numpy
@@ -9,18 +10,12 @@ import numpy.typing as npt
 import torch
 import torch.nn.functional as F
 
+from furiosa.registry.model import Format, Metadata, Publication
+
 from .. import native
 from ...errors import ArtifactNotFound, FuriosaModelException
-from ...types import (
-    Format,
-    Metadata,
-    ModelProcessor,
-    ObjectDetectionModel,
-    PostProcessor,
-    PreProcessor,
-    Publication,
-)
-from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
+from ...types import ObjectDetectionModel, Platform, PostProcessor, PreProcessor
+from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, get_field_default
 from ..common.datasets import coco
 from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox
 
@@ -257,42 +252,6 @@ def _pick_best(detections, confidence_threshold):
     return [pred[best].squeeze(axis=0) for pred in detections]
 
 
-class SSDResNet34(ObjectDetectionModel):
-    """MLCommons SSD ResNet34 model"""
-
-    @staticmethod
-    def get_artifact_name():
-        return "mlcommons_ssd_resnet34_int8"
-
-    @classmethod
-    def load_aux(
-        cls, artifacts: Dict[str, bytes], use_native: bool = True, *, version: str = "cpp"
-    ):
-        if use_native:
-            if artifacts[EXT_DFG] is None:
-                raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
-            processor = SSDResNet34NativeProcessor(artifacts[EXT_DFG], version)
-        else:
-            processor = SSDResNet34PythonProcessor()
-        return cls(
-            name="SSDResNet34",
-            source=artifacts[EXT_ONNX],
-            dfg=artifacts[EXT_DFG],
-            enf=artifacts[EXT_ENF],
-            format=Format.ONNX,
-            family="ResNet",
-            version="v1.1",
-            metadata=Metadata(
-                description="SSD ResNet34 model for MLCommons v1.1",
-                publication=Publication(
-                    url="https://github.com/mlcommons/inference/tree/master/vision/classification_and_detection"
-                    # noqa: E501
-                ),
-            ),
-            processor=processor,
-        )
-
-
 class SSDResNet34PreProcessor(PreProcessor):
     @staticmethod
     def __call__(
@@ -418,13 +377,49 @@ class SSDResNet34NativePostProcessor(PostProcessor):
         return results
 
 
-class SSDResNet34PythonProcessor(ModelProcessor):
-    preprocessor: PreProcessor = SSDResNet34PreProcessor()
-    postprocessor: PostProcessor = SSDResNet34PythonPostProcessor()
+class SSDResNet34(ObjectDetectionModel):
+    """MLCommons SSD ResNet34 model"""
 
+    postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
+        Platform.PYTHON: SSDResNet34PythonPostProcessor,
+        Platform.RUST: partial(SSDResNet34NativePostProcessor, version="rust"),
+        Platform.CPP: partial(SSDResNet34NativePostProcessor, version="cpp"),
+    }
 
-class SSDResNet34NativeProcessor(ModelProcessor):
-    preprocessor: PreProcessor = SSDResNet34PreProcessor()
+    @staticmethod
+    def get_artifact_name():
+        return "mlcommons_ssd_resnet34_int8"
 
-    def __init__(self, dfg: bytes, version: str):
-        self.postprocessor = SSDResNet34NativePostProcessor(dfg, version)
+    @classmethod
+    def load_aux(
+        cls, artifacts: Dict[str, bytes], use_native: bool = True, *, version: str = "cpp"
+    ):
+        if use_native and artifacts[EXT_DFG] is None:
+            raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
+        if use_native:
+            postproc_type = Platform.RUST if version == "rust" else Platform.RuST
+        else:
+            postproc_type = Platform.PYTHON
+
+        postproc_type = Platform.RUST if use_native else Platform.PYTHON
+        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type](
+            artifacts[EXT_DFG]
+        )
+        return cls(
+            name="SSDResNet34",
+            source=artifacts[EXT_ONNX],
+            dfg=artifacts[EXT_DFG],
+            enf=artifacts[EXT_ENF],
+            format=Format.ONNX,
+            family="ResNet",
+            version="v1.1",
+            metadata=Metadata(
+                description="SSD ResNet34 model for MLCommons v1.1",
+                publication=Publication(
+                    url="https://github.com/mlcommons/inference/tree/master/vision/classification_and_detection"
+                    # noqa: E501
+                ),
+            ),
+            preprocessor=SSDResNet34PreProcessor(),
+            postprocessor=postprocessor,
+        )

@@ -5,10 +5,11 @@ from functools import partial
 import logging
 import os
 from pathlib import Path
-from typing import Dict, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple, Type, Union
 
 import aiofiles
 import aiohttp
+from pydantic import BaseModel
 import yaml
 
 from furiosa.common.native import DEFAULT_ENCODING, find_native_lib_path, find_native_libs
@@ -38,6 +39,18 @@ module_logger = logging.getLogger(__name__)
 class CompilerVersion:
     version: str
     revision: str
+
+
+def get_field_default(model: Type[BaseModel], field: str) -> Any:
+    """Returns field's default value from BaseModel cls
+
+    Args:
+        model: A pydantic BaseModel cls
+
+    Returns:
+        Prettified string for model's task type
+    """
+    return model.__fields__[field].default
 
 
 def compiler_version() -> Optional[CompilerVersion]:

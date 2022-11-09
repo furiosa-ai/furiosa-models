@@ -1,5 +1,5 @@
 from time import perf_counter
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Sequence, Type
 
 from tqdm import tqdm
 
@@ -7,6 +7,7 @@ from furiosa.runtime import session
 
 from .. import vision
 from ..types import Model
+from ..utils import get_field_default
 
 
 def normalize(text: str) -> str:
@@ -22,7 +23,7 @@ def normalize(text: str) -> str:
     return text.casefold()
 
 
-def pretty_task_type(model: Model):
+def prettified_task_type(model: Type[Model]):
     """Returns pretty string for model's task type
 
     Args:
@@ -31,9 +32,8 @@ def pretty_task_type(model: Model):
     Returns:
         Prettified string for model's task type
     """
-    return " ".join(
-        map(lambda x: x.capitalize(), model.__fields__["task_type"].default.name.split("_"))
-    )
+    task_type = get_field_default(model, "task_type").name
+    return " ".join(map(lambda x: x.capitalize(), task_type.split("_")))
 
 
 def get_model_list(filter_func: Optional[Callable[..., bool]] = None) -> List[List[str]]:
@@ -52,11 +52,11 @@ def get_model_list(filter_func: Optional[Callable[..., bool]] = None) -> List[Li
         if not filter_func(model):
             continue
         # Model name, description, task type
-        model_list.append([model_name, model.__doc__, pretty_task_type(model)])
+        model_list.append([model_name, model.__doc__, prettified_task_type(model)])
     return model_list
 
 
-def get_model(model_name: str) -> Optional[Model]:
+def get_model(model_name: str) -> Optional[Type[Model]]:
     """Get model for given model name string
 
     Args:
@@ -71,9 +71,9 @@ def get_model(model_name: str) -> Optional[Model]:
     return None
 
 
-def run_inference(model: Model, input_paths: List[str]):
+def run_inferences(model_cls: Type[Model], input_paths: Sequence[str]):
     net_inference_times = []
-    model = model.load()
+    model = model_cls.load()
     print(f"Running {len(input_paths)} inferences")
     with session.create(model) as sess:
         initial_time = perf_counter()

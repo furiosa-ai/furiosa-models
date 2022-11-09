@@ -1,24 +1,19 @@
 from enum import Enum
-from typing import Any, Dict, List, Sequence, Tuple, Union
+from functools import partial
+from typing import Any, Dict, List, Sequence, Tuple, Type, Union
 
 import cv2
 import numpy
 import numpy as np
 import numpy.typing as npt
 
+from furiosa.registry.model import Format, Metadata, Publication
+
 from . import anchor_generator  # type: ignore[import]
 from .. import native
 from ...errors import ArtifactNotFound, FuriosaModelException
-from ...types import (
-    Format,
-    Metadata,
-    ModelProcessor,
-    ObjectDetectionModel,
-    PostProcessor,
-    PreProcessor,
-    Publication,
-)
-from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
+from ...types import ObjectDetectionModel, Platform, PostProcessor, PreProcessor
+from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, get_field_default
 from ..common.datasets import coco
 from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox, sigmoid
 
@@ -151,39 +146,6 @@ class SSDSmallConstant(object):
     PRIORS_CENTER_Y = PRIORS_CENTER_Y
 
 
-class SSDMobileNet(ObjectDetectionModel):
-    """MLCommons MobileNet v1 model"""
-
-    @staticmethod
-    def get_artifact_name():
-        return "mlcommons_ssd_mobilenet_v1_int8"
-
-    @classmethod
-    def load_aux(
-        cls, artifacts: Dict[str, bytes], use_native: bool = True, *, version: str = "cpp"
-    ):
-        if use_native:
-            if artifacts[EXT_DFG] is None:
-                raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
-            processor = SSDMobileNetNativeProcessor(artifacts[EXT_DFG], version)
-        else:
-            processor = SSDMobileNetPythonProcessor()
-        return cls(
-            name="MLCommonsSSDMobileNet",
-            source=artifacts[EXT_ONNX],
-            dfg=artifacts[EXT_DFG],
-            enf=artifacts[EXT_ENF],
-            format=Format.ONNX,
-            family="MobileNetV1",
-            version="v1.1",
-            metadata=Metadata(
-                description="SSD MobileNet model for MLCommons v1.1",
-                publication=Publication(url="https://arxiv.org/abs/1704.04861.pdf"),
-            ),
-            processor=processor,
-        )
-
-
 class SSDMobileNetPreProcessor(PreProcessor):
     @staticmethod
     def __call__(
@@ -306,13 +268,46 @@ class SSDMobileNetNativePostProcessor(PostProcessor):
         return results
 
 
-class SSDMobileNetPythonProcessor(ModelProcessor):
-    preprocessor: PreProcessor = SSDMobileNetPreProcessor()
-    postprocessor: PostProcessor = SSDMobileNetPythonPostProcessor()
+class SSDMobileNet(ObjectDetectionModel):
+    """MLCommons MobileNet v1 model"""
 
+    postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
+        Platform.PYTHON: SSDMobileNetPythonPostProcessor,
+        Platform.RUST: partial(SSDMobileNetNativePostProcessor, version="rust"),
+        Platform.CPP: partial(SSDMobileNetNativePostProcessor, version="cpp"),
+    }
 
-class SSDMobileNetNativeProcessor(ModelProcessor):
-    preprocessor: PreProcessor = SSDMobileNetPreProcessor()
+    @staticmethod
+    def get_artifact_name():
+        return "mlcommons_ssd_mobilenet_v1_int8"
 
-    def __init__(self, dfg: bytes, version: str):
-        self.postprocessor = SSDMobileNetNativePostProcessor(dfg, version)
+    @classmethod
+    def load_aux(
+        cls, artifacts: Dict[str, bytes], use_native: bool = True, *, version: str = "cpp"
+    ):
+        if use_native and artifacts[EXT_DFG] is None:
+            raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
+        if use_native:
+            postproc_type = Platform.RUST if version == "rust" else Platform.RuST
+        else:
+            postproc_type = Platform.PYTHON
+
+        postproc_type = Platform.RUST if use_native else Platform.PYTHON
+        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type](
+            artifacts[EXT_DFG]
+        )
+        return cls(
+            name="MLCommonsSSDMobileNet",
+            source=artifacts[EXT_ONNX],
+            dfg=artifacts[EXT_DFG],
+            enf=artifacts[EXT_ENF],
+            format=Format.ONNX,
+            family="MobileNetV1",
+            version="v1.1",
+            metadata=Metadata(
+                description="SSD MobileNet model for MLCommons v1.1",
+                publication=Publication(url="https://arxiv.org/abs/1704.04861.pdf"),
+            ),
+            preprocessor=SSDMobileNetPreProcessor(),
+            postprocessor=postprocessor,
+        )

@@ -1,11 +1,11 @@
 from abc import ABC
-from typing import Any, Dict, List, Sequence, Tuple, Union
+from typing import Any, Dict, List, Sequence, Tuple, Type, Union
 
 import cv2
 import numpy as np
 import numpy.typing as npt
 
-from ...types import ModelProcessor, ObjectDetectionModel, PostProcessor, PreProcessor
+from ...types import ObjectDetectionModel, Platform, PostProcessor, PreProcessor
 from ...vision.postprocess import LtrbBoundingBox, ObjectDetectionResult, nms_internal_ops_fast
 from .box_decoder import BoxDecoderC
 
@@ -159,20 +159,6 @@ def boxdecoder(class_names: Sequence[str], anchors: np.ndarray) -> BoxDecoderC:
     )
 
 
-class YOLOv5Base(ObjectDetectionModel, ABC):
-    @staticmethod
-    def get_compiler_config() -> Dict:
-        return {
-            "without_quantize": {
-                "parameters": [
-                    {
-                        "permute": [0, 2, 3, 1],
-                    }
-                ]
-            }
-        }
-
-
 class YOLOv5PreProcessor(PreProcessor):
     @staticmethod
     def __call__(
@@ -277,8 +263,20 @@ class YOLOv5PostProcessor(PostProcessor):
         return batched_detected_boxes
 
 
-class YOLOv5Processor(ModelProcessor):
-    preprocessor: PreProcessor = YOLOv5PreProcessor()
+class YOLOv5Base(ObjectDetectionModel, ABC):
 
-    def __init__(self, anchors: npt.ArrayLike, class_names: Sequence[str]):
-        self.postprocessor = YOLOv5PostProcessor(anchors, class_names)
+    postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
+        Platform.PYTHON: YOLOv5PostProcessor,
+    }
+
+    @staticmethod
+    def get_compiler_config() -> Dict:
+        return {
+            "without_quantize": {
+                "parameters": [
+                    {
+                        "permute": [0, 2, 3, 1],
+                    }
+                ]
+            }
+        }
