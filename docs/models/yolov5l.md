@@ -1,7 +1,7 @@
 # YOLOv5L
 
-YOLOv5 is the one of the most popular object detection models developed by [Ultralytics](https://ultralytics.com/).
-You can find more details at https://github.com/ultralytics/yolov5.
+YOLOv5 is the one of the most popular object detection models.
+You can find more details at [https://github.com/ultralytics/yolov5](https://github.com/ultralytics/yolov5).
 
 <div align="center">
     <img src="../../images/yolov5l_demo.jpg" title="YOLOv5l Example" width="640" />
@@ -11,7 +11,7 @@ You can find more details at https://github.com/ultralytics/yolov5.
 * Framework: PyTorch
 * Model format: ONNX
 * Model task: Object Detection
-* Source: This model is originated from https://github.com/ultralytics/yolov5
+* Source: [https://github.com/ultralytics/yolov5](https://github.com/ultralytics/yolov5)
 
 ## <a name="YOLOv5l_Usage"></a>
 !!!Usage
