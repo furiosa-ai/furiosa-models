@@ -75,24 +75,34 @@ def get_model(model_name: str) -> Optional[Type[Model]]:
 
 
 def run_inferences(model_cls: Type[Model], input_paths: Sequence[str], postprocess: Optional[str]):
-    net_inference_times = []
     postprocess = postprocess.lower() if postprocess is not None else postprocess
     use_native = postprocess is not None and postprocess != "python"
     version = postprocess if postprocess == "rust" or postprocess == "cpp" else None
     model = model_cls.load(use_native=use_native, version=version)
-    print(f"Running {len(input_paths)} inferences")
-    with session.create(model) as sess:
-        initial_time = perf_counter()
-        for input_path in tqdm(input_paths):
-            input, contexts = model.preprocess(input_path)
-            start_time = perf_counter()
-            model_output = sess.run(input)
-            net_inference_times.append(perf_counter() - start_time)
-            model_output = model_output.numpy()  # To avoid calling __getitem__
-            contexts = contexts[0] if contexts is not None and use_native else contexts
-            _final_output = model.postprocess(model_output, contexts)
-        total_time_elapsed = perf_counter() - initial_time
-    print(f"Total time elapsed: {total_time_elapsed:.5f} sec")
-    average = sum(net_inference_times) / len(net_inference_times)
-    print(f"Average inference time: {average * 1000:.5f} msec")
-    print(f"Throughput: {1 / average:.5f} inferences/sec")
+    queries = len(input_paths)
+    print(f"Running {queries} inferences")
+    sess, queue = session.create_async(model)
+    model_inputs, model_outputs = [], []
+    initial_time = perf_counter()
+    for input_path in tqdm(input_paths, desc="Preprocessing"):
+        model_inputs.append(model.preprocess(input_path))
+    after_preprocess = perf_counter()
+    for idx, (model_input, ctx) in enumerate(model_inputs):
+        sess.submit(model_input, context=idx)
+    for _ in tqdm(range(queries), desc="Receiving async session"):
+        model_outputs.append(queue.recv())
+    after_npu = perf_counter()
+    for ctx, model_output in tqdm(model_outputs, desc="Postprocessing"):
+        contexts = model_inputs[ctx][1]
+        contexts = contexts[0] if contexts is not None and use_native else contexts
+        model.postprocess(model_output.numpy(), contexts)
+    all_done = perf_counter()
+    sess.close()
+
+    print(f"Ran total {queries} queries")
+    print(f"Preprocess times: {(after_preprocess - initial_time):.5f} sec")
+    print(f"NPU inference times: {(after_npu - after_preprocess):.5f} sec")
+    print(f"Postprocess times: {(all_done - after_npu):.5f} sec")
+    print(f"Overall w/ preprocessing: {(all_done - initial_time):.5f} sec")
+    print(f"Overall w/o preprocessing: {(all_done - after_preprocess):.5f} sec")
+    print(f"Overall qps w/o preprocessing: {queries / (all_done - after_preprocess):.5f} qps")

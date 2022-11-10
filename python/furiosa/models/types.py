@@ -74,7 +74,7 @@ class Model(RegistryModel, ABC):
         return cls.load_aux(await load_artifacts(artifact_name), use_native, *args, **kwargs)
 
     @classmethod
-    def load(cls, use_native: bool = False, *args, **kwargs) -> 'Model':
+    def load(cls, use_native: bool, *args, **kwargs) -> 'Model':
         artifact_name = model_file_name(cls.get_artifact_name(), use_native)
         return cls.load_aux(synchronous(load_artifacts)(artifact_name), use_native, *args, **kwargs)
 
