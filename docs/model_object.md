@@ -46,8 +46,11 @@ If an `Model` object is passed to `session.create()`, Session API chooses the EN
 by default. In this case, `session.create()` doesn't involve any compilation because it uses the pre-compiled ENF binary.
 
 !!!Info
-    If you want to learn more about various options and features of Session API, 
-    please refer to [Furiosa SDK - Tutorial and Code Examples](https://furiosa-ai.github.io/docs/latest/en/software/tutorials.html).
+    If you want to learn more about the installation of furiosa-sdk and how to use it, please follow the followings:
+
+    * [Driver, Firmware, and Runtime Installation](https://furiosa-ai.github.io/docs/latest/en/software/installation.html)
+    * [Python SDK Installation and User Guide](https://furiosa-ai.github.io/docs/latest/en/software/python-sdk.html)
+    * [Furiosa SDK - Tutorial and Code Examples](https://furiosa-ai.github.io/docs/latest/en/software/tutorials.html)
 
 Users still can compile source models like ONNX or tflite if passing `Model.source` to `session.create()`. 
 Compiling models will take some time up to minutes, but it allows to specify batch size and compiler configs, 

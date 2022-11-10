@@ -36,7 +36,15 @@ pip install 'furiosa-models'
 
 ## Quick example and Guides
 
-You can simply load a model and run through furiosa-sdk as following:
+You can simply load a model and run through furiosa-sdk as the following:
+
+!!!Info
+    If you want to learn more about the installation of furiosa-sdk and how to use it, please follow the followings:
+
+    * [Driver, Firmware, and Runtime Installation](https://furiosa-ai.github.io/docs/latest/en/software/installation.html)
+    * [Python SDK Installation and User Guide](https://furiosa-ai.github.io/docs/latest/en/software/python-sdk.html)
+    * [Furiosa SDK - Tutorial and Code Examples](https://furiosa-ai.github.io/docs/latest/en/software/tutorials.html)
+
 ```python
 --8<-- "docs/examples/ssd_mobilenet.py"
 ```
@@ -47,7 +55,7 @@ This example does:
 1. Creates a `session` which is the main class of Furiosa Runtime which actually loads an ONNX/tflite model to NPU and run inferences
 1. Runs an inference with pre/post processings.
 
-A `Model` instance is a Python object, including model artifacts, metadata, and its pre/post processors.
+A `Model` instance is a Python object, including model artifacts, metadata, and its pre/postprocessors.
 You can learn more about `Model` object at [Model object](model_object.md).
 
 Also, you can find all available models at 
