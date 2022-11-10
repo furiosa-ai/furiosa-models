@@ -288,21 +288,20 @@ class SSDMobileNet(ObjectDetectionModel):
     def load_aux(
         cls, artifacts: Dict[str, bytes], use_native: bool = True, *, version: str = "cpp"
     ):
-        if use_native and artifacts[EXT_DFG] is None:
+        dfg = artifacts[EXT_DFG]
+        if use_native and dfg is None:
             raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
-
+        version = version and version.lower()
         if use_native:
-            postproc_type = Platform.RUST if version.lower() == "rust" else Platform.CPP
+            postproc_type = Platform.RUST if version == "rust" else Platform.CPP
         else:
             postproc_type = Platform.PYTHON
         logger.debug(f"Using {postproc_type.name} postprocessor")
-        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type](
-            artifacts[EXT_DFG]
-        )
+        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type](dfg)
         return cls(
             name="MLCommonsSSDMobileNet",
             source=artifacts[EXT_ONNX],
-            dfg=artifacts[EXT_DFG],
+            dfg=dfg,
             enf=artifacts[EXT_ENF],
             format=Format.ONNX,
             family="MobileNetV1",

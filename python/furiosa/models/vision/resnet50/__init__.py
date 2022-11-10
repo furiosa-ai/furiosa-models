@@ -68,17 +68,16 @@ class ResNet50(ImageClassificationModel):
 
     @classmethod
     def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = True, *args, **kwargs):
-        if use_native and artifacts[EXT_DFG] is None:
+        dfg = artifacts[EXT_DFG]
+        if use_native and dfg is None:
             raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
         postproc_type = Platform.RUST if use_native else Platform.PYTHON
         logger.debug(f"Using {postproc_type.name} postprocessor")
-        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type](
-            artifacts[EXT_DFG]
-        )
+        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type](dfg)
         return cls(
             name="ResNet50",
             source=artifacts[EXT_ONNX],
-            dfg=artifacts[EXT_DFG],
+            dfg=dfg,
             enf=artifacts[EXT_ENF],
             format=Format.ONNX,
             family="ResNet",

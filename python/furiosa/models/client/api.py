@@ -75,10 +75,9 @@ def get_model(model_name: str) -> Optional[Type[Model]]:
 
 
 def run_inferences(model_cls: Type[Model], input_paths: Sequence[str], postprocess: Optional[str]):
-    postprocess = postprocess.lower() if postprocess is not None else postprocess
-    use_native = postprocess is not None and postprocess != "python"
-    version = postprocess if postprocess == "rust" or postprocess == "cpp" else None
-    model = model_cls.load(use_native=use_native, version=version)
+    postprocess = postprocess and postprocess.lower()
+    use_native = postprocess != "python"
+    model = model_cls.load(use_native=use_native, version=postprocess)
     queries = len(input_paths)
     print(f"Running {queries} inferences")
     sess, queue = session.create_async(model)
@@ -89,7 +88,7 @@ def run_inferences(model_cls: Type[Model], input_paths: Sequence[str], postproce
     after_preprocess = perf_counter()
     for idx, (model_input, ctx) in enumerate(model_inputs):
         sess.submit(model_input, context=idx)
-    for _ in tqdm(range(queries), desc="Receiving async session"):
+    for _ in tqdm(range(queries), desc="Run inferences on NPU"):
         model_outputs.append(queue.recv())
     after_npu = perf_counter()
     for ctx, model_output in tqdm(model_outputs, desc="Postprocessing"):
