@@ -65,16 +65,18 @@ class Model(RegistryModel, ABC):
 
     @classmethod
     @abstractmethod
-    def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool, *args, **kwargs):
+    def load_aux(
+        cls, artifacts: Dict[str, bytes], use_native: Optional[bool] = None, *args, **kwargs
+    ):
         ...
 
     @classmethod
-    async def load_async(cls, use_native: bool, *args, **kwargs) -> 'Model':
+    async def load_async(cls, use_native: Optional[bool] = None, *args, **kwargs) -> 'Model':
         artifact_name = model_file_name(cls.get_artifact_name(), use_native)
         return cls.load_aux(await load_artifacts(artifact_name), use_native, *args, **kwargs)
 
     @classmethod
-    def load(cls, use_native: bool, *args, **kwargs) -> 'Model':
+    def load(cls, use_native: Optional[bool] = None, *args, **kwargs) -> 'Model':
         artifact_name = model_file_name(cls.get_artifact_name(), use_native)
         return cls.load_aux(synchronous(load_artifacts)(artifact_name), use_native, *args, **kwargs)
 

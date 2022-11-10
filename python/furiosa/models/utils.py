@@ -133,14 +133,17 @@ class ArtifactResolver:
 
 
 def model_file_name(relative_path: str, truncated=True) -> str:
-    return relative_path + "_truncated" if truncated else ""
+    return f'{relative_path}{"_truncated" if truncated else ""}'
 
 
 async def resolve_file(
-    src_name: str, generated_path_base: str, extension: str, generated_suffix: str = "_warboy_2pe"
+    src_name: str, extension: str, generated_suffix: str = "_warboy_2pe"
 ) -> bytes:
     # First check whether it is generated file or not
     if extension.lower() in GENERATED_EXTENSIONS:
+        generated_path_base = _generated_path_base()
+        if generated_path_base is None:
+            raise errors.VersionInfoNotFound()
         file_name = f'{src_name}{generated_suffix}.{extension}'
         file_subpath = f'{generated_path_base}/{file_name}'
     else:
@@ -150,13 +153,10 @@ async def resolve_file(
     try:
         return await ArtifactResolver(full_path).read()
     except Exception as e:
-        raise errors.ArtifactNotFound(src_name, extension) from e
+        raise errors.ArtifactNotFound(f"{src_name}:{full_path}", extension) from e
 
 
 async def load_artifacts(name: str) -> Dict[str, bytes]:
     exts = [EXT_ONNX, EXT_DFG, EXT_ENF]
-    generated_path_base = _generated_path_base()
-    if generated_path_base is None:
-        raise errors.VersionInfoNotFound()
-    resolvers = map(partial(resolve_file, name, generated_path_base), exts)
+    resolvers = map(partial(resolve_file, name), exts)
     return {ext: binary for ext, binary in zip(exts, await asyncio.gather(*resolvers))}
