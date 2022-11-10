@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://furiosa-ai.github.io/furiosa-models/getting_started/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.8">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.9">
     
     
       
@@ -24,7 +24,7 @@
       <link rel="stylesheet" href="../assets/stylesheets/main.20d9efc8.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.815d1a91.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.08040f6c.min.css">
         
       
       
@@ -58,7 +58,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
   
     
     
@@ -553,7 +553,16 @@ So, only when you have any dependency issue, you need to install the following p
 </code></pre></div>
 </details>
 <h2 id="quick-example-and-guides">Quick example and Guides</h2>
-<p>You can simply load a model and run through furiosa-sdk as following:
+<p>You can simply load a model and run through furiosa-sdk as the following:</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>If you want to learn more about the installation of furiosa-sdk and how to use it, please follow the followings:</p>
+<ul>
+<li><a href="https://furiosa-ai.github.io/docs/latest/en/software/installation.html">Driver, Firmware, and Runtime Installation</a></li>
+<li><a href="https://furiosa-ai.github.io/docs/latest/en/software/python-sdk.html">Python SDK Installation and User Guide</a></li>
+<li><a href="https://furiosa-ai.github.io/docs/latest/en/software/tutorials.html">Furiosa SDK - Tutorial and Code Examples</a></li>
+</ul>
+</div>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span> <span class="nn">furiosa.models.vision</span> <span class="kn">import</span> <span class="n">SSDMobileNet</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span> <span class="nn">furiosa.runtime</span> <span class="kn">import</span> <span class="n">session</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
@@ -564,14 +573,14 @@ So, only when you have any dependency issue, you need to install the following p
 <a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">inputs</span><span class="p">,</span> <span class="n">contexts</span> <span class="o">=</span> <span class="n">mobilenet</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
 <a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">outputs</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
 <a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="n">mobilenet</span><span class="o">.</span><span class="n">postprocess</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">contexts</span><span class="p">)</span>
-</code></pre></div></p>
+</code></pre></div>
 <p>This example does:</p>
 <ol>
 <li>Loads the <a href="../models/ssd_mobilenet/">SSDMobileNet</a> model</li>
 <li>Creates a <code>session</code> which is the main class of Furiosa Runtime which actually loads an ONNX/tflite model to NPU and run inferences</li>
 <li>Runs an inference with pre/post processings.</li>
 </ol>
-<p>A <code>Model</code> instance is a Python object, including model artifacts, metadata, and its pre/post processors.
+<p>A <code>Model</code> instance is a Python object, including model artifacts, metadata, and its pre/postprocessors.
 You can learn more about <code>Model</code> object at <a href="../model_object/">Model object</a>.</p>
 <p>Also, you can find all available models at 
 <a href="https://furiosa-ai.github.io/furiosa-models/#available_models">Available Models</a>.

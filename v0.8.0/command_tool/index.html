@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://furiosa-ai.github.io/furiosa-models/command_tool/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.8">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.9">
     
     
       
@@ -24,7 +24,7 @@
       <link rel="stylesheet" href="../assets/stylesheets/main.20d9efc8.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.815d1a91.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.08040f6c.min.css">
         
       
       
@@ -58,7 +58,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
   
     
     
@@ -317,6 +317,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#subcommand-desc" class="md-nav__link">
+    Subcommand: Desc
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -515,6 +522,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#subcommand-desc" class="md-nav__link">
+    Subcommand: Desc
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -536,26 +550,56 @@
 
 
 <h1 id="command-tool">Command Tool</h1>
-<div class="admonition info">
-<p class="admonition-title">Info</p>
-<p>Working in Progress </p>
-</div>
-<p><code>furiosa-models</code> offers a simple command line tool to evaluate or run quickly a model 
-with input sample data. </p>
+<p>We provide a simple command line too called <code>furiosa-models</code> to allow users to 
+evaluate or run quickly one of models with FuriosaAI NPU. </p>
 <h2 id="installing">Installing</h2>
 <p>To install <code>furiosa-models</code> command, please refer to <a href="../getting_started/#installing">Installing</a>. 
-Then, <code>furiosa-models</code> command will be available in shell.</p>
+Then, <code>furiosa-models</code> command will be available.</p>
 <h2 id="synopsis">Synopsis</h2>
-<p>Synopsis:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>furiosa-models [-h] {list,run} ...
-</code></pre></div></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>furiosa-models [-h] {list, desc, run} ...
+</code></pre></div>
 <p><code>furiosa-models</code> command has two subcommands: <code>list</code> and <code>run</code>.</p>
 <h2 id="subcommand-list">Subcommand: List</h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>furiosa-models list ..
-</code></pre></div>
+<p><code>list</code> subcommand prints out the list of models with attributes. 
+You will be able to figure out what models are available. </p>
+<p><em>Example</em>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$ furiosa-models list
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>+--------------+------------------------------+----------------------+-------------------------+
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>|  Model name  |      Model description       |      Task type       | Available postprocesses |
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>+--------------+------------------------------+----------------------+-------------------------+
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>|   ResNet50   |   MLCommons ResNet50 model   | Image Classification |      Python, Rust       |
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>| SSDMobileNet | MLCommons MobileNet v1 model |   Object Detection   |    Python, Rust, Cpp    |
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>| SSDResNet34  | MLCommons SSD ResNet34 model |   Object Detection   |    Python, Rust, Cpp    |
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>|   YOLOv5l    |      YOLOv5 Large model      |   Object Detection   |         Python          |
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>|   YOLOv5m    |     YOLOv5 Medium model      |   Object Detection   |         Python          |
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>+--------------+------------------------------+----------------------+-------------------------+
+</code></pre></div></p>
 <h2 id="subcommand-run">Subcommand: Run</h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>furiosa-models run ..
-</code></pre></div>
+<p><code>run</code> subcommand runs a specific model with a given path where the input sample data are located.
+It also prints out the performance benchmark results like QPS.</p>
+<p><em>Example</em>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$ furiosa-models run ResNet50 tests/assets/
+</code></pre></div></p>
+<h2 id="subcommand-desc">Subcommand: Desc</h2>
+<p><code>desc</code> subcommand shows the details of a specific model.</p>
+<p><em>Example</em>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$ furiosa-models desc ResNet50 
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>family: ResNet
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>format: onnx
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>metadata:
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>  description: ResNet50 v1.5 int8 ImageNet-1K
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>  publication:
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    authors: null
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    date: null
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    publisher: null
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    title: null
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    url: https://arxiv.org/abs/1512.03385.pdf
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>name: ResNet50
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>version: v1.5
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>task type: Image Classification
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>available postprocess versions: Python, Rust
+</code></pre></div></p>
 
 
 
