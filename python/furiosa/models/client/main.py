@@ -40,18 +40,20 @@ def parse_args() -> argparse.Namespace:
         required=True,
     )
 
-    list_parser = subparsers.add_parser("list", help="See available models")
+    list_parser = subparsers.add_parser("list", help="Lists available models")
     list_parser.add_argument(
         "-t", "--type", type=str, help="Limits the task type (ex. classify, detect)"
     )
 
-    desc_parser = subparsers.add_parser("desc", help="See description of given model")
+    desc_parser = subparsers.add_parser("desc", help="Prints out a description of a model")
     desc_parser.add_argument("model", type=str, help="Model name (ignore case)")
 
-    inference_parser = subparsers.add_parser("run", help="Run Inference")
+    inference_parser = subparsers.add_parser(
+        "bench", help="Benchmark a given model by running inferences"
+    )
     inference_parser.add_argument("-v", "--verbose", action="store_true", help="Set verbose")
     inference_parser.add_argument(
-        "-post", "--postprocess", type=str, help="Set postprocess implementation"
+        "-post", "--postprocess", type=str, help="Specifies a postprocess implementation"
     )
     inference_parser.add_argument("model", type=str, help="Model name (ignore case)")
     inference_parser.add_argument("input", type=str, help="Input path (file or directory)")
@@ -126,7 +128,7 @@ def main():
         model_name: str = args.model
         model_cls = get_model_or_exit(model_name)
         print(describe_model(model_cls))
-    elif command == "run":
+    elif command == "bench":
         model_name: str = args.model
         verbose: bool = args.verbose
         _input_paths: str = args.input
