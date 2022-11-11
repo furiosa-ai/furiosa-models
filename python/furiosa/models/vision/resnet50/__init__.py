@@ -51,7 +51,7 @@ class ResNet50PreProcessor(PreProcessor):
         return image[np.newaxis, ...], None
 
 
-class Resnet50PythonPostProcessor(PostProcessor):
+class ResNet50PythonPostProcessor(PostProcessor):
     """Convert the outputs of a model to a label string, such as car and cat.
 
     Args:
@@ -67,7 +67,7 @@ class Resnet50PythonPostProcessor(PostProcessor):
         return CLASSES[int(model_outputs[0]) - 1]
 
 
-class Resnet50NativePostProcessor(PostProcessor):
+class ResNet50NativePostProcessor(PostProcessor):
     def __init__(self, dfg: bytes):
         self._native = native.resnet50.PostProcessor(dfg)
 
@@ -79,8 +79,8 @@ class ResNet50(ImageClassificationModel):
     """MLCommons ResNet50 model"""
 
     postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
-        Platform.PYTHON: Resnet50PythonPostProcessor,
-        Platform.RUST: Resnet50NativePostProcessor,
+        Platform.PYTHON: ResNet50PythonPostProcessor,
+        Platform.RUST: ResNet50NativePostProcessor,
     }
 
     @staticmethod
@@ -107,6 +107,6 @@ class ResNet50(ImageClassificationModel):
                 description="ResNet50 v1.5 int8 ImageNet-1K",
                 publication=Publication(url="https://arxiv.org/abs/1512.03385.pdf"),
             ),
-            preprocessor=Resnet50PreProcessor(),
+            preprocessor=ResNet50PreProcessor(),
             postprocessor=postprocessor,
         )
