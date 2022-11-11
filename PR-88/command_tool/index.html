@@ -305,21 +305,21 @@
       
         <li class="md-nav__item">
   <a href="#subcommand-list" class="md-nav__link">
-    Subcommand: List
+    Subcommand: list
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#subcommand-run" class="md-nav__link">
-    Subcommand: Run
+  <a href="#subcommand-bench" class="md-nav__link">
+    Subcommand: bench
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#subcommand-desc" class="md-nav__link">
-    Subcommand: Desc
+    Subcommand: desc
   </a>
   
 </li>
@@ -510,21 +510,21 @@
       
         <li class="md-nav__item">
   <a href="#subcommand-list" class="md-nav__link">
-    Subcommand: List
+    Subcommand: list
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#subcommand-run" class="md-nav__link">
-    Subcommand: Run
+  <a href="#subcommand-bench" class="md-nav__link">
+    Subcommand: bench
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#subcommand-desc" class="md-nav__link">
-    Subcommand: Desc
+    Subcommand: desc
   </a>
   
 </li>
@@ -556,10 +556,10 @@ evaluate or run quickly one of models with FuriosaAI NPU. </p>
 <p>To install <code>furiosa-models</code> command, please refer to <a href="../getting_started/#installing">Installing</a>. 
 Then, <code>furiosa-models</code> command will be available.</p>
 <h2 id="synopsis">Synopsis</h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>furiosa-models [-h] {list, desc, run} ...
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>furiosa-models [-h] {list, desc, bench} ...
 </code></pre></div>
-<p><code>furiosa-models</code> command has two subcommands: <code>list</code> and <code>run</code>.</p>
-<h2 id="subcommand-list">Subcommand: List</h2>
+<p><code>furiosa-models</code> command has three subcommands: <code>list</code>, <code>desc</code>, and <code>bench</code>.</p>
+<h2 id="subcommand-list">Subcommand: list</h2>
 <p><code>list</code> subcommand prints out the list of models with attributes. 
 You will be able to figure out what models are available. </p>
 <p><em>Example</em>
@@ -575,13 +575,40 @@ You will be able to figure out what models are available. </p>
 <a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>|   YOLOv5m    |     YOLOv5 Medium model      |   Object Detection   |         Python          |
 <a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>+--------------+------------------------------+----------------------+-------------------------+
 </code></pre></div></p>
-<h2 id="subcommand-run">Subcommand: Run</h2>
-<p><code>run</code> subcommand runs a specific model with a given path where the input sample data are located.
-It also prints out the performance benchmark results like QPS.</p>
+<h2 id="subcommand-bench">Subcommand: bench</h2>
+<p><code>bench</code> subcommand runs a specific model with a given path where the input sample data are located.
+It will print out the performance benchmark results like QPS.</p>
 <p><em>Example</em>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$ furiosa-models run ResNet50 tests/assets/
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$ furiosa-models bench ResNet50 ./samples
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>Running 10 input samples ...
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>----------------------------------------------------------------------
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>WARN: the benchmark results may depend on the number of input samples,
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>sizes of the images, and a machine where this benchmark is running.
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>----------------------------------------------------------------------
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>----------------------------------------------------------------------
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>Preprocess -&gt; Inference -&gt; Postprocess
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>----------------------------------------------------------------------
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>Total elapsed time: 1.04471 sec
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>QPS: 9.57201
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>Avg. elapsed time / sample: 104.47126 ms
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>----------------------------------------------------------------------
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>Inference -&gt; Postprocess
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>----------------------------------------------------------------------
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>Total elapsed time: 24.98687 ms
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>QPS: 400.21017
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>Avg. elapsed time / sample: 2.49869 ms
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>----------------------------------------------------------------------
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>Inference
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>----------------------------------------------------------------------
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>Total elapsed time: 558.66595 us
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>QPS: 17899.78418
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a>Avg. elapsed time / sample: 55.86660 us
 </code></pre></div></p>
-<h2 id="subcommand-desc">Subcommand: Desc</h2>
+<h2 id="subcommand-desc">Subcommand: desc</h2>
 <p><code>desc</code> subcommand shows the details of a specific model.</p>
 <p><em>Example</em>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$ furiosa-models desc ResNet50 
