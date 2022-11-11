@@ -1,6 +1,8 @@
+from functools import partial
 import itertools
+import logging
 from math import sqrt
-from typing import Any, Dict, List, Sequence, Tuple, Union
+from typing import Any, Dict, List, Sequence, Tuple, Type, Union
 
 import cv2
 import numpy
@@ -9,23 +11,19 @@ import numpy.typing as npt
 import torch
 import torch.nn.functional as F
 
+from furiosa.registry.model import Format, Metadata, Publication
+
 from .. import native
 from ...errors import ArtifactNotFound, FuriosaModelException
-from ...types import (
-    Format,
-    Metadata,
-    ModelProcessor,
-    ObjectDetectionModel,
-    PostProcessor,
-    PreProcessor,
-    Publication,
-)
-from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
+from ...types import ObjectDetectionModel, Platform, PostProcessor, PreProcessor
+from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, get_field_default
 from ..common.datasets import coco
 from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox
 
 NUM_OUTPUTS: int = 12
 CLASSES = coco.MobileNetSSD_Large_CLASSES
+
+logger = logging.getLogger(__name__)
 
 
 ##Inspired by https://github.com/kuangliu/pytorch-ssd
@@ -257,42 +255,6 @@ def _pick_best(detections, confidence_threshold):
     return [pred[best].squeeze(axis=0) for pred in detections]
 
 
-class SSDResNet34(ObjectDetectionModel):
-    """MLCommons SSD ResNet34 model"""
-
-    @staticmethod
-    def get_artifact_name():
-        return "mlcommons_ssd_resnet34_int8"
-
-    @classmethod
-    def load_aux(
-        cls, artifacts: Dict[str, bytes], use_native: bool = True, *, version: str = "cpp"
-    ):
-        if use_native:
-            if artifacts[EXT_DFG] is None:
-                raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
-            processor = SSDResNet34NativeProcessor(artifacts[EXT_DFG], version)
-        else:
-            processor = SSDResNet34PythonProcessor()
-        return cls(
-            name="SSDResNet34",
-            source=artifacts[EXT_ONNX],
-            dfg=artifacts[EXT_DFG],
-            enf=artifacts[EXT_ENF],
-            format=Format.ONNX,
-            family="ResNet",
-            version="v1.1",
-            metadata=Metadata(
-                description="SSD ResNet34 model for MLCommons v1.1",
-                publication=Publication(
-                    url="https://github.com/mlcommons/inference/tree/master/vision/classification_and_detection"
-                    # noqa: E501
-                ),
-            ),
-            processor=processor,
-        )
-
-
 class SSDResNet34PreProcessor(PreProcessor):
     @staticmethod
     def __call__(
@@ -304,6 +266,8 @@ class SSDResNet34PreProcessor(PreProcessor):
         # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L252-L263
         batch_image = []
         batch_preproc_param = []
+        if isinstance(inputs, str):
+            inputs = [inputs]
         for image in inputs:
             if type(image) == str:
                 image = cv2.imread(image)
@@ -416,13 +380,48 @@ class SSDResNet34NativePostProcessor(PostProcessor):
         return results
 
 
-class SSDResNet34PythonProcessor(ModelProcessor):
-    preprocessor: PreProcessor = SSDResNet34PreProcessor()
-    postprocessor: PostProcessor = SSDResNet34PythonPostProcessor()
+class SSDResNet34(ObjectDetectionModel):
+    """MLCommons SSD ResNet34 model"""
 
+    postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
+        Platform.PYTHON: SSDResNet34PythonPostProcessor,
+        Platform.RUST: partial(SSDResNet34NativePostProcessor, version="rust"),
+        Platform.CPP: partial(SSDResNet34NativePostProcessor, version="cpp"),
+    }
 
-class SSDResNet34NativeProcessor(ModelProcessor):
-    preprocessor: PreProcessor = SSDResNet34PreProcessor()
+    @staticmethod
+    def get_artifact_name():
+        return "mlcommons_ssd_resnet34_int8"
 
-    def __init__(self, dfg: bytes, version: str):
-        self.postprocessor = SSDResNet34NativePostProcessor(dfg, version)
+    @classmethod
+    def load_aux(
+        cls, artifacts: Dict[str, bytes], use_native: bool = True, *, version: str = "cpp"
+    ):
+        dfg = artifacts[EXT_DFG]
+        if use_native and dfg is None:
+            raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
+        version = version and version.lower()
+        if use_native:
+            postproc_type = Platform.RUST if version and version == "rust" else Platform.CPP
+        else:
+            postproc_type = Platform.PYTHON
+        logger.debug(f"Using {postproc_type.name} postprocessor")
+        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type](dfg)
+        return cls(
+            name="SSDResNet34",
+            source=artifacts[EXT_ONNX],
+            dfg=dfg,
+            enf=artifacts[EXT_ENF],
+            format=Format.ONNX,
+            family="ResNet",
+            version="v1.1",
+            metadata=Metadata(
+                description="SSD ResNet34 model for MLCommons v1.1",
+                publication=Publication(
+                    url="https://github.com/mlcommons/inference/tree/master/vision/classification_and_detection"
+                    # noqa: E501
+                ),
+            ),
+            preprocessor=SSDResNet34PreProcessor(),
+            postprocessor=postprocessor,
+        )

@@ -1,30 +1,28 @@
 from enum import Enum
-from typing import Any, Dict, List, Sequence, Tuple, Union
+from functools import partial
+import logging
+from typing import Any, Dict, List, Sequence, Tuple, Type, Union
 
 import cv2
 import numpy
 import numpy as np
 import numpy.typing as npt
 
+from furiosa.registry.model import Format, Metadata, Publication
+
 from . import anchor_generator  # type: ignore[import]
 from .. import native
 from ...errors import ArtifactNotFound, FuriosaModelException
-from ...types import (
-    Format,
-    Metadata,
-    ModelProcessor,
-    ObjectDetectionModel,
-    PostProcessor,
-    PreProcessor,
-    Publication,
-)
-from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
+from ...types import ObjectDetectionModel, Platform, PostProcessor, PreProcessor
+from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, get_field_default
 from ..common.datasets import coco
 from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox, sigmoid
 
 NUM_OUTPUTS: int = 12
 CLASSES = coco.MobileNetSSD_CLASSES
 NUM_CLASSES = len(CLASSES) - 1  # remove background
+
+logger = logging.getLogger(__name__)
 
 # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L155-L158
 PRIORS = np.concatenate(
@@ -151,39 +149,6 @@ class SSDSmallConstant(object):
     PRIORS_CENTER_Y = PRIORS_CENTER_Y
 
 
-class SSDMobileNet(ObjectDetectionModel):
-    """MLCommons MobileNet v1 model"""
-
-    @staticmethod
-    def get_artifact_name():
-        return "mlcommons_ssd_mobilenet_v1_int8"
-
-    @classmethod
-    def load_aux(
-        cls, artifacts: Dict[str, bytes], use_native: bool = True, *, version: str = "cpp"
-    ):
-        if use_native:
-            if artifacts[EXT_DFG] is None:
-                raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
-            processor = SSDMobileNetNativeProcessor(artifacts[EXT_DFG], version)
-        else:
-            processor = SSDMobileNetPythonProcessor()
-        return cls(
-            name="MLCommonsSSDMobileNet",
-            source=artifacts[EXT_ONNX],
-            dfg=artifacts[EXT_DFG],
-            enf=artifacts[EXT_ENF],
-            format=Format.ONNX,
-            family="MobileNetV1",
-            version="v1.1",
-            metadata=Metadata(
-                description="SSD MobileNet model for MLCommons v1.1",
-                publication=Publication(url="https://arxiv.org/abs/1704.04861.pdf"),
-            ),
-            processor=processor,
-        )
-
-
 class SSDMobileNetPreProcessor(PreProcessor):
     @staticmethod
     def __call__(
@@ -194,6 +159,8 @@ class SSDMobileNetPreProcessor(PreProcessor):
         # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L242-L249
         batch_image = []
         batch_preproc_param = []
+        if isinstance(inputs, str):
+            inputs = [inputs]
         for image in inputs:
             if type(image) == str:
                 image = cv2.imread(image)
@@ -304,13 +271,45 @@ class SSDMobileNetNativePostProcessor(PostProcessor):
         return results
 
 
-class SSDMobileNetPythonProcessor(ModelProcessor):
-    preprocessor: PreProcessor = SSDMobileNetPreProcessor()
-    postprocessor: PostProcessor = SSDMobileNetPythonPostProcessor()
+class SSDMobileNet(ObjectDetectionModel):
+    """MLCommons MobileNet v1 model"""
 
+    postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
+        Platform.PYTHON: SSDMobileNetPythonPostProcessor,
+        Platform.RUST: partial(SSDMobileNetNativePostProcessor, version="rust"),
+        Platform.CPP: partial(SSDMobileNetNativePostProcessor, version="cpp"),
+    }
 
-class SSDMobileNetNativeProcessor(ModelProcessor):
-    preprocessor: PreProcessor = SSDMobileNetPreProcessor()
+    @staticmethod
+    def get_artifact_name():
+        return "mlcommons_ssd_mobilenet_v1_int8"
 
-    def __init__(self, dfg: bytes, version: str):
-        self.postprocessor = SSDMobileNetNativePostProcessor(dfg, version)
+    @classmethod
+    def load_aux(
+        cls, artifacts: Dict[str, bytes], use_native: bool = True, *, version: str = "cpp"
+    ):
+        dfg = artifacts[EXT_DFG]
+        if use_native and dfg is None:
+            raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
+        version = version and version.lower()
+        if use_native:
+            postproc_type = Platform.RUST if version == "rust" else Platform.CPP
+        else:
+            postproc_type = Platform.PYTHON
+        logger.debug(f"Using {postproc_type.name} postprocessor")
+        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type](dfg)
+        return cls(
+            name="MLCommonsSSDMobileNet",
+            source=artifacts[EXT_ONNX],
+            dfg=dfg,
+            enf=artifacts[EXT_ENF],
+            format=Format.ONNX,
+            family="MobileNetV1",
+            version="v1.1",
+            metadata=Metadata(
+                description="SSD MobileNet model for MLCommons v1.1",
+                publication=Publication(url="https://arxiv.org/abs/1704.04861.pdf"),
+            ),
+            preprocessor=SSDMobileNetPreProcessor(),
+            postprocessor=postprocessor,
+        )

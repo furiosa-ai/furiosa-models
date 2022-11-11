@@ -1,18 +1,17 @@
-from abc import ABC, abstractmethod
 import asyncio
 from dataclasses import dataclass
 from functools import partial
 import logging
 import os
 from pathlib import Path
-from typing import Dict, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple, Type, Union
 
 import aiofiles
 import aiohttp
+from pydantic import BaseModel
 import yaml
 
 from furiosa.common.native import DEFAULT_ENCODING, find_native_lib_path, find_native_libs
-from furiosa.common.thread import asynchronous
 
 from . import errors
 
@@ -38,6 +37,18 @@ module_logger = logging.getLogger(__name__)
 class CompilerVersion:
     version: str
     revision: str
+
+
+def get_field_default(model: Type[BaseModel], field: str) -> Any:
+    """Returns field's default value from BaseModel cls
+
+    Args:
+        model: A pydantic BaseModel cls
+
+    Returns:
+        Pydantic class' default field value
+    """
+    return model.__fields__[field].default
 
 
 def compiler_version() -> Optional[CompilerVersion]:
@@ -96,7 +107,7 @@ class ArtifactResolver:
     ) -> str:
         return f"{http_endpoint}/{directory}/{filename}"
 
-    async def read(self):
+    async def read(self) -> bytes:
         # Try to find real file (no DVC)
         if Path(self.uri).exists():
             module_logger.debug(f"Local file exists: {self.uri}")
@@ -121,17 +132,17 @@ class ArtifactResolver:
                 return await resp.read()
 
 
-def model_file_name(relative_path, truncated=True) -> str:
-    suffix = "_truncated" if truncated else ""
-    return relative_path + suffix
+def model_file_name(relative_path: str, truncated=True) -> str:
+    return f'{relative_path}{"_truncated" if truncated else ""}'
 
 
-async def resolve_file(src_name: str, extension: str, generated_suffix="_warboy_2pe") -> bytes:
+async def resolve_file(
+    src_name: str, extension: str, generated_suffix: str = "_warboy_2pe"
+) -> bytes:
     # First check whether it is generated file or not
     if extension.lower() in GENERATED_EXTENSIONS:
         generated_path_base = _generated_path_base()
         if generated_path_base is None:
-            # FIXME: Uncovered code path. Can we assume libnux is always installed?
             raise errors.VersionInfoNotFound()
         file_name = f'{src_name}{generated_suffix}.{extension}'
         file_subpath = f'{generated_path_base}/{file_name}'
@@ -142,10 +153,10 @@ async def resolve_file(src_name: str, extension: str, generated_suffix="_warboy_
     try:
         return await ArtifactResolver(full_path).read()
     except Exception as e:
-        raise errors.ArtifactNotFound(src_name, extension) from e
+        raise errors.ArtifactNotFound(f"{src_name}:{full_path}", extension) from e
 
 
 async def load_artifacts(name: str) -> Dict[str, bytes]:
     exts = [EXT_ONNX, EXT_DFG, EXT_ENF]
     resolvers = map(partial(resolve_file, name), exts)
-    return {k: v for k, v in zip(exts, await asyncio.gather(*resolvers))}
+    return {ext: binary for ext, binary in zip(exts, await asyncio.gather(*resolvers))}
