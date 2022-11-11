@@ -74,34 +74,63 @@ def get_model(model_name: str) -> Optional[Type[Model]]:
     return None
 
 
+def decorate_with_bar(string: str) -> str:
+    bar = "----------------------------------------------------------------------"
+    return "\n".join([bar, string, bar])
+
+
+def time_with_proper_suffix(t: float, digits: int = 5) -> str:
+    units = iter(["sec", "ms", "us", "ns"])
+    while t < 1:
+        t *= 1_000
+        next(units)
+    return f"{t:.{digits}f} {next(units)}"
+
+
+def decorate_result(
+    total_time: float, queries: int, header: str = "", digits: int = 5, newline: bool = True
+) -> str:
+    result = []
+    result.append(decorate_with_bar(header))
+    result.append(f"Total elapsed time: {time_with_proper_suffix(total_time, digits)}")
+    result.append(f"QPS: {queries / total_time:.{digits}f}")
+    result.append(
+        f"Avg. elapsed time / sample: {time_with_proper_suffix(total_time / queries, digits)}"
+    )
+    if newline:
+        result.append("")
+    return "\n".join(result)
+
+
 def run_inferences(model_cls: Type[Model], input_paths: Sequence[str], postprocess: Optional[str]):
+    warning = """WARN: the benchmark results may depend on the number of input samples,
+sizes of the images, and a machine where this benchmark is running."""
     postprocess = postprocess and postprocess.lower()
     use_native = postprocess != "python"
     model = model_cls.load(use_native=use_native, version=postprocess)
     queries = len(input_paths)
-    print(f"Running {queries} inferences")
+    print(f"Running {queries} input samples ...")
+    print(decorate_with_bar(warning))
     sess, queue = session.create_async(model)
     model_inputs, model_outputs = [], []
     initial_time = perf_counter()
-    for input_path in tqdm(input_paths, desc="Preprocessing"):
+    for input_path in tqdm(input_paths, desc="Preprocess"):
         model_inputs.append(model.preprocess(input_path))
     after_preprocess = perf_counter()
     for idx, (model_input, ctx) in enumerate(model_inputs):
         sess.submit(model_input, context=idx)
-    for _ in tqdm(range(queries), desc="Run inferences on NPU"):
+    for _ in tqdm(range(queries), desc="Inference"):
         model_outputs.append(queue.recv())
     after_npu = perf_counter()
-    for ctx, model_output in tqdm(model_outputs, desc="Postprocessing"):
+    for ctx, model_output in tqdm(model_outputs, desc="Postprocess"):
         contexts = model_inputs[ctx][1]
         contexts = contexts[0] if contexts is not None and use_native else contexts
         model.postprocess(model_output.numpy(), contexts)
     all_done = perf_counter()
     sess.close()
 
-    print(f"Ran total {queries} queries")
-    print(f"Preprocess times: {(after_preprocess - initial_time):.5f} sec")
-    print(f"NPU inference times: {(after_npu - after_preprocess):.5f} sec")
-    print(f"Postprocess times: {(all_done - after_npu):.5f} sec")
-    print(f"Overall w/ preprocessing: {(all_done - initial_time):.5f} sec")
-    print(f"Overall w/o preprocessing: {(all_done - after_preprocess):.5f} sec")
-    print(f"Overall qps w/o preprocessing: {queries / (all_done - after_preprocess):.5f} qps")
+    print(
+        decorate_result(all_done - initial_time, queries, "Preprocess -> Inference -> Postprocess")
+    )
+    print(decorate_result(all_done - after_preprocess, queries, "Inference -> Postprocess"))
+    print(decorate_result(all_done - after_npu, queries, "Inference", newline=False))
