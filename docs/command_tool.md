@@ -8,12 +8,12 @@ Then, `furiosa-models` command will be available.
 
 ## Synopsis
 ```
-furiosa-models [-h] {list, desc, run} ...
+furiosa-models [-h] {list, desc, bench} ...
 ```
 
-`furiosa-models` command has two subcommands: `list` and `run`.
+`furiosa-models` command has three subcommands: `list`, `desc`, and `bench`.
 
-## Subcommand: List
+## Subcommand: list
 
 `list` subcommand prints out the list of models with attributes. 
 You will be able to figure out what models are available. 
@@ -33,17 +33,44 @@ $ furiosa-models list
 +--------------+------------------------------+----------------------+-------------------------+
 ```
 
-## Subcommand: Run
+## Subcommand: bench
 
-`run` subcommand runs a specific model with a given path where the input sample data are located.
-It also prints out the performance benchmark results like QPS.
+`bench` subcommand runs a specific model with a given path where the input sample data are located.
+It will print out the performance benchmark results like QPS.
 
 *Example*
 ```
-$ furiosa-models run ResNet50 tests/assets/
+$ furiosa-models bench ResNet50 ./samples
+
+Running 10 input samples ...
+----------------------------------------------------------------------
+WARN: the benchmark results may depend on the number of input samples,
+sizes of the images, and a machine where this benchmark is running.
+----------------------------------------------------------------------
+
+----------------------------------------------------------------------
+Preprocess -> Inference -> Postprocess
+----------------------------------------------------------------------
+Total elapsed time: 1.04471 sec
+QPS: 9.57201
+Avg. elapsed time / sample: 104.47126 ms
+
+----------------------------------------------------------------------
+Inference -> Postprocess
+----------------------------------------------------------------------
+Total elapsed time: 24.98687 ms
+QPS: 400.21017
+Avg. elapsed time / sample: 2.49869 ms
+
+----------------------------------------------------------------------
+Inference
+----------------------------------------------------------------------
+Total elapsed time: 558.66595 us
+QPS: 17899.78418
+Avg. elapsed time / sample: 55.86660 us
 ```
 
-## Subcommand: Desc
+## Subcommand: desc
 
 `desc` subcommand shows the details of a specific model.
 

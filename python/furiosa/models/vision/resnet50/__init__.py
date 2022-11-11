@@ -1,57 +1,22 @@
-from typing import Dict, List, Sequence, Tuple, Union
+import logging
+from typing import Any, Dict, List, Sequence, Tuple, Type, Union
 
 import cv2
 import numpy as np
 import numpy.typing as npt
 
+from furiosa.registry.model import Format, Metadata, Publication
+
 from .. import native
 from ...errors import ArtifactNotFound
-from ...types import (
-    Format,
-    ImageClassificationModel,
-    Metadata,
-    ModelProcessor,
-    PostProcessor,
-    PreProcessor,
-    Publication,
-)
-from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
+from ...types import ImageClassificationModel, Platform, PostProcessor, PreProcessor
+from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, get_field_default
 from ..common.datasets import imagenet1k
 from ..preprocess import center_crop, resize_with_aspect_ratio
 
 CLASSES: List[str] = imagenet1k.ImageNet1k_CLASSES
-"""A list of class names"""
 
-
-class ResNet50(ImageClassificationModel):
-    """MLCommons ResNet50 model"""
-
-    @staticmethod
-    def get_artifact_name():
-        return "mlcommons_resnet50_v1.5_int8"
-
-    @classmethod
-    def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = True, *args, **kwargs):
-        if use_native:
-            if artifacts[EXT_DFG] is None:
-                raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
-            processor = ResNet50NativeProcessor(artifacts[EXT_DFG])
-        else:
-            processor = ResNet50PythonProcessor()
-        return cls(
-            name="ResNet50",
-            source=artifacts[EXT_ONNX],
-            dfg=artifacts[EXT_DFG],
-            enf=artifacts[EXT_ENF],
-            format=Format.ONNX,
-            family="ResNet",
-            version="v1.5",
-            metadata=Metadata(
-                description="ResNet50 v1.5 int8 ImageNet-1K",
-                publication=Publication(url="https://arxiv.org/abs/1512.03385.pdf"),
-            ),
-            processor=processor,
-        )
+logger = logging.getLogger(__name__)
 
 
 class ResNet50PreProcessor(PreProcessor):
@@ -86,36 +51,62 @@ class ResNet50PreProcessor(PreProcessor):
         return image[np.newaxis, ...], None
 
 
-class ResNet50PythonPostProcessor(PostProcessor):
-    def __call__(self, model_outputs: Sequence[npt.ArrayLike]) -> str:
-        """Convert the outputs of a model to a label string, such as car and cat.
+class Resnet50PythonPostProcessor(PostProcessor):
+    """Convert the outputs of a model to a label string, such as car and cat.
 
-        Args:
-            model_outputs: the outputs of the model.
-                Please learn more about the output of model,
-                please refer to [Outputs](resnet50_v1.5.md#outputs).
+    Args:
+        model_outputs: the outputs of the model.
+            Please learn more about the output of model,
+            please refer to [Outputs](resnet50_v1.5.md#outputs).
 
-        Returns:
-            str: A classified label
-        """
+    Returns:
+        str: A classified label
+    """
+
+    def __call__(self, model_outputs: Sequence[npt.ArrayLike], contexts: Any = None) -> str:
         return CLASSES[int(model_outputs[0]) - 1]
 
 
-class ResNet50NativePostProcessor(PostProcessor):
+class Resnet50NativePostProcessor(PostProcessor):
     def __init__(self, dfg: bytes):
         self._native = native.resnet50.PostProcessor(dfg)
 
-    def __call__(self, model_outputs: Sequence[npt.ArrayLike]) -> str:
+    def __call__(self, model_outputs: Sequence[npt.ArrayLike], contexts: Any = None) -> str:
         return CLASSES[self._native.eval(model_outputs) - 1]
 
 
-class ResNet50PythonProcessor(ModelProcessor):
-    preprocessor: PreProcessor = ResNet50PreProcessor()
-    postprocessor: PostProcessor = ResNet50PythonPostProcessor()
+class ResNet50(ImageClassificationModel):
+    """MLCommons ResNet50 model"""
 
+    postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
+        Platform.PYTHON: Resnet50PythonPostProcessor,
+        Platform.RUST: Resnet50NativePostProcessor,
+    }
 
-class ResNet50NativeProcessor(ModelProcessor):
-    preprocessor: PreProcessor = ResNet50PreProcessor()
+    @staticmethod
+    def get_artifact_name():
+        return "mlcommons_resnet50_v1.5_int8"
 
-    def __init__(self, dfg: bytes):
-        self.postprocessor = ResNet50NativePostProcessor(dfg)
+    @classmethod
+    def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = True, *args, **kwargs):
+        dfg = artifacts[EXT_DFG]
+        if use_native and dfg is None:
+            raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
+        postproc_type = Platform.RUST if use_native else Platform.PYTHON
+        logger.debug(f"Using {postproc_type.name} postprocessor")
+        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type](dfg)
+        return cls(
+            name="ResNet50",
+            source=artifacts[EXT_ONNX],
+            dfg=dfg,
+            enf=artifacts[EXT_ENF],
+            format=Format.ONNX,
+            family="ResNet",
+            version="v1.5",
+            metadata=Metadata(
+                description="ResNet50 v1.5 int8 ImageNet-1K",
+                publication=Publication(url="https://arxiv.org/abs/1512.03385.pdf"),
+            ),
+            preprocessor=Resnet50PreProcessor(),
+            postprocessor=postprocessor,
+        )
