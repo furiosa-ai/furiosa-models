@@ -258,17 +258,29 @@ def _pick_best(detections, confidence_threshold):
 class SSDResNet34PreProcessor(PreProcessor):
     @staticmethod
     def __call__(
-        inputs: Sequence[Union[str, np.ndarray]]
+        images: Sequence[Union[str, np.ndarray]]
     ) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
-        """Read and preprocess an image located at image_path."""
+        """Preprocess input images to a batch of input tensors
+
+        Args:
+            images: A list of paths of image files (e.g., JPEG, PNG)
+                or a stacked image loaded as a numpy array in BGR order or gray order.
+
+        Returns:
+            The first element is a list of 3-channel images of 1200x1200
+                in NCHW format, and the second element is a list of context about the original image metadata.
+                Please learn more about the outputs of preprocess (i.e., model inputs),
+                please refer to [Inputs](ssd_resnet34.md#inputs).
+
+        """
         # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L141
         # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L61-L63
         # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/dataset.py#L252-L263
         batch_image = []
         batch_preproc_param = []
-        if isinstance(inputs, str):
-            inputs = [inputs]
-        for image in inputs:
+        if isinstance(images, str):
+            inputs = [images]
+        for image in images:
             if type(image) == str:
                 image = cv2.imread(image)
                 if image is None:
@@ -301,6 +313,26 @@ class SSDResNet34PythonPostProcessor(PostProcessor):
         contexts: Sequence[Dict[str, Any]],
         confidence_threshold=0.05,
     ) -> List[List[ObjectDetectionResult]]:
+        """Convert the outputs of this model to a list of bounding boxes, scores and labels
+
+        Args:
+            model_outputs: the outputs of the model. To learn more about the output of model,
+                please refer to [Outputs](ssd_resnet34.md#outputs).
+            contexts: context coming from `preprocess()`
+
+        Returns:
+            Detected Bounding Box and its score and label represented as
+                `ObjectDetectionResult`.
+                To learn more about `ObjectDetectionResult`, 'Definition of ObjectDetectionResult' can be found below.
+
+        Definition of ObjectDetectionResult and LtrbBoundingBox:
+            ::: furiosa.models.vision.postprocess.LtrbBoundingBox
+                options:
+                    show_source: true
+            ::: furiosa.models.vision.postprocess.ObjectDetectionResult
+                options:
+                    show_source: true
+        """
         if len(model_outputs) != NUM_OUTPUTS:
             raise Exception(f"output size must be {NUM_OUTPUTS}, but {len(model_outputs)}")
         classes, locations = model_outputs[:6], model_outputs[6:]

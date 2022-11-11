@@ -1,8 +1,4 @@
-"""Yolov5l Module
-
-Attributes:
-    CLASSES (List[str]): a list of class names
-"""
+"""YOLOv5L"""
 import pathlib
 from typing import Dict, List
 

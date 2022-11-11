@@ -37,7 +37,7 @@ async def test_yolov5_small(
 
     batch_im = [cv2.imread(test_image_path), cv2.imread(test_image_path)]
     sess = create_session_scenario(session_test_scenario, m)
-    batch_pre_img, batch_preproc_param = m.preprocess(batch_im, input_color_format="bgr")
+    batch_pre_img, batch_preproc_param = m.preprocess(batch_im, color_format="bgr")
     batch_feat = []
     for pre_image in batch_pre_img:
         batch_feat.append(sess.run(np.expand_dims(pre_image, axis=0)).numpy())

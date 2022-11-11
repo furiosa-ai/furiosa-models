@@ -1,49 +1,41 @@
 Furiosa Models
 ======================
-Furiosa Models provides DNN models including quantized pre-trained weights, model metadata, and 
-runtime configurations for FuriosaAI SDK and NPU. Basically, all models are specifically optimized for FuriosaAI NPU, 
-but the models are based on standard ONNX format. You can feel free to use all models for even CPU and GPU.
+`furiosa-models` is an open model zoo project for FuriosaAI NPU. 
+It provides a set of public pre-trained, pre-quantized models for learning and demo purposes or 
+for developing your applications.
 
-## <a name="AvailableModels"></a>Available Models
+`furiosa-models` also includes pre-packaged post/processing utilities, compiler configurations optimized
+for FuriosaAI NPU. However, all models are standard ONNX or tflite models, 
+and they can run even on CPU and GPU as well.
 
-| Model                                        | Task                 | Size | Accuracy                  | Latency (NPU) | Latency (CPU) |
-| -------------------------------------------- | -------------------- | ---- | ------------------------- | ------------- | ------------- |
-| [ResNet50](docs/models/resnet50_v1.5.md)     | Image Classification | 25M  | 76.002% (ImageNet1K-val)  |               |               |
-| [SSDMobileNet](docs/models/ssd_mobilenet.md) | Object Detection     | 7.2M | mAP 0.228 (COCO 2017-val) |               |               |
-| [SSDResNet34](docs/models/ssd_resnet34.md)   | Object Detection     | 20M  | mAP 0.220 (COCO 2017-val) |               |               |
-| YOLOv5M                                      | Object Detection     | 21M  | mAP 0.280 (Bdd100k-val)   |               |               |
-| YOLOv5L                                      | Object Detection     | 46M  | mAP 0.295 (Bdd100k-val)   |               |               |
+## Releases
+* [v0.8.0](https://furiosa-ai.github.io/furiosa-models/v0.8.0/changelog/) - 2022-11-10
 
-## Installation
-You can quickly install Furiosa Models by using `pip` as following:
-```sh
-pip install 'furiosa-sdk[models]'
-```
+## Online Documentation
+If you are new, you can start from [Getting Started](getting_started.md).
+You can also find the latest online documents, 
+including programming guides, API references, and examples from the followings:
 
-Or you can build from the source code as following:
+* [Furiosa Models - Latest Documentation](https://furiosa-ai.github.io/furiosa-models/latest/)
+* [Model object](model_object.md)
+* [Model List](#model_list)
+* [Command Tool](command_tool.md)
+* [Furiosa SDK - Tutorial and Code Examples](https://furiosa-ai.github.io/docs/latest/en/software/tutorials.html)
 
-```
-git clone https://github.com/furiosa-ai/furiosa-models
-pip install .
-```
 
-## Usage
-You can simply access each model as following:
-```python
-from furiosa.models.vision import ResNet50
+## <a name="model_list"></a>Model List
+The table summarizes all models available in `furiosa-models`. If you visit each model link, 
+you can find details about loading a model, their input and output tensors, pre/post processings, and usage examples.
 
-model = ResNet50.load()
-```
-
-Each model in [available models](#AvailableModels) also provides the details 
-including how to access the model, input and output tensors, and pre/post processings.
-
-If you want to learn more about Furiosa SDK, you can refer to 
-[Furiosa SDK - Tutorial and Code Examples](https://furiosa-ai.github.io/docs/latest/en/software/tutorials.html)
-
-Also, you can learn about [Blocking and Non-blocking APIs](blocking_and_nonblocking_api.md) 
-if you want to access the models with Asynchronous (AsyncIO) client library.
+| Model                                   | Task                 | Size | Accuracy                  |
+|-----------------------------------------| -------------------- | ---- |---------------------------|
+| [ResNet50](models/resnet50_v1.5.md)     | Image Classification | 25M  | 76.002% (ImageNet1K-val)  |
+| [SSDMobileNet](models/ssd_mobilenet.md) | Object Detection     | 7.2M | mAP 0.228 (COCO 2017-val) |
+| [SSDResNet34](models/ssd_resnet34.md)   | Object Detection     | 20M  | mAP 0.220 (COCO 2017-val) |
+| [YOLOv5M](models/yolov5m.md)            | Object Detection     | 21M  | mAP 0.280 (Bdd100k-val)   |
+| [YOLOv5L](models/yolov5l.md)            | Object Detection     | 46M  | mAP 0.295 (Bdd100k-val)   |
 
 ## See Also
+* [Furiosa Models - Latest Documentation](https://furiosa-ai.github.io/furiosa-models/latest/)
 * [Furiosa Models - Github](https://github.com/furiosa-ai/furiosa-models)
 * [Furiosa SDK Documentation](https://furiosa-ai.github.io/docs/latest/en/)

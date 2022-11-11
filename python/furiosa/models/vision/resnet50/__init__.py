@@ -19,34 +19,55 @@ CLASSES: List[str] = imagenet1k.ImageNet1k_CLASSES
 logger = logging.getLogger(__name__)
 
 
-class Resnet50PreProcessor(PreProcessor):
+class ResNet50PreProcessor(PreProcessor):
     @staticmethod
-    def __call__(inputs: Union[str, npt.ArrayLike]) -> Tuple[np.array, None]:
-        """Read and preprocess an image located at image_path."""
+    def __call__(image: Union[str, npt.ArrayLike]) -> Tuple[np.array, None]:
+        """Convert an input image to a model input tensor
+
+        Args:
+            image: A path of an image or
+                an image loaded as a numpy array in BGR order.
+
+        Returns:
+            The first element of tuple is a numpy array.
+                To learn more about the output of preprocess,
+                please refer to [Inputs](resnet50_v1.5.md#inputs).
+        """
         # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/main.py#L37-L39
         # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L168-L184
-        if type(inputs) == str:
-            inputs = cv2.imread(inputs)
-            if inputs is None:
-                raise FileNotFoundError(inputs)
-        inputs = cv2.cvtColor(inputs, cv2.COLOR_BGR2RGB)
-        inputs = resize_with_aspect_ratio(
-            inputs, 224, 224, percent=87.5, interpolation=cv2.INTER_AREA
+        if type(image) == str:
+            image = cv2.imread(image)
+            if image is None:
+                raise FileNotFoundError(image)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = resize_with_aspect_ratio(
+            image, 224, 224, percent=87.5, interpolation=cv2.INTER_AREA
         )
-        inputs = center_crop(inputs, 224, 224)
-        inputs = np.asarray(inputs, dtype=np.float32)
+        image = center_crop(image, 224, 224)
+        image = np.asarray(image, dtype=np.float32)
         # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L178
-        inputs -= np.array([123.68, 116.78, 103.94], dtype=np.float32)
-        inputs = inputs.transpose([2, 0, 1])
-        return inputs[np.newaxis, ...], None
+        image -= np.array([123.68, 116.78, 103.94], dtype=np.float32)
+        image = image.transpose([2, 0, 1])
+        return image[np.newaxis, ...], None
 
 
-class Resnet50PythonPostProcessor(PostProcessor):
+class ResNet50PythonPostProcessor(PostProcessor):
+    """Convert the outputs of a model to a label string, such as car and cat.
+
+    Args:
+        model_outputs: the outputs of the model.
+            Please learn more about the output of model,
+            please refer to [Outputs](resnet50_v1.5.md#outputs).
+
+    Returns:
+        str: A classified label
+    """
+
     def __call__(self, model_outputs: Sequence[npt.ArrayLike], contexts: Any = None) -> str:
         return CLASSES[int(model_outputs[0]) - 1]
 
 
-class Resnet50NativePostProcessor(PostProcessor):
+class ResNet50NativePostProcessor(PostProcessor):
     def __init__(self, dfg: bytes):
         self._native = native.resnet50.PostProcessor(dfg)
 
@@ -58,8 +79,8 @@ class ResNet50(ImageClassificationModel):
     """MLCommons ResNet50 model"""
 
     postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
-        Platform.PYTHON: Resnet50PythonPostProcessor,
-        Platform.RUST: Resnet50NativePostProcessor,
+        Platform.PYTHON: ResNet50PythonPostProcessor,
+        Platform.RUST: ResNet50NativePostProcessor,
     }
 
     @staticmethod
@@ -86,6 +107,6 @@ class ResNet50(ImageClassificationModel):
                 description="ResNet50 v1.5 int8 ImageNet-1K",
                 publication=Publication(url="https://arxiv.org/abs/1512.03385.pdf"),
             ),
-            preprocessor=Resnet50PreProcessor(),
+            preprocessor=ResNet50PreProcessor(),
             postprocessor=postprocessor,
         )

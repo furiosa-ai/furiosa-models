@@ -25,7 +25,7 @@ unit_tests:
 	pytest ./tests/unit/ -s
 
 examples:
-	for f in $$(ls docs/examples/*.py); do echo"";echo "[TEST] $$f ..."; python3 $$f; done
+	for f in $$(ls docs/examples/*.py | grep -v "ssd_resnet34"); do echo"";echo "[TEST] $$f ..."; python3 $$f; done
 
 regression-test-all:
 	pytest ./tests/bench/
