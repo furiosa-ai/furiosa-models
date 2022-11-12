@@ -172,7 +172,7 @@ class SSDMobileNetPreProcessor(PreProcessor):
         batch_image = []
         batch_preproc_param = []
         if isinstance(images, str):
-            inputs = [images]
+            images = [images]
         for image in images:
             if type(image) == str:
                 image = cv2.imread(image)
