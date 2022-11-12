@@ -172,7 +172,7 @@ class SSDMobileNetPreProcessor(PreProcessor):
         batch_image = []
         batch_preproc_param = []
         if isinstance(images, str):
-            inputs = [images]
+            images = [images]
         for image in images:
             if type(image) == str:
                 image = cv2.imread(image)
@@ -271,10 +271,8 @@ class SSDMobileNetPythonPostProcessor(PostProcessor):
 
 
 class SSDMobileNetNativePostProcessor(PostProcessor):
-    def __init__(self, dfg: bytes, version: str = "cpp"):
-        if version == "cpp":
-            self._native = native.ssd_mobilenet.CppPostProcessor(dfg)
-        elif version == "rust":
+    def __init__(self, dfg: bytes, version: str = "rust"):
+        if version == "rust":
             self._native = native.ssd_mobilenet.RustPostProcessor(dfg)
         else:
             raise FuriosaModelException(f"Unknown post processor version: {version}")

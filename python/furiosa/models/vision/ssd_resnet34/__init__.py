@@ -381,10 +381,8 @@ class SSDResNet34PythonPostProcessor(PostProcessor):
 
 
 class SSDResNet34NativePostProcessor(PostProcessor):
-    def __init__(self, dfg: bytes, version: str = "cpp"):
-        if version == "cpp":
-            self._native = native.ssd_resnet34.CppPostProcessor(dfg)
-        elif version == "rust":
+    def __init__(self, dfg: bytes, version: str = "rust"):
+        if version == "rust":
             self._native = native.ssd_resnet34.RustPostProcessor(dfg)
         else:
             raise FuriosaModelException(f"Unknown post processor version: {version}")

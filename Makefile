@@ -53,3 +53,12 @@ docker-build: check-docker-tag
 
 docker-push:
 	docker push asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:${DOCKER_TAG}
+
+build-wheel:
+	docker run \
+        -v /usr/share/furiosa/:/usr/share/furiosa \
+        -v `pwd`/scripts/build_wheel.sh:/root/build_wheel.sh \
+        -v ${HOME}/.gitconfig:/root/.gitconfig \
+        -v ${HOME}/.git-credentials:/root/.git-credentials \
+        -v `pwd`/.:/root/furiosa-models \
+        -it quay.io/pypa/manylinux2014_x86_64 /root/build_wheel.sh $1

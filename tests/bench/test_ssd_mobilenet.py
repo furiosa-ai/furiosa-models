@@ -125,7 +125,7 @@ def test_mlcommons_ssd_mobilenet_with_native_rust_pp_accuracy(benchmark):
 
 
 def test_mlcommons_ssd_mobilenet_with_native_cpp_pp_accuracy(benchmark):
-    model = SSDMobileNet.load(use_native=True, version="cpp")
+    model = SSDMobileNet.load(use_native=True, version="rust")
 
     image_directory, coco = load_coco_from_env_variable()
     image_src_iter = iter(tqdm.tqdm(coco.dataset["images"]))
