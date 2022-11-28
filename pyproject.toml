@@ -1,12 +1,12 @@
 [build-system]
-requires = ["setuptools", "wheel", "setuptools-rust"]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "furiosa-models"
-version = "0.9.0.dev0"
 authors = [{ name = "FurioaAI Inc.", email = "pkg@furiosa.ai" }]
 readme = "README.md"
-license = { file = "LICENSE" }
+license-files = { paths = ["LICENSE"] }
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
@@ -26,10 +26,12 @@ classifiers = [
 ]
 description = "Furiosa Models"
 requires-python = "~=3.7"
+dynamic = ["version"]
 dependencies = [
     "furiosa-common == 0.8.*",
     "furiosa-registry == 0.8.*",
     "furiosa-runtime == 0.8.*",
+    "furiosa-mlperf-postprocess == 0.1.*",
 
     "aiofiles ~= 22.1.0",
     "aiohttp ~= 3.8.3",
@@ -42,6 +44,8 @@ dependencies = [
     "PyYAML ~= 6.0",
 
     "numpy ~= 1.21",
+
+    "cbox_decode @ {root:uri}/furiosa/models/vision/yolov5/cbox_decode",
 ]
 
 [project.optional-dependencies]
@@ -58,14 +62,28 @@ dvc = [
 [project.scripts]
 furiosa-models = "furiosa.models.client.main:main"
 
-[tool.pytest.ini_options]
-addopts = "--benchmark-autosave"
-
 [project.urls]
 Home = "https://furiosa.ai"
 Documentation = "https://github.com/furiosa-ai/furiosa-models"
 "Bug Tracker" = "https://github.com/furiosa-ai/furiosa-models/issues"
 "Source Code" = "https://github.com/furiosa-ai/furiosa-models"
+
+[tool.hatch.version]
+path = "furiosa/models/__init__.py"
+
+[tool.hatch.build]
+include = [
+  "**/*.py",
+  "furiosa/models/data/**/*.dvc",
+  "**/*.txt",
+  "**/*.yaml",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.pytest.ini_options]
+addopts = "--benchmark-autosave"
 
 [tool.black]
 skip-string-normalization = true

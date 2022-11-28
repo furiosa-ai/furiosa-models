@@ -15,10 +15,8 @@ toolchain:
 lint:
 	isort --diff --check .
 	black --diff --check .
-	cargo fmt --all --check
 
 test:
-	cargo test --release
 	pytest ./tests -s
 
 unit_tests:
@@ -40,9 +38,9 @@ regression-test-ssd-resnet34:
 	pytest ./tests/bench/test_ssd_resnet34.py
 
 regression-test-yolov5:
-	pytest -s ./tests/bench/test_unit_yolov5l.py	&&	\
-	pytest -s ./tests/bench/test_unit_yolov5m.py	&&	\
-	pytest -s ./tests/bench/test_yolov5l.py	&&	\
+	pytest -s ./tests/bench/test_unit_yolov5l.py && \
+	pytest -s ./tests/bench/test_unit_yolov5m.py && \
+	pytest -s ./tests/bench/test_yolov5l.py && \
 	pytest -s ./tests/bench/test_yolov5m.py
 
 doc:

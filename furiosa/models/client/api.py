@@ -107,6 +107,8 @@ def run_inferences(model_cls: Type[Model], input_paths: Sequence[str], postproce
 sizes of the images, and a machine where this benchmark is running."""
     postprocess = postprocess and postprocess.lower()
     use_native = postprocess != "python"
+    if issubclass(model_cls, (vision.YOLOv5l, vision.YOLOv5m)):
+        use_native = False
     model = model_cls.load(use_native=use_native, version=postprocess)
     queries = len(input_paths)
     print(f"Running {queries} input samples ...")

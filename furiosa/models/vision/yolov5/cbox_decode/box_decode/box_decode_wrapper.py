@@ -1,12 +1,9 @@
 import ctypes
 import os
-from sysconfig import get_config_var
 
 import numpy as np
 
-_clib = ctypes.CDLL(
-    os.path.join(os.path.dirname(__file__), 'native' + get_config_var('EXT_SUFFIX'))
-)
+_clib = ctypes.CDLL(os.path.join(os.path.dirname(__file__), 'cbox_decode.so'))
 
 
 def _init():
@@ -52,7 +49,7 @@ def _box_decode_feat(anchors, stride, conf_thres, max_boxes, feat, out_batch, ou
     )
 
 
-def cbox_decode(anchors, stride, conf_thres, feats):
+def box_decode(anchors, stride, conf_thres, feats):
     bs = feats[0].shape[0]
     max_boxes = int(1e4)
 
