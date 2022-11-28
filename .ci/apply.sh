@@ -12,14 +12,14 @@ cd "$(dirname "$(realpath "$0")")";
 if ! command -v kubectl &> /dev/null
 then
     echo "kubectl command not found"
-    exit
+    exit 1
 fi
 
 # Check tkn command exists
 if ! command -v tkn &> /dev/null
 then
     echo "tkn command not found"
-    exit
+    exit 1
 fi
 
 # Apply tekton hub's scripts (reinstalls if install command fails)
