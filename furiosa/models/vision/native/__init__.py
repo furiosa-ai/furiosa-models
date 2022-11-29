@@ -1,2 +1,2 @@
 # Native implementations in Rust and C++
-from furiosa_mlperf_postprocess import *
+from furiosa_native_postprocess import *
