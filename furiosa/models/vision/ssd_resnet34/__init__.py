@@ -1,4 +1,3 @@
-from functools import partial
 import itertools
 import logging
 from math import sqrt
@@ -14,7 +13,7 @@ import torch.nn.functional as F
 from furiosa.registry.model import Format, Metadata, Publication
 
 from .. import native
-from ...errors import ArtifactNotFound, FuriosaModelException
+from ...errors import ArtifactNotFound
 from ...types import ObjectDetectionModel, Platform, PostProcessor, PreProcessor
 from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, get_field_default
 from ..common.datasets import coco
@@ -381,13 +380,8 @@ class SSDResNet34PythonPostProcessor(PostProcessor):
 
 
 class SSDResNet34NativePostProcessor(PostProcessor):
-    def __init__(self, dfg: bytes, version: str = "cpp"):
-        if version == "cpp":
-            self._native = native.ssd_resnet34.CppPostProcessor(dfg)
-        elif version == "rust":
-            self._native = native.ssd_resnet34.RustPostProcessor(dfg)
-        else:
-            raise FuriosaModelException(f"Unknown post processor version: {version}")
+    def __init__(self, dfg: bytes):
+        self._native = native.ssd_resnet34.RustPostProcessor(dfg)
 
     def __call__(self, model_outputs: Sequence[numpy.ndarray], contexts: Sequence[Dict[str, Any]]):
         raw_results = self._native.eval(model_outputs)
@@ -417,8 +411,7 @@ class SSDResNet34(ObjectDetectionModel):
 
     postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
         Platform.PYTHON: SSDResNet34PythonPostProcessor,
-        Platform.RUST: partial(SSDResNet34NativePostProcessor, version="rust"),
-        Platform.CPP: partial(SSDResNet34NativePostProcessor, version="cpp"),
+        Platform.RUST: SSDResNet34NativePostProcessor,
     }
 
     @staticmethod
@@ -426,17 +419,11 @@ class SSDResNet34(ObjectDetectionModel):
         return "mlcommons_ssd_resnet34_int8"
 
     @classmethod
-    def load_aux(
-        cls, artifacts: Dict[str, bytes], use_native: bool = True, *, version: str = "cpp"
-    ):
+    def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = True):
         dfg = artifacts[EXT_DFG]
         if use_native and dfg is None:
             raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
-        version = version and version.lower()
-        if use_native:
-            postproc_type = Platform.RUST if version and version == "rust" else Platform.CPP
-        else:
-            postproc_type = Platform.PYTHON
+        postproc_type = Platform.RUST if use_native else Platform.PYTHON
         logger.debug(f"Using {postproc_type.name} postprocessor")
         postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type](dfg)
         return cls(

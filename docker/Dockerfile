@@ -25,8 +25,8 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 5F03AFA423A751913F2
 RUN --mount=type=secret,id=furiosa.conf,dst=/etc/apt/auth.conf.d/furiosa.conf,required \
     APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn \
     apt-get update && \
-    apt-get install -y libonnxruntime=$ONNXRUNTIME_VERSION
+    apt-get install -y libonnxruntime=$ONNXRUNTIME_VERSION \
         furiosa-libhal-warboy=$TOOLCHAIN_VERSION \
         furiosa-libcompiler=$TOOLCHAIN_VERSION \
-        furiosa-libnux-extrinsic=$TOOLCHAIN_VERSION \
-        furiosa-libnux=$TOOLCHAIN_VERSION
+        furiosa-libnux=$TOOLCHAIN_VERSION \
+        furiosa-libnux-extrinsic=$TOOLCHAIN_VERSION
