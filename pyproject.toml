@@ -84,6 +84,7 @@ allow-direct-references = true
 
 [tool.pytest.ini_options]
 addopts = "--benchmark-autosave"
+asyncio_mode = "auto"
 
 [tool.black]
 skip-string-normalization = true
