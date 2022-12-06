@@ -126,7 +126,7 @@ def test_mlcommons_ssd_resnet34_with_native_rust_pp_accuracy(benchmark):
             }
             detections.append(detection)
 
-    sess = session.create(model.enf)
+    sess = session.create(model)
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 
