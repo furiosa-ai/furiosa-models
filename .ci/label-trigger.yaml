@@ -237,6 +237,7 @@ spec:
     params:
     - name: modelName
       value: $(params.modelName)
+    timeout: "5h"
     workspaces:
       - name: source
         workspace: source

@@ -1,5 +1,19 @@
 # Changelog
 
+## [unreleased]
+### Added
+
+### Changed
+- Changed packaging tool from setuptools-rust to hatch #102
+
+### Deprecated
+
+### Removed
+- MLPerf postprocess rust bindings #102
+- Cpp postprocessor(s) #102
+
+### Fixed
+
 ## [0.8.0 - 2022-11-10]
 
 ### New Features

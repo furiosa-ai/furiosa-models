@@ -15,17 +15,15 @@ toolchain:
 lint:
 	isort --diff --check .
 	black --diff --check .
-	cargo fmt --all --check
 
 test:
-	cargo test --release
 	pytest ./tests -s
 
 unit_tests:
 	pytest ./tests/unit/ -s
 
 examples:
-	for f in $$(ls docs/examples/*.py | grep -v "ssd_resnet34"); do echo"";echo "[TEST] $$f ..."; python3 $$f; done
+	for f in $$(ls docs/examples/*.py | grep -v "ssd_resnet34"); do echo"";echo "[TEST] $$f ..."; python3 $$f || exit 1; done
 
 regression-test-all:
 	pytest ./tests/bench/
@@ -40,9 +38,9 @@ regression-test-ssd-resnet34:
 	pytest ./tests/bench/test_ssd_resnet34.py
 
 regression-test-yolov5:
-	pytest -s ./tests/bench/test_unit_yolov5l.py	&&	\
-	pytest -s ./tests/bench/test_unit_yolov5m.py	&&	\
-	pytest -s ./tests/bench/test_yolov5l.py	&&	\
+	pytest -s ./tests/bench/test_unit_yolov5l.py && \
+	pytest -s ./tests/bench/test_unit_yolov5m.py && \
+	pytest -s ./tests/bench/test_yolov5l.py && \
 	pytest -s ./tests/bench/test_yolov5m.py
 
 doc:
