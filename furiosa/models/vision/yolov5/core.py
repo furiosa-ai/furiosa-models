@@ -7,7 +7,7 @@ import numpy.typing as npt
 
 from ...types import ObjectDetectionModel, Platform, PostProcessor, PreProcessor
 from ...vision.postprocess import LtrbBoundingBox, ObjectDetectionResult, nms_internal_ops_fast
-from .box_decoder import BoxDecoderC
+from .box_decoder import BoxDecoder
 
 _INPUT_SIZE = (640, 640)
 _GRID_CELL_OUTPUT_SHAPES = [(80, 80), (40, 40), (20, 20)]
@@ -137,7 +137,7 @@ def _compute_stride() -> np.ndarray:
     return strides
 
 
-def boxdecoder(class_names: Sequence[str], anchors: np.ndarray) -> BoxDecoderC:
+def boxdecoder(class_names: Sequence[str], anchors: np.ndarray) -> BoxDecoder:
     """Calculate the left, top, right, and bottom of the box from the coordinates
        predicted by a model.
        In predicted features(batch x features(the number anchors x (5+the number of clsss))),
@@ -152,9 +152,9 @@ def boxdecoder(class_names: Sequence[str], anchors: np.ndarray) -> BoxDecoderC:
         BoxDecoderC Callable Instance. If the instance is called,
             it returns an numpy.ndarray with batch x N x 6 properties.
     """
-    return BoxDecoderC(
-        nc=len(class_names),
+    return BoxDecoder(
         anchors=anchors,
+        num_classes=len(class_names),
         stride=_compute_stride(),
     )
 
@@ -255,7 +255,7 @@ class YOLOv5PostProcessor(PostProcessor):
             for f in model_outputs
         ]
         batched_boxes = self.box_decoder(model_outputs, conf_thres)
-        batched_boxes = _nms(batched_boxes, iou_thres)
+        # batched_boxes = _nms(batched_boxes, iou_thres)
 
         batched_detected_boxes = []
         for boxes, preproc_params in zip(batched_boxes, contexts):

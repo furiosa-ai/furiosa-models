@@ -1,9 +1,10 @@
-from box_decode import cbox_decode
+from .. import native
+from typing import Sequence
 import numpy as np
 
 
-class BoxDecoderC(object):
-    def __init__(self, nc: int, anchors: np.ndarray, stride: np.ndarray) -> None:
+class BoxDecoder:
+    def __init__(self, num_classes: int, anchors: np.ndarray, stride: np.ndarray) -> None:
         """Yolov5 BoxDecoder creator
 
         Args:
@@ -11,12 +12,7 @@ class BoxDecoderC(object):
             anchors (np.ndarray): anchors: layers x the number of anchors x 2(aspect ratio: width, height)
             stride (np.ndarray): stride per layers: image_height / feature_height for each layer.
         """
-        self.nc = nc  # number of classes
-        self.no = nc + 5  # number of outputs per anchor(xyxy,conf)
-        self.anchors = anchors
-        self.nl = anchors.shape[0]  # number of detection layers
-        self.na = anchors.shape[1]  # number of anchors
-        self.stride = stride
+        self.native = native.yolov5.RustPostProcessor(anchors, num_classes, stride)
 
     def __call__(self, feats: np.ndarray, conf_thres: float) -> np.ndarray:
         """_summary_
@@ -31,6 +27,5 @@ class BoxDecoderC(object):
 
         assert all(isinstance(feat, np.ndarray) for feat in feats)
 
-        out_boxes_batched = cbox_decode(self.anchors, self.stride, conf_thres, feats)
-
-        return out_boxes_batched
+        boxes = self.native.eval(feats, conf_thres)
+        return [boxes]
