@@ -1,8 +1,9 @@
 
+# Step 1: ./compile.sh
+# Step 2: python test_llvm.py
 from ctypes import CFUNCTYPE, POINTER, c_float, c_uint32
 
 from llvmlite import binding as llvm
-from llvmlite import ir as lc
 import numpy as np
 
 llvm.initialize()
@@ -10,9 +11,12 @@ llvm.initialize_native_target()
 llvm.initialize_native_asmprinter()
 
 print("parse assembler.")
-with open("box_decode.ll", "r") as f:
+#with open("box_decode.ll", "r") as f:
+#    m = f.read()
+#modref = llvm.parse_assembly(m)
+with open("box_decode.bc", "rb") as f:
     m = f.read()
-modref = llvm.parse_assembly(m)
+modref = llvm.parse_bitcode(m)
 
 u32 = c_uint32
 f32 = c_float
@@ -46,22 +50,23 @@ function = CFUNCTYPE( None,
                      u32p       # out_batch_pos
                      )(func_ptr)
 
-anchors = np.zeros([5,30], dtype=np.float32)
-num_class = 8
-num_output_per_ancher = num_class + 5
 num_anchors = 3
-stride = 0.3
+num_batch = 1
+anchors = np.random.rand(num_anchors,2).astype(np.float32)
+num_class = 8
+num_output_per_ancher = num_class + 5 # [x,y,x,y,conf,c0...c7]
+stride = 3
 conf_thresh = 0.02
-max_boxes = 30
+max_boxes = 5000
 width=20
 height=20
-feat = np.zeros([1,num_anchors,height,width,num_output_per_ancher], dtype=np.float32)
+feat = np.random.rand(num_batch,num_anchors,height,width,num_output_per_ancher).astype(np.float32)
 batch_size, na, ny, nx, no = feat.shape
-out_batch = np.empty( (batch_size, max_boxes, 6), dtype=np.float32)
-out_batch_pos = np.zeros(batch_size, dtype=np.uint32)
+out_batch = np.empty( (num_batch, max_boxes, 6), dtype=np.float32)
+out_batch_pos = np.zeros(num_batch, dtype=np.uint32)
 
 
-print("function1", function( anchors.reshape(-1),
+function( anchors.reshape(-1),
                             int(num_anchors),
                             stride, 
                             conf_thresh, 
@@ -72,6 +77,8 @@ print("function1", function( anchors.reshape(-1),
                             nx,
                             no,
                             out_batch.reshape(-1),
-                            out_batch_pos))
+                            out_batch_pos)
 
 llvm.shutdown()
+print("out_batch", out_batch)
+print("out_batch_pos", out_batch_pos)

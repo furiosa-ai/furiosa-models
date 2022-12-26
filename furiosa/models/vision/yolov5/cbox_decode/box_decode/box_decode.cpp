@@ -16,9 +16,6 @@ void box_decode_feat(
     float *const out_batch,
     uint32_t *out_batch_pos)
 {
-
-    // assertm(false, "false");
-
     const uint32_t params_per_box = 6;
 
     const uint32_t max_out_batch_pos = params_per_box * max_boxes;
@@ -108,6 +105,7 @@ void box_decode_feat(
             }
         }
 
+        printf("out_pos: %d\n", out_pos);
         // update buffer end
         *out_pos_ptr = out_pos;
     }
