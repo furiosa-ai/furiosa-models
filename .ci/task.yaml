@@ -214,7 +214,8 @@ spec:
 
         cd /workspace/source
 
-        echo "\`\`\`" > $(workspaces.source.path)/$(params.reportFileName)
+        git log -n1 --format="%C(auto) %h %s" > $(workspaces.source.path)/$(params.reportFileName)
+        echo "\`\`\`" >> $(workspaces.source.path)/$(params.reportFileName)
         py.test-benchmark compare >> $(workspaces.source.path)/$(params.reportFileName)
         echo "\`\`\`" >> $(workspaces.source.path)/$(params.reportFileName)
 
