@@ -3,8 +3,6 @@ from typing import Callable, List, Optional, Sequence, Type
 
 from tqdm import tqdm
 
-from furiosa.runtime import session
-
 from .. import vision
 from ..types import Model
 from ..utils import get_field_default
@@ -103,6 +101,8 @@ def decorate_result(
 
 
 def run_inferences(model_cls: Type[Model], input_paths: Sequence[str], postprocess: Optional[str]):
+    from furiosa.runtime import session
+
     warning = """WARN: the benchmark results may depend on the number of input samples,
 sizes of the images, and a machine where this benchmark is running."""
     postprocess = postprocess and postprocess.lower()
