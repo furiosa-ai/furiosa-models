@@ -29,5 +29,8 @@ tkn hub install task git-clone --namespace $NAMESPACE \
 tkn hub install task github-set-status --namespace $NAMESPACE \
     || tkn hub reinstall task github-set-status --namespace $NAMESPACE
 
+tkn hub install task github-add-comment --namespace $NAMESPACE \
+    || tkn hub reinstall task github-add-comment --namespace $NAMESPACE
+
 # Apply all files in cwd
 kubectl apply --namespace $NAMESPACE --filename .
