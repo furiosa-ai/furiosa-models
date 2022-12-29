@@ -135,4 +135,4 @@ sizes of the images, and a machine where this benchmark is running."""
         decorate_result(all_done - initial_time, queries, "Preprocess -> Inference -> Postprocess")
     )
     print(decorate_result(all_done - after_preprocess, queries, "Inference -> Postprocess"))
-    print(decorate_result(all_done - after_npu, queries, "Inference", newline=False))
+    print(decorate_result(after_npu - after_preprocess, queries, "Inference", newline=False))
