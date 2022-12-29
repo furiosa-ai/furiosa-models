@@ -5,9 +5,9 @@ import cv2
 import numpy as np
 import numpy.typing as npt
 
+from .. import native
 from ...types import ObjectDetectionModel, Platform, PostProcessor, PreProcessor
-from ...vision.postprocess import LtrbBoundingBox, ObjectDetectionResult, nms_internal_ops_fast
-from .box_decoder import BoxDecoder
+from ...vision.postprocess import LtrbBoundingBox, ObjectDetectionResult
 
 _INPUT_SIZE = (640, 640)
 _GRID_CELL_OUTPUT_SHAPES = [(80, 80), (40, 40), (20, 20)]
@@ -72,47 +72,6 @@ def _letterbox(
     return im, ratio, (dw, dh)
 
 
-def _nms(
-    prediction: Sequence[np.ndarray], iou_thres: float = 0.45, class_agnostic: bool = True
-) -> List[np.ndarray]:
-    """Internal Non-Maxima Suppression for BoxDecode
-
-    Args:
-        prediction (Sequence[np.ndarray]): Batch x 6(left,top,right,bottom,confidence,class index)
-        iou_thres (float, optional): IoU Threshold. Defaults to 0.45.
-        class_agnostic (bool, optional): Class Agnostic. Defaults to True.
-
-    Returns:
-        List[np.ndarray]: Detected Boxes
-    """
-    # Checks
-    assert 0 <= iou_thres <= 1, f"Invalid IoU {iou_thres}, valid values are between 0.0 and 1.0"
-
-    # Settings
-    min_wh, max_wh = (  # noqa: F841
-        2,
-        7680,
-    )  # (pixels) minimum and maximum box width and height
-
-    batched_output = []
-    for x in prediction:
-        # Batched NMS
-        if not class_agnostic:
-            class_index = x[:, 5:6] * max_wh  # class index * max_wh
-            # c = 0, offset 0 + (xyxy)
-            # c = 1, +max_wh + (xyxy)
-            # c = 2, +2*max_wh + (xyxy)
-            # ...
-            # boxes of different classes can never overlap each other.
-            boxes, scores = x[:, :4] + class_index, x[:, 4]  # boxes (offset by class), scores
-        else:
-            boxes, scores = x[:, :4], x[:, 4]
-        i = nms_internal_ops_fast(boxes[:, :4], scores, iou_thres)  # NMS
-        batched_output.append(x[i, :])
-
-    return batched_output
-
-
 def _resize(img, model_input_size):
     w, h = model_input_size
     return _letterbox(img, (h, w), auto=False)
@@ -135,28 +94,6 @@ def _compute_stride() -> np.ndarray:
     feat_h = np.float32([shape[0] for shape in _GRID_CELL_OUTPUT_SHAPES])  # a size of grid cell
     strides = img_h / feat_h
     return strides
-
-
-def boxdecoder(class_names: Sequence[str], anchors: np.ndarray) -> BoxDecoder:
-    """Calculate the left, top, right, and bottom of the box from the coordinates
-       predicted by a model.
-       In predicted features(batch x features(the number anchors x (5+the number of clsss))),
-       this box deocoder computes Batch x N x 6 properties(left,top,right,bottom,conf,class index) for boxes with a high probability of being an object.
-       It is selected as a candidate box with a high probability of an object with the condition of "obj_conf * class_conf >= confidnece threshold". And the class index is the index of the array corresponding to the highest score value.
-
-    Args:
-        class_names (Sequence[str]): A list of class string.
-        anchors (np.ndarray): a aspect ratio array of anchors.
-
-    Returns:
-        BoxDecoderC Callable Instance. If the instance is called,
-            it returns an numpy.ndarray with batch x N x 6 properties.
-    """
-    return BoxDecoder(
-        anchors=anchors,
-        num_classes=len(class_names),
-        stride=_compute_stride(),
-    )
 
 
 class YOLOv5PreProcessor(PreProcessor):
@@ -209,14 +146,13 @@ class YOLOv5PreProcessor(PreProcessor):
 class YOLOv5PostProcessor(PostProcessor):
     def __init__(self, anchors: npt.ArrayLike, class_names: Sequence[str]):
         """
-        box_decoder (BoxDecoderC): A box decoder. It has several information to decode: (xyxy, confidence threshold, anchor_grid, stride, number of classes).
-        anchor_per_layer_count (int): The number of anchors per layers.
+        native (RustProcessor): A native postprocessor. It has several information to decode: (xyxy, confidence threshold, anchor_grid, stride, number of classes).
         class_names (Sequence[str]): A list of class names.
         """
         self.anchors = anchors
         self.class_names = class_names
-        self.box_decoder = boxdecoder(class_names, anchors)
         self.anchor_per_layer_count = anchors.shape[1]
+        self.native = native.yolov5.RustPostProcessor(anchors, len(class_names), _compute_stride())
 
     def __call__(
         self,
@@ -254,8 +190,9 @@ class YOLOv5PostProcessor(PostProcessor):
             _reshape_output(f, self.anchor_per_layer_count, len(self.class_names))
             for f in model_outputs
         ]
-        batched_boxes = self.box_decoder(model_outputs, conf_thres)
-        # batched_boxes = _nms(batched_boxes, iou_thres)
+
+        # FIXME: Don't crush batch
+        batched_boxes = [self.native.eval(model_outputs, conf_thres, iou_thres)]
 
         batched_detected_boxes = []
         for boxes, preproc_params in zip(batched_boxes, contexts):
@@ -263,17 +200,18 @@ class YOLOv5PostProcessor(PostProcessor):
             padw, padh = preproc_params['pad']
             detected_boxes = []
             # rescale boxes
-            boxes[:, [0, 2]] = (1 / scale) * (boxes[:, [0, 2]] - padw)
-            boxes[:, [1, 3]] = (1 / scale) * (boxes[:, [1, 3]] - padh)
 
             for box in boxes:
                 detected_boxes.append(
                     ObjectDetectionResult(
-                        index=int(box[5]),
-                        label=self.class_names[int(box[5])],
-                        score=box[4],
+                        index=box.class_id,
+                        label=self.class_names[box.class_id],
+                        score=box.score,
                         boundingbox=LtrbBoundingBox(
-                            left=box[0], top=box[1], right=box[2], bottom=box[3]
+                            left=(box.left - padw) / scale,
+                            top=(box.top - padh) / scale,
+                            right=(box.right - padw) / scale,
+                            bottom=(box.bottom - padh) / scale,
                         ),
                     )
                 )
