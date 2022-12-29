@@ -161,6 +161,9 @@ spec:
       default: "1"
     - name: modelName
       description: Name of the model to run the regression test
+    - name: reportFileName
+      description: Name of the file to save the report data
+      default: "report.txt"
  
   workspaces:
     - name: source
@@ -262,11 +265,28 @@ spec:
   - name: regression-test-report
     taskRef:
       name: regression-test-report
+    params:
+    - name: reportFileName
+      value: $(params.reportFileName)
     workspaces:
       - name: source
         workspace: source
     runAfter:
       - regression-test-with-npu
+
+  - name: github-add-comment
+    taskRef:
+      name: github-add-comment
+    workspaces:
+      - name: comment-file
+        workspace: source
+    params:
+    - name: REQUEST_URL
+      value: https://github.com/$(params.repo_full_name)/pull/$(params.prNumber)
+    - name: COMMENT_OR_FILE
+      value: $(params.reportFileName)
+    runAfter:
+      - regression-test-report
 
   finally:
   - name: set-status-success

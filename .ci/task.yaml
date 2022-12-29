@@ -202,6 +202,9 @@ spec:
     - name: image
       description: The container image
       default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:v0.8.0
+    - name: reportFileName
+      description: Name of the file to save the report data
+      default: report.txt
   steps:
     - name: regression-test-report
       image: $(params.image)
@@ -210,7 +213,7 @@ spec:
         pip install --quiet pytest-benchmark
 
         cd /workspace/source
-        py.test-benchmark compare
+        py.test-benchmark compare | tee $(workspaces.source.path)/$(params.reportFileName)
 
       resources:
         requests:
