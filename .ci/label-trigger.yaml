@@ -287,6 +287,10 @@ spec:
       value: https://github.com/$(params.repo_full_name)/pull/$(params.prNumber)
     - name: COMMENT_OR_FILE
       value: $(params.reportFileName)
+    - name: GITHUB_TOKEN_SECRET_NAME
+      value: "github-credential"
+    - name: GITHUB_TOKEN_SECRET_KEY
+      value: "password"
     runAfter:
       - regression-test-report
 
