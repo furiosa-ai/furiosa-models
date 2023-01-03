@@ -111,7 +111,7 @@ def _nms_internal_ops_fast_py(
     # compute the area of the bounding boxes and sort the bounding
     # boxes by score of the bounding box
     area = (x2 - x1) * (y2 - y1)
-    idxs = np.argsort(scores)
+    idxs = np.argsort(scores, kind="stable")
     # keep looping while some indexes still remain in the indexes
     # list
     while len(idxs) > 0:
