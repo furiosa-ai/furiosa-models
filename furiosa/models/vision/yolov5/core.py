@@ -191,8 +191,7 @@ class YOLOv5PostProcessor(PostProcessor):
             for f in model_outputs
         ]
 
-        # FIXME: Don't crush batch
-        batched_boxes = [self.native.eval(model_outputs, conf_thres, iou_thres)]
+        batched_boxes = self.native.eval(model_outputs, conf_thres, iou_thres)
 
         batched_detected_boxes = []
         for boxes, preproc_params in zip(batched_boxes, contexts):
