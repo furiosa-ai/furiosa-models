@@ -152,7 +152,7 @@ class YOLOv5PostProcessor(PostProcessor):
         self.anchors = anchors
         self.class_names = class_names
         self.anchor_per_layer_count = anchors.shape[1]
-        self.native = native.yolov5.RustPostProcessor(anchors, len(class_names), _compute_stride())
+        self.native = native.yolov5.RustPostProcessor(anchors, _compute_stride())
 
     def __call__(
         self,

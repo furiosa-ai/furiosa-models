@@ -12,7 +12,7 @@ class BoxDecoder:
             anchors (np.ndarray): anchors: layers x the number of anchors x 2(aspect ratio: width, height)
             stride (np.ndarray): stride per layers: image_height / feature_height for each layer.
         """
-        self.native = native.yolov5.RustPostProcessor(anchors, num_classes, stride)
+        self.native = native.yolov5.RustPostProcessor(anchors, stride)
 
     def __call__(self, feats: np.ndarray, conf_thres: float) -> np.ndarray:
         """_summary_
