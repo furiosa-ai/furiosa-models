@@ -31,7 +31,7 @@ dependencies = [
     "furiosa-common == 0.8.*",
     "furiosa-registry == 0.8.*",
     "furiosa-runtime == 0.8.*",
-    "furiosa-native-postprocess == 0.2.*",
+    "furiosa-native-postprocess ~= 0.2.1",
 
     "aiofiles ~= 22.1.0",
     "aiohttp ~= 3.8.3",
