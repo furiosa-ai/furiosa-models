@@ -68,6 +68,4 @@ def test_yolov5l_accuracy(benchmark):
     print("YOLOv5Large mAP50:", result['map50'])
     print("YOLOv5Large ap_class:", result['ap_class'])
     print("YOLOv5Large ap50_class:", result['ap50_class'])
-    np.testing.assert_almost_equal(
-        result['map'], EXPECTED_MAP_RUST, err_msg="Accuracy check failed"
-    )
+    np.testing.assert_allclose(result['map'], EXPECTED_MAP_RUST, err_msg="Accuracy check failed")
