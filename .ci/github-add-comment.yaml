@@ -3,6 +3,7 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: github-add-comment
+  namespace: ci-furiosa-models
   labels:
     app.kubernetes.io/version: "0.4"
   annotations:
@@ -23,12 +24,12 @@ spec:
       optional: true
       description: The optional workspace containing comment file to be posted.
 
-  results:
-    - name: OLD_COMMENT
-      description: The old text of the comment, if any.
+  # results:
+  #   - name: OLD_COMMENT
+  #     description: The old text of the comment, if any.
 
-    - name: NEW_COMMENT
-      description: The new text of the comment, if any.
+  #   - name: NEW_COMMENT
+  #     description: The new text of the comment, if any.
 
   params:
     - name: GITHUB_HOST_URL
