@@ -10,7 +10,7 @@ ifndef DOCKER_TAG
 endif
 
 toolchain:
-	env TOOLCHAIN_VERSION=0.8.0-2+nightly-221023 sh -c 'apt-get install -y --allow-downgrades furiosa-libcompiler=$$TOOLCHAIN_VERSION furiosa-libnux-extrinsic=$$TOOLCHAIN_VERSION furiosa-libnux=$$TOOLCHAIN_VERSION'
+	env TOOLCHAIN_VERSION=0.8.0-2 sh -c 'apt-get install -y --allow-downgrades furiosa-libcompiler=$$TOOLCHAIN_VERSION furiosa-libnux-extrinsic=$$TOOLCHAIN_VERSION furiosa-libnux=$$TOOLCHAIN_VERSION'
 
 lint:
 	isort --diff --check .
