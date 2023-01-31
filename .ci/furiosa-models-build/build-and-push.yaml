@@ -22,8 +22,8 @@ spec:
       image: $(params.BUILDKIT_IMAGE)
       workingDir: /workspace/source
       script: |
-        #!/usr/bin/env bash
-        set -e
+        #!/usr/bin/env ash
+        set -eu
 
         url=$(resources.outputs.image.url)
 
