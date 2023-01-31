@@ -1,37 +1,6 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: format
-  namespace: ci-furiosa-models
-spec:
-  workspaces:
-    - name: source
-  params:
-    - name: image
-      description: The container image to use black in
-      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:v0.8.0
-  steps:
-    - name: format
-      image: $(params.image)
-      script: |
-        #!/usr/bin/env bash
-        set -e
-
-        cd /workspace/source
-
-        make lint
-
-      resources:
-        requests:
-          memory: 4Gi
-          cpu: 4
-        limits:
-          memory: 4Gi
-          cpu: 4
----
-apiVersion: tekton.dev/v1beta1
-kind: Task
-metadata:
   name: unittests
   namespace: ci-furiosa-models
 spec:
