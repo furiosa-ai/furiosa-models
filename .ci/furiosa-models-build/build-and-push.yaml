@@ -21,6 +21,8 @@ spec:
     - name: build-and-push
       image: $(params.BUILDKIT_IMAGE)
       workingDir: /workspace/source
+      securityContext:
+        privileged: true
       script: |
         #!/usr/bin/env ash
         set -eu
