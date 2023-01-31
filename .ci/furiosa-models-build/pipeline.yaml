@@ -73,24 +73,9 @@ spec:
     - name: depth
       value: $(params.gitCloneDepth)
 
-  - name: set-dvc-cache
+  - name: lint
     taskRef:
-      name: set-dvc-cache
-    workspaces:
-      - name: source
-        workspace: source
-      - name: furiosa-apt-credential
-        workspace: furiosa-apt-credential
-      - name: aws-credential
-        workspace: aws-credential
-      - name: furiosa-models-dvc-cache
-        workspace: furiosa-models-dvc-cache
-    runAfter:
-      - clone
-
-  - name: format
-    taskRef:
-      name: format
+      name: lint
     workspaces:
       - name: source
         workspace: source
@@ -102,59 +87,19 @@ spec:
     runAfter:
       - clone
 
-  - name: unittests
+  - name: build-image
     taskRef:
-      name: unittests
+      name: build-image
     workspaces:
       - name: source
         workspace: source
-      - name: furiosa-apt-credential
-        workspace: furiosa-apt-credential
-      - name: aws-credential
-        workspace: aws-credential
-      - name: internal-pypi-secret
-        workspace: internal-pypi-secret
-        subPath: .netrc
-      - name: furiosa-models-dvc-cache
-        workspace: furiosa-models-dvc-cache
-      - name: furiosa-models-pip-cache
-        workspace: furiosa-models-pip-cache
-      - name: furiosa-models-compiler-cache
-        workspace: furiosa-models-compiler-cache
     params:
     - name: logs
-      value: "https://grafana.office.furiosa.in/d/logs/kubernetes-pod-logs?orgId=1&var-pod=$(context.pipelineRun.name)-unittests-pod"
+      value: "https://grafana.office.furiosa.in/d/logs/kubernetes-pod-logs?orgId=1&var-pod=$(context.pipelineRun.name)-build-image"
     - name: pod-resource-usage
-      value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-unittests-pod"
+      value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-build-image-pod"
     runAfter:
-      - set-dvc-cache
-
-  - name: test-examples
-    taskRef:
-      name: test-examples
-    workspaces:
-      - name: source
-        workspace: source
-      - name: furiosa-apt-credential
-        workspace: furiosa-apt-credential
-      - name: aws-credential
-        workspace: aws-credential
-      - name: internal-pypi-secret
-        workspace: internal-pypi-secret
-        subPath: .netrc
-      - name: furiosa-models-dvc-cache
-        workspace: furiosa-models-dvc-cache
-      - name: furiosa-models-pip-cache
-        workspace: furiosa-models-pip-cache
-      - name: furiosa-models-compiler-cache
-        workspace: furiosa-models-compiler-cache
-    params:
-      - name: logs
-        value: "https://grafana.office.furiosa.in/d/logs/kubernetes-pod-logs?orgId=1&var-pod=$(context.pipelineRun.name)-test-examples-pod"
-      - name: pod-resource-usage
-        value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-test-examples-pod"
-    runAfter:
-      - set-dvc-cache
+      - lint
 
   finally:
   - name: set-status-success
