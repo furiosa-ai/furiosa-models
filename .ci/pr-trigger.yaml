@@ -86,6 +86,6 @@ spec:
               claimName: furiosa-models-compiler-cache
         serviceAccountName: build-bot
         pipelineRef:
-          name: furiosa-models-ci
+          name: furiosa-models-build
         timeouts:
           pipeline: 3h
