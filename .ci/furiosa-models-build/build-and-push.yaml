@@ -35,7 +35,7 @@ spec:
                 --opt filename=$(params.DOCKERFILE) \
                 --opt target=image \
                 --local context=. --local dockerfile=. \
-                --output type=image,name=${url},push=true
+                --output type=local,dest=.
 
       resources:
         requests:
