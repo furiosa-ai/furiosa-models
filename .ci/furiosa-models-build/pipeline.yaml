@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: furiosa-models-ci
+  name: furiosa-models-build
   namespace: ci-furiosa-models
 spec:
   params:
@@ -55,7 +55,7 @@ spec:
     - name: DESCRIPTION
       value: "begin"
     - name: CONTEXT
-      value: "furiosa-models-ci"
+      value: "furiosa-models-build"
     - name: STATE
       value: pending
 
@@ -174,7 +174,7 @@ spec:
     - name: DESCRIPTION
       value: "succeeded"
     - name: CONTEXT
-      value: "furiosa-models-ci"
+      value: "furiosa-models-build"
     - name: STATE
       value: success
     when:
@@ -198,7 +198,7 @@ spec:
     - name: DESCRIPTION
       value: "failed"
     - name: CONTEXT
-      value: "furiosa-models-ci"
+      value: "furiosa-models-build"
     - name: STATE
       value: failure
     when:
