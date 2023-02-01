@@ -36,7 +36,6 @@ spec:
 
         cd /workspace/source
 
-        pip install --pre .[test]
         make unit_tests
 
       resources:
@@ -88,7 +87,6 @@ spec:
 
         cd /workspace/source
 
-        pip install --pre .
         NPU_GLOBAL_CONFIG_PATH=warboy-2pe make examples
 
       resources:
