@@ -9,9 +9,9 @@ spec:
   interceptors:
     - cel:
         filter: >-
-          body.repository.full_name in ['furiosa-ai/furiosa-models'] &&
           body.context in ['furiosa-models-build'] &&
-          body.state in ['success']
+          body.state in ['success'] &&
+          body.repository.full_name in ['furiosa-ai/furiosa-models']
   bindings:
     - ref: tekton-ci-github-base
       kind: ClusterTriggerBinding
