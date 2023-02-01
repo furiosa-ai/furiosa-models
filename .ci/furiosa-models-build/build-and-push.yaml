@@ -12,7 +12,7 @@ spec:
       default: "Dockerfile"
     - name: BUILDKIT_IMAGE
       description: The name of the Buildkit image
-      default: "docker.io/moby/buildkit:v0.11.2"
+      default: "docker.io/moby/buildkit:v0.9.3"
   resources:
     outputs:
       - name: image
@@ -28,6 +28,7 @@ spec:
         set -eu
 
         url=$(resources.outputs.image.url)
+        ls
 
         buildctl-daemonless.sh --debug build \
                 --progress=plain \
