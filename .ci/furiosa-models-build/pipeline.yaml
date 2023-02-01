@@ -101,7 +101,7 @@ spec:
         workspace: furiosa-apt-credential
     params:
     - name: DOCKERFILE
-      value: "./docker/Dockerfile"
+      value: "Dockerfile"
     - name: logs
       value: "https://grafana.office.furiosa.in/d/logs/kubernetes-pod-logs?orgId=1&var-pod=$(context.pipelineRun.name)-build-and-push"
     - name: pod-resource-usage
