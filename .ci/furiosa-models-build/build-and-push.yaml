@@ -34,9 +34,7 @@ spec:
                 --progress=plain \
                 --frontend=dockerfile.v0 \
                 --opt filename=$(params.DOCKERFILE) \
-                --opt target=image \
                 --local context=. --local dockerfile=. \
-                --output type=local,dest=.
 
       resources:
         requests:
