@@ -96,6 +96,14 @@ spec:
                         operator: In
                         values:
                         - npu
+        resources:
+          - name: image
+            resourceSpec:
+              description: image for commit $(tt.params.gitShortRevision)"
+              type: image
+              params:
+                - name: url
+                  value: "asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:$(tt.params.gitShortRevision)"
         workspaces:
           - name: source
             volumeClaimTemplate:
@@ -166,6 +174,10 @@ spec:
     - name: reportFileName
       description: Name of the file to save the report data
       default: "report.txt"
+
+  resources:
+    - name: image
+      type: image
  
   workspaces:
     - name: source
@@ -221,21 +233,6 @@ spec:
     - name: depth
       value: $(params.gitCloneDepth)
 
-  - name: set-dvc-cache
-    taskRef:
-      name: set-dvc-cache
-    workspaces:
-      - name: source
-        workspace: source
-      - name: furiosa-apt-credential
-        workspace: furiosa-apt-credential
-      - name: aws-credential
-        workspace: aws-credential
-      - name: furiosa-models-dvc-cache
-        workspace: furiosa-models-dvc-cache
-    runAfter:
-      - clone
-
   - name: regression-test-with-npu
     taskRef:
       name: regression-test-with-npu
@@ -261,8 +258,12 @@ spec:
         workspace: furiosa-models-compiler-cache
       - name: furiosa-models-dataset
         workspace: furiosa-models-dataset
+    resources:
+      inputs:
+        - name: image
+          resource: image
     runAfter:
-      - set-dvc-cache
+      - clone
 
   - name: regression-test-report
     taskRef:
@@ -273,6 +274,10 @@ spec:
     workspaces:
       - name: source
         workspace: source
+    resources:
+      inputs:
+        - name: image
+          resource: image
     runAfter:
       - regression-test-with-npu
 
