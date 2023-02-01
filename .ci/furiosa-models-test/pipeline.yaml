@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: furiosa-models-build
+  name: furiosa-models-test
   namespace: ci-furiosa-models
 spec:
   params:
@@ -55,7 +55,7 @@ spec:
     - name: DESCRIPTION
       value: "begin"
     - name: CONTEXT
-      value: "furiosa-models-build"
+      value: "furiosa-models-test"
     - name: STATE
       value: pending
 
@@ -72,35 +72,6 @@ spec:
       value: $(params.gitRevision)
     - name: depth
       value: $(params.gitCloneDepth)
-
-  - name: set-dvc-cache
-    taskRef:
-      name: set-dvc-cache
-    workspaces:
-      - name: source
-        workspace: source
-      - name: furiosa-apt-credential
-        workspace: furiosa-apt-credential
-      - name: aws-credential
-        workspace: aws-credential
-      - name: furiosa-models-dvc-cache
-        workspace: furiosa-models-dvc-cache
-    runAfter:
-      - clone
-
-  - name: format
-    taskRef:
-      name: format
-    workspaces:
-      - name: source
-        workspace: source
-    params:
-    - name: logs
-      value: "https://grafana.office.furiosa.in/d/logs/kubernetes-pod-logs?orgId=1&var-pod=$(context.pipelineRun.name)-format"
-    - name: pod-resource-usage
-      value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-format-pod"
-    runAfter:
-      - clone
 
   - name: unittests
     taskRef:
@@ -127,7 +98,7 @@ spec:
     - name: pod-resource-usage
       value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-unittests-pod"
     runAfter:
-      - set-dvc-cache
+      - clone
 
   - name: test-examples
     taskRef:
@@ -154,7 +125,7 @@ spec:
       - name: pod-resource-usage
         value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-test-examples-pod"
     runAfter:
-      - set-dvc-cache
+      - clone
 
   finally:
   - name: set-status-success
@@ -174,7 +145,7 @@ spec:
     - name: DESCRIPTION
       value: "succeeded"
     - name: CONTEXT
-      value: "furiosa-models-build"
+      value: "furiosa-models-test"
     - name: STATE
       value: success
     when:
@@ -198,7 +169,7 @@ spec:
     - name: DESCRIPTION
       value: "failed"
     - name: CONTEXT
-      value: "furiosa-models-build"
+      value: "furiosa-models-test"
     - name: STATE
       value: failure
     when:
