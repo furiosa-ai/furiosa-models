@@ -30,11 +30,10 @@ spec:
         - name: "PIP_EXTRA_INDEX_URL"
           value: "https://internal-pypi.furiosa.dev/simple"
       image: $(resources.inputs.image.url)
+      workingDir: /workspace/source
       script: |
         #!/usr/bin/env bash
         set -e
-
-        cd /workspace/source
 
         make unit_tests
 
@@ -78,14 +77,13 @@ spec:
         - name: "PIP_EXTRA_INDEX_URL"
           value: "https://internal-pypi.furiosa.dev/simple"
       image: $(resources.inputs.image.url)
+      workingDir: /workspace/source
       script: |
         #!/usr/bin/env bash
         set -e
 
         TOOLCHAIN_VERSION=$(apt-cache policy furiosa-libcompiler | grep Installed | awk '{print $2}')
         apt-get update && apt-get install -y furiosa-libhal-sim=$TOOLCHAIN_VERSION
-
-        cd /workspace/source
 
         NPU_GLOBAL_CONFIG_PATH=warboy-2pe make examples
 

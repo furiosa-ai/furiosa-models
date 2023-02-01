@@ -34,17 +34,14 @@ spec:
         - name: "PIP_EXTRA_INDEX_URL"
           value: "https://internal-pypi.furiosa.dev/simple"
       image: $(params.image)
+      workingDir: /workspace/source
       script: |
         #!/usr/bin/env bash
         set -e
         set -x
 
-        cd /workspace/source
-
         rm -rf tests/data
         ln -s /furiosa-models-dataset tests/data
-
-        pip install --pre .[test]
 
         make regression-test-$(params.modelName)
 
@@ -76,11 +73,9 @@ spec:
   steps:
     - name: regression-test-report
       image: $(params.image)
+      workingDir: /workspace/source
       script: |
         #!/usr/bin/env bash
-        pip install --quiet pytest-benchmark
-
-        cd /workspace/source
 
         git log -n1 --format="%C(auto) %h %s" > $(workspaces.source.path)/$(params.reportFileName)
         echo "\`\`\`" >> $(workspaces.source.path)/$(params.reportFileName)
