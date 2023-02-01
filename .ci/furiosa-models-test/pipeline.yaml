@@ -21,6 +21,10 @@ spec:
       description: Number of commits in the change + 1
       default: "1"
 
+  resources:
+    - name: image
+      type: image
+
   workspaces:
     - name: source
       description: Workspace where the git repo is prepared for testing
@@ -97,6 +101,10 @@ spec:
       value: "https://grafana.office.furiosa.in/d/logs/kubernetes-pod-logs?orgId=1&var-pod=$(context.pipelineRun.name)-unittests-pod"
     - name: pod-resource-usage
       value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-unittests-pod"
+    resources:
+      inputs:
+        - name: image
+          resource: image
     runAfter:
       - clone
 
@@ -124,6 +132,10 @@ spec:
         value: "https://grafana.office.furiosa.in/d/logs/kubernetes-pod-logs?orgId=1&var-pod=$(context.pipelineRun.name)-test-examples-pod"
       - name: pod-resource-usage
         value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-test-examples-pod"
+    resources:
+      inputs:
+        - name: image
+          resource: image
     runAfter:
       - clone
 

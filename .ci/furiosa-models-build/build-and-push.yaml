@@ -29,14 +29,13 @@ spec:
         #!/usr/bin/env ash
         set -eu
 
-        url=$(resources.outputs.image.url)
-
         buildctl-daemonless.sh --debug build \
                 --progress=plain \
                 --frontend=dockerfile.v0 \
                 --opt filename=$(params.DOCKERFILE) \
                 --local context=. --local dockerfile=. \
                 --secret id=furiosa.conf,src=/etc/apt/auth.conf.d/furiosa.conf
+                --output type=image,name=$(resources.outputs.image.url),push=true
 
       resources:
         requests:

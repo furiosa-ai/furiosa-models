@@ -20,16 +20,16 @@ spec:
       mountPath: /root/.cache/pip
     - name: furiosa-models-compiler-cache
       mountPath: /root/.cache/furiosa
-  params:
-    - name: image
-      description: The container image to use black in
-      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:v0.8.0
+  resources:
+    inputs:
+      - name: image
+        type: image
   steps:
     - name: unittests
       env:
         - name: "PIP_EXTRA_INDEX_URL"
           value: "https://internal-pypi.furiosa.dev/simple"
-      image: $(params.image)
+      image: $(resources.outputs.image.url)
       script: |
         #!/usr/bin/env bash
         set -e
@@ -69,16 +69,16 @@ spec:
       mountPath: /root/.cache/pip
     - name: furiosa-models-compiler-cache
       mountPath: /root/.cache/furiosa
-  params:
-    - name: image
-      description: The container image to use black in
-      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:v0.8.0
+  resources:
+    inputs:
+      - name: image
+        type: image
   steps:
     - name: run
       env:
         - name: "PIP_EXTRA_INDEX_URL"
           value: "https://internal-pypi.furiosa.dev/simple"
-      image: $(params.image)
+      image: $(resources.outputs.image.url)
       script: |
         #!/usr/bin/env bash
         set -e
