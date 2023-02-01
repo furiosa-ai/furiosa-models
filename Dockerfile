@@ -9,7 +9,7 @@ RUN apt-get update \
         python3-dev cmake protobuf-compiler gnupg curl
 
 RUN pip3 install --upgrade pip wheel setuptools Cython pytest pycocotools \
-        black isort dvc[s3]
+        black isort dvc[s3] pytest-benchmark
 
 RUN echo "deb [arch=amd64] https://internal-archive.furiosa.dev/ubuntu focal restricted" \
         > /etc/apt/sources.list.d/furiosa.list && \
