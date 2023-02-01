@@ -4,13 +4,14 @@ metadata:
   name: furiosa-models-test-trigger
   namespace: ci-furiosa-models
   labels:
-    ci.tekton.dev/trigger-type: github.pull-request
+    ci.tekton.dev/trigger-type: github.status
 spec:
   interceptors:
     - cel:
         filter: >-
           body.repository.full_name in ['furiosa-ai/furiosa-models'] &&
-          body.action in ['opened', 'synchronize']
+          body.context in ['furiosa-models-build'] &&
+          body.state in ['success']
   bindings:
     - ref: tekton-ci-github-base
       kind: ClusterTriggerBinding
