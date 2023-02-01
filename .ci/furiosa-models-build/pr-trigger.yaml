@@ -1,7 +1,7 @@
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: Trigger
 metadata:
-  name: furiosa-models-ci-trigger
+  name: furiosa-models-build-trigger
   namespace: ci-furiosa-models
   labels:
     ci.tekton.dev/trigger-type: github.pull-request
@@ -17,12 +17,12 @@ spec:
     - ref: tekton-ci-webhook-pull-request
       kind: ClusterTriggerBinding
   template:
-    ref: furiosa-models-ci
+    ref: furiosa-models-build
 ---
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
-  name: furiosa-models-ci
+  name: furiosa-models-build
   namespace: ci-furiosa-models
 spec:
   params:
