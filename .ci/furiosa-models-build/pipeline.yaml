@@ -97,6 +97,8 @@ spec:
     workspaces:
       - name: source
         workspace: source
+      - name: furiosa-apt-credential
+        workspace: furiosa-apt-credential
     params:
     - name: DOCKERFILE
       value: "./docker/Dockerfile"
