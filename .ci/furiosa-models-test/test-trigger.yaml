@@ -15,7 +15,7 @@ spec:
   bindings:
     - ref: tekton-ci-github-base
       kind: ClusterTriggerBinding
-    - ref: tekton-ci-webhook-pull-request
+    - ref: tekton-ci-webhook-status
       kind: ClusterTriggerBinding
   template:
     ref: furiosa-models-test
