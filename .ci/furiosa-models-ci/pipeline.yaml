@@ -113,6 +113,68 @@ spec:
     runAfter:
       - lint
 
+  - name: unittests
+    taskRef:
+      name: unittests
+    workspaces:
+      - name: source
+        workspace: source
+      - name: furiosa-apt-credential
+        workspace: furiosa-apt-credential
+      - name: aws-credential
+        workspace: aws-credential
+      - name: internal-pypi-secret
+        workspace: internal-pypi-secret
+        subPath: .netrc
+      - name: furiosa-models-dvc-cache
+        workspace: furiosa-models-dvc-cache
+      - name: furiosa-models-pip-cache
+        workspace: furiosa-models-pip-cache
+      - name: furiosa-models-compiler-cache
+        workspace: furiosa-models-compiler-cache
+    params:
+    - name: logs
+      value: "https://grafana.office.furiosa.in/d/logs/kubernetes-pod-logs?orgId=1&var-pod=$(context.pipelineRun.name)-unittests-pod"
+    - name: pod-resource-usage
+      value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-unittests-pod"
+    resources:
+      inputs:
+        - name: image
+          resource: image
+    runAfter:
+      - build-and-push
+
+  - name: test-examples
+    taskRef:
+      name: test-examples
+    workspaces:
+      - name: source
+        workspace: source
+      - name: furiosa-apt-credential
+        workspace: furiosa-apt-credential
+      - name: aws-credential
+        workspace: aws-credential
+      - name: internal-pypi-secret
+        workspace: internal-pypi-secret
+        subPath: .netrc
+      - name: furiosa-models-dvc-cache
+        workspace: furiosa-models-dvc-cache
+      - name: furiosa-models-pip-cache
+        workspace: furiosa-models-pip-cache
+      - name: furiosa-models-compiler-cache
+        workspace: furiosa-models-compiler-cache
+    params:
+      - name: logs
+        value: "https://grafana.office.furiosa.in/d/logs/kubernetes-pod-logs?orgId=1&var-pod=$(context.pipelineRun.name)-test-examples-pod"
+      - name: pod-resource-usage
+        value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-test-examples-pod"
+    resources:
+      inputs:
+        - name: image
+          resource: image
+    runAfter:
+      - build-and-push
+
   finally:
   - name: set-status-success
     taskRef:
