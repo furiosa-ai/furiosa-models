@@ -59,7 +59,7 @@ spec:
     - name: DESCRIPTION
       value: "begin"
     - name: CONTEXT
-      value: "furiosa-models-build"
+      value: "furiosa-models-ci"
     - name: STATE
       value: pending
 
@@ -193,7 +193,7 @@ spec:
     - name: DESCRIPTION
       value: "succeeded"
     - name: CONTEXT
-      value: "furiosa-models-build"
+      value: "furiosa-models-ci"
     - name: STATE
       value: success
     when:
@@ -217,7 +217,7 @@ spec:
     - name: DESCRIPTION
       value: "failed"
     - name: CONTEXT
-      value: "furiosa-models-build"
+      value: "furiosa-models-ci"
     - name: STATE
       value: failure
     when:
