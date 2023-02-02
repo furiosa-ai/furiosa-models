@@ -9,7 +9,7 @@ spec:
   params:
     - name: image
       description: The container image to use black in
-      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:v0.8.0
+      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:lint
   steps:
     - name: lint
       image: $(params.image)
