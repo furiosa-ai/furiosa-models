@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: lint
+  namespace: ci-furiosa-models
+spec:
+  workspaces:
+    - name: source
+  params:
+    - name: image
+      description: The container image to use black in
+      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:lint
+  steps:
+    - name: lint
+      image: $(params.image)
+      workingDir: /workspace/source
+      script: |
+        #!/usr/bin/env bash
+        set -e
+
+        make lint
+
+      resources:
+        requests:
+          memory: 4Gi
+          cpu: 1
+        limits:
+          memory: 4Gi
+          cpu: 1

@@ -1,0 +1,46 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-and-push
+  namespace: ci-furiosa-models
+spec:
+  workspaces:
+    - name: source
+    - name: furiosa-apt-credential
+      mountPath: /etc/apt/auth.conf.d
+  params:
+    - name: DOCKERFILE
+      description: The name of the Dockerfile
+      default: "Dockerfile"
+    - name: BUILDKIT_IMAGE
+      description: The name of the Buildkit image
+      default: "docker.io/moby/buildkit:v0.9.3"
+  resources:
+    outputs:
+      - name: image
+        type: image
+  steps:
+    - name: build-and-push
+      image: $(params.BUILDKIT_IMAGE)
+      workingDir: /workspace/source
+      securityContext:
+        privileged: true
+      script: |
+        #!/usr/bin/env ash
+        set -eu
+
+        buildctl-daemonless.sh --debug build \
+                --progress=plain \
+                --frontend=dockerfile.v0 \
+                --opt filename=$(params.DOCKERFILE) \
+                --local context=. --local dockerfile=. \
+                --secret id=furiosa.conf,src=/etc/apt/auth.conf.d/furiosa.conf \
+                --output type=image,name=$(resources.outputs.image.url),push=true
+
+      resources:
+        requests:
+          memory: 4Gi
+          cpu: 4
+        limits:
+          memory: 4Gi
+          cpu: 4

@@ -1,0 +1,93 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: regression-test-with-npu
+  namespace: ci-furiosa-models
+spec:
+  workspaces:
+    - name: source
+    - name: furiosa-apt-credential
+      mountPath: /etc/apt/auth.conf.d
+      readOnly: true
+    - name: aws-credential
+      mountPath: /root/.aws
+    - name: internal-pypi-secret
+      mountPath: /root/.netrc
+      readOnly: true
+    - name: furiosa-models-dvc-cache
+      mountPath: /dvc-cache
+    - name: furiosa-models-pip-cache
+      mountPath: /root/.cache/pip
+    - name: furiosa-models-compiler-cache
+      mountPath: /root/.cache/furiosa
+    - name: furiosa-models-dataset
+      mountPath: /furiosa-models-dataset
+  params:
+    - name: modelName
+      description: Name of the model to run the regression test
+  resources:
+    inputs:
+      - name: image
+        type: image
+  steps:
+    - name: regression-test-with-npu
+      env:
+        - name: "PIP_EXTRA_INDEX_URL"
+          value: "https://internal-pypi.furiosa.dev/simple"
+      image: $(resources.inputs.image.url)
+      workingDir: /workspace/source
+      script: |
+        #!/usr/bin/env bash
+        set -e
+        set -x
+
+        rm -rf tests/data
+        ln -s /furiosa-models-dataset tests/data
+
+        make regression-test-$(params.modelName)
+
+      resources:
+        requests:
+          memory: 32Gi
+          cpu: 16
+          alpha.furiosa.ai/npu: 1
+        limits:
+          memory: 32Gi
+          cpu: 16
+          alpha.furiosa.ai/npu: 1
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: regression-test-report
+  namespace: ci-furiosa-models
+spec:
+  workspaces:
+    - name: source
+  params:
+    - name: reportFileName
+      description: Name of the file to save the report data
+      default: report.txt
+  resources:
+    inputs:
+      - name: image
+        type: image
+  steps:
+    - name: regression-test-report
+      image: $(resources.inputs.image.url)
+      workingDir: /workspace/source
+      script: |
+        #!/usr/bin/env bash
+
+        git log -n1 --format="%C(auto) %h %s" > $(workspaces.source.path)/$(params.reportFileName)
+        echo "\`\`\`" >> $(workspaces.source.path)/$(params.reportFileName)
+        py.test-benchmark compare >> $(workspaces.source.path)/$(params.reportFileName)
+        echo "\`\`\`" >> $(workspaces.source.path)/$(params.reportFileName)
+
+      resources:
+        requests:
+          memory: 8Gi
+          cpu: 4
+        limits:
+          memory: 8Gi
+          cpu: 4

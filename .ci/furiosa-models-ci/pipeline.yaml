@@ -21,6 +21,10 @@ spec:
       description: Number of commits in the change + 1
       default: "1"
 
+  resources:
+    - name: image
+      type: image
+
   workspaces:
     - name: source
       description: Workspace where the git repo is prepared for testing
@@ -73,24 +77,9 @@ spec:
     - name: depth
       value: $(params.gitCloneDepth)
 
-  - name: set-dvc-cache
+  - name: lint
     taskRef:
-      name: set-dvc-cache
-    workspaces:
-      - name: source
-        workspace: source
-      - name: furiosa-apt-credential
-        workspace: furiosa-apt-credential
-      - name: aws-credential
-        workspace: aws-credential
-      - name: furiosa-models-dvc-cache
-        workspace: furiosa-models-dvc-cache
-    runAfter:
-      - clone
-
-  - name: format
-    taskRef:
-      name: format
+      name: lint
     workspaces:
       - name: source
         workspace: source
@@ -101,6 +90,28 @@ spec:
       value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-format-pod"
     runAfter:
       - clone
+
+  - name: build-and-push
+    taskRef:
+      name: build-and-push
+    workspaces:
+      - name: source
+        workspace: source
+      - name: furiosa-apt-credential
+        workspace: furiosa-apt-credential
+    params:
+    - name: DOCKERFILE
+      value: "Dockerfile"
+    - name: logs
+      value: "https://grafana.office.furiosa.in/d/logs/kubernetes-pod-logs?orgId=1&var-pod=$(context.pipelineRun.name)-build-and-push"
+    - name: pod-resource-usage
+      value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-build-and-push-pod"
+    resources:
+      outputs:
+        - name: image
+          resource: image
+    runAfter:
+      - lint
 
   - name: unittests
     taskRef:
@@ -126,8 +137,12 @@ spec:
       value: "https://grafana.office.furiosa.in/d/logs/kubernetes-pod-logs?orgId=1&var-pod=$(context.pipelineRun.name)-unittests-pod"
     - name: pod-resource-usage
       value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-unittests-pod"
+    resources:
+      inputs:
+        - name: image
+          resource: image
     runAfter:
-      - set-dvc-cache
+      - build-and-push
 
   - name: test-examples
     taskRef:
@@ -153,8 +168,12 @@ spec:
         value: "https://grafana.office.furiosa.in/d/logs/kubernetes-pod-logs?orgId=1&var-pod=$(context.pipelineRun.name)-test-examples-pod"
       - name: pod-resource-usage
         value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-test-examples-pod"
+    resources:
+      inputs:
+        - name: image
+          resource: image
     runAfter:
-      - set-dvc-cache
+      - build-and-push
 
   finally:
   - name: set-status-success

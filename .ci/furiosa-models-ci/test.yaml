@@ -1,0 +1,96 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: unittests
+  namespace: ci-furiosa-models
+spec:
+  workspaces:
+    - name: source
+    - name: furiosa-apt-credential
+      mountPath: /etc/apt/auth.conf.d
+      readOnly: true
+    - name: aws-credential
+      mountPath: /root/.aws
+    - name: internal-pypi-secret
+      mountPath: /root/.netrc
+      readOnly: true
+    - name: furiosa-models-dvc-cache
+      mountPath: /dvc-cache
+    - name: furiosa-models-pip-cache
+      mountPath: /root/.cache/pip
+    - name: furiosa-models-compiler-cache
+      mountPath: /root/.cache/furiosa
+  resources:
+    inputs:
+      - name: image
+        type: image
+  steps:
+    - name: unittests
+      env:
+        - name: "PIP_EXTRA_INDEX_URL"
+          value: "https://internal-pypi.furiosa.dev/simple"
+      image: $(resources.inputs.image.url)
+      workingDir: /workspace/source
+      script: |
+        #!/usr/bin/env bash
+        set -e
+
+        make unit_tests
+
+      resources:
+        requests:
+          memory: 16Gi
+          cpu: 8
+        limits:
+          memory: 16Gi
+          cpu: 8
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: test-examples
+  namespace: ci-furiosa-models
+spec:
+  workspaces:
+    - name: source
+    - name: furiosa-apt-credential
+      mountPath: /etc/apt/auth.conf.d
+      readOnly: true
+    - name: aws-credential
+      mountPath: /root/.aws
+    - name: internal-pypi-secret
+      mountPath: /root/.netrc
+      readOnly: true
+    - name: furiosa-models-dvc-cache
+      mountPath: /dvc-cache
+    - name: furiosa-models-pip-cache
+      mountPath: /root/.cache/pip
+    - name: furiosa-models-compiler-cache
+      mountPath: /root/.cache/furiosa
+  resources:
+    inputs:
+      - name: image
+        type: image
+  steps:
+    - name: run
+      env:
+        - name: "PIP_EXTRA_INDEX_URL"
+          value: "https://internal-pypi.furiosa.dev/simple"
+      image: $(resources.inputs.image.url)
+      workingDir: /workspace/source
+      script: |
+        #!/usr/bin/env bash
+        set -e
+
+        TOOLCHAIN_VERSION=$(apt-cache policy furiosa-libcompiler | grep Installed | awk '{print $2}')
+        apt-get update && apt-get install -y furiosa-libhal-sim=$TOOLCHAIN_VERSION
+
+        NPU_GLOBAL_CONFIG_PATH=warboy-2pe make examples
+
+      resources:
+        requests:
+          memory: 16Gi
+          cpu: 8
+        limits:
+          memory: 16Gi
+          cpu: 8
