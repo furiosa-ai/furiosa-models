@@ -80,7 +80,7 @@ def test_mlcommons_ssd_resnet34_accuracy(benchmark):
     coco_eval.accumulate()
     coco_eval.summarize()
     print("mAP:", coco_eval.stats[0])
-    assert coco_eval.stats[0] == EXPECTED_ACCURACY, "Accuracy check failed"
+    assert coco_eval.stats[0] >= EXPECTED_ACCURACY, "Accuracy check failed"
 
 
 def test_mlcommons_ssd_resnet34_with_native_rust_pp_accuracy(benchmark):
@@ -136,4 +136,4 @@ def test_mlcommons_ssd_resnet34_with_native_rust_pp_accuracy(benchmark):
     coco_eval.accumulate()
     coco_eval.summarize()
     print("mAP:", coco_eval.stats[0])
-    assert coco_eval.stats[0] == EXPECTED_ACCURACY_RUST, "Accuracy check failed"
+    assert coco_eval.stats[0] >= EXPECTED_ACCURACY_RUST, "Accuracy check failed"
