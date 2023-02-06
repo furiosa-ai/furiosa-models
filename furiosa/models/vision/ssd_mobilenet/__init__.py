@@ -226,11 +226,11 @@ class SSDMobileNetPythonPostProcessor(PostProcessor):
         # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L94-L97
         class_logits = [
             output.transpose((0, 2, 3, 1)).reshape((batch_size, -1, NUM_CLASSES))
-            for output in model_outputs[0::2]
+            for output in model_outputs[0:6]
         ]
         box_regression = [
             output.transpose((0, 2, 3, 1)).reshape((batch_size, -1, 4))
-            for output in model_outputs[1::2]
+            for output in model_outputs[6:12]
         ]
         # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L144-L166
         class_logits = np.concatenate(class_logits, axis=1)  # type: ignore[assignment]

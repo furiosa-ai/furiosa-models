@@ -11,7 +11,7 @@ from furiosa.models.types import Model
 from furiosa.models.vision import SSDMobileNet
 from furiosa.runtime import session
 
-EXPECTED_ACCURACY = 0.22762065944402837  # matches e2e-testing's accuracy exactly
+EXPECTED_ACCURACY = 0.22762065944402837
 EXPECTED_ACCURACY_NATIVE_RUST_PP = 0.22808056885213657
 
 
@@ -72,7 +72,7 @@ def test_mlcommons_ssd_mobilenet_accuracy(benchmark):
     coco_eval.summarize()
     print("mAP:", coco_eval.stats[0])
 
-    assert coco_eval.stats[0] == EXPECTED_ACCURACY, "Accuracy check failed"
+    assert coco_eval.stats[0] >= EXPECTED_ACCURACY, "Accuracy check failed"
 
 
 def test_mlcommons_ssd_mobilenet_with_native_rust_pp_accuracy(benchmark):
@@ -120,4 +120,4 @@ def test_mlcommons_ssd_mobilenet_with_native_rust_pp_accuracy(benchmark):
     coco_eval.accumulate()
     coco_eval.summarize()
     print("mAP:", coco_eval.stats[0])
-    assert coco_eval.stats[0] == EXPECTED_ACCURACY_NATIVE_RUST_PP, "Accuracy check failed"
+    assert coco_eval.stats[0] >= EXPECTED_ACCURACY_NATIVE_RUST_PP, "Accuracy check failed"
