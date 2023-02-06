@@ -82,7 +82,7 @@ spec:
           - pipelineTaskName: regression-test-with-npu
             taskPodTemplate:
               nodeSelector:
-                alpha.furiosa.ai/npu.rev: A0
+                alpha.furiosa.ai/npu.rev: B0
               tolerations:
               - key: "npu"
                 operator: "Exists"
