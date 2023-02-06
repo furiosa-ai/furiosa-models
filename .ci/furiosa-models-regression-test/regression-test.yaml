@@ -79,6 +79,7 @@ spec:
       script: |
         #!/usr/bin/env bash
 
+        git config --global --add safe.directory /workspace/source
         git log -n1 --format="%C(auto) %h %s" > $(workspaces.source.path)/$(params.reportFileName)
         echo "\`\`\`" >> $(workspaces.source.path)/$(params.reportFileName)
         py.test-benchmark compare >> $(workspaces.source.path)/$(params.reportFileName)
