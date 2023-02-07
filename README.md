@@ -32,8 +32,10 @@ you can find details about loading a model, their input and output tensors, pre/
 | [ResNet50](models/resnet50_v1.5.md)     | Image Classification | 25M  | 76.002% (ImageNet1K-val)  |
 | [SSDMobileNet](models/ssd_mobilenet.md) | Object Detection     | 7.2M | mAP 0.228 (COCO 2017-val) |
 | [SSDResNet34](models/ssd_resnet34.md)   | Object Detection     | 20M  | mAP 0.220 (COCO 2017-val) |
-| [YOLOv5M](models/yolov5m.md)            | Object Detection     | 21M  | mAP 0.280 (Bdd100k-val)   |
-| [YOLOv5L](models/yolov5l.md)            | Object Detection     | 46M  | mAP 0.295 (Bdd100k-val)   |
+| [YOLOv5M](models/yolov5m.md)            | Object Detection     | 21M  | mAP 0.280 (Bdd100k-val)\*  |
+| [YOLOv5L](models/yolov5l.md)            | Object Detection     | 46M  | mAP 0.295 (Bdd100k-val)\*  |
+
+_\*: The accuracy of the yolov5 f32 model trained with bdd100k-val dataset, is mAP 0.295 (for yolov5m) and mAP 0.316 (for yolov5l)._
 
 ## See Also
 * [Furiosa Models - Latest Documentation](https://furiosa-ai.github.io/furiosa-models/latest/)
