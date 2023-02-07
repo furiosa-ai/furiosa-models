@@ -29,7 +29,7 @@ function compile() {
   else
     echo " ... (Running)"
 
-    COMPILE_CMD="furiosa compile --target-npu warboy-2pe --target-ir ${FORMAT} $ONNX_PATH -o ${OUTPUT_PATH}"
+    COMPILE_CMD="furiosa compile --target-npu warboy-b0-2pe --target-ir ${FORMAT} $ONNX_PATH -o ${OUTPUT_PATH}"
 
     # Try to find the format-specific compiler config
     IR_COMPILER_CONFIG=$MODEL_DIR/${FILENAME}.${FORMAT}.yaml
