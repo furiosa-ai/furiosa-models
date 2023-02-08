@@ -9,7 +9,7 @@ import numpy.typing as npt
 from furiosa.registry.model import Format, Metadata, Publication
 
 from ...types import ImageClassificationModel, PostProcessor, PreProcessor
-from ...utils import EXT_ONNX
+from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
 from ..common.datasets import imagenet1k
 from ..preprocess import center_crop
 
@@ -88,8 +88,8 @@ class EfficientNetB0(ImageClassificationModel):
         return cls(
             name="EfficientNetB0",
             source=artifacts[EXT_ONNX],
-            dfg=None,
-            enf=None,
+            dfg=artifacts[EXT_DFG],
+            enf=artifacts[EXT_ENF],
             format=Format.ONNX,
             family="EfficientNet",
             version="1.0.2",
