@@ -2,7 +2,8 @@ SHELL=/bin/bash -o pipefail
 
 .PHONY: check-docker-tag toolchain lint test unit_tests examples regression-test-all \
 regression-test-resnet50 regression-test-ssd-mobilenet \
-regression-test-ssd-resnet34 regression-test-yolov5 doc docker-build docker-push
+regression-test-ssd-resnet34 regression-test-yolov5 doc docker-build docker-push \
+regression-test-efficientnet-b0
 
 check-docker-tag:
 ifndef DOCKER_TAG
@@ -44,6 +45,9 @@ regression-test-yolov5:
 	pytest -s ./tests/bench/test_unit_yolov5m.py && \
 	pytest -s ./tests/bench/test_yolov5l.py && \
 	pytest -s ./tests/bench/test_yolov5m.py
+
+regression-test-efficientnet-b0:
+	pytest -s ./tests/bench/test_efficientnet_b0.py
 
 doc:
 	mkdocs build

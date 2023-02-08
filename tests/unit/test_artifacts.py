@@ -63,3 +63,10 @@ def test_yolov5_medium():
         YOLOv5m.load(),
         DATA_DIRECTORY_BASE / "yolov5m_int8.onnx.dvc",
     )
+
+
+def test_efficientnet_b0():
+    sanity_check_for_dvc_file(
+        EfficientNetB0.load(),
+        DATA_DIRECTORY_BASE / "efficientnet_b0.onnx.dvc",
+    )
