@@ -1,20 +1,17 @@
 import math
 from pathlib import Path
-from typing import Any, Dict, List, Sequence, Tuple, Type, Union
+from typing import Any, Dict, List, Sequence, Tuple
 
 from PIL import Image
-import cv2
 import numpy as np
 import numpy.typing as npt
 
 from furiosa.registry.model import Format, Metadata, Publication
 
-from .. import native
-from ...errors import ArtifactNotFound
-from ...types import ImageClassificationModel, Platform, PostProcessor, PreProcessor
-from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, get_field_default
+from ...types import ImageClassificationModel, PostProcessor, PreProcessor
+from ...utils import EXT_ONNX
 from ..common.datasets import imagenet1k
-from ..preprocess import center_crop, resize_with_aspect_ratio
+from ..preprocess import center_crop
 
 CLASSES: List[str] = imagenet1k.ImageNet1k_CLASSES
 

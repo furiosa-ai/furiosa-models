@@ -2,8 +2,6 @@ import os
 from pathlib import Path
 from typing import List
 
-from PIL import Image
-import numpy as np
 import tqdm
 
 from furiosa.models.vision import EfficientNetB0
