@@ -37,7 +37,7 @@ def test_mlcommons_efficientnetb0_accuracy(benchmark):
 
     def workload(image, answer):
         global correct_predictions, incorrect_predictions
-        image = model.preprocess(image)
+        image, _ = model.preprocess(image)
         output = sess.run(image).numpy()
         output = model.postprocess(output)
 
