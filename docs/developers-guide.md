@@ -38,6 +38,6 @@ git push --tags <appropriate remote>  # e.g. git push --tags upstream
 We're using `flit` as our packaging tool, so please test that you can generate a proper wheel using the `flit build` command before releasing.
 You may want to install `flit` first, please install it with `pip install flit`.
 
-## Publish to PyPI
+### Publish to PyPI
 
-Now you can publish the package with `flit publish` command. :tada:
+Now you can publish the package with `flit publish` command. 🎉
