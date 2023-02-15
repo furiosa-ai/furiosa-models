@@ -438,50 +438,22 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#select-the-appropriate-commit" class="md-nav__link">
-    Select the appropriate commit
+  <a href="#preparing-for-release" class="md-nav__link">
+    Preparing for Release
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#create-a-dedicated-release-branch" class="md-nav__link">
-    Create a dedicated release branch
+  <a href="#pre-release-tasks" class="md-nav__link">
+    Pre-Release Tasks
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#set-the-version" class="md-nav__link">
-    Set the version
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#alter-absolute-links-in-documentation" class="md-nav__link">
-    Alter absolute links in documentation
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#create-release-tag" class="md-nav__link">
-    Create release tag
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#test-building-wheels" class="md-nav__link">
-    Test building wheels
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#publish-to-pypi" class="md-nav__link">
-    Publish to PyPI
+  <a href="#releasing-the-new-version" class="md-nav__link">
+    Releasing the New Version
   </a>
   
 </li>
@@ -549,50 +521,22 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#select-the-appropriate-commit" class="md-nav__link">
-    Select the appropriate commit
+  <a href="#preparing-for-release" class="md-nav__link">
+    Preparing for Release
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#create-a-dedicated-release-branch" class="md-nav__link">
-    Create a dedicated release branch
+  <a href="#pre-release-tasks" class="md-nav__link">
+    Pre-Release Tasks
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#set-the-version" class="md-nav__link">
-    Set the version
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#alter-absolute-links-in-documentation" class="md-nav__link">
-    Alter absolute links in documentation
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#create-release-tag" class="md-nav__link">
-    Create release tag
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#test-building-wheels" class="md-nav__link">
-    Test building wheels
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#publish-to-pypi" class="md-nav__link">
-    Publish to PyPI
+  <a href="#releasing-the-new-version" class="md-nav__link">
+    Releasing the New Version
   </a>
   
 </li>
@@ -624,28 +568,27 @@
 <h1 id="developers-guide">Developer's guide</h1>
 <p>This documentation is for developers who want to contribute to Furiosa Models.</p>
 <h2 id="release-guide">Release guide</h2>
-<h3 id="select-the-appropriate-commit">Select the appropriate commit</h3>
-<p>First, you need to select the proper release candidate commit to release.
-That revision <em>must pass</em> all CI tests and be polished.</p>
-<h3 id="create-a-dedicated-release-branch">Create a dedicated release branch</h3>
-<p>Create a release branch named <code>branch-&lt;release version w/o v prefix&gt;</code> from that commit.</p>
-<h3 id="set-the-version">Set the version</h3>
-<p>Furiosa Models' main branch is for developers, so it set to <code>&lt;next-release-version&gt;.dev0</code>.
-The version information is located in <code>./furiosa/models/__init__.py</code>. Please set it with the appropriate one.</p>
-<h3 id="alter-absolute-links-in-documentation">Alter absolute links in documentation</h3>
-<p>Since <code>README.md</code> can appear in many places, including GitHub, the rendered documentation, and the index page of PyPI, there are a few absolute URL links (e.g., <code>[Getting Started](https://furiosa-ai.github.io/furiosa-models/v0.8.0/getting_started/)</code>).
-Please change it to appropriate links with the proper version.</p>
-<h3 id="create-release-tag">Create release tag</h3>
-<p>Create a git tag when you publish a release to keep track of revisions in your releases.
-You can create and push a git tag with the following commands.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>tag<span class="w"> </span>&lt;release<span class="w"> </span>version&gt;<span class="w">  </span><span class="c1"># e.g. git tag v0.8.2</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>git<span class="w"> </span>push<span class="w"> </span>--tags<span class="w"> </span>&lt;appropriate<span class="w"> </span>remote&gt;<span class="w">  </span><span class="c1"># e.g. git push --tags upstream</span>
-</code></pre></div>
-<h3 id="test-building-wheels">Test building wheels</h3>
-<p>We're using <code>flit</code> as our packaging tool, so please test that you can generate a proper wheel using the <code>flit build</code> command before releasing.
-You may want to install <code>flit</code> first, please install it with <code>pip install flit</code>.</p>
-<h3 id="publish-to-pypi">Publish to PyPI</h3>
-<p>Now you can publish the package with <code>flit publish</code> command. 🎉</p>
+<h3 id="preparing-for-release">Preparing for Release</h3>
+<ul>
+<li>[ ] Select a correct release tag to mark the release: <code>x.y.z</code></li>
+<li>[ ] Update the code in the <code>main</code> branch to reflect the next development version.<ul>
+<li>[ ] <code>__version__</code> field in <code>furiosa/models/__init__.py</code></li>
+</ul>
+</li>
+<li>[ ] Create a dedicated release branch on github for the new tag.</li>
+</ul>
+<h3 id="pre-release-tasks">Pre-Release Tasks</h3>
+<p>Before releasing the new version, ensure that the following tasks are completed:</p>
+<ul>
+<li>[ ] Update the code in the release branch to the appropriate version.</li>
+<li>[ ] Generate a rendered documentation for the new release.</li>
+<li>[ ] Write a changelog that describes the changes made in the new release.</li>
+<li>[ ] Test the building of wheels by <code>flit build</code> to ensure the release is functional.</li>
+</ul>
+<h3 id="releasing-the-new-version">Releasing the New Version</h3>
+<ul>
+<li>[ ] Publish the package to PyPI with <code>flit publish</code> command. 🎉</li>
+</ul>
 
 
 

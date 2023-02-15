@@ -2,57 +2,57 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://furiosa-ai.github.io/furiosa-models/</loc>
-         <lastmod>2023-02-10</lastmod>
+         <lastmod>2023-02-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://furiosa-ai.github.io/furiosa-models/changelog/</loc>
-         <lastmod>2023-02-10</lastmod>
+         <lastmod>2023-02-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://furiosa-ai.github.io/furiosa-models/command_tool/</loc>
-         <lastmod>2023-02-10</lastmod>
+         <lastmod>2023-02-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://furiosa-ai.github.io/furiosa-models/developers-guide/</loc>
-         <lastmod>2023-02-10</lastmod>
+         <lastmod>2023-02-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://furiosa-ai.github.io/furiosa-models/getting_started/</loc>
-         <lastmod>2023-02-10</lastmod>
+         <lastmod>2023-02-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://furiosa-ai.github.io/furiosa-models/model_object/</loc>
-         <lastmod>2023-02-10</lastmod>
+         <lastmod>2023-02-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://furiosa-ai.github.io/furiosa-models/models/resnet50_v1.5/</loc>
-         <lastmod>2023-02-10</lastmod>
+         <lastmod>2023-02-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://furiosa-ai.github.io/furiosa-models/models/ssd_mobilenet/</loc>
-         <lastmod>2023-02-10</lastmod>
+         <lastmod>2023-02-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://furiosa-ai.github.io/furiosa-models/models/ssd_resnet34/</loc>
-         <lastmod>2023-02-10</lastmod>
+         <lastmod>2023-02-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://furiosa-ai.github.io/furiosa-models/models/yolov5l/</loc>
-         <lastmod>2023-02-10</lastmod>
+         <lastmod>2023-02-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://furiosa-ai.github.io/furiosa-models/models/yolov5m/</loc>
-         <lastmod>2023-02-10</lastmod>
+         <lastmod>2023-02-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
