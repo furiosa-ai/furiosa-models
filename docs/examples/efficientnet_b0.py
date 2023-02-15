@@ -1,5 +1,3 @@
-import numpy as np
-
 from furiosa.models.vision import EfficientNetB0
 from furiosa.runtime import session
 

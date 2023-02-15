@@ -70,3 +70,10 @@ def test_efficientnet_b0():
         EfficientNetB0.load(),
         DATA_DIRECTORY_BASE / "efficientnet_b0.onnx.dvc",
     )
+
+
+def test_efficientnet_v2_s():
+    sanity_check_for_dvc_file(
+        EfficientNetV2s.load(),
+        DATA_DIRECTORY_BASE / "efficientnet_v2_s.onnx.dvc",
+    )
