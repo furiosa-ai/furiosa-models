@@ -569,25 +569,25 @@
 <p>This documentation is for developers who want to contribute to Furiosa Models.</p>
 <h2 id="release-guide">Release guide</h2>
 <h3 id="preparing-for-release">Preparing for Release</h3>
-<ul>
-<li>[ ] Select a correct release tag to mark the release: <code>x.y.z</code></li>
-<li>[ ] Update the code in the <code>main</code> branch to reflect the next development version.<ul>
-<li>[ ] <code>__version__</code> field in <code>furiosa/models/__init__.py</code></li>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Select a correct release tag to mark the release: <code>x.y.z</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Update the code in the <code>main</code> branch to reflect the next development version.<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>__version__</code> field in <code>furiosa/models/__init__.py</code></li>
 </ul>
 </li>
-<li>[ ] Create a dedicated release branch on github for the new tag.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Create a dedicated release branch on github for the new tag.</li>
 </ul>
 <h3 id="pre-release-tasks">Pre-Release Tasks</h3>
 <p>Before releasing the new version, ensure that the following tasks are completed:</p>
-<ul>
-<li>[ ] Update the code in the release branch to the appropriate version.</li>
-<li>[ ] Generate a rendered documentation for the new release.</li>
-<li>[ ] Write a changelog that describes the changes made in the new release.</li>
-<li>[ ] Test the building of wheels by <code>flit build</code> to ensure the release is functional.</li>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Update the code in the release branch to the appropriate version.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Generate a rendered documentation for the new release.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Write a changelog that describes the changes made in the new release.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Test the building of wheels by <code>flit build</code> to ensure the release is functional.</li>
 </ul>
 <h3 id="releasing-the-new-version">Releasing the New Version</h3>
-<ul>
-<li>[ ] Publish the package to PyPI with <code>flit publish</code> command. 🎉</li>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Publish the package to PyPI with <code>flit publish</code> command. 🎉</li>
 </ul>
 
 
