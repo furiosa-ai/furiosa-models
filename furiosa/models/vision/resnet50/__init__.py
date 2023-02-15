@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 class ResNet50PreProcessor(PreProcessor):
     @staticmethod
-    def __call__(image: Union[str, npt.ArrayLike]) -> Tuple[np.array, None]:
+    def __call__(image: Union[str, npt.ArrayLike]) -> Tuple[np.ndarray, None]:
         """Convert an input image to a model input tensor
 
         Args:

@@ -1,0 +1,4 @@
+outs:
+- md5: 6091461f1e48120ffbbb42a1d4a031ab
+  size: 22182336
+  path: efficientnet_b0_warboy_2pe.enf
