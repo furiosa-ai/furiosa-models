@@ -49,9 +49,10 @@ def get_model_list(filter_func: Optional[Callable[..., bool]] = None) -> List[Li
         model = getattr(vision, model_name)
         if not filter_func(model):
             continue
-        postprocs = ', '.join(
-            map(lambda x: x.name.capitalize(), get_field_default(model, "postprocessor_map").keys())
-        )
+        postproc_map = get_field_default(model, "postprocessor_map")
+        if not postproc_map:
+            raise ValueError(f"No postprocessor map found for {model_name.capitalize()}")
+        postprocs = ', '.join(map(lambda x: x.name.capitalize(), postproc_map.keys()))
         # Model name, description, task type, available post process implementations
         model_list.append([model_name, model.__doc__, prettified_task_type(model), postprocs])
     return model_list
