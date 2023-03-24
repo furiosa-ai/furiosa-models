@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List, Sequence, Tuple
+from typing import Any, Dict, List, Sequence, Tuple, Type
 
 from PIL import Image, ImageOps
 import numpy as np
@@ -7,8 +7,8 @@ import numpy.typing as npt
 
 from furiosa.registry.model import Format, Metadata, Publication
 
-from ...types import ImageClassificationModel, PostProcessor, PreProcessor
-from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
+from ...types import ImageClassificationModel, Platform, PostProcessor, PreProcessor
+from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, get_field_default
 from ..common.datasets import imagenet1k
 
 CLASSES: List[str] = imagenet1k.ImageNet1k_CLASSES
@@ -67,7 +67,7 @@ class EfficientNetV2sPreProcessor(PreProcessor):
         image = image.astype(np.float32) / 255
 
         data = normalize(image)
-        return data[np.newaxis, ...], None
+        return np.expand_dims(data, axis=0), None
 
 
 class EfficientNetV2sPostProcessor(PostProcessor):
@@ -78,12 +78,17 @@ class EfficientNetV2sPostProcessor(PostProcessor):
 class EfficientNetV2s(ImageClassificationModel):
     """EfficientNetV2-s model"""
 
+    postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
+        Platform.PYTHON: EfficientNetV2sPostProcessor,
+    }
+
     @staticmethod
     def get_artifact_name():
         return "efficientnet_v2_s"
 
     @classmethod
     def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = False, *args, **kwargs):
+        postprocessor = get_field_default(cls, "postprocessor_map")[Platform.PYTHON]()
         return cls(
             name="EfficientNetV2s",
             source=artifacts[EXT_ONNX],
@@ -97,5 +102,5 @@ class EfficientNetV2s(ImageClassificationModel):
                 publication=Publication(url="https://arxiv.org/abs/2104.00298"),
             ),
             preprocessor=EfficientNetV2sPreProcessor(),
-            postprocessor=EfficientNetV2sPostProcessor(),
+            postprocessor=postprocessor,
         )
