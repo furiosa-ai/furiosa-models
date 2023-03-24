@@ -4,7 +4,7 @@ from typing import Callable, List, Optional, Sequence, Type
 from tqdm import tqdm
 
 from .. import vision
-from ..types import Model
+from ..types import Model, Platform
 from ..utils import get_field_default
 
 
@@ -49,9 +49,10 @@ def get_model_list(filter_func: Optional[Callable[..., bool]] = None) -> List[Li
         model = getattr(vision, model_name)
         if not filter_func(model):
             continue
-        postprocs = ', '.join(
-            map(lambda x: x.name.capitalize(), get_field_default(model, "postprocessor_map").keys())
-        )
+        postproc_map = get_field_default(model, "postprocessor_map")
+        if not postproc_map:
+            raise ValueError(f"No postprocessor map found for {model_name.capitalize()}")
+        postprocs = ', '.join(map(lambda x: x.name.capitalize(), postproc_map.keys()))
         # Model name, description, task type, available post process implementations
         model_list.append([model_name, model.__doc__, prettified_task_type(model), postprocs])
     return model_list
@@ -106,9 +107,12 @@ def run_inferences(model_cls: Type[Model], input_paths: Sequence[str], postproce
     warning = """WARN: the benchmark results may depend on the number of input samples,
 sizes of the images, and a machine where this benchmark is running."""
     postprocess = postprocess and postprocess.lower()
-    use_native = postprocess != "python"
-    if issubclass(model_cls, (vision.YOLOv5l, vision.YOLOv5m)):
-        use_native = False
+    use_native = any(
+        map(
+            lambda x: x.is_native_platform(),
+            get_field_default(model_cls, "postprocessor_map").keys(),
+        )
+    )
     model = model_cls.load(use_native=use_native)
     queries = len(input_paths)
     print(f"Running {queries} input samples ...")
