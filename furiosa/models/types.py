@@ -29,6 +29,9 @@ class Platform(IntEnum):
     CPP = 2
     RUST = 3
 
+    def is_native_platform(self):
+        return self != self.PYTHON
+
 
 class PostProcessor(ABC):
     def __init__(self, *args, **kwargs):

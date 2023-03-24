@@ -1,6 +1,6 @@
 import math
 from pathlib import Path
-from typing import Any, Dict, List, Sequence, Tuple
+from typing import Any, Dict, List, Sequence, Tuple, Type
 
 from PIL import Image
 import numpy as np
@@ -8,7 +8,7 @@ import numpy.typing as npt
 
 from furiosa.registry.model import Format, Metadata, Publication
 
-from ...types import ImageClassificationModel, PostProcessor, PreProcessor
+from ...types import ImageClassificationModel, Platform, PostProcessor, PreProcessor
 from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
 from ..common.datasets import imagenet1k
 from ..preprocess import center_crop
@@ -78,6 +78,10 @@ class EfficientNetB0PostProcessor(PostProcessor):
 
 class EfficientNetB0(ImageClassificationModel):
     """EfficientNet B0 model"""
+
+    postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
+        Platform.PYTHON: EfficientNetB0PostProcessor,
+    }
 
     @staticmethod
     def get_artifact_name():
