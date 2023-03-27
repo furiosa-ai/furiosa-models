@@ -1,6 +1,14 @@
 from typing import Any, List
 
-__all__ = ["ResNet50", "SSDMobileNet", "SSDResNet34", "YOLOv5l", "YOLOv5m", "EfficientNetB0"]
+__all__ = [
+    "ResNet50",
+    "SSDMobileNet",
+    "SSDResNet34",
+    "YOLOv5l",
+    "YOLOv5m",
+    "EfficientNetB0",
+    "EfficientNetV2s",
+]
 
 _class_modules = {
     "ResNet50": ".resnet50",
@@ -9,6 +17,7 @@ _class_modules = {
     "YOLOv5l": ".yolov5",
     "YOLOv5m": ".yolov5",
     "EfficientNetB0": ".efficientnet_b0",
+    "EfficientNetV2s": ".efficientnet_v2_s",
 }
 
 

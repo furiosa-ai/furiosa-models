@@ -4,21 +4,21 @@ from typing import List
 
 import tqdm
 
-from furiosa.models.vision import EfficientNetB0
+from furiosa.models.vision import EfficientNetV2s
 from furiosa.models.vision.common.datasets import imagenet1k
 from furiosa.runtime import session
 
-EXPECTED_ACCURACY = 16.104
+EXPECTED_ACCURACY = 75.208
 CLASSES: List[str] = imagenet1k.ImageNet1k_CLASSES
 
 
-def test_efficientnetb0_accuracy(benchmark):
+def test_efficientnetv2s_accuracy(benchmark):
     imagenet_val_images = Path(os.environ.get('IMAGENET_VAL_IMAGES', 'tests/data/imagenet/val'))
     imagenet_val_labels = Path(
         os.environ.get('IMAGENET_VAL_LABELS', 'tests/data/imagenet/aux/val.txt')
     )
 
-    model = EfficientNetB0.load()
+    model = EfficientNetV2s.load()
 
     image_paths = list(imagenet_val_images.glob("*.[Jj][Pp][Ee][Gg]"))
     with open(imagenet_val_labels, encoding="ascii") as file:

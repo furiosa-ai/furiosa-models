@@ -3,3 +3,4 @@
 *.dfg
 *.enf
 /efficientnet_b0.calib_data.yaml
+/efficientnet_v2_s.calib_data.yaml
