@@ -100,7 +100,7 @@ In sum, typical steps of a single inference is as the following, as also shown a
 
     To use native post processor, please pass `use_native=True` to `Model.load()` or `Model.load_async()`.
     The following is an example to use native post processor for [SSDMobileNet](models/ssd_mobilenet.md).
-    You can find more details of each mode page.
+    You can find more details of each model page.
 
     !!!Example
         ```python

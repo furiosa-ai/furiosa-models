@@ -1,5 +1,5 @@
 # Command Tool
-We provide a simple command line too called `furiosa-models` to allow users to 
+We provide a simple command line tool called `furiosa-models` to allow users to 
 evaluate or run quickly one of models with FuriosaAI NPU. 
 
 ## Installing
