@@ -99,6 +99,9 @@ spec:
         workspace: source
       - name: furiosa-apt-credential
         workspace: furiosa-apt-credential
+      - name: internal-pypi-secret
+        workspace: internal-pypi-secret
+        subPath: .netrc
     params:
     - name: DOCKERFILE
       value: "Dockerfile"
