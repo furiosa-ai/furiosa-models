@@ -23,9 +23,9 @@ WORKDIR /app
 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 5F03AFA423A751913F249259814F888B20B09A7E
 RUN --mount=type=secret,id=furiosa.conf,dst=/etc/apt/auth.conf.d/furiosa.conf,required \
-    --mount=type=secret,id=.netrc,dst=/root/.netrc,required \
     APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn \
     apt-get update && \
     make toolchain
 
-RUN pip install --pre --extra-index-url https://internal-pypi.furiosa.dev/simple .[test]
+RUN --mount=type=secret,id=.netrc,dst=/root/.netrc,required \
+    pip install --pre --extra-index-url https://internal-pypi.furiosa.dev/simple .[test]
