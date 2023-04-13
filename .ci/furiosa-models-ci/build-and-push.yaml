@@ -8,6 +8,11 @@ spec:
     - name: source
     - name: furiosa-apt-credential
       mountPath: /etc/apt/auth.conf.d
+    - name: furiosa-apt-credential
+      mountPath: /etc/apt/auth.conf.d
+    - name: internal-pypi-secret
+      mountPath: /root/.netrc
+      subPath: .netrc
   params:
     - name: DOCKERFILE
       description: The name of the Dockerfile
@@ -35,6 +40,7 @@ spec:
                 --opt filename=$(params.DOCKERFILE) \
                 --local context=. --local dockerfile=. \
                 --secret id=furiosa.conf,src=/etc/apt/auth.conf.d/furiosa.conf \
+                --secret id=.netrc,src=/root/.netrc \
                 --output type=image,name=$(resources.outputs.image.url),push=true
 
       resources:
