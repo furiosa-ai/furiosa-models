@@ -64,7 +64,7 @@ class EfficientNetV2sPreProcessor(PreProcessor):
             The first element of tuple is a numpy array.
                 To learn more about the output of preprocess,
                 please refer to [Inputs](efficientnet_v2_s.md#inputs).
- 
+
         """
 
         image = Image.open(image).convert("RGB")
