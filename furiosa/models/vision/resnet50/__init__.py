@@ -52,18 +52,18 @@ class ResNet50PreProcessor(PreProcessor):
 
 
 class ResNet50PythonPostProcessor(PostProcessor):
-    """Convert the outputs of a model to a label string, such as car and cat.
-
-    Args:
-        model_outputs: the outputs of the model.
-            Please learn more about the output of model,
-            please refer to [Outputs](resnet50_v1.5.md#outputs).
-
-    Returns:
-        str: A classified label
-    """
-
     def __call__(self, model_outputs: Sequence[npt.ArrayLike], contexts: Any = None) -> str:
+        """Convert the outputs of a model to a label string, such as car and cat.
+
+        Args:
+            model_outputs: the outputs of the model.
+                Please learn more about the output of model,
+                please refer to [Outputs](resnet50_v1.5.md#outputs).
+
+        Returns:
+            str: A classified label
+        """
+
         return CLASSES[int(model_outputs[0]) - 1]
 
 
