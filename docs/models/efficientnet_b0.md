@@ -6,7 +6,7 @@ The EfficientNet originates from the ["EfficientNet: Rethinking Model Scaling fo
 * Framework: PyTorch
 * Model format: ONNX
 * Model task: Image classification
-* Source: https://github.com/rwightman/gen-efficientnet-pytorch
+* Source: [github](https://github.com/rwightman/gen-efficientnet-pytorch)
 
 
 ## <a name="EfficientNetB0_Usage"></a>

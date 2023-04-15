@@ -6,7 +6,7 @@ EfficientNetV2-S is the smallest and most efficient model in the EfficientNetV2 
 * Framework: PyTorch
 * Model format: ONNX
 * Model task: Image classification
-* Source: https://pytorch.org/vision/main/models/generated/torchvision.models.efficientnet_v2_s.html
+* Source: [torchvision](https://pytorch.org/vision/main/models/generated/torchvision.models.efficientnet_v2_s.html)
 
 ## <a name="EfficientNetV2-S_Usage"></a>
 !!! Usages
