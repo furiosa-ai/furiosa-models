@@ -27,7 +27,7 @@ The input is a 3-channel image of 224x224 (height, width).
     * H - image height
     * W - image width
 * Color Order: BGR
-* Optimal Batch Size (minimum: 1): <= TBU
+* Optimal Batch Size (minimum: 1): <= 16
 
 ## Outputs
 The output is a `numpy.float32` tensor with the shape (`[1,]`), including
