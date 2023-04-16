@@ -61,7 +61,7 @@ class ResNet50PythonPostProcessor(PostProcessor):
                 please refer to [Outputs](resnet50_v1.5.md#outputs).
 
         Returns:
-            str: A classified label
+            str: A classified label, e.g., "tabby, tabby cat".
         """
 
         return CLASSES[int(model_outputs[0]) - 1]

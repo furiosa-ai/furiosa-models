@@ -91,7 +91,7 @@ class EfficientNetB0PostProcessor(PostProcessor):
                 please refer to [Outputs](efficientnet_b0.md#outputs).
 
         Returns:
-            str: A classified label
+            str: A classified label, e.g., "jigsaw puzzle".
         """
 
         return CLASSES[int(np.argsort(model_outputs[0], axis=1)[:, ::-1][0, 0])]
