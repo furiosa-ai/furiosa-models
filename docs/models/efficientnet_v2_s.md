@@ -46,3 +46,10 @@ You can find examples at [EfficientNetV2-S Usage](#EfficientNetV2-S_Usage).
 ::: furiosa.models.vision.efficientnet_v2_s.EfficientNetV2sPostProcessor.__call__
     options:
         show_source: false
+
+## Notes on the source field of this model
+There is a significant update in sdk version 0.9.0, which involves that the Furiosa's quantization tool adopts DFG(Data Flow Graph) as its output format instead of onnx. DFG is an IR of FuriosaAI that supports more diverse quantization schemes than onnx and is more specialized for FuriosaAI’s Warboy.
+
+The EfficientNetV2-S we offer has been quantized with furiosa-sdk 0.9.0 and thus formatted in DFG. The ONNX file in the source field is the original f32 model, not yet quantized.
+
+In case you need to use a different batch size or start from scratch, you can either start from the DFG or use the original ONNX file (and repeat the quantization process).
