@@ -29,9 +29,9 @@ class ResNet50PreProcessor(PreProcessor):
                 an image loaded as a numpy array in BGR order.
 
         Returns:
-            The first element of tuple is a numpy array.
-                To learn more about the output of preprocess,
-                please refer to [Inputs](resnet50_v1.5.md#inputs).
+            The first element of the tuple is a numpy array that meets the input requirements of the ResNet50 model.
+                The second element of the tuple is unused in this model and has no value.
+                To learn more information about the output numpy array, please refer to [Inputs](resnet50_v1.5.md#inputs).
         """
         # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/main.py#L37-L39
         # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L168-L184

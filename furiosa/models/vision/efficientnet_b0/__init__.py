@@ -58,9 +58,9 @@ class EfficientNetB0PreProcessor(PreProcessor):
             image: A path of an image.
 
         Returns:
-            The first element of tuple is a numpy array.
-                To learn more about the output of preprocess,
-                please refer to [Inputs](efficientnet_b0.md#inputs).
+            The first element of the tuple is a numpy array that meets the input requirements of the model.
+                The second element of the tuple is unused in this model and has no value.
+                To learn more information about the output numpy array, please refer to [Inputs](efficientnet_b0.md#inputs).
 
         """
 
