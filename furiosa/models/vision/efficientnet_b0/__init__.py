@@ -52,7 +52,17 @@ def center_crop(image: Image.Image, cropped_height: int, cropped_width: int) -> 
 class EfficientNetB0PreProcessor(PreProcessor):
     @staticmethod
     def __call__(image: Path) -> Tuple[np.ndarray, None]:
-        """Read and preprocess an image located at image_path."""
+        """Read and preprocess an image located at image_path.
+
+        Args:
+            image: A path of an image.
+
+        Returns:
+            The first element of the tuple is a numpy array that meets the input requirements of the model.
+                The second element of the tuple is unused in this model and has no value.
+                To learn more information about the output numpy array, please refer to [Inputs](efficientnet_b0.md#inputs).
+
+        """
 
         image = Image.open(Path(image)).convert("RGB")
 
@@ -73,6 +83,17 @@ class EfficientNetB0PreProcessor(PreProcessor):
 
 class EfficientNetB0PostProcessor(PostProcessor):
     def __call__(self, model_outputs: Sequence[npt.ArrayLike], contexts: Any = None) -> str:
+        """Convert the outputs of a model to a label string, such as car and cat.
+
+        Args:
+            model_outputs: the outputs of the model.
+                Please learn more about the output of model,
+                please refer to [Outputs](efficientnet_b0.md#outputs).
+
+        Returns:
+            str: A classified label, e.g., "jigsaw puzzle".
+        """
+
         return CLASSES[int(np.argsort(model_outputs[0], axis=1)[:, ::-1][0, 0])]
 
 

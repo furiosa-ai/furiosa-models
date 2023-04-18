@@ -35,16 +35,16 @@ The input is a 3-channel image of 224x224 (height, width).
     * W - image width
 * Color Order: BGR
 * Optimal Batch Size (minimum: 1): <= 8
- 
+
 ## Outputs
 The output is a `numpy.float32` tensor with the shape (`[1,]`), including
 a class id. `postprocess()` transforms the class id to a label string.
- 
+
 ## Pre/Postprocessing
-`furiosa.models.vision.ResNet50` class provides `preprocess` and `postprocess` methods that 
-convert input images to input tensors and the model outputs to labels respectively. 
+`furiosa.models.vision.ResNet50` class provides `preprocess` and `postprocess` methods that
+convert input images to input tensors and the model outputs to labels respectively.
 You can find examples at [ResNet50 Usage](#ResNet50_Usage).
- 
+
 ### `furiosa.models.vision.ResNet50.preprocess`
 ::: furiosa.models.vision.resnet50.ResNet50PreProcessor.__call__
     options:

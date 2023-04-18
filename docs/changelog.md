@@ -1,18 +1,25 @@
 # Changelog
 
-## [unreleased]
-### Added
+## [0.9.0 - TBU]
 
-### Changed
-- Changed packaging tool from setuptools-rust to hatch #102
+### New Features
+- Add EfficientNetB0 model #121
+- Add EfficientNetV2-S model #130
+- Set default target as Warboy's production revision (B0) #125
 
-### Deprecated
+### Improvements
+- Faster import for furiosa.models #117
+- Replace yolov5's box decode implementation in Rust #109
+- Remove Cpp postprocessor implementations #102
+- Change packaging tool from setuptools-rust to flit #109
 
-### Removed
-- MLPerf postprocess rust bindings #102
-- Cpp postprocessor(s) #102
+### Tasks
+- Release guide for developers #129
+- Report regression test's result with PR comment #110
 
-### Fixed
+### Bug Fixes
+- Fix CLI to properly report net inference time #112
+- Update certain model sources with valid onnx #120
 
 ## [0.8.0 - 2022-11-10]
 

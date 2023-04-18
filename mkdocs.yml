@@ -17,6 +17,8 @@ nav:
 - command_tool.md
 - Models:
     - models/resnet50_v1.5.md
+    - models/efficientnet_b0.md
+    - models/efficientnet_v2_s.md
     - models/ssd_mobilenet.md
     - models/ssd_resnet34.md
     - models/yolov5m.md
