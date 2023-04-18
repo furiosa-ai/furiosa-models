@@ -30,8 +30,8 @@ you can find details about loading a model, their input and output tensors, pre/
 | Model                                                                                    | Task                 | Size | Accuracy                   |
 |------------------------------------------------------------------------------------------| -------------------- | ---- |----------------------------|
 | [ResNet50](https://furiosa-ai.github.io/furiosa-models/latest/models/resnet50_v1.5/)     | Image Classification | 25M  | 76.002% (ImageNet1K-val)   |
-| [EfficientNetB0](https://furiosa-ai.github.io/furiosa-models/latest/models/)             | Image Classification | 6.4M | 16.104% (ImageNet1K-val)   |
-| [EfficientNetV2-S](https://furiosa-ai.github.io/furiosa-models/latest/models/)           | Image Classification | 26M  | 75.208% (ImageNet1K-val)   |
+| [EfficientNetB0](https://furiosa-ai.github.io/furiosa-models/latest/models/)             | Image Classification | 6.4M | 73.556% (ImageNet1K-val)   |
+| [EfficientNetV2-S](https://furiosa-ai.github.io/furiosa-models/latest/models/)           | Image Classification | 26M  | 83.566% (ImageNet1K-val)   |
 | [SSDMobileNet](https://furiosa-ai.github.io/furiosa-models/latest/models/ssd_mobilenet/) | Object Detection     | 7.2M | mAP 0.228 (COCO 2017-val)  |
 | [SSDResNet34](https://furiosa-ai.github.io/furiosa-models/latest/models/ssd_resnet34/)   | Object Detection     | 20M  | mAP 0.220 (COCO 2017-val)  |
 | [YOLOv5M](https://furiosa-ai.github.io/furiosa-models/latest/models/yolov5m/)            | Object Detection     | 21M  | mAP 0.280 (Bdd100k-val)\*  |
