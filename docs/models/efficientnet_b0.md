@@ -54,4 +54,3 @@ There is a significant update in sdk version 0.9.0, which involves that the Furi
 The EfficientNetB0 we offer has been quantized with furiosa-sdk 0.9.0 and thus formatted in DFG. The ONNX file in the source field is the original f32 model, not yet quantized.
 
 In case you need to use a different batch size or start from scratch, you can either start from the DFG or use the original ONNX file (and repeat the quantization process).
-
