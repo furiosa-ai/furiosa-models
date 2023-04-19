@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List, Sequence, Tuple, Type
+from typing import Any, Dict, List, Sequence, Tuple, Type, Union
 
 from PIL import Image, ImageOps
 import numpy as np
@@ -10,6 +10,9 @@ from furiosa.registry.model import Format, Metadata, Publication
 from ...types import ImageClassificationModel, Platform, PostProcessor, PreProcessor
 from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, get_field_default
 from ..common.datasets import imagenet1k
+
+IMAGENET_DEFAULT_MEAN = np.array((0.485, 0.456, 0.406), dtype=np.float32)[:, np.newaxis, np.newaxis]
+IMAGENET_DEFAULT_STD = np.array((0.229, 0.224, 0.225), dtype=np.float32)[:, np.newaxis, np.newaxis]
 
 CLASSES: List[str] = imagenet1k.ImageNet1k_CLASSES
 INPUT_SIZE = 384
@@ -47,14 +50,14 @@ def center_crop(image: Image.Image, output_size: int) -> Image.Image:
 
 
 def normalize(image: Image.Image) -> np.ndarray:
-    image -= np.asarray((0.485, 0.456, 0.406)).reshape(-1, 1, 1)
-    image /= np.asarray((0.229, 0.224, 0.225)).reshape(-1, 1, 1)
+    image -= IMAGENET_DEFAULT_MEAN
+    image /= IMAGENET_DEFAULT_STD
     return image
 
 
 class EfficientNetV2sPreProcessor(PreProcessor):
     @staticmethod
-    def __call__(image: Path) -> Tuple[np.ndarray, None]:
+    def __call__(image: Union[str, Path, npt.ArrayLike]) -> Tuple[np.ndarray, None]:
         """Read and preprocess an image located at image_path.
 
         Args:
@@ -67,7 +70,8 @@ class EfficientNetV2sPreProcessor(PreProcessor):
 
         """
 
-        image = Image.open(image).convert("RGB")
+        if isinstance(image, (str, Path)):
+            image = Image.open(image).convert("RGB")
 
         image = resize(image, INPUT_SIZE, Image.Resampling.BILINEAR)
         image = center_crop(image, INPUT_SIZE)
