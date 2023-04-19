@@ -1,6 +1,6 @@
 import math
 from pathlib import Path
-from typing import Any, Dict, List, Sequence, Tuple, Type
+from typing import Any, Dict, List, Sequence, Tuple, Type, Union
 
 from PIL import Image
 import numpy as np
@@ -17,6 +17,7 @@ CLASSES: List[str] = imagenet1k.ImageNet1k_CLASSES
 
 IMAGENET_DEFAULT_MEAN = np.array((0.485, 0.456, 0.406), dtype=np.float32)[:, np.newaxis, np.newaxis]
 IMAGENET_DEFAULT_STD = np.array((0.229, 0.224, 0.225), dtype=np.float32)[:, np.newaxis, np.newaxis]
+
 
 # https://github.com/pytorch/vision/blob/7ba97196757229552cede54639be75e3a0a9959f/torchvision/transforms/functional.py#L386-L392
 def resize(image: Image.Image, size: int, resample: Image.Resampling) -> Image.Image:
@@ -51,7 +52,7 @@ def center_crop(image: Image.Image, cropped_height: int, cropped_width: int) -> 
 
 class EfficientNetB0PreProcessor(PreProcessor):
     @staticmethod
-    def __call__(image: Path) -> Tuple[np.ndarray, None]:
+    def __call__(image: Union[str, Path, npt.ArrayLike]) -> Tuple[np.ndarray, None]:
         """Read and preprocess an image located at image_path.
 
         Args:
@@ -64,7 +65,8 @@ class EfficientNetB0PreProcessor(PreProcessor):
 
         """
 
-        image = Image.open(Path(image)).convert("RGB")
+        if isinstance(image, (str, Path)):
+            image = Image.open(image).convert("RGB")
 
         scale_size = int(math.floor(224 / 0.875))
         image = resize(image, scale_size, resample=Image.Resampling.BICUBIC)
