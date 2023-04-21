@@ -117,7 +117,7 @@ class YOLOv5PreProcessor(PreProcessor):
                 The second element is a list of dict objects about the original images.
                 Each dict object has the following keys. 'scale' key of the returned dict has a rescaled ratio
                 per width(=target/width) and height(=target/height), and the 'pad' key has padded width and height
-                pixels. Specially, the last dictionary element of returing tuple will be passed to postprocessing
+                pixels. Specially, the last dictionary element of returning tuple will be passed to postprocessing
                 as a parameter to calculate predicted coordinates on normalized
                 coordinates back to an input image coordinator.
         """
