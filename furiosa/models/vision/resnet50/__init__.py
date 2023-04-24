@@ -85,7 +85,7 @@ class ResNet50(ImageClassificationModel):
 
     @staticmethod
     def get_artifact_name():
-        return "mlcommons_resnet50_v1.5_int8"
+        return "mlcommons_resnet50_v1.5"
 
     @classmethod
     def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = True, *args, **kwargs):

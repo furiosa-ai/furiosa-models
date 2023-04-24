@@ -9,8 +9,7 @@ from furiosa.models.vision import ResNet50
 from furiosa.models.vision.common.datasets import imagenet1k
 from furiosa.runtime import session
 
-# NOTE: e2e-testing = 76.126 %, mlperf submission = 76.106 %
-EXPECTED_ACCURACY = 75.982
+EXPECTED_ACCURACY = 76.228
 EXPECTED_ACCURACY_NATIVE = 76.002
 CLASSES: List[str] = imagenet1k.ImageNet1k_CLASSES
 

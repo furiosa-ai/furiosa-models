@@ -1,0 +1,4 @@
+outs:
+- md5: d6cbfe9b257cd78e148939a11c0dcad9
+  size: 10736
+  path: mlcommons_resnet50_v1.5.calib_data.yaml
