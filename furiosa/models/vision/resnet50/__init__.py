@@ -51,7 +51,7 @@ class ResNet50PreProcessor(PreProcessor):
         return image[np.newaxis, ...], None
 
 
-class ResNet50PythonPostProcessor(PostProcessor):
+class ResNet50PostProcessor(PostProcessor):
     """Convert the outputs of a model to a label string, such as car and cat.
 
     Args:
@@ -67,20 +67,11 @@ class ResNet50PythonPostProcessor(PostProcessor):
         return CLASSES[int(model_outputs[0]) - 1]
 
 
-class ResNet50NativePostProcessor(PostProcessor):
-    def __init__(self, dfg: bytes):
-        self._native = native.resnet50.PostProcessor(dfg)
-
-    def __call__(self, model_outputs: Sequence[npt.ArrayLike], contexts: Any = None) -> str:
-        return CLASSES[self._native.eval(model_outputs) - 1]
-
-
 class ResNet50(ImageClassificationModel):
     """MLCommons ResNet50 model"""
 
     postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
-        Platform.PYTHON: ResNet50PythonPostProcessor,
-        Platform.RUST: ResNet50NativePostProcessor,
+        Platform.PYTHON: ResNet50PostProcessor,
     }
 
     @staticmethod
@@ -88,13 +79,8 @@ class ResNet50(ImageClassificationModel):
         return "mlcommons_resnet50_v1.5"
 
     @classmethod
-    def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = True, *args, **kwargs):
+    def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = False, *args, **kwargs):
         dfg = artifacts[EXT_DFG]
-        if use_native and dfg is None:
-            raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
-        postproc_type = Platform.RUST if use_native else Platform.PYTHON
-        logger.debug(f"Using {postproc_type.name} postprocessor")
-        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type](dfg)
         return cls(
             name="ResNet50",
             source=artifacts[EXT_ONNX],
@@ -108,5 +94,5 @@ class ResNet50(ImageClassificationModel):
                 publication=Publication(url="https://arxiv.org/abs/1512.03385.pdf"),
             ),
             preprocessor=ResNet50PreProcessor(),
-            postprocessor=postprocessor,
+            postprocessor=ResNet50PostProcessor(),
         )
