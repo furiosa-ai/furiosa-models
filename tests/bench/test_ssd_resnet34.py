@@ -12,7 +12,7 @@ from furiosa.models.types import Model
 from furiosa.models.vision import SSDResNet34
 from furiosa.runtime import session
 
-EXPECTED_ACCURACY = 0.21321479317934577  # e2e-testing's accuracy
+EXPECTED_ACCURACY = 0.21625689695610095  # e2e-testing's accuracy
 EXPECTED_ACCURACY_RUST = 0.22013336390711905
 
 

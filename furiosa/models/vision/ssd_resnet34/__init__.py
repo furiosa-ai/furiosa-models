@@ -380,11 +380,14 @@ class SSDResNet34PythonPostProcessor(PostProcessor):
 
 
 class SSDResNet34NativePostProcessor(PostProcessor):
-    def __init__(self, dfg: bytes):
-        self._native = native.ssd_resnet34.RustPostProcessor(dfg)
+    def __init__(self):
+        self._native = native.ssd_resnet34.RustPostProcessor()
 
     def __call__(self, model_outputs: Sequence[numpy.ndarray], contexts: Sequence[Dict[str, Any]]):
-        raw_results = self._native.eval(model_outputs)
+        raw_results = self._native.eval(
+            [np.squeeze(s, axis=0) for s in model_outputs[6:]],
+            [np.squeeze(s, axis=0) for s in model_outputs[:6]],
+        )
 
         results = []
         width = contexts['width']
@@ -416,7 +419,7 @@ class SSDResNet34(ObjectDetectionModel):
 
     @staticmethod
     def get_artifact_name():
-        return "mlcommons_ssd_resnet34_int8"
+        return "mlcommons_ssd_resnet34"
 
     @classmethod
     def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = True):
@@ -425,7 +428,7 @@ class SSDResNet34(ObjectDetectionModel):
             raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
         postproc_type = Platform.RUST if use_native else Platform.PYTHON
         logger.debug(f"Using {postproc_type.name} postprocessor")
-        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type](dfg)
+        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type]()
         return cls(
             name="SSDResNet34",
             source=artifacts[EXT_ONNX],
