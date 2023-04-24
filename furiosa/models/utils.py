@@ -132,10 +132,6 @@ class ArtifactResolver:
                 return await resp.read()
 
 
-def model_file_name(relative_path: str, truncated=True) -> str:
-    return f'{relative_path}{"_truncated" if truncated else ""}'
-
-
 async def resolve_file(
     src_name: str, extension: str, generated_suffix: str = "_warboy_2pe"
 ) -> bytes:

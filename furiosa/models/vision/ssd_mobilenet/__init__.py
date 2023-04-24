@@ -270,10 +270,13 @@ class SSDMobileNetPythonPostProcessor(PostProcessor):
 
 class SSDMobileNetNativePostProcessor(PostProcessor):
     def __init__(self, dfg: bytes):
-        self._native = native.ssd_mobilenet.RustPostProcessor(dfg)
+        self._native = native.ssd_mobilenet.RustPostProcessor()
 
     def __call__(self, model_outputs: Sequence[numpy.ndarray], contexts: Sequence[Dict[str, Any]]):
-        raw_results = self._native.eval(model_outputs)
+        raw_results = self._native.eval(
+            [np.squeeze(s, axis=0) for s in model_outputs[1::2]], 
+            [np.squeeze(s, axis=0) for s in model_outputs[0::2]], 
+        )
 
         results = []
         width = contexts['width']

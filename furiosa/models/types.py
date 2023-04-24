@@ -9,7 +9,7 @@ from typing_extensions import TypeAlias
 from furiosa.common.thread import synchronous
 from furiosa.registry.model import Model as RegistryModel
 
-from .utils import load_artifacts, model_file_name
+from .utils import load_artifacts
 
 # Context type alias
 Context: TypeAlias = Any
@@ -75,13 +75,11 @@ class Model(RegistryModel, ABC):
 
     @classmethod
     async def load_async(cls, use_native: Optional[bool] = None, *args, **kwargs) -> 'Model':
-        artifact_name = model_file_name(cls.get_artifact_name(), use_native)
-        return cls.load_aux(await load_artifacts(artifact_name), use_native, *args, **kwargs)
+        return cls.load_aux(await load_artifacts(cls.get_artifact_name()), use_native, *args, **kwargs)
 
     @classmethod
     def load(cls, use_native: Optional[bool] = None, *args, **kwargs) -> 'Model':
-        artifact_name = model_file_name(cls.get_artifact_name(), use_native)
-        return cls.load_aux(synchronous(load_artifacts)(artifact_name), use_native, *args, **kwargs)
+        return cls.load_aux(synchronous(load_artifacts)(cls.get_artifact_name()), use_native, *args, **kwargs)
 
     def preprocess(self, *args, **kwargs) -> Tuple[Sequence[npt.ArrayLike], Sequence[Context]]:
         assert self.preprocessor is not None
