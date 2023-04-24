@@ -30,7 +30,7 @@ you can find details about loading a model, their input and output tensors, pre/
 | Model                                                                                    | Task                 | Size | Accuracy                   |
 |------------------------------------------------------------------------------------------| -------------------- | ---- |----------------------------|
 | [ResNet50](https://furiosa-ai.github.io/furiosa-models/latest/models/resnet50_v1.5/)     | Image Classification | 25M  | 76.228% (ImageNet1K-val)   |
-| [SSDMobileNet](https://furiosa-ai.github.io/furiosa-models/latest/models/ssd_mobilenet/) | Object Detection     | 7.2M | mAP 0.228 (COCO 2017-val)  |
+| [SSDMobileNet](https://furiosa-ai.github.io/furiosa-models/latest/models/ssd_mobilenet/) | Object Detection     | 7.2M | mAP 0.232 (COCO 2017-val)  |
 | [SSDResNet34](https://furiosa-ai.github.io/furiosa-models/latest/models/ssd_resnet34/)   | Object Detection     | 20M  | mAP 0.220 (COCO 2017-val)  |
 | [YOLOv5M](https://furiosa-ai.github.io/furiosa-models/latest/models/yolov5m/)            | Object Detection     | 21M  | mAP 0.280 (Bdd100k-val)\*  |
 | [YOLOv5L](https://furiosa-ai.github.io/furiosa-models/latest/models/yolov5l/)            | Object Detection     | 46M  | mAP 0.295 (Bdd100k-val)\*  |
