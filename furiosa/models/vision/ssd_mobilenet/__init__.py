@@ -269,13 +269,13 @@ class SSDMobileNetPythonPostProcessor(PostProcessor):
 
 
 class SSDMobileNetNativePostProcessor(PostProcessor):
-    def __init__(self, dfg: bytes):
+    def __init__(self):
         self._native = native.ssd_mobilenet.RustPostProcessor()
 
     def __call__(self, model_outputs: Sequence[numpy.ndarray], contexts: Sequence[Dict[str, Any]]):
         raw_results = self._native.eval(
-            [np.squeeze(s, axis=0) for s in model_outputs[1::2]], 
-            [np.squeeze(s, axis=0) for s in model_outputs[0::2]], 
+            [np.squeeze(s, axis=0) for s in model_outputs[1::2]],
+            [np.squeeze(s, axis=0) for s in model_outputs[0::2]],
         )
 
         results = []
@@ -317,7 +317,7 @@ class SSDMobileNet(ObjectDetectionModel):
             raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
         postproc_type = Platform.RUST if use_native else Platform.PYTHON
         logger.debug(f"Using {postproc_type.name} postprocessor")
-        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type](dfg)
+        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type]()
         return cls(
             name="MLCommonsSSDMobileNet",
             source=artifacts[EXT_ONNX],
