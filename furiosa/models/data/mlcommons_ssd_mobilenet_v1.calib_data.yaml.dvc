@@ -1,4 +1,0 @@
-outs:
-- md5: a753f3a71cf8dc599f3894698b83ffd4
-  size: 7978
-  path: mlcommons_ssd_mobilenet_v1.calib_data.yaml

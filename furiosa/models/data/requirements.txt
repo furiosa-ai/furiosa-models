@@ -1,1 +1,3 @@
-furiosa-sdk
+furiosa-sdk[quantizer]==0.9.*
+onnx
+PyYaml
