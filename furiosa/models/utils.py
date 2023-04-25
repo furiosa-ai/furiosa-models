@@ -133,7 +133,7 @@ class ArtifactResolver:
 
 
 async def resolve_file(
-    src_name: str, extension: str, generated_suffix: str = "_warboy_2pe"
+    src_name: str, extension: str, generated_suffix: str = "_int8_warboy_2pe"
 ) -> bytes:
     # First check whether it is generated file or not
     if extension.lower() in GENERATED_EXTENSIONS:
@@ -141,10 +141,10 @@ async def resolve_file(
         if generated_path_base is None:
             raise errors.VersionInfoNotFound()
         file_name = f'{src_name}{generated_suffix}.{extension}'
-        file_subpath = f'{generated_path_base}/{file_name}'
-    else:
-        file_subpath = f'{src_name}.{extension}'
-    full_path = (DATA_DIRECTORY_BASE / file_subpath).resolve()
+        full_path = DATA_DIRECTORY_BASE / f'{generated_path_base}/{file_name}'
+    else:        
+        full_path = DATA_DIRECTORY_BASE /src_name
+        full_path = next(full_path.glob(f'*.{extension}'))
 
     try:
         return await ArtifactResolver(full_path).read()
@@ -153,6 +153,6 @@ async def resolve_file(
 
 
 async def load_artifacts(name: str) -> Dict[str, bytes]:
-    exts = [EXT_ONNX, EXT_DFG, EXT_ENF]
+    exts = [EXT_ONNX, EXT_ENF]
     resolvers = map(partial(resolve_file, name), exts)
     return {ext: binary for ext, binary in zip(exts, await asyncio.gather(*resolvers))}

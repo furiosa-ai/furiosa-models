@@ -44,9 +44,9 @@ class ResNet50PreProcessor(PreProcessor):
             image, 224, 224, percent=87.5, interpolation=cv2.INTER_AREA
         )
         image = center_crop(image, 224, 224)
-        image = np.asarray(image, dtype=np.float32)
+        # image = np.asarray(image, dtype=np.float32)
         # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L178
-        image -= np.array([123.68, 116.78, 103.94], dtype=np.float32)
+        # image -= np.array([123.68, 116.78, 103.94], dtype=np.float32)
         image = image.transpose([2, 0, 1])
         return image[np.newaxis, ...], None
 
@@ -80,11 +80,11 @@ class ResNet50(ImageClassificationModel):
 
     @classmethod
     def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = False, *args, **kwargs):
-        dfg = artifacts[EXT_DFG]
+        # dfg = artifacts[EXT_DFG]
         return cls(
             name="ResNet50",
             source=artifacts[EXT_ONNX],
-            dfg=dfg,
+            # dfg=dfg,
             enf=artifacts[EXT_ENF],
             format=Format.ONNX,
             family="ResNet",

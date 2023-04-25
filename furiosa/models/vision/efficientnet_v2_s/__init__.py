@@ -92,7 +92,7 @@ class EfficientNetV2s(ImageClassificationModel):
         return cls(
             name="EfficientNetV2s",
             source=artifacts[EXT_ONNX],
-            dfg=artifacts[EXT_DFG],
+            # dfg=artifacts[EXT_DFG],
             enf=artifacts[EXT_ENF],
             format=Format.ONNX,
             family="EfficientNetV2",

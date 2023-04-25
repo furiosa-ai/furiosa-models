@@ -61,12 +61,12 @@ class EfficientNetB0PreProcessor(PreProcessor):
 
         image = center_crop(image, 224, 224)
 
-        data = np.asarray(image, dtype=np.float32)
+        # data = np.asarray(image, dtype=np.float32)
         data = np.transpose(data, axes=(2, 0, 1))
-        data /= 255
+        # data /= 255
 
-        data -= IMAGENET_DEFAULT_MEAN
-        data /= IMAGENET_DEFAULT_STD
+        # data -= IMAGENET_DEFAULT_MEAN
+        # data /= IMAGENET_DEFAULT_STD
 
         return data[np.newaxis, ...], None
 
@@ -92,7 +92,7 @@ class EfficientNetB0(ImageClassificationModel):
         return cls(
             name="EfficientNetB0",
             source=artifacts[EXT_ONNX],
-            dfg=artifacts[EXT_DFG],
+            # dfg=artifacts[EXT_DFG],
             enf=artifacts[EXT_ENF],
             format=Format.ONNX,
             family="EfficientNet",

@@ -29,7 +29,7 @@ class YOLOv5m(YOLOv5Base):
 
     @staticmethod
     def get_artifact_name():
-        return "yolov5m_int8"
+        return "yolov5m"
 
     @classmethod
     def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = False, *args, **kwargs):
@@ -38,7 +38,7 @@ class YOLOv5m(YOLOv5Base):
         return cls(
             name="YOLOv5Medium",
             source=artifacts[EXT_ONNX],
-            dfg=artifacts[EXT_DFG],
+            # dfg=artifacts[EXT_DFG],
             enf=artifacts[EXT_ENF],
             format=Format.ONNX,
             family="YOLOv5",

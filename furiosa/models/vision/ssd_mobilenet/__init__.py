@@ -176,7 +176,7 @@ class SSDMobileNetPreProcessor(PreProcessor):
                 image = cv2.imread(image)
                 if image is None:
                     raise FileNotFoundError(image)
-            image = np.array(image, dtype=np.float32)
+            # image = np.array(image, dtype=np.float32)
             if len(image.shape) < 3 or image.shape[2] != 3:
                 image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
             else:
@@ -184,8 +184,8 @@ class SSDMobileNetPreProcessor(PreProcessor):
             width = image.shape[1]
             height = image.shape[0]
             image = cv2.resize(image, (300, 300), interpolation=cv2.INTER_LINEAR)
-            image -= 127.5
-            image /= 127.5
+            # image -= 127
+            # image /= 127
             image = image.transpose([2, 0, 1])
             batch_image.append(image)
             batch_preproc_param.append({"width": width, "height": height})
@@ -312,16 +312,16 @@ class SSDMobileNet(ObjectDetectionModel):
 
     @classmethod
     def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = True):
-        dfg = artifacts[EXT_DFG]
-        if use_native and dfg is None:
-            raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
+        # dfg = artifacts[EXT_DFG]
+        # if use_native and dfg is None:
+        #     raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
         postproc_type = Platform.RUST if use_native else Platform.PYTHON
         logger.debug(f"Using {postproc_type.name} postprocessor")
         postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type]()
         return cls(
             name="MLCommonsSSDMobileNet",
             source=artifacts[EXT_ONNX],
-            dfg=dfg,
+            # dfg=None,
             enf=artifacts[EXT_ENF],
             format=Format.ONNX,
             family="MobileNetV1",
