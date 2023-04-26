@@ -57,16 +57,13 @@ Compiling models will take some time up to minutes, but it allows to specify bat
 leading to more optimizations depending on user use-cases. To learn more about `Model.source`, 
 please refer to [Accessing artifacts and metadata](#accessing_artifacts_and_metadata).
 
+TODO: explain making enf from onnx with calibration range
+
 <a name="Examples"></a>
 !!! Example
     === "Using ENF binary"
         ```python
         --8<-- "docs/examples/ssd_mobilenet.py"
-        ```
-    
-    === "Using ONNX model"
-        ```python
-        --8<-- "docs/examples/ssd_mobilenet_onnx.py"
         ```
 
 ### Pre/Postprocessing
