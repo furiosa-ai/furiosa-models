@@ -75,11 +75,15 @@ class Model(RegistryModel, ABC):
 
     @classmethod
     async def load_async(cls, use_native: Optional[bool] = None, *args, **kwargs) -> 'Model':
-        return cls.load_aux(await load_artifacts(cls.get_artifact_name()), use_native, *args, **kwargs)
+        return cls.load_aux(
+            await load_artifacts(cls.get_artifact_name()), use_native, *args, **kwargs
+        )
 
     @classmethod
     def load(cls, use_native: Optional[bool] = None, *args, **kwargs) -> 'Model':
-        return cls.load_aux(synchronous(load_artifacts)(cls.get_artifact_name()), use_native, *args, **kwargs)
+        return cls.load_aux(
+            synchronous(load_artifacts)(cls.get_artifact_name()), use_native, *args, **kwargs
+        )
 
     def preprocess(self, *args, **kwargs) -> Tuple[Sequence[npt.ArrayLike], Sequence[Context]]:
         assert self.preprocessor is not None

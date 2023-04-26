@@ -142,8 +142,8 @@ async def resolve_file(
             raise errors.VersionInfoNotFound()
         file_name = f'{src_name}{generated_suffix}.{extension}'
         full_path = DATA_DIRECTORY_BASE / f'{generated_path_base}/{file_name}'
-    else:        
-        full_path = DATA_DIRECTORY_BASE /src_name
+    else:
+        full_path = DATA_DIRECTORY_BASE / src_name
         full_path = next(full_path.glob(f'*.{extension}'))
 
     try:

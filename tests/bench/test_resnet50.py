@@ -55,4 +55,3 @@ def test_mlcommons_resnet50_accuracy(benchmark):
     accuracy = 100.0 * correct_predictions / total_predictions
     print("accuracy :", accuracy, "% (", correct_predictions, "/", total_predictions, ")")
     assert accuracy == EXPECTED_ACCURACY, "Accuracy check failed"
-

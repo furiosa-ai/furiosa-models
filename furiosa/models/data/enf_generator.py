@@ -80,10 +80,8 @@ def quantize_and_compile_model(arg: Tuple[int, Path]):
 
 
 if __name__ == '__main__':
-
     print(f"Spawn {MAX_WORKER_PROCESSES} worker processes")
     print("=" * 80)
-
 
     # Do the job parallelly
     with Pool(processes=MAX_WORKER_PROCESSES) as pool:
