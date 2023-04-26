@@ -10,7 +10,7 @@ import yaml
 import furiosa.quantizer
 from furiosa.tools.compiler.api import VersionInfo, compile
 
-QUANTIZER_CONFIG = {"with_quantize": False}
+QUANTIZER_CONFIG = {"with_quantize": True}
 COMPILER_CONFIG = {"tabulate_dequantize": True}
 TARGET_NPU = "warboy-2pe"
 COMPILED_SUFFIX = "_warboy_2pe"
