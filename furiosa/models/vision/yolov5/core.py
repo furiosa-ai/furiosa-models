@@ -220,7 +220,6 @@ class YOLOv5PostProcessor(PostProcessor):
 
 
 class YOLOv5Base(ObjectDetectionModel, ABC):
-
     postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
         Platform.PYTHON: YOLOv5PostProcessor,
     }

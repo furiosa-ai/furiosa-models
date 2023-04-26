@@ -389,7 +389,7 @@ class MultipleGridAnchorGenerator(object):
             scale_height * self._base_anchor_size[0],
             scale_width * self._base_anchor_size[1],
         ]
-        for feature_map_index, (grid_size, scales, aspect_ratios, stride, offset,) in enumerate(
+        for feature_map_index, (grid_size, scales, aspect_ratios, stride, offset) in enumerate(
             zip(
                 feature_map_shape_list,
                 self._scales,

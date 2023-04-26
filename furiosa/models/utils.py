@@ -19,7 +19,7 @@ EXT_ONNX = "onnx"
 EXT_ENF = "enf"
 EXT_DFG = "dfg"
 
-GENERATED_EXTENSIONS = (EXT_DFG, EXT_ENF)
+GENERATED_EXTENSIONS = (EXT_ENF,)
 DATA_DIRECTORY_BASE = Path(__file__).parent / "data"
 CACHE_DIRECTORY_BASE = Path(
     os.getenv(
@@ -133,7 +133,7 @@ class ArtifactResolver:
 
 
 async def resolve_file(
-    src_name: str, extension: str, generated_suffix: str = "_int8_warboy_2pe"
+    src_name: str, extension: str, generated_suffix: str = "_warboy_2pe"
 ) -> bytes:
     # First check whether it is generated file or not
     if extension.lower() in GENERATED_EXTENSIONS:

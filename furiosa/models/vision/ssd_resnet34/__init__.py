@@ -192,7 +192,6 @@ class DefaultBoxes(object):
     def __init__(
         self, fig_size, feat_size, steps, scales, aspect_ratios, scale_xy=0.1, scale_wh=0.2
     ):
-
         self.feat_size = feat_size
         self.fig_size_w, self.fig_size_h = fig_size
 
