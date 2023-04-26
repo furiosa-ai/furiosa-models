@@ -64,10 +64,10 @@ class EfficientNetV2sPreProcessor(PreProcessor):
         image = np.ascontiguousarray(image)
         image = np.transpose(image, (2, 0, 1))
 
-        image = image.astype(np.float32) / 255
+        # image = image.astype(np.float32) / 255
 
-        data = normalize(image)
-        return np.expand_dims(data, axis=0), None
+        # data = normalize(image)
+        return np.expand_dims(image, axis=0), None
 
 
 class EfficientNetV2sPostProcessor(PostProcessor):
