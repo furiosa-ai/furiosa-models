@@ -143,8 +143,9 @@ async def resolve_file(
         file_name = f'{src_name}{generated_suffix}.{extension}'
         full_path = DATA_DIRECTORY_BASE / f'{generated_path_base}/{file_name}'
     else:
-        full_path = DATA_DIRECTORY_BASE / src_name
-        full_path = next(full_path.glob(f'*.{extension}'))
+        full_path = next((DATA_DIRECTORY_BASE / src_name).glob(f'*.{extension}.dvc'))
+        # Remove `.dvc` suffix
+        full_path = full_path.with_suffix('')
 
     try:
         return await ArtifactResolver(full_path).read()
