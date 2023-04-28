@@ -74,10 +74,10 @@ class EfficientNetB0PreProcessor(PreProcessor):
         image = resize(image, scale_size, resample=Image.Resampling.BICUBIC)
 
         data = center_crop(image, 224, 224)
-        data = np.transpose(image, axes=(2, 0, 1))
+        data = np.transpose(data, axes=(2, 0, 1))
 
         if with_quantize:
-            data = np.asarray(image, dtype=np.float32)
+            data = np.asarray(data, dtype=np.float32)
             data /= 255
 
             data -= IMAGENET_DEFAULT_MEAN
