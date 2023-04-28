@@ -138,6 +138,7 @@ class YOLOv5PreProcessor(PreProcessor):
 
             if with_quantize:
                 img /= 255.0
+            img = img.tensors([0, 2, 1])
             assert sx == sy, "yolov5 must be the same rescale for width and height"
             scale = sx
             batched_image.append(img)

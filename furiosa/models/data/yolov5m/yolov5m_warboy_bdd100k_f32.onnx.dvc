@@ -1,0 +1,4 @@
+outs:
+- md5: c9780d691b3fba24e862700e6b6688b4
+  size: 86223371
+  path: yolov5m_warboy_bdd100k_f32.onnx
