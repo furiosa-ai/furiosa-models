@@ -256,7 +256,8 @@ def _pick_best(detections, confidence_threshold):
 class SSDResNet34PreProcessor(PreProcessor):
     @staticmethod
     def __call__(
-        images: Sequence[Union[str, np.ndarray]]
+        images: Sequence[Union[str, np.ndarray]],
+        with_quantize: bool = False,
     ) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
         """Preprocess input images to a batch of input tensors
 
@@ -283,7 +284,9 @@ class SSDResNet34PreProcessor(PreProcessor):
                 image = cv2.imread(image)
                 if image is None:
                     raise FileNotFoundError(image)
-            # image = np.array(image, dtype=np.float32)
+
+            if with_quantize:
+                image = np.array(image, dtype=np.float32)
             if len(image.shape) < 3 or image.shape[2] != 3:
                 image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
             else:
@@ -291,10 +294,11 @@ class SSDResNet34PreProcessor(PreProcessor):
             width = image.shape[1]
             height = image.shape[0]
             image = cv2.resize(image, (1200, 1200), interpolation=cv2.INTER_LINEAR)
-            mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
-            std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
-            # image = image / 255.0 - mean
-            # image = image / std
+            if with_quantize:
+                mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
+                std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+                image = image / 255.0 - mean
+                image = image / std
             # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L143
             # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/coco.py#L40
             # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/coco.py#L91

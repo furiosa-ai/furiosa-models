@@ -150,7 +150,8 @@ class SSDSmallConstant(object):
 class SSDMobileNetPreProcessor(PreProcessor):
     @staticmethod
     def __call__(
-        images: Sequence[Union[str, np.ndarray]]
+        images: Sequence[Union[str, np.ndarray]],
+        with_quantize: bool = False,
     ) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
         """Preprocess input images to a batch of input tensors.
 
@@ -176,7 +177,9 @@ class SSDMobileNetPreProcessor(PreProcessor):
                 image = cv2.imread(image)
                 if image is None:
                     raise FileNotFoundError(image)
-            # image = np.array(image, dtype=np.float32)
+
+            if with_quantize:
+                image = np.array(image, dtype=np.float32)
             if len(image.shape) < 3 or image.shape[2] != 3:
                 image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
             else:
@@ -184,8 +187,9 @@ class SSDMobileNetPreProcessor(PreProcessor):
             width = image.shape[1]
             height = image.shape[0]
             image = cv2.resize(image, (300, 300), interpolation=cv2.INTER_LINEAR)
-            # image -= 127
-            # image /= 127
+            if with_quantize:
+                image -= 127
+                image /= 127
             image = image.transpose([2, 0, 1])
             batch_image.append(image)
             batch_preproc_param.append({"width": width, "height": height})

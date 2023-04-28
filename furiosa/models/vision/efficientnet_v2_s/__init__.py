@@ -54,7 +54,7 @@ def normalize(image: Image.Image) -> np.ndarray:
 
 class EfficientNetV2sPreProcessor(PreProcessor):
     @staticmethod
-    def __call__(image: Path) -> Tuple[np.ndarray, None]:
+    def __call__(image: Path, with_quantize: bool = False) -> Tuple[np.ndarray, None]:
         """Read and preprocess an image located at image_path."""
         image = Image.open(image).convert("RGB")
 
@@ -62,12 +62,13 @@ class EfficientNetV2sPreProcessor(PreProcessor):
         image = center_crop(image, INPUT_SIZE)
 
         image = np.ascontiguousarray(image)
-        image = np.transpose(image, (2, 0, 1))
+        data = np.transpose(image, (2, 0, 1))
 
-        # image = image.astype(np.float32) / 255
+        if with_quantize:
+            data = data.astype(np.float32) / 255
+            data = normalize(data)
 
-        # data = normalize(image)
-        return np.expand_dims(image, axis=0), None
+        return np.expand_dims(data, axis=0), None
 
 
 class EfficientNetV2sPostProcessor(PostProcessor):

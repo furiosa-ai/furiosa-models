@@ -21,7 +21,9 @@ logger = logging.getLogger(__name__)
 
 class ResNet50PreProcessor(PreProcessor):
     @staticmethod
-    def __call__(image: Union[str, npt.ArrayLike]) -> Tuple[np.ndarray, None]:
+    def __call__(
+        image: Union[str, npt.ArrayLike], with_quantize: bool = False
+    ) -> Tuple[np.ndarray, None]:
         """Convert an input image to a model input tensor
 
         Args:
@@ -44,9 +46,10 @@ class ResNet50PreProcessor(PreProcessor):
             image, 224, 224, percent=87.5, interpolation=cv2.INTER_AREA
         )
         image = center_crop(image, 224, 224)
-        # image = np.asarray(image, dtype=np.float32)
-        # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L178
-        # image -= np.array([123.68, 116.78, 103.94], dtype=np.float32)
+        if with_quantize:
+            image = np.asarray(image, dtype=np.float32)
+            # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L178
+            image -= np.array([123.68, 116.78, 103.94], dtype=np.float32)
         image = image.transpose([2, 0, 1])
         return image[np.newaxis, ...], None
 
