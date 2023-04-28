@@ -39,7 +39,6 @@ class YOLOv5l(YOLOv5Base):
             format=Format.ONNX,
             family="YOLOv5",
             version="v5",
-            compiler_config=cls.get_compiler_config(),
             metadata=Metadata(
                 description="YOLOv5 large model",
                 publication=Publication(url="https://github.com/ultralytics/yolov5"),

@@ -138,7 +138,7 @@ class YOLOv5PreProcessor(PreProcessor):
 
             if with_quantize:
                 img /= 255.0
-            img = img.tensors([0, 2, 1])
+            img = img.transpose([2, 0, 1])
             assert sx == sy, "yolov5 must be the same rescale for width and height"
             scale = sx
             batched_image.append(img)
@@ -227,15 +227,3 @@ class YOLOv5Base(ObjectDetectionModel, ABC):
     postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
         Platform.PYTHON: YOLOv5PostProcessor,
     }
-
-    @staticmethod
-    def get_compiler_config() -> Dict:
-        return {
-            "without_quantize": {
-                "parameters": [
-                    {
-                        "permute": [0, 2, 3, 1],
-                    }
-                ]
-            }
-        }
