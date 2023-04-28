@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List, Sequence, Tuple, Type
+from typing import Any, Dict, List, Sequence, Tuple, Type, Union
 
 from PIL import Image, ImageOps
 import numpy as np
@@ -10,6 +10,9 @@ from furiosa.registry.model import Format, Metadata, Publication
 from ...types import ImageClassificationModel, Platform, PostProcessor, PreProcessor
 from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, get_field_default
 from ..common.datasets import imagenet1k
+
+IMAGENET_DEFAULT_MEAN = np.array((0.485, 0.456, 0.406), dtype=np.float32)[:, np.newaxis, np.newaxis]
+IMAGENET_DEFAULT_STD = np.array((0.229, 0.224, 0.225), dtype=np.float32)[:, np.newaxis, np.newaxis]
 
 CLASSES: List[str] = imagenet1k.ImageNet1k_CLASSES
 INPUT_SIZE = 384
@@ -47,16 +50,30 @@ def center_crop(image: Image.Image, output_size: int) -> Image.Image:
 
 
 def normalize(image: Image.Image) -> np.ndarray:
-    image -= np.asarray((0.485, 0.456, 0.406)).reshape(-1, 1, 1)
-    image /= np.asarray((0.229, 0.224, 0.225)).reshape(-1, 1, 1)
+    image -= IMAGENET_DEFAULT_MEAN
+    image /= IMAGENET_DEFAULT_STD
     return image
 
 
 class EfficientNetV2sPreProcessor(PreProcessor):
     @staticmethod
-    def __call__(image: Path, with_quantize: bool = False) -> Tuple[np.ndarray, None]:
-        """Read and preprocess an image located at image_path."""
-        image = Image.open(image).convert("RGB")
+    def __call__(
+        image: Union[str, Path, npt.ArrayLike], with_quantize: bool = False
+    ) -> Tuple[np.ndarray, None]:
+        """Read and preprocess an image located at image_path.
+
+        Args:
+            image: A path of an image.
+
+        Returns:
+            The first element of the tuple is a numpy array that meets the input requirements of the model.
+                The second element of the tuple is unused in this model and has no value.
+                To learn more information about the output numpy array, please refer to [Inputs](efficientnet_v2_s.md#inputs).
+
+        """
+
+        if isinstance(image, (str, Path)):
+            image = Image.open(image).convert("RGB")
 
         image = resize(image, INPUT_SIZE, Image.Resampling.BILINEAR)
         image = center_crop(image, INPUT_SIZE)
@@ -73,6 +90,17 @@ class EfficientNetV2sPreProcessor(PreProcessor):
 
 class EfficientNetV2sPostProcessor(PostProcessor):
     def __call__(self, model_outputs: Sequence[npt.ArrayLike], contexts: Any = None) -> str:
+        """Convert the outputs of a model to a label string, such as car and cat.
+
+        Args:
+            model_outputs: the outputs of the model.
+                Please learn more about the output of model,
+                please refer to [Outputs](efficientnet_b0.md#outputs).
+
+        Returns:
+            str: A classified label, e.g., "tabby, tabby cat".
+        """
+
         return CLASSES[int(np.argsort(model_outputs[0], axis=1)[:, ::-1][0, 0])]
 
 

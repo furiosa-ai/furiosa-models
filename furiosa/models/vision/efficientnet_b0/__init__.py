@@ -1,6 +1,6 @@
 import math
 from pathlib import Path
-from typing import Any, Dict, List, Sequence, Tuple, Type
+from typing import Any, Dict, List, Sequence, Tuple, Type, Union
 
 from PIL import Image
 import numpy as np
@@ -52,10 +52,23 @@ def center_crop(image: Image.Image, cropped_height: int, cropped_width: int) -> 
 
 class EfficientNetB0PreProcessor(PreProcessor):
     @staticmethod
-    def __call__(image: Path, with_quantize: bool = False) -> Tuple[np.ndarray, None]:
-        """Read and preprocess an image located at image_path."""
+    def __call__(
+        image: Union[str, Path, npt.ArrayLike], with_quantize: bool = False
+    ) -> Tuple[np.ndarray, None]:
+        """Read and preprocess an image located at image_path.
 
-        image = Image.open(Path(image)).convert("RGB")
+        Args:
+            image: A path of an image.
+
+        Returns:
+            The first element of the tuple is a numpy array that meets the input requirements of the model.
+                The second element of the tuple is unused in this model and has no value.
+                To learn more information about the output numpy array, please refer to [Inputs](efficientnet_b0.md#inputs).
+
+        """
+
+        if isinstance(image, (str, Path)):
+            image = Image.open(image).convert("RGB")
 
         scale_size = int(math.floor(224 / 0.875))
         image = resize(image, scale_size, resample=Image.Resampling.BICUBIC)
@@ -75,6 +88,17 @@ class EfficientNetB0PreProcessor(PreProcessor):
 
 class EfficientNetB0PostProcessor(PostProcessor):
     def __call__(self, model_outputs: Sequence[npt.ArrayLike], contexts: Any = None) -> str:
+        """Convert the outputs of a model to a label string, such as car and cat.
+
+        Args:
+            model_outputs: the outputs of the model.
+                Please learn more about the output of model,
+                please refer to [Outputs](efficientnet_b0.md#outputs).
+
+        Returns:
+            str: A classified label, e.g., "jigsaw puzzle".
+        """
+
         return CLASSES[int(np.argsort(model_outputs[0], axis=1)[:, ::-1][0, 0])]
 
 

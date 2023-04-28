@@ -62,7 +62,7 @@ furiosa-models = "furiosa.models.client.main:main"
 
 [project.urls]
 Home = "https://furiosa.ai"
-Documentation = "https://github.com/furiosa-ai/furiosa-models"
+Documentation = "https://furiosa-ai.github.io/furiosa-models/latest/"
 "Bug Tracker" = "https://github.com/furiosa-ai/furiosa-models/issues"
 "Source Code" = "https://github.com/furiosa-ai/furiosa-models"
 

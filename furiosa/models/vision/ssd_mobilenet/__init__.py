@@ -162,7 +162,8 @@ class SSDMobileNetPreProcessor(PreProcessor):
         Returns:
             The first element is 3-channel images of 300x300 in NCHW format,
                 and the second element is a list of context about the original image metadata.
-                Please learn more about the outputs of preprocess (i.e., model inputs),
+                This context data should be passed and utilized during post-processing.
+                To learn more about the outputs of preprocess (i.e., model inputs),
                 please refer to [Inputs](ssd_mobilenet.md#inputs).
 
         """

@@ -13,7 +13,7 @@ and they can run even on CPU and GPU as well.
 
 ## Online Documentation
 If you are new, you can start from [Getting Started](https://furiosa-ai.github.io/furiosa-models/latest/getting_started/).
-You can also find the latest online documents, 
+You can also find the latest online documents,
 including programming guides, API references, and examples from the followings:
 
 * [Furiosa Models - Latest Documentation](https://furiosa-ai.github.io/furiosa-models/latest/)
@@ -24,12 +24,14 @@ including programming guides, API references, and examples from the followings:
 
 
 ## <a name="model_list"></a>Model List
-The table summarizes all models available in `furiosa-models`. If you visit each model link, 
+The table summarizes all models available in `furiosa-models`. If you visit each model link,
 you can find details about loading a model, their input and output tensors, pre/post processings, and usage examples.
 
 | Model                                                                                    | Task                 | Size | Accuracy                   |
 |------------------------------------------------------------------------------------------| -------------------- | ---- |----------------------------|
 | [ResNet50](https://furiosa-ai.github.io/furiosa-models/latest/models/resnet50_v1.5/)     | Image Classification | 25M  | 76.228% (ImageNet1K-val)   |
+| [EfficientNetB0](https://furiosa-ai.github.io/furiosa-models/latest/models/)             | Image Classification | 6.4M | 73.556% (ImageNet1K-val)   |
+| [EfficientNetV2-S](https://furiosa-ai.github.io/furiosa-models/latest/models/)           | Image Classification | 26M  | 83.566% (ImageNet1K-val)   |
 | [SSDMobileNet](https://furiosa-ai.github.io/furiosa-models/latest/models/ssd_mobilenet/) | Object Detection     | 7.2M | mAP 0.232 (COCO 2017-val)  |
 | [SSDResNet34](https://furiosa-ai.github.io/furiosa-models/latest/models/ssd_resnet34/)   | Object Detection     | 20M  | mAP 0.220 (COCO 2017-val)  |
 | [YOLOv5M](https://furiosa-ai.github.io/furiosa-models/latest/models/yolov5m/)            | Object Detection     | 21M  | mAP 0.280 (Bdd100k-val)\*  |

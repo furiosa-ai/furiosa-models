@@ -31,9 +31,9 @@ class ResNet50PreProcessor(PreProcessor):
                 an image loaded as a numpy array in BGR order.
 
         Returns:
-            The first element of tuple is a numpy array.
-                To learn more about the output of preprocess,
-                please refer to [Inputs](resnet50_v1.5.md#inputs).
+            The first element of the tuple is a numpy array that meets the input requirements of the ResNet50 model.
+                The second element of the tuple is unused in this model and has no value.
+                To learn more information about the output numpy array, please refer to [Inputs](resnet50_v1.5.md#inputs).
         """
         # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/main.py#L37-L39
         # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L168-L184
@@ -54,7 +54,7 @@ class ResNet50PreProcessor(PreProcessor):
         return image[np.newaxis, ...], None
 
 
-class ResNet50PostProcessor(PostProcessor):
+class ResNet50PythonPostProcessor(PostProcessor):
     """Convert the outputs of a model to a label string, such as car and cat.
 
     Args:
@@ -63,7 +63,7 @@ class ResNet50PostProcessor(PostProcessor):
             please refer to [Outputs](resnet50_v1.5.md#outputs).
 
     Returns:
-        str: A classified label
+        str: A classified label, e.g., "tabby, tabby cat".
     """
 
     def __call__(self, model_outputs: Sequence[npt.ArrayLike], contexts: Any = None) -> str:
@@ -74,7 +74,7 @@ class ResNet50(ImageClassificationModel):
     """MLCommons ResNet50 model"""
 
     postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
-        Platform.PYTHON: ResNet50PostProcessor,
+        Platform.PYTHON: ResNet50PythonPostProcessor,
     }
 
     @staticmethod
@@ -97,5 +97,5 @@ class ResNet50(ImageClassificationModel):
                 publication=Publication(url="https://arxiv.org/abs/1512.03385.pdf"),
             ),
             preprocessor=ResNet50PreProcessor(),
-            postprocessor=ResNet50PostProcessor(),
+            postprocessor=ResNet50PythonPostProcessor(),
         )
