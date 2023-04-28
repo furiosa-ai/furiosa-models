@@ -99,7 +99,7 @@ def _compute_stride() -> np.ndarray:
 class YOLOv5PreProcessor(PreProcessor):
     @staticmethod
     def __call__(
-        images: Sequence[Union[str, np.ndarray]], color_format: str = "bgr"
+        images: Sequence[Union[str, np.ndarray]], with_quantize: bool = False
     ) -> Tuple[np.ndarray, List[Dict[str, Any]]]:
         """Preprocess input images to a batch of input tensors
 
@@ -126,15 +126,18 @@ class YOLOv5PreProcessor(PreProcessor):
         batched_proc_params = []
         if isinstance(images, str):
             images = [images]
-        for i, img in enumerate(images):
+        for img in images:
             if type(img) == str:
                 img = cv2.imread(img)
                 if img is None:
                     raise FileNotFoundError(img)
+            if with_quantize:
+                img = img.astype(np.float32)
             img, (sx, sy), (padw, padh) = _resize(img, _INPUT_SIZE)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-            if color_format == "bgr":
-                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            if with_quantize:
+                img /= 255.0
             assert sx == sy, "yolov5 must be the same rescale for width and height"
             scale = sx
             batched_image.append(img)
