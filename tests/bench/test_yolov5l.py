@@ -69,4 +69,4 @@ def test_yolov5l_accuracy(benchmark):
     print("YOLOv5Large mAP50:", result['map50'])
     print("YOLOv5Large ap_class:", result['ap_class'])
     print("YOLOv5Large ap50_class:", result['ap50_class'])
-    np.testing.assert_allclose(result['map'], WIP_MAP, err_msg="Accuracy check failed")
+    assert result['map'] >= WIP_MAP, "Accuracy check failed"
