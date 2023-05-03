@@ -5,12 +5,18 @@ import cv2
 import numpy as np
 import numpy.typing as npt
 
-from furiosa.registry.model import Format, Metadata, Publication
-
 from .. import native
 from ...errors import ArtifactNotFound
-from ...types import ImageClassificationModel, Platform, PostProcessor, PreProcessor
-from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, get_field_default
+from ...types import (
+    Format,
+    ImageClassificationModel,
+    Metadata,
+    Platform,
+    PostProcessor,
+    PreProcessor,
+    Publication,
+)
+from ...utils import EXT_CALIB_YAML, EXT_ENF, EXT_ONNX, get_field_default
 from ..common.datasets import imagenet1k
 from ..preprocess import center_crop, resize_with_aspect_ratio
 
@@ -83,12 +89,11 @@ class ResNet50(ImageClassificationModel):
 
     @classmethod
     def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = False, *args, **kwargs):
-        # dfg = artifacts[EXT_DFG]
         return cls(
             name="ResNet50",
             source=artifacts[EXT_ONNX],
-            # dfg=dfg,
             enf=artifacts[EXT_ENF],
+            calib_yaml=artifacts[EXT_CALIB_YAML],
             format=Format.ONNX,
             family="ResNet",
             version="v1.5",

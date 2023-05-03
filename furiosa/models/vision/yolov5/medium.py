@@ -9,9 +9,8 @@ from typing import Dict, List
 import numpy as np
 import yaml
 
-from furiosa.registry.model import Format, Metadata, Publication
-
-from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
+from ...types import Format, Metadata, Publication
+from ...utils import EXT_CALIB_YAML, EXT_ENF, EXT_ONNX
 from .core import YOLOv5Base, YOLOv5PostProcessor, YOLOv5PreProcessor
 
 with open(pathlib.Path(__file__).parent / "datasets/yolov5m/cfg.yaml", "r") as f:
@@ -38,8 +37,8 @@ class YOLOv5m(YOLOv5Base):
         return cls(
             name="YOLOv5Medium",
             source=artifacts[EXT_ONNX],
-            # dfg=artifacts[EXT_DFG],
             enf=artifacts[EXT_ENF],
+            calib_yaml=artifacts[EXT_CALIB_YAML],
             format=Format.ONNX,
             family="YOLOv5",
             version="v5",

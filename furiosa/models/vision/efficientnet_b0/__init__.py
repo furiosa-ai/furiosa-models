@@ -6,10 +6,16 @@ from PIL import Image
 import numpy as np
 import numpy.typing as npt
 
-from furiosa.registry.model import Format, Metadata, Publication
-
-from ...types import ImageClassificationModel, Platform, PostProcessor, PreProcessor
-from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
+from ...types import (
+    Format,
+    ImageClassificationModel,
+    Metadata,
+    Platform,
+    PostProcessor,
+    PreProcessor,
+    Publication,
+)
+from ...utils import EXT_CALIB_YAML, EXT_ENF, EXT_ONNX
 from ..common.datasets import imagenet1k
 from ..preprocess import center_crop
 
@@ -118,8 +124,8 @@ class EfficientNetB0(ImageClassificationModel):
         return cls(
             name="EfficientNetB0",
             source=artifacts[EXT_ONNX],
-            # dfg=artifacts[EXT_DFG],
             enf=artifacts[EXT_ENF],
+            calib_yaml=artifacts[EXT_CALIB_YAML],
             format=Format.ONNX,
             family="EfficientNet",
             version="1.0.2",

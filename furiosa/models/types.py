@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
-from enum import IntEnum
-from typing import Any, Dict, Optional, Sequence, Tuple, Type
+import datetime
+from enum import Enum, IntEnum
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Type
 
 import numpy.typing as npt
-from pydantic import BaseConfig, Extra
+from pydantic import BaseConfig, BaseModel, Extra, Field
 from typing_extensions import TypeAlias
 
 from furiosa.common.thread import synchronous
-from furiosa.registry.model import Model as RegistryModel
 
 from .utils import load_artifacts
 
@@ -86,11 +86,11 @@ class Model(RegistryModel, ABC):
         )
 
     def preprocess(self, *args, **kwargs) -> Tuple[Sequence[npt.ArrayLike], Sequence[Context]]:
-        assert self.preprocessor is not None
+        assert self.preprocessor
         return self.preprocessor(*args, **kwargs)
 
     def postprocess(self, *args, **kwargs):
-        assert self.postprocessor is not None
+        assert self.postprocessor
         return self.postprocessor(*args, **kwargs)
 
 

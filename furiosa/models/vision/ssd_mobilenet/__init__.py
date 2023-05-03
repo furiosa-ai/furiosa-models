@@ -6,13 +6,19 @@ import numpy
 import numpy as np
 import numpy.typing as npt
 
-from furiosa.registry.model import Format, Metadata, Publication
-
 from . import anchor_generator  # type: ignore[import]
 from .. import native
 from ...errors import ArtifactNotFound
-from ...types import ObjectDetectionModel, Platform, PostProcessor, PreProcessor
-from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, get_field_default
+from ...types import (
+    Format,
+    Metadata,
+    ObjectDetectionModel,
+    Platform,
+    PostProcessor,
+    PreProcessor,
+    Publication,
+)
+from ...utils import EXT_CALIB_YAML, EXT_ENF, EXT_ONNX, get_field_default
 from ..common.datasets import coco
 from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox, sigmoid
 
@@ -317,17 +323,14 @@ class SSDMobileNet(ObjectDetectionModel):
 
     @classmethod
     def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = True):
-        # dfg = artifacts[EXT_DFG]
-        # if use_native and dfg is None:
-        #     raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
         postproc_type = Platform.RUST if use_native else Platform.PYTHON
         logger.debug(f"Using {postproc_type.name} postprocessor")
         postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type]()
         return cls(
             name="MLCommonsSSDMobileNet",
             source=artifacts[EXT_ONNX],
-            # dfg=None,
             enf=artifacts[EXT_ENF],
+            calib_yaml=artifacts[EXT_CALIB_YAML],
             format=Format.ONNX,
             family="MobileNetV1",
             version="v1.1",
