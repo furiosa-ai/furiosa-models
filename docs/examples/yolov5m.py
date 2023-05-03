@@ -6,7 +6,7 @@ from furiosa.runtime import session
 
 yolov5m = YOLOv5m.load()
 
-with session.create(yolov5m) as sess:
+with session.create(yolov5m.enf) as sess:
     image = cv2.imread("tests/assets/yolov5-test.jpg")
     inputs, contexts = yolov5m.preprocess([image])
     output = sess.run(np.expand_dims(inputs[0], axis=0)).numpy()
