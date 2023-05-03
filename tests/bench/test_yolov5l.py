@@ -12,7 +12,7 @@ from furiosa.runtime import session
 
 from .test_acc_util import bdd100k
 
-EXPECTED_MAP = 0.27159970551628876
+EXPECTED_MAP = 0.28381881562181255
 
 
 def load_db_from_env_variable() -> Tuple[Path, bdd100k.Yolov5Dataset]:
