@@ -12,7 +12,7 @@ TEST_IMAGE_PATH = str(Path(__file__).parent / "../assets/yolov5-test.jpg")
 
 NUM_CLASSES = 10
 NUM_BATCHES = 2
-NUM_DETECTED_BOXES = 27
+NUM_DETECTED_BOXES = 21
 
 
 @pytest.mark.asyncio

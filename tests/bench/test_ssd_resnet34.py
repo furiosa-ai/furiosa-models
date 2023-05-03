@@ -12,8 +12,8 @@ from furiosa.models.types import Model
 from furiosa.models.vision import SSDResNet34
 from furiosa.runtime import session
 
-EXPECTED_ACCURACY = 0.21625689695610095  # e2e-testing's accuracy
-EXPECTED_ACCURACY_RUST = 0.22013336390711905
+EXPECTED_ACCURACY = 0.2132147932
+EXPECTED_ACCURACY_RUST = 0.2201333639
 
 
 def load_coco_from_env_variable():

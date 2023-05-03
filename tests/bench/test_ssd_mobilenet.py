@@ -11,8 +11,8 @@ from furiosa.models.types import Model
 from furiosa.models.vision import SSDMobileNet
 from furiosa.runtime import session
 
-EXPECTED_ACCURACY = 0.2321485936886135
-EXPECTED_ACCURACY_NATIVE_RUST_PP = 0.232125173840933
+EXPECTED_ACCURACY = 0.23199896825191885
+EXPECTED_ACCURACY_NATIVE_RUST_PP = 0.23178397430922199
 
 
 def load_coco_from_env_variable():

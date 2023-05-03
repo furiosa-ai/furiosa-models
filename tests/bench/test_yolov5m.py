@@ -13,8 +13,7 @@ from furiosa.runtime import session
 
 from .test_acc_util import bdd100k
 
-# EXPECTED_MAP = 0.2803325282086983
-EXPECTED_MAP_RUST = 0.2801733892282153
+EXPECTED_MAP = 0.27159970551628876
 
 
 def load_db_from_env_variable() -> Tuple[Path, bdd100k.Yolov5Dataset]:
@@ -72,4 +71,4 @@ def test_yolov5m_accuracy(benchmark):
     print("YOLOv5Medium ap_class:", result['ap_class'])
     print("YOLOv5Medium ap50_class:", result['ap50_class'])
 
-    assert result['map'] >= EXPECTED_MAP_RUST, "Accuracy check failed"
+    assert result['map'] == EXPECTED_MAP, "Accuracy check failed"

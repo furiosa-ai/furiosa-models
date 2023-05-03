@@ -8,7 +8,7 @@ from furiosa.models.vision import EfficientNetB0
 from furiosa.models.vision.common.datasets import imagenet1k
 from furiosa.runtime import session
 
-EXPECTED_ACCURACY = 16.104
+EXPECTED_ACCURACY = 72.47
 CLASSES: List[str] = imagenet1k.ImageNet1k_CLASSES
 
 
