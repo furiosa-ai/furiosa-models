@@ -44,8 +44,8 @@ You can find examples at [ResNet50 Usage](#ResNet50_Usage).
 ::: furiosa.models.vision.resnet50.ResNet50PreProcessor.__call__
     options:
         show_source: false
-    
+
 ### `furiosa.models.vision.ResNet50.postprocess`
-::: furiosa.models.vision.resnet50.ResNet50PostProcessor.__call__
+::: furiosa.models.vision.resnet50.ResNet50PythonPostProcessor.__call__
     options:
         show_source: false

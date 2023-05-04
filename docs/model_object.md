@@ -1,16 +1,16 @@
 # Model object
 
-In `furiosa-models` project, `Model` is the first class object, and it represents a neural network model. 
-This document explains what [`Model`][furiosa.registry.Model] object offers and their usages.
+In `furiosa-models` project, `Model` is the first class object, and it represents a neural network model.
+This document explains what [`Model`][furiosa.models.types.Model] object offers and their usages.
 
 ## Loading a pre-trained model
 To load a pre-trained neural-network model, you need to call `load()` method.
-Since the sizes of pre-trained model weights vary from tens to hundreds megabytes, 
-the model images are not included in Python package. When `load()` method is called, a pre-trained model will be 
-fetched over network. It takes some time (usually few seconds) depending on models and environments. 
+Since the sizes of pre-trained model weights vary from tens to hundreds megabytes,
+the model images are not included in Python package. When `load()` method is called, a pre-trained model will be
+fetched over the network. It takes some time (usually few seconds) depending on models and network conditions.
 Once the model images are fetched, they will be cached on a local disk.
 
-Non-blocking API `load_async()` also is available, and it can be used 
+Non-blocking API `load_async()` also is available, and it can be used
 if your application is running through asynchronous executors (e.g., asyncio).
 
 === "Blocking API"
@@ -25,25 +25,21 @@ if your application is running through asynchronous executors (e.g., asyncio).
 
 <a name="accessing_artifacts_and_metadata"></a>
 ## Accessing artifacts and metadata
-A `Model` object includes model artifacts, such as ONNX, tflite, DFG, and ENF.
+A `Model` object includes model artifacts, such as ONNX, tflite, calibration range in yaml format, and ENF.
 
-DFG and ENF are [FuriosaAI Compiler](https://furiosa-ai.github.io/docs/latest/en/software/compiler.html) specific formats.
-Both formats are used for pre-compiled binary, and they are used to skip compilation times that take up to minutes.
+ENF format is [FuriosaAI Compiler](https://furiosa-ai.github.io/docs/latest/en/software/compiler.html) specific format.
+Once you have the ENF file, you can reuse it to omit the compilation process that take up to minutes.
 In addition, a `Model` object has various metadata. The followings are all attributes belonging to a single `Model` object.
 
-### `furiosa.registry.Model`
-::: furiosa.registry.Model
+### `furiosa.models.types.Model`
+::: furiosa.models.types.Model
     options:
         show_source: true
 
 
 ## Inferencing with Session API
-To load a model to FuriosaAI NPU, you need to create a session instance with a `Model` object 
-through Furiosa SDK. As we mentioned above, even a single `Model` object has multiple model artifacts, such as 
-a ONNX model and an ENF (FuriosaAI's compiled program binary).
 
-If an `Model` object is passed to `session.create()`, Session API chooses the ENF (FuriosaAI's Executable NPU Format) 
-by default. In this case, `session.create()` doesn't involve any compilation because it uses the pre-compiled ENF binary.
+You can create a session by passing the `enf` field of the model object to the `furiosa.runtime.session.create()` function. The "enf" field's binary is already compiled, so you can perform inference directly without the compilation process. You can also manually quantize and compile the original f32 model with the given calibration range.
 
 !!!Info
     If you want to learn more about the installation of furiosa-sdk and how to use it, please follow the followings:
@@ -52,9 +48,9 @@ by default. In this case, `session.create()` doesn't involve any compilation bec
     * [Python SDK Installation and User Guide](https://furiosa-ai.github.io/docs/latest/en/software/python-sdk.html)
     * [Furiosa SDK - Tutorial and Code Examples](https://furiosa-ai.github.io/docs/latest/en/software/tutorials.html)
 
-Users still can compile source models like ONNX or tflite if passing `Model.source` to `session.create()`. 
-Compiling models will take some time up to minutes, but it allows to specify batch size and compiler configs, 
-leading to more optimizations depending on user use-cases. To learn more about `Model.source`, 
+Users still can compile source models like ONNX or tflite if passing `Model.source` to `session.create()`.
+Compiling models will take some time up to minutes, but it allows to specify batch size and compiler configs,
+leading to more optimizations depending on user use-cases. To learn more about `Model.source`,
 please refer to [Accessing artifacts and metadata](#accessing_artifacts_and_metadata).
 
 TODO: explain making enf from onnx with calibration range
@@ -68,14 +64,14 @@ TODO: explain making enf from onnx with calibration range
 
 ### Pre/Postprocessing
 There are gaps between model input/outputs and user applications' desired input and output data.
-In general, inputs and outputs of a neural network model are tensors. In applications, 
-user sample data are images in standard formats like PNG or JPEG, and 
+In general, inputs and outputs of a neural network model are tensors. In applications,
+user sample data are images in standard formats like PNG or JPEG, and
 users also need to convert the output tensors to struct data for user applications.
 
-A `Model` object also provides both `preprocess()` and `postprocess()` methods. 
-They are utilities to convert easily user inputs to the model's input tensors and output tensors 
-to struct data which can be easily accessible by applications. 
-If using pre-built pre/postprocessing methods, users can quickly start using `furiosa-models`. 
+A `Model` object also provides both `preprocess()` and `postprocess()` methods.
+They are utilities to convert easily user inputs to the model's input tensors and output tensors
+to struct data which can be easily accessible by applications.
+If using pre-built pre/postprocessing methods, users can quickly start using `furiosa-models`.
 
 In sum, typical steps of a single inference is as the following, as also shown at [examples](#Examples).
 
@@ -89,9 +85,9 @@ In sum, typical steps of a single inference is as the following, as also shown a
     However, some models have the native postprocessing implemented in Rust and C++ and
     optimized for FuriosaAI Warboy and Intel/AMD CPUs.
     Python implementations can run on CPU and GPU as well, whereas
-    the native postprocessor implementations works with only FuriosaAI NPU. 
+    the native postprocessor implementations works with only FuriosaAI NPU.
     Native implementations are designed to leverage FuriosaAI NPU's characteristics even for post-processing
-    and maximize the latency and throughput by using modern CPU architecture, 
+    and maximize the latency and throughput by using modern CPU architecture,
     such as CPU cache, SIMD instructions and CPU pipelining.
     According to our benchmark, the native implementations show at most 70% lower latency.
 
