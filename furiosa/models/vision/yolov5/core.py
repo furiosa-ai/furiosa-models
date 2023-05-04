@@ -105,7 +105,6 @@ class YOLOv5PreProcessor(PreProcessor):
 
         Args:
             images: Color images have (NCHW: Batch, Channel, Height, Width) dimensions.
-            color_format:  'bgr' (default) or 'rgb'
 
         Returns:
             a pre-processed image, scales and padded sizes(width,height) per images.
