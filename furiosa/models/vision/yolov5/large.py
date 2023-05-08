@@ -1,4 +1,8 @@
-"""YOLOv5L"""
+"""YOLOv5l Module
+
+Attributes:
+    CLASSES (List[str]): a list of class names
+"""
 import pathlib
 from typing import Dict, List
 
@@ -11,7 +15,7 @@ from .core import YOLOv5Base, YOLOv5PostProcessor, YOLOv5PreProcessor
 
 with open(pathlib.Path(__file__).parent / "datasets/yolov5l/cfg.yaml", "r") as f:
     configuration = yaml.safe_load(f)
-    _ANCHORS: np.array = np.float32(configuration["anchors"])
+    _ANCHORS: np.array = np.float32(configuration["anchors"])  # aspect ratio: (width, height)
     CLASSES: List[str] = configuration["class_names"]
 
 __all__ = ['CLASSES', 'YOLOv5l']
@@ -31,7 +35,7 @@ class YOLOv5l(YOLOv5Base):
         if use_native:
             raise NotImplementedError("No native implementation for YOLOv5")
         return cls(
-            name="YoloV5Large",
+            name="YOLOv5Large",
             source=artifacts[EXT_ONNX],
             enf=artifacts[EXT_ENF],
             calib_yaml=artifacts[EXT_CALIB_YAML],

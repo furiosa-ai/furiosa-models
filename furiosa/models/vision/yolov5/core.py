@@ -10,12 +10,12 @@ from ...types import ObjectDetectionModel, Platform, PostProcessor, PreProcessor
 from ...vision.postprocess import LtrbBoundingBox, ObjectDetectionResult
 
 _INPUT_SIZE = (640, 640)
-_GRID_CELL_OUTPUT_SHAPES = [(80, 80), (40, 40), (20, 20)]
+_STRIDES = [8, 16, 32]
 
 
 def _letterbox(
     im: np.ndarray,
-    new_shape: Tuple[int, int] = (640, 640),
+    new_shape: Tuple[int, int] = _INPUT_SIZE,
     color: Tuple[int, int, int] = (114, 114, 114),
     auto: bool = True,
     scaleFill: bool = False,
@@ -27,7 +27,7 @@ def _letterbox(
        If some axis is smaller than new_shape, it will be filled with color.
     Args:
         im (np.ndarray): a numpy image. Its shape must be Channel x Height x Width.
-        new_shape (Tuple[int, int], optional): Targeted Image size. Defaults to (640, 640).
+        new_shape (Tuple[int, int], optional): Targeted Image size. Defaults to default input size (640, 640).
         color (Tuple[int, int, int], optional): Padding Color Value. Defaults to (114, 114, 114).
         auto (bool, optional): If True, calculate padding width and height along to stride  Default to True.
         scaleFill (bool, optional): If True and auto is False, stretch an give image to target shape without any padding. Default to False.
@@ -89,13 +89,6 @@ def _reshape_output(feat: np.ndarray, anchor_per_layer_count: int, num_classes: 
     )
 
 
-def _compute_stride() -> np.ndarray:
-    img_h = _INPUT_SIZE[1]
-    feat_h = np.float32([shape[0] for shape in _GRID_CELL_OUTPUT_SHAPES])  # a size of grid cell
-    strides = img_h / feat_h
-    return strides
-
-
 class YOLOv5PreProcessor(PreProcessor):
     @staticmethod
     def __call__(
@@ -105,6 +98,7 @@ class YOLOv5PreProcessor(PreProcessor):
 
         Args:
             images: Color images have (NCHW: Batch, Channel, Height, Width) dimensions.
+            with_quantize: Whether to put quantize operator in front of the model or not.
 
         Returns:
             a pre-processed image, scales and padded sizes(width,height) per images.
@@ -155,7 +149,7 @@ class YOLOv5PostProcessor(PostProcessor):
         self.anchors = anchors
         self.class_names = class_names
         self.anchor_per_layer_count = anchors.shape[1]
-        self.native = native.yolov5.RustPostProcessor(anchors, _compute_stride())
+        self.native = native.yolov5.RustPostProcessor(anchors, _STRIDES)
 
     def __call__(
         self,

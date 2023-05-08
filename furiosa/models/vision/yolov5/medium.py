@@ -1,4 +1,4 @@
-"""Yolov5m Module
+"""YOLOv5m Module
 
 Attributes:
     CLASSES (List[str]): a list of class names
@@ -14,9 +14,9 @@ from ...utils import EXT_CALIB_YAML, EXT_ENF, EXT_ONNX
 from .core import YOLOv5Base, YOLOv5PostProcessor, YOLOv5PreProcessor
 
 with open(pathlib.Path(__file__).parent / "datasets/yolov5m/cfg.yaml", "r") as f:
-    cfg = yaml.safe_load(f)
-    _ANCHORS: np.array = np.float32(cfg["anchors"])  # aspect ratio: (width, height)
-    CLASSES: List[str] = cfg["class_names"]
+    configuration = yaml.safe_load(f)
+    _ANCHORS: np.array = np.float32(configuration["anchors"])  # aspect ratio: (width, height)
+    CLASSES: List[str] = configuration["class_names"]
 
 __all__ = ['CLASSES', 'YOLOv5m']
 
