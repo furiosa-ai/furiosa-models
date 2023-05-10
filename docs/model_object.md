@@ -39,7 +39,7 @@ In addition, a `Model` object has various metadata. The followings are all attri
 
 ## Inferencing with Session API
 
-You can create a session by passing the `enf` field of the model object to the `furiosa.runtime.session.create()` function. The "enf" field's binary is already compiled, so you can perform inference directly without the compilation process. You can also manually quantize and compile the original f32 model with the given calibration range.
+To create a session, pass the `enf` field of the model object to the furiosa.runtime.session.create() function. Passing the pre-compiled `enf` allows you to perform inference directly without the compilation process. Alternatively, you can also manually quantize and compile the original f32 model with the provided calibration range.
 
 !!!Info
     If you want to learn more about the installation of furiosa-sdk and how to use it, please follow the followings:
@@ -48,10 +48,7 @@ You can create a session by passing the `enf` field of the model object to the `
     * [Python SDK Installation and User Guide](https://furiosa-ai.github.io/docs/latest/en/software/python-sdk.html)
     * [Furiosa SDK - Tutorial and Code Examples](https://furiosa-ai.github.io/docs/latest/en/software/tutorials.html)
 
-Users still can compile source models like ONNX or tflite if passing `Model.source` to `session.create()`.
-Compiling models will take some time up to minutes, but it allows to specify batch size and compiler configs,
-leading to more optimizations depending on user use-cases. To learn more about `Model.source`,
-please refer to [Accessing artifacts and metadata](#accessing_artifacts_and_metadata).
+Passing `Model.source` to `session.create()` allows users to start from source models in ONNX or tflite and customize models to their specific use-cases. This customization includes options such as specifying batch sizes and compiler configurations for optimization purposes. For additional information on Model.source, please refer to [Accessing artifacts and metadata](#accessing_artifacts_and_metadata).
 
 TODO: explain making enf from onnx with calibration range
 

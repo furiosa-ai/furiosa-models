@@ -49,7 +49,7 @@ You can simply load a model and run through furiosa-sdk as the following:
 This example does:
 
 1. Load the [SSDMobileNet](models/ssd_mobilenet.md) model
-2. Create a `session` which is the main class of Furiosa Runtime which actually loads an ONNX/tflite model to NPU and run inferences.
+2. Create a `session`, which is the main class of Furiosa Runtime, that can load an ONNX/tflite model onto NPU and run inferences.
 3. Run an inference with pre/post process functions.
 
 A `Model` instance is a Python object, including model artifacts, metadata, and its pre/postprocessors.
