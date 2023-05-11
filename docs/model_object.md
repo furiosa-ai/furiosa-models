@@ -63,10 +63,18 @@ At this stage, the compiler configuration can be specified.
 
 <a name="Examples"></a>
 !!! Example
-    === "Using ENF binary"
+    === "Using pre-compiled ENF binary"
         ```python
         --8<-- "docs/examples/ssd_mobilenet.py"
         ```
+
+
+!!! Example
+    === "From ONNX"
+        ```python
+        --8<-- "docs/examples/ssd_mobilenet_onnx.py"
+        ```
+
 
 ### Pre/Postprocessing
 There are gaps between model input/outputs and user applications' desired input and output data.
