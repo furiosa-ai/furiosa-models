@@ -23,7 +23,7 @@ test:
 	pytest ./tests -s
 
 unit_tests:
-	pytest ./tests/unit/ -s --ignore-glob './tests/unit/test_batched_yolov5*'
+	NPU_GLOBAL_CONFIG_PATH=warboy-b0-2pe pytest ./tests/unit/ -s
 
 examples:
 	for f in $$(ls docs/examples/*.py | grep -v "ssd_resnet34"); do echo"";echo "[TEST] $$f ..."; python3 $$f || exit 1; done

@@ -61,22 +61,22 @@ def quantize_and_compile_model(arg: Tuple[int, Path]):
     compiler_config = dict(COMPILER_CONFIG)
     compiler_config_path = model_dir_path / "compiler_config.yaml"
     if compiler_config_path.exists() and compiler_config_path.is_file():
-        print(f"  [{index}] {model_short_name} has extra compiler config: ", flush=True, end='')
+        print(f"   [{index}] {model_short_name} has extra compiler config: ", flush=True, end='')
         with open(compiler_config_path) as f:
             additional_compiler_config = yaml.full_load(f)
             print(str(additional_compiler_config), flush=True)
             compiler_config.update(additional_compiler_config)
     set_compiler_config(compiler_config)
 
-    # Redirect C lib's stderr to /dev/null
-    devnull = open('/dev/null', 'w')
-    os.dup2(devnull.fileno(), 2)
+    with open('/dev/null', 'w') as devnull:
+        # Redirect C lib's stderr to /dev/null
+        os.dup2(devnull.fileno(), 2)
 
-    # Compile and write to file
-    enf = compile(bytes(dfg), target_npu=TARGET_NPU)
-    with open(enf_path, 'wb') as f:
-        f.write(enf)
-    print(f"  [{index}] {model_short_name} compiled to {enf_path}", flush=True)
+        # Compile and write to file
+        enf = compile(bytes(dfg), target_npu=TARGET_NPU)
+        with open(enf_path, 'wb') as f:
+            f.write(enf)
+        print(f"  [{index}] {model_short_name} compiled to {enf_path}", flush=True)
 
 
 if __name__ == '__main__':

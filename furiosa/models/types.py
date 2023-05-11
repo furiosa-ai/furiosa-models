@@ -104,9 +104,8 @@ class Model(ABC, BaseModel):
         format: the binary format type of model source; e.g., ONNX, tflite
         source: a source binary in ONNX or tflite. It can be used for compiling this model
             with a custom compiler configuration.
-        dfg: an intermediate representation of furiosa-compiler. Native post processor implementation uses dfg binary.
-            Users don't need to use `dfg` directly.
         enf: the executable binary for furiosa runtime and NPU
+        calib_yaml: the calibration ranges in yaml format for quantization
         version: model version
         inputs: data type and shape of input tensors
         outputs: data type and shape of output tensors

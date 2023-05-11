@@ -50,7 +50,16 @@ To create a session, pass the `enf` field of the model object to the furiosa.run
 
 Passing `Model.source` to `session.create()` allows users to start from source models in ONNX or tflite and customize models to their specific use-cases. This customization includes options such as specifying batch sizes and compiler configurations for optimization purposes. For additional information on Model.source, please refer to [Accessing artifacts and metadata](#accessing_artifacts_and_metadata).
 
-TODO: explain making enf from onnx with calibration range
+To utilize f32 source models, calibration and quantization are necessary.
+Pre-calibrated data is readily available in Furiosa-models, facilitating direct access to the quantization process.
+The calib_range field of the model class represents this pre-calibrated data.
+After quantization, the output will be in the form of FuriosaAI's IR which can then be passed to the session.
+At this stage, the compiler configuration can be specified.
+
+
+!!!Info
+    The calibration range field is actually in yaml format but serialized in string type.
+    To deserialize the calibration range, use `import yaml; yaml.full_load(calib_range)`.
 
 <a name="Examples"></a>
 !!! Example

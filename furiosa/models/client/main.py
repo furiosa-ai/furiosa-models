@@ -23,7 +23,7 @@ EXAMPLE: str = """example:
     furiosa-models desc SSDResNet34
 
     # Run SSDResNet34 for images in `./input` directory
-    furiosa-models run ssd-resnet34 ./input/
+    furiosa-models bench ssd-resnet34 ./input/
 """
 
 

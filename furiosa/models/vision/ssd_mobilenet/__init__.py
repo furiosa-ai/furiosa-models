@@ -283,7 +283,8 @@ class SSDMobileNetNativePostProcessor(PostProcessor):
     def __init__(self):
         self._native = native.ssd_mobilenet.RustPostProcessor()
 
-    def __call__(self, model_outputs: Sequence[numpy.ndarray], contexts: Sequence[Dict[str, Any]]):
+    # TODO: argument `contexts` can get only one context
+    def __call__(self, model_outputs: Sequence[numpy.ndarray], contexts: Dict[str, Any]):
         raw_results = self._native.eval(
             [np.squeeze(s, axis=0) for s in model_outputs[1::2]],
             [np.squeeze(s, axis=0) for s in model_outputs[0::2]],
