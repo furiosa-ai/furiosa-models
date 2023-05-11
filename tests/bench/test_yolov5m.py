@@ -13,8 +13,7 @@ from furiosa.runtime import session
 
 from .test_acc_util import bdd100k
 
-# EXPECTED_MAP = 0.2803325282086983
-EXPECTED_MAP_RUST = 0.2801733892282153
+EXPECTED_MAP = 0.27159970551628876
 
 
 def load_db_from_env_variable() -> Tuple[Path, bdd100k.Yolov5Dataset]:
@@ -45,7 +44,7 @@ def test_yolov5m_accuracy(benchmark):
         batch_im = [im]
 
         batch_pre_img, batch_preproc_param = model.preprocess(
-            batch_im, color_format="bgr"
+            batch_im,
         )  # single-batch
         batch_feat = sess.run(np.expand_dims(batch_pre_img[0], axis=0)).numpy()
         detected_boxes = model.postprocess(
@@ -62,7 +61,7 @@ def test_yolov5m_accuracy(benchmark):
             classes_target=classes_target,
         )
 
-    sess = session.create(model)
+    sess = session.create(model.enf)
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 
@@ -71,4 +70,5 @@ def test_yolov5m_accuracy(benchmark):
     print("YOLOv5Medium mAP50:", result['map50'])
     print("YOLOv5Medium ap_class:", result['ap_class'])
     print("YOLOv5Medium ap50_class:", result['ap50_class'])
-    np.testing.assert_allclose(result['map'], EXPECTED_MAP_RUST, err_msg="Accuracy check failed")
+
+    assert result['map'] == EXPECTED_MAP, "Accuracy check failed"

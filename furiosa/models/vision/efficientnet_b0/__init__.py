@@ -6,10 +6,16 @@ from PIL import Image
 import numpy as np
 import numpy.typing as npt
 
-from furiosa.registry.model import Format, Metadata, Publication
-
-from ...types import ImageClassificationModel, Platform, PostProcessor, PreProcessor
-from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX
+from ...types import (
+    Format,
+    ImageClassificationModel,
+    Metadata,
+    Platform,
+    PostProcessor,
+    PreProcessor,
+    Publication,
+)
+from ...utils import EXT_CALIB_YAML, EXT_ENF, EXT_ONNX
 from ..common.datasets import imagenet1k
 from ..preprocess import center_crop
 
@@ -52,7 +58,9 @@ def center_crop(image: Image.Image, cropped_height: int, cropped_width: int) -> 
 
 class EfficientNetB0PreProcessor(PreProcessor):
     @staticmethod
-    def __call__(image: Union[str, Path, npt.ArrayLike]) -> Tuple[np.ndarray, None]:
+    def __call__(
+        image: Union[str, Path, npt.ArrayLike], with_quantize: bool = False
+    ) -> Tuple[np.ndarray, None]:
         """Read and preprocess an image located at image_path.
 
         Args:
@@ -71,14 +79,15 @@ class EfficientNetB0PreProcessor(PreProcessor):
         scale_size = int(math.floor(224 / 0.875))
         image = resize(image, scale_size, resample=Image.Resampling.BICUBIC)
 
-        image = center_crop(image, 224, 224)
-
-        data = np.asarray(image, dtype=np.float32)
+        data = center_crop(image, 224, 224)
         data = np.transpose(data, axes=(2, 0, 1))
-        data /= 255
 
-        data -= IMAGENET_DEFAULT_MEAN
-        data /= IMAGENET_DEFAULT_STD
+        if with_quantize:
+            data = np.asarray(data, dtype=np.float32)
+            data /= 255
+
+            data -= IMAGENET_DEFAULT_MEAN
+            data /= IMAGENET_DEFAULT_STD
 
         return data[np.newaxis, ...], None
 
@@ -115,8 +124,8 @@ class EfficientNetB0(ImageClassificationModel):
         return cls(
             name="EfficientNetB0",
             source=artifacts[EXT_ONNX],
-            dfg=artifacts[EXT_DFG],
             enf=artifacts[EXT_ENF],
+            calib_yaml=artifacts[EXT_CALIB_YAML],
             format=Format.ONNX,
             family="EfficientNet",
             version="1.0.2",

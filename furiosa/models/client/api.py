@@ -4,7 +4,7 @@ from typing import Callable, List, Optional, Sequence, Type
 from tqdm import tqdm
 
 from .. import vision
-from ..types import Model, Platform
+from ..types import Model
 from ..utils import get_field_default
 
 
@@ -117,7 +117,7 @@ sizes of the images, and a machine where this benchmark is running."""
     queries = len(input_paths)
     print(f"Running {queries} input samples ...")
     print(decorate_with_bar(warning))
-    sess, queue = session.create_async(model)
+    sess, queue = session.create_async(model.enf)
     model_inputs, model_outputs = [], []
     initial_time = perf_counter()
     for input_path in tqdm(input_paths, desc="Preprocess"):

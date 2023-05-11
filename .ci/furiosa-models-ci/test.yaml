@@ -35,7 +35,9 @@ spec:
         #!/usr/bin/env bash
         set -e
 
-        make unit_tests
+        TOOLCHAIN_VERSION=$(apt-cache policy furiosa-libcompiler | grep Installed | awk '{print $2}')
+        apt-get update && apt-get install -y furiosa-libhal-sim=$TOOLCHAIN_VERSION
+        NPU_GLOBAL_CONFIG_PATH=warboy-b0-2pe make unit_tests
 
       resources:
         requests:
@@ -84,6 +86,8 @@ spec:
 
         TOOLCHAIN_VERSION=$(apt-cache policy furiosa-libcompiler | grep Installed | awk '{print $2}')
         apt-get update && apt-get install -y furiosa-libhal-sim=$TOOLCHAIN_VERSION
+
+        pip install 'furiosa-quantizer==0.9.*'
 
         NPU_GLOBAL_CONFIG_PATH=warboy-b0-2pe make examples
 

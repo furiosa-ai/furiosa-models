@@ -14,8 +14,15 @@ class FuriosaModelException(Exception):
 class ArtifactNotFound(FuriosaModelException):
     """Certain artifact file not found"""
 
-    def __init__(self, model_name: str, ir: str):
-        super().__init__(f"'{ir} for {model_name} is required, but missing'")
+    def __init__(self, artifact_file_name: str):
+        super().__init__(f"{artifact_file_name} is required, but missing")
+
+
+class NotFoundInDVCRemote(ArtifactNotFound):
+    """Certain artifact file's DVC exists, but cannot fetch from remote"""
+
+    def __init__(self, artifact_file_name: str, md5sum: str):
+        super().__init__(f"{artifact_file_name} not exists in DVC remote\nmd5sum: {md5sum}")
 
 
 class VersionInfoNotFound(FuriosaModelException):
@@ -23,5 +30,5 @@ class VersionInfoNotFound(FuriosaModelException):
 
     def __init__(self):
         super().__init__(
-            f"Could not retrieve furiosa compiler information. Try: `pip install furiosa-sdk`."
+            "Could not retrieve furiosa compiler information. Try: `pip install furiosa-sdk`."
         )

@@ -12,8 +12,8 @@ endif
 
 toolchain:
 	env ONNXRUNTIME_VERSION=1.13.1-2 sh -c 'apt-get install -y --allow-downgrades libonnxruntime=$$ONNXRUNTIME_VERSION'
-	env TOOLCHAIN_VERSION=0.9.0-2+nightly-230125 sh -c 'apt-get install -y --allow-downgrades furiosa-libcompiler=$$TOOLCHAIN_VERSION furiosa-libnux-extrinsic=$$TOOLCHAIN_VERSION furiosa-libnux=$$TOOLCHAIN_VERSION'
-	env LIBHAL_VERSION=0.10.0-2 sh -c 'apt-get install -y --allow-downgrades furiosa-libhal-warboy=$$LIBHAL_VERSION'
+	env TOOLCHAIN_VERSION=0.9.0-2 sh -c 'apt-get install -y --allow-downgrades furiosa-libcompiler=$$TOOLCHAIN_VERSION furiosa-libnux-extrinsic=$$TOOLCHAIN_VERSION furiosa-libnux=$$TOOLCHAIN_VERSION'
+	env LIBHAL_VERSION=0.11.0-2 sh -c 'apt-get install -y --allow-downgrades furiosa-libhal-warboy=$$LIBHAL_VERSION'
 
 lint:
 	isort --diff --check .
@@ -41,10 +41,8 @@ regression-test-ssd-resnet34:
 	pytest ./tests/bench/test_ssd_resnet34.py
 
 regression-test-yolov5:
-	pytest -s ./tests/bench/test_unit_yolov5l.py && \
-	pytest -s ./tests/bench/test_unit_yolov5m.py && \
-	pytest -s ./tests/bench/test_yolov5l.py && \
-	pytest -s ./tests/bench/test_yolov5m.py
+	pytest -s ./tests/bench/test_yolov5m.py && \
+	pytest -s ./tests/bench/test_yolov5l.py
 
 regression-test-efficientnet-b0:
 	pytest -s ./tests/bench/test_efficientnet_b0.py

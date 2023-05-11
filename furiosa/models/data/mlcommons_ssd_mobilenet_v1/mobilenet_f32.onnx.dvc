@@ -1,0 +1,4 @@
+outs:
+- md5: 43aa26272b8a9ee2f7a1b9584c5f3c27
+  size: 27274088
+  path: mobilenet_f32.onnx

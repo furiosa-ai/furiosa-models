@@ -1,4 +1,0 @@
-outs:
-- md5: 554544429574c93f947c60323ea24b50
-  size: 20154444
-  path: mlcommons_ssd_resnet34_int8_truncated.onnx

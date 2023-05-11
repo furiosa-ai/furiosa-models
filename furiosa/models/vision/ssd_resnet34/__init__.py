@@ -10,12 +10,17 @@ import numpy.typing as npt
 import torch
 import torch.nn.functional as F
 
-from furiosa.registry.model import Format, Metadata, Publication
-
 from .. import native
-from ...errors import ArtifactNotFound
-from ...types import ObjectDetectionModel, Platform, PostProcessor, PreProcessor
-from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, get_field_default
+from ...types import (
+    Format,
+    Metadata,
+    ObjectDetectionModel,
+    Platform,
+    PostProcessor,
+    PreProcessor,
+    Publication,
+)
+from ...utils import EXT_CALIB_YAML, EXT_ENF, EXT_ONNX, get_field_default
 from ..common.datasets import coco
 from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox
 
@@ -192,7 +197,6 @@ class DefaultBoxes(object):
     def __init__(
         self, fig_size, feat_size, steps, scales, aspect_ratios, scale_xy=0.1, scale_wh=0.2
     ):
-
         self.feat_size = feat_size
         self.fig_size_w, self.fig_size_h = fig_size
 
@@ -257,7 +261,8 @@ def _pick_best(detections, confidence_threshold):
 class SSDResNet34PreProcessor(PreProcessor):
     @staticmethod
     def __call__(
-        images: Sequence[Union[str, np.ndarray]]
+        images: Sequence[Union[str, np.ndarray]],
+        with_quantize: bool = False,
     ) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
         """Preprocess input images to a batch of input tensors
 
@@ -285,7 +290,9 @@ class SSDResNet34PreProcessor(PreProcessor):
                 image = cv2.imread(image)
                 if image is None:
                     raise FileNotFoundError(image)
-            image = np.array(image, dtype=np.float32)
+
+            if with_quantize:
+                image = np.array(image, dtype=np.float32)
             if len(image.shape) < 3 or image.shape[2] != 3:
                 image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
             else:
@@ -293,10 +300,11 @@ class SSDResNet34PreProcessor(PreProcessor):
             width = image.shape[1]
             height = image.shape[0]
             image = cv2.resize(image, (1200, 1200), interpolation=cv2.INTER_LINEAR)
-            mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
-            std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
-            image = image / 255.0 - mean
-            image = image / std
+            if with_quantize:
+                mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
+                std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+                image = image / 255.0 - mean
+                image = image / std
             # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/main.py#L143
             # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/coco.py#L40
             # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/coco.py#L91
@@ -381,11 +389,14 @@ class SSDResNet34PythonPostProcessor(PostProcessor):
 
 
 class SSDResNet34NativePostProcessor(PostProcessor):
-    def __init__(self, dfg: bytes):
-        self._native = native.ssd_resnet34.RustPostProcessor(dfg)
+    def __init__(self):
+        self._native = native.ssd_resnet34.RustPostProcessor()
 
     def __call__(self, model_outputs: Sequence[numpy.ndarray], contexts: Sequence[Dict[str, Any]]):
-        raw_results = self._native.eval(model_outputs)
+        raw_results = self._native.eval(
+            [np.squeeze(s, axis=0) for s in model_outputs[6:]],
+            [np.squeeze(s, axis=0) for s in model_outputs[:6]],
+        )
 
         results = []
         width = contexts['width']
@@ -417,21 +428,18 @@ class SSDResNet34(ObjectDetectionModel):
 
     @staticmethod
     def get_artifact_name():
-        return "mlcommons_ssd_resnet34_int8"
+        return "mlcommons_ssd_resnet34"
 
     @classmethod
     def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = True):
-        dfg = artifacts[EXT_DFG]
-        if use_native and dfg is None:
-            raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
         postproc_type = Platform.RUST if use_native else Platform.PYTHON
         logger.debug(f"Using {postproc_type.name} postprocessor")
-        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type](dfg)
+        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type]()
         return cls(
             name="SSDResNet34",
             source=artifacts[EXT_ONNX],
-            dfg=dfg,
             enf=artifacts[EXT_ENF],
+            calib_yaml=artifacts[EXT_CALIB_YAML],
             format=Format.ONNX,
             family="ResNet",
             version="v1.1",

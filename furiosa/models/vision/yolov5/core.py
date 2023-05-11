@@ -10,12 +10,12 @@ from ...types import ObjectDetectionModel, Platform, PostProcessor, PreProcessor
 from ...vision.postprocess import LtrbBoundingBox, ObjectDetectionResult
 
 _INPUT_SIZE = (640, 640)
-_GRID_CELL_OUTPUT_SHAPES = [(80, 80), (40, 40), (20, 20)]
+_STRIDES = [8, 16, 32]
 
 
 def _letterbox(
     im: np.ndarray,
-    new_shape: Tuple[int, int] = (640, 640),
+    new_shape: Tuple[int, int] = _INPUT_SIZE,
     color: Tuple[int, int, int] = (114, 114, 114),
     auto: bool = True,
     scaleFill: bool = False,
@@ -27,7 +27,7 @@ def _letterbox(
        If some axis is smaller than new_shape, it will be filled with color.
     Args:
         im (np.ndarray): a numpy image. Its shape must be Channel x Height x Width.
-        new_shape (Tuple[int, int], optional): Targeted Image size. Defaults to (640, 640).
+        new_shape (Tuple[int, int], optional): Targeted Image size. Defaults to default input size (640, 640).
         color (Tuple[int, int, int], optional): Padding Color Value. Defaults to (114, 114, 114).
         auto (bool, optional): If True, calculate padding width and height along to stride  Default to True.
         scaleFill (bool, optional): If True and auto is False, stretch an give image to target shape without any padding. Default to False.
@@ -89,23 +89,16 @@ def _reshape_output(feat: np.ndarray, anchor_per_layer_count: int, num_classes: 
     )
 
 
-def _compute_stride() -> np.ndarray:
-    img_h = _INPUT_SIZE[1]
-    feat_h = np.float32([shape[0] for shape in _GRID_CELL_OUTPUT_SHAPES])  # a size of grid cell
-    strides = img_h / feat_h
-    return strides
-
-
 class YOLOv5PreProcessor(PreProcessor):
     @staticmethod
     def __call__(
-        images: Sequence[Union[str, np.ndarray]], color_format: str = "bgr"
+        images: Sequence[Union[str, np.ndarray]], with_quantize: bool = False
     ) -> Tuple[np.ndarray, List[Dict[str, Any]]]:
         """Preprocess input images to a batch of input tensors
 
         Args:
             images: Color images have (NCHW: Batch, Channel, Height, Width) dimensions.
-            color_format:  'bgr' (default) or 'rgb'
+            with_quantize: Whether to put quantize operator in front of the model or not.
 
         Returns:
             a pre-processed image, scales and padded sizes(width,height) per images.
@@ -126,15 +119,19 @@ class YOLOv5PreProcessor(PreProcessor):
         batched_proc_params = []
         if isinstance(images, str):
             images = [images]
-        for i, img in enumerate(images):
+        for img in images:
             if type(img) == str:
                 img = cv2.imread(img)
                 if img is None:
                     raise FileNotFoundError(img)
+            if with_quantize:
+                img = img.astype(np.float32)
             img, (sx, sy), (padw, padh) = _resize(img, _INPUT_SIZE)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-            if color_format == "bgr":
-                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            if with_quantize:
+                img /= 255.0
+            img = img.transpose([2, 0, 1])
             assert sx == sy, "yolov5 must be the same rescale for width and height"
             scale = sx
             batched_image.append(img)
@@ -152,7 +149,7 @@ class YOLOv5PostProcessor(PostProcessor):
         self.anchors = anchors
         self.class_names = class_names
         self.anchor_per_layer_count = anchors.shape[1]
-        self.native = native.yolov5.RustPostProcessor(anchors, _compute_stride())
+        self.native = native.yolov5.RustPostProcessor(anchors, _STRIDES)
 
     def __call__(
         self,
@@ -220,19 +217,6 @@ class YOLOv5PostProcessor(PostProcessor):
 
 
 class YOLOv5Base(ObjectDetectionModel, ABC):
-
     postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
         Platform.PYTHON: YOLOv5PostProcessor,
     }
-
-    @staticmethod
-    def get_compiler_config() -> Dict:
-        return {
-            "without_quantize": {
-                "parameters": [
-                    {
-                        "permute": [0, 2, 3, 1],
-                    }
-                ]
-            }
-        }

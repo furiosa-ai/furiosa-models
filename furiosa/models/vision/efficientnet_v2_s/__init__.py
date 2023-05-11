@@ -5,10 +5,16 @@ from PIL import Image, ImageOps
 import numpy as np
 import numpy.typing as npt
 
-from furiosa.registry.model import Format, Metadata, Publication
-
-from ...types import ImageClassificationModel, Platform, PostProcessor, PreProcessor
-from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, get_field_default
+from ...types import (
+    Format,
+    ImageClassificationModel,
+    Metadata,
+    Platform,
+    PostProcessor,
+    PreProcessor,
+    Publication,
+)
+from ...utils import EXT_CALIB_YAML, EXT_ENF, EXT_ONNX, get_field_default
 from ..common.datasets import imagenet1k
 
 IMAGENET_DEFAULT_MEAN = np.array((0.485, 0.456, 0.406), dtype=np.float32)[:, np.newaxis, np.newaxis]
@@ -57,7 +63,9 @@ def normalize(image: Image.Image) -> np.ndarray:
 
 class EfficientNetV2sPreProcessor(PreProcessor):
     @staticmethod
-    def __call__(image: Union[str, Path, npt.ArrayLike]) -> Tuple[np.ndarray, None]:
+    def __call__(
+        image: Union[str, Path, npt.ArrayLike], with_quantize: bool = False
+    ) -> Tuple[np.ndarray, None]:
         """Read and preprocess an image located at image_path.
 
         Args:
@@ -77,11 +85,12 @@ class EfficientNetV2sPreProcessor(PreProcessor):
         image = center_crop(image, INPUT_SIZE)
 
         image = np.ascontiguousarray(image)
-        image = np.transpose(image, (2, 0, 1))
+        data = np.transpose(image, (2, 0, 1))
 
-        image = image.astype(np.float32) / 255
+        if with_quantize:
+            data = data.astype(np.float32) / 255
+            data = normalize(data)
 
-        data = normalize(image)
         return np.expand_dims(data, axis=0), None
 
 
@@ -118,8 +127,8 @@ class EfficientNetV2s(ImageClassificationModel):
         return cls(
             name="EfficientNetV2s",
             source=artifacts[EXT_ONNX],
-            dfg=artifacts[EXT_DFG],
             enf=artifacts[EXT_ENF],
+            calib_yaml=artifacts[EXT_CALIB_YAML],
             format=Format.ONNX,
             family="EfficientNetV2",
             version="s",

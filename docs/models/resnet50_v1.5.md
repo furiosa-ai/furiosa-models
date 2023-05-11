@@ -13,14 +13,9 @@ This model has been used since MLCommons v0.5.
 
 ## <a name="ResNet50_Usage"></a>
 !!! Usages
-    === "Python Postprocessor"
+    === "Postprocessor"
         ```python
         --8<-- "docs/examples/resnet50.py"
-        ```
-     
-    === "Native Postprocessor"
-        ```python
-        --8<-- "docs/examples/resnet50_native.py"
         ```
 
 ## Inputs
@@ -49,20 +44,8 @@ You can find examples at [ResNet50 Usage](#ResNet50_Usage).
 ::: furiosa.models.vision.resnet50.ResNet50PreProcessor.__call__
     options:
         show_source: false
-    
+
 ### `furiosa.models.vision.ResNet50.postprocess`
-::: furiosa.models.vision.resnet50.ResNet50PythonPostProcessor.__call__
+::: furiosa.models.vision.resnet50.ResNet50PostProcessor.__call__
     options:
         show_source: false
-
-### <a href="NativePostProcessor"></a>Native Postprocessor
-This class provides another version of the postprocessing implementation
-which is highly optimized for NPU. The implementation leverages the NPU IO architecture and runtime.
-
-To use this implementation, when this model is loaded, the parameter `use_native=True`
-should be passed to `load()` or `load_aync()`. The following is an example:
-
-!!! Example
-    ```python
-    --8<-- "docs/examples/resnet50_native.py"
-    ```

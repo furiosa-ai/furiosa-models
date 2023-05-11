@@ -6,13 +6,19 @@ import numpy
 import numpy as np
 import numpy.typing as npt
 
-from furiosa.registry.model import Format, Metadata, Publication
-
 from . import anchor_generator  # type: ignore[import]
 from .. import native
 from ...errors import ArtifactNotFound
-from ...types import ObjectDetectionModel, Platform, PostProcessor, PreProcessor
-from ...utils import EXT_DFG, EXT_ENF, EXT_ONNX, get_field_default
+from ...types import (
+    Format,
+    Metadata,
+    ObjectDetectionModel,
+    Platform,
+    PostProcessor,
+    PreProcessor,
+    Publication,
+)
+from ...utils import EXT_CALIB_YAML, EXT_ENF, EXT_ONNX, get_field_default
 from ..common.datasets import coco
 from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox, sigmoid
 
@@ -150,7 +156,8 @@ class SSDSmallConstant(object):
 class SSDMobileNetPreProcessor(PreProcessor):
     @staticmethod
     def __call__(
-        images: Sequence[Union[str, np.ndarray]]
+        images: Sequence[Union[str, np.ndarray]],
+        with_quantize: bool = False,
     ) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
         """Preprocess input images to a batch of input tensors.
 
@@ -177,7 +184,9 @@ class SSDMobileNetPreProcessor(PreProcessor):
                 image = cv2.imread(image)
                 if image is None:
                     raise FileNotFoundError(image)
-            image = np.array(image, dtype=np.float32)
+
+            if with_quantize:
+                image = np.array(image, dtype=np.float32)
             if len(image.shape) < 3 or image.shape[2] != 3:
                 image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
             else:
@@ -185,8 +194,9 @@ class SSDMobileNetPreProcessor(PreProcessor):
             width = image.shape[1]
             height = image.shape[0]
             image = cv2.resize(image, (300, 300), interpolation=cv2.INTER_LINEAR)
-            image -= 127.5
-            image /= 127.5
+            if with_quantize:
+                image -= 127
+                image /= 127
             image = image.transpose([2, 0, 1])
             batch_image.append(image)
             batch_preproc_param.append({"width": width, "height": height})
@@ -227,11 +237,11 @@ class SSDMobileNetPythonPostProcessor(PostProcessor):
         # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L94-L97
         class_logits = [
             output.transpose((0, 2, 3, 1)).reshape((batch_size, -1, NUM_CLASSES))
-            for output in model_outputs[0:6]
+            for output in model_outputs[0::2]
         ]
         box_regression = [
             output.transpose((0, 2, 3, 1)).reshape((batch_size, -1, 4))
-            for output in model_outputs[6:12]
+            for output in model_outputs[1::2]
         ]
         # https://github.com/mlcommons/inference/blob/de6497f9d64b85668f2ab9c26c9e3889a7be257b/vision/classification_and_detection/python/models/ssd_mobilenet_v1.py#L144-L166
         class_logits = np.concatenate(class_logits, axis=1)  # type: ignore[assignment]
@@ -270,11 +280,15 @@ class SSDMobileNetPythonPostProcessor(PostProcessor):
 
 
 class SSDMobileNetNativePostProcessor(PostProcessor):
-    def __init__(self, dfg: bytes):
-        self._native = native.ssd_mobilenet.RustPostProcessor(dfg)
+    def __init__(self):
+        self._native = native.ssd_mobilenet.RustPostProcessor()
 
-    def __call__(self, model_outputs: Sequence[numpy.ndarray], contexts: Sequence[Dict[str, Any]]):
-        raw_results = self._native.eval(model_outputs)
+    # TODO: argument `contexts` can get only one context
+    def __call__(self, model_outputs: Sequence[numpy.ndarray], contexts: Dict[str, Any]):
+        raw_results = self._native.eval(
+            [np.squeeze(s, axis=0) for s in model_outputs[1::2]],
+            [np.squeeze(s, axis=0) for s in model_outputs[0::2]],
+        )
 
         results = []
         width = contexts['width']
@@ -306,21 +320,18 @@ class SSDMobileNet(ObjectDetectionModel):
 
     @staticmethod
     def get_artifact_name():
-        return "mlcommons_ssd_mobilenet_v1_int8"
+        return "mlcommons_ssd_mobilenet_v1"
 
     @classmethod
     def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = True):
-        dfg = artifacts[EXT_DFG]
-        if use_native and dfg is None:
-            raise ArtifactNotFound(cls.get_artifact_name(), EXT_DFG)
         postproc_type = Platform.RUST if use_native else Platform.PYTHON
         logger.debug(f"Using {postproc_type.name} postprocessor")
-        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type](dfg)
+        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type]()
         return cls(
             name="MLCommonsSSDMobileNet",
             source=artifacts[EXT_ONNX],
-            dfg=dfg,
             enf=artifacts[EXT_ENF],
+            calib_yaml=artifacts[EXT_CALIB_YAML],
             format=Format.ONNX,
             family="MobileNetV1",
             version="v1.1",

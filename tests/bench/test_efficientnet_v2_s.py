@@ -8,7 +8,7 @@ from furiosa.models.vision import EfficientNetV2s
 from furiosa.models.vision.common.datasets import imagenet1k
 from furiosa.runtime import session
 
-EXPECTED_ACCURACY = 75.208
+EXPECTED_ACCURACY = 83.498
 CLASSES: List[str] = imagenet1k.ImageNet1k_CLASSES
 
 
@@ -46,7 +46,7 @@ def test_efficientnetv2s_accuracy(benchmark):
         else:
             incorrect_predictions += 1
 
-    sess = session.create(model)
+    sess = session.create(model.enf)
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 

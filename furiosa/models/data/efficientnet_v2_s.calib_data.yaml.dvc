@@ -1,4 +1,0 @@
-outs:
-- md5: 8667254dc7b188b167f3692b4f07d450
-  size: 54084
-  path: efficientnet_v2_s.calib_data.yaml

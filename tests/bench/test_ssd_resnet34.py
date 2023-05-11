@@ -12,8 +12,8 @@ from furiosa.models.types import Model
 from furiosa.models.vision import SSDResNet34
 from furiosa.runtime import session
 
-EXPECTED_ACCURACY = 0.21321479317934577  # e2e-testing's accuracy
-EXPECTED_ACCURACY_RUST = 0.22013336390711905
+EXPECTED_ACCURACY = 0.2132147932
+EXPECTED_ACCURACY_RUST = 0.2201333639
 
 
 def load_coco_from_env_variable():
@@ -70,7 +70,7 @@ def test_mlcommons_ssd_resnet34_accuracy(benchmark):
             }
             detections.append(detection)
 
-    sess = session.create(model)
+    sess = session.create(model.enf)
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 
@@ -126,7 +126,7 @@ def test_mlcommons_ssd_resnet34_with_native_rust_pp_accuracy(benchmark):
             }
             detections.append(detection)
 
-    sess = session.create(model)
+    sess = session.create(model.enf)
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 

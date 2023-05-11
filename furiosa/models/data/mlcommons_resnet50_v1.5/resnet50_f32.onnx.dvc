@@ -1,0 +1,4 @@
+outs:
+- md5: cd75550409463a0faa065f4803182483
+  size: 102178169
+  path: resnet50_f32.onnx

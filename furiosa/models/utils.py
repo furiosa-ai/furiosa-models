@@ -15,11 +15,11 @@ from furiosa.common.native import DEFAULT_ENCODING, find_native_lib_path, find_n
 
 from . import errors
 
-EXT_ONNX = "onnx"
+EXT_CALIB_YAML = "calib_range.yaml"
 EXT_ENF = "enf"
-EXT_DFG = "dfg"
+EXT_ONNX = "onnx"
 
-GENERATED_EXTENSIONS = (EXT_DFG, EXT_ENF)
+GENERATED_EXTENSIONS = (EXT_ENF,)
 DATA_DIRECTORY_BASE = Path(__file__).parent / "data"
 CACHE_DIRECTORY_BASE = Path(
     os.getenv(
@@ -97,9 +97,10 @@ class ArtifactResolver:
         return cls.find_dvc_cache_directory(path.parent)
 
     @staticmethod
-    def parse_dvc_file(file_path: Path) -> Tuple[str, str]:
-        md5sum = yaml.safe_load(open(f"{file_path}.dvc").read())["outs"][0]["md5"]
-        return md5sum[:2], md5sum[2:]
+    def parse_dvc_file(file_path: Path) -> Tuple[str, str, int]:
+        info_dict = yaml.safe_load(open(f"{file_path}.dvc").read())["outs"][0]
+        md5sum = info_dict["md5"]
+        return md5sum[:2], md5sum[2:], info_dict["size"]
 
     @staticmethod
     def get_url(
@@ -115,25 +116,28 @@ class ArtifactResolver:
                 return await f.read()
 
         module_logger.debug(f"{self.uri} not exists, resolving DVC")
-        directory, filename = self.parse_dvc_file(self.uri)
+        directory, filename, size = self.parse_dvc_file(self.uri)
         if self.dvc_cache_path is not None:
-            # DVC Cache hit
             cached: Path = self.dvc_cache_path / directory / filename
             if cached.exists():
                 module_logger.debug(f"DVC Cache hit: {cached}")
                 async with aiofiles.open(cached, mode="rb") as f:
-                    return await f.read()
+                    data = await f.read()
+                    assert len(data) == size
+                    return data
+            else:
+                module_logger.warning(f"DVC cache directory exists, but not having {self.uri}")
 
-        # Fetch from remote
+        # Fetching from remote
         async with aiohttp.ClientSession() as session:
             url = self.get_url(directory, filename)
             module_logger.debug(f"Fetching from remote: {url}")
             async with session.get(url) as resp:
-                return await resp.read()
-
-
-def model_file_name(relative_path: str, truncated=True) -> str:
-    return f'{relative_path}{"_truncated" if truncated else ""}'
+                if resp.status != 200:
+                    raise errors.NotFoundInDVCRemote(self.uri, f"{directory}{filename}")
+                data = await resp.read()
+                assert len(data) == size
+                return data
 
 
 async def resolve_file(
@@ -145,18 +149,19 @@ async def resolve_file(
         if generated_path_base is None:
             raise errors.VersionInfoNotFound()
         file_name = f'{src_name}{generated_suffix}.{extension}'
-        file_subpath = f'{generated_path_base}/{file_name}'
+        full_path = DATA_DIRECTORY_BASE / f'{generated_path_base}/{file_name}'
     else:
-        file_subpath = f'{src_name}.{extension}'
-    full_path = (DATA_DIRECTORY_BASE / file_subpath).resolve()
+        full_path = next((DATA_DIRECTORY_BASE / src_name).glob(f'*.{extension}.dvc'))
+        # Remove `.dvc` suffix
+        full_path = full_path.with_suffix('')
 
     try:
         return await ArtifactResolver(full_path).read()
     except Exception as e:
-        raise errors.ArtifactNotFound(f"{src_name}:{full_path}", extension) from e
+        raise errors.ArtifactNotFound(f"{src_name}:{full_path}.{extension}") from e
 
 
 async def load_artifacts(name: str) -> Dict[str, bytes]:
-    exts = [EXT_ONNX, EXT_DFG, EXT_ENF]
+    exts = [EXT_ONNX, EXT_CALIB_YAML, EXT_ENF]
     resolvers = map(partial(resolve_file, name), exts)
     return {ext: binary for ext, binary in zip(exts, await asyncio.gather(*resolvers))}

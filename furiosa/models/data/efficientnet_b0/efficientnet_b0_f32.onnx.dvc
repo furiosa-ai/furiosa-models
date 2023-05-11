@@ -1,0 +1,4 @@
+outs:
+- md5: fae3d4146aac858f21132dc1ac3b1f30
+  size: 21156466
+  path: efficientnet_b0_f32.onnx
