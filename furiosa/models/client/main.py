@@ -8,6 +8,7 @@ from tabulate import tabulate
 import yaml
 
 from . import api
+from .. import __version__ as models_version
 from ..types import ImageClassificationModel, Model, ObjectDetectionModel
 
 logger = logging.getLogger(__name__)
@@ -29,6 +30,7 @@ EXAMPLE: str = """example:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
+        description=f"FuriosaAI Model Zoo CLI --- v{models_version}",
         prog="furiosa-models",
         epilog=EXAMPLE,
         formatter_class=argparse.RawDescriptionHelpFormatter,

@@ -4,7 +4,7 @@ from typing import Callable, List, Optional, Sequence, Type
 from tqdm import tqdm
 
 from .. import vision
-from ..types import Model, Platform
+from ..types import Model
 from ..utils import get_field_default
 
 
