@@ -9,7 +9,7 @@ for FuriosaAI NPU. However, all models are standard ONNX or tflite models,
 and they can run even on CPU and GPU as well.
 
 ## Releases
-* [v0.9.0](https://furiosa-ai.github.io/furiosa-models/v0.9.0/changelog/) - 2023-TBD
+* [v0.9.0](https://furiosa-ai.github.io/furiosa-models/v0.9.0/changelog/) - 2023-05-12
 * [v0.8.0](https://furiosa-ai.github.io/furiosa-models/v0.8.0/changelog/) - 2022-11-10
 
 ## Online Documentation

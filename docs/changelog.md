@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.9.0 - TBU]
+## [0.9.0 - 2023-05-12]
 
 ### New Features
 - Add EfficientNetB0 model #121
