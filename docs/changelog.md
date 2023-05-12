@@ -6,12 +6,21 @@
 - Add EfficientNetB0 model #121
 - Add EfficientNetV2-S model #130
 - Set default target as Warboy's production revision (B0) #125
+- Provide calibration ranges for every model #144
 
 ### Improvements
+- Removed `Quantize` external operators #144
+- Detailed error messages for model file fetching #144
+- ENF generator can do the jobs parallelly #144
+- Removed furiosa.registry dependency #144
 - Faster import for furiosa.models #117
 - Replace yolov5's box decode implementation in Rust #109
 - Remove Cpp postprocessor implementations #102
 - Change packaging tool from setuptools-rust to flit #109
+
+## Removed
+- Truncated models and corresponding postprocesses #144
+- **Breaking:** drop support of directly passing Model to session.create() #144
 
 ### Tasks
 - Release guide for developers #129
