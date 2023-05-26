@@ -11,7 +11,7 @@ import furiosa.quantizer
 from furiosa.tools.compiler.api import VersionInfo, compile
 
 QUANTIZER_CONFIG = {"with_quantize": False}
-COMPILER_CONFIG = {"tabulate_dequantize": True}
+COMPILER_CONFIG = {"lower_tabulated_dequantize": True}
 TARGET_NPU = "warboy-2pe"
 COMPILED_SUFFIX = "_warboy_2pe"
 MAX_WORKER_PROCESSES = 8
@@ -70,7 +70,7 @@ def quantize_and_compile_model(arg: Tuple[int, Path]):
 
     with open('/dev/null', 'w') as devnull:
         # Redirect C lib's stderr to /dev/null
-        os.dup2(devnull.fileno(), 2)
+        # os.dup2(devnull.fileno(), 2)
 
         # Compile and write to file
         enf = compile(bytes(dfg), target_npu=TARGET_NPU)
