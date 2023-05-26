@@ -3,8 +3,7 @@ import torch
 
 # The following functions were taken from
 # https://github.com/tensorflow/models/tree/master/research/object_detection
-# with minor modifications so that they use
-# torch operations instead
+# with minor modifications so that they use torch operations instead
 
 
 def expanded_shape(orig_shape, start_dim, num_dims):
