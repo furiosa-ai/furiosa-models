@@ -11,7 +11,7 @@ import aiohttp
 from pydantic import BaseModel
 import yaml
 
-from furiosa.common.native import DEFAULT_ENCODING, find_native_lib_path, find_native_libs
+from furiosa.common.native import DEFAULT_ENCODING, find_native_libs
 
 from . import errors
 
@@ -53,24 +53,23 @@ def get_field_default(model: Type[BaseModel], field: str) -> Any:
     return model.__fields__[field].default
 
 
-def compiler_version() -> Optional[CompilerVersion]:
+def get_nux_version() -> Optional[CompilerVersion]:
     # TODO - hacky version. Eventually,
     #  it should find a compiler version being used by runtime.
-    if find_native_lib_path("nux") is None:
+    libnux = find_native_libs("nux")
+    if libnux is None:
         return None
-    else:
-        libnux = find_native_libs("nux")
-        return CompilerVersion(
-            libnux.version().decode(DEFAULT_ENCODING),
-            libnux.git_short_hash().decode(DEFAULT_ENCODING),
-        )
+    return CompilerVersion(
+        libnux.version().decode(DEFAULT_ENCODING),
+        libnux.git_short_hash().decode(DEFAULT_ENCODING),
+    )
 
 
-def _generated_path_base() -> Optional[str]:
-    version_info = compiler_version()
+def version_info() -> Optional[str]:
+    version_info = get_nux_version()
     if not version_info:
         return None
-    return f"generated/{version_info.version}_{version_info.revision}"
+    return f"{version_info.version}_{version_info.revision}"
 
 
 def removesuffix(base: str, suffix: str) -> str:
@@ -111,7 +110,14 @@ class ArtifactResolver:
         return f"{http_endpoint}/{directory}/{filename}"
 
     async def read(self) -> bytes:
-        # Try to find real file (no DVC)
+        # Try to find local cached file
+        local_cache_path = CACHE_DIRECTORY_BASE / version_info() / (self.uri.name)
+        if local_cache_path.exists():
+            module_logger.debug(f"Local cache exists: {local_cache_path}")
+            async with aiofiles.open(local_cache_path, mode="rb") as f:
+                return await f.read()
+
+        # Try to find real file along with DVC file (no DVC)
         if Path(self.uri).exists():
             module_logger.debug(f"Local file exists: {self.uri}")
             async with aiofiles.open(self.uri, mode="rb") as f:
@@ -139,6 +145,11 @@ class ArtifactResolver:
                     raise errors.NotFoundInDVCRemote(self.uri, f"{directory}{filename}")
                 data = await resp.read()
                 assert len(data) == size
+                caching_path = CACHE_DIRECTORY_BASE / version_info() / (self.uri.name)
+                module_logger.debug(f"caching to {caching_path}")
+                caching_path.parent.mkdir(parents=True, exist_ok=True)
+                async with aiofiles.open(caching_path, mode="wb") as f:
+                    await f.write(data)
                 return data
 
 
@@ -147,7 +158,7 @@ async def resolve_file(
 ) -> bytes:
     # First check whether it is generated file or not
     if extension.lower() in GENERATED_EXTENSIONS:
-        generated_path_base = _generated_path_base()
+        generated_path_base = f"generated/{version_info()}"
         if generated_path_base is None:
             raise errors.VersionInfoNotFound()
         file_name = f'{src_name}{generated_suffix}.{extension}'
@@ -159,8 +170,8 @@ async def resolve_file(
 
     try:
         return await ArtifactResolver(full_path).read()
-    except Exception as e:
-        raise errors.ArtifactNotFound(f"{src_name}:{full_path}.{extension}") from e
+    except Exception as _:
+        raise errors.ArtifactNotFound(f"{src_name}:{full_path}.{extension}")
 
 
 async def load_artifacts(name: str) -> Dict[str, bytes]:
