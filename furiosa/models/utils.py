@@ -28,7 +28,9 @@ CACHE_DIRECTORY_BASE = Path(
     )
 )
 
-DVC_PUBLIC_HTTP_ENDPOINT = "https://furiosa-public-artifacts.s3.amazonaws.com/furiosa-artifacts"
+DVC_PUBLIC_HTTP_ENDPOINT = (
+    "https://furiosa-public-artifacts.s3-accelerate.amazonaws.com/furiosa-artifacts"
+)
 
 module_logger = logging.getLogger(__name__)
 
