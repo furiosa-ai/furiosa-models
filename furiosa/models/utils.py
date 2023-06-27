@@ -24,7 +24,7 @@ DATA_DIRECTORY_BASE = Path(__file__).parent / "data"
 CACHE_DIRECTORY_BASE = Path(
     os.getenv(
         "FURIOSA_MODELS_CACHE_HOME",
-        os.path.join(os.getenv("XDG_CACHE_HOME", "~/.cache"), "furiosa/models"),
+        os.path.join(os.getenv("XDG_CACHE_HOME", Path.home() / ".cache"), "furiosa/models"),
     )
 )
 
