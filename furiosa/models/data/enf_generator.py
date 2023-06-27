@@ -70,7 +70,7 @@ def quantize_and_compile_model(arg: Tuple[int, Path]):
 
     with open('/dev/null', 'w') as devnull:
         # Redirect C lib's stderr to /dev/null
-        # os.dup2(devnull.fileno(), 2)
+        os.dup2(devnull.fileno(), 2)
 
         # Compile and write to file
         enf = compile(bytes(dfg), target_npu=TARGET_NPU)
