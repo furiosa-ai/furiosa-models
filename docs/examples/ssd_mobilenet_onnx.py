@@ -4,7 +4,7 @@ from furiosa.models.vision import SSDMobileNet
 from furiosa.quantizer import quantize
 from furiosa.runtime import session
 
-compiler_config = {"tabulate_dequantize": True}
+compiler_config = {"lower_tabulated_dequantize": True}
 
 image = ["tests/assets/cat.jpg"]
 
