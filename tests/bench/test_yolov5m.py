@@ -6,14 +6,12 @@ from typing import Tuple
 import numpy as np
 from tqdm import tqdm
 
-from furiosa.models.types import Model
 from furiosa.models.vision import YOLOv5m
-from furiosa.models.vision.postprocess import collate
 from furiosa.runtime import session
 
 from .test_acc_util import bdd100k
 
-EXPECTED_MAP = 0.27159970551628876
+EXPECTED_MAP = 0.2716221365849332
 
 
 def load_db_from_env_variable() -> Tuple[Path, bdd100k.Yolov5Dataset]:

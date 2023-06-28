@@ -11,7 +11,7 @@ from furiosa.models.types import Model
 from furiosa.models.vision import SSDMobileNet
 from furiosa.runtime import session
 
-EXPECTED_ACCURACY = 0.23199896825191885
+EXPECTED_ACCURACY = 0.2319698092633901
 EXPECTED_ACCURACY_NATIVE_RUST_PP = 0.23178397430922199
 
 
