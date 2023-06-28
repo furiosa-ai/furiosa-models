@@ -64,26 +64,44 @@ metadata:
 spec:
   workspaces:
     - name: source
-  params:
-    - name: reportFileName
-      description: Name of the file to save the report data
-      default: report.txt
   resources:
     inputs:
       - name: image
         type: image
+  params:
+    - name: GITHUB_TOKEN_SECRET_NAME
+      description: |
+        The name of the Kubernetes Secret that contains the GitHub token.
+      type: string
+      default: github
+
+    - name: GITHUB_TOKEN_SECRET_KEY
+      description: |
+        The key within the Kubernetes Secret that contains the GitHub token.
+      type: string
+      default: token
+
+    - name: prNumber
   steps:
     - name: regression-test-report
+      env:
+        - name: GITHUBTOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.GITHUB_TOKEN_SECRET_NAME)
+              key: $(params.GITHUB_TOKEN_SECRET_KEY)
       image: $(resources.inputs.image.url)
       workingDir: /workspace/source
       script: |
         #!/usr/bin/env bash
 
         git config --global --add safe.directory /workspace/source
-        git log -n1 --format="%C(auto) %h %s" > $(workspaces.source.path)/$(params.reportFileName)
-        echo "\`\`\`" >> $(workspaces.source.path)/$(params.reportFileName)
-        py.test-benchmark compare >> $(workspaces.source.path)/$(params.reportFileName)
-        echo "\`\`\`" >> $(workspaces.source.path)/$(params.reportFileName)
+        git log -n1 --format="%C(auto) %h %s" > report.txt
+        echo "\`\`\`" >> report.txt
+        py.test-benchmark compare >> report.txt
+        echo "\`\`\`" >> report.txt
+
+        gh issue comment $(params.prNumber)--body-file report.txt
 
       resources:
         requests:

@@ -171,9 +171,6 @@ spec:
       default: "1"
     - name: modelName
       description: Name of the model to run the regression test
-    - name: reportFileName
-      description: Name of the file to save the report data
-      default: "report.txt"
 
   resources:
     - name: image
@@ -269,8 +266,12 @@ spec:
     taskRef:
       name: regression-test-report
     params:
-    - name: reportFileName
-      value: $(params.reportFileName)
+    - name: prNumber
+      value: $(params.prNumber)
+    - name: GITHUB_TOKEN_SECRET_NAME
+      value: "github-credential"
+    - name: GITHUB_TOKEN_SECRET_KEY
+      value: "password"
     workspaces:
       - name: source
         workspace: source
@@ -280,24 +281,6 @@ spec:
           resource: image
     runAfter:
       - regression-test-with-npu
-
-  - name: github-add-comment
-    taskRef:
-      name: github-add-comment
-    workspaces:
-      - name: comment-file
-        workspace: source
-    params:
-    - name: REQUEST_URL
-      value: https://github.com/$(params.repo_full_name)/pull/$(params.prNumber)
-    - name: COMMENT_OR_FILE
-      value: $(params.reportFileName)
-    - name: GITHUB_TOKEN_SECRET_NAME
-      value: "github-credential"
-    - name: GITHUB_TOKEN_SECRET_KEY
-      value: "password"
-    runAfter:
-      - regression-test-report
 
   finally:
   - name: set-status-success
