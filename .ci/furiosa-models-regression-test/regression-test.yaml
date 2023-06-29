@@ -23,6 +23,18 @@ spec:
     - name: furiosa-models-dataset
       mountPath: /furiosa-models-dataset
   params:
+    - name: GITHUB_TOKEN_SECRET_NAME
+      description: |
+        The name of the Kubernetes Secret that contains the GitHub token.
+      type: string
+      default: github
+    - name: GITHUB_TOKEN_SECRET_KEY
+      description: |
+        The key within the Kubernetes Secret that contains the GitHub token.
+      type: string
+      default: token
+    - name: prNumber
+      description: The corresponding pr number
     - name: modelName
       description: Name of the model to run the regression test
   resources:
@@ -34,62 +46,7 @@ spec:
       env:
         - name: "PIP_EXTRA_INDEX_URL"
           value: "https://internal-pypi.furiosa.dev/simple"
-      image: $(resources.inputs.image.url)
-      workingDir: /workspace/source
-      script: |
-        #!/usr/bin/env bash
-        set -e
-        set -x
-
-        rm -rf tests/data
-        ln -s /furiosa-models-dataset tests/data
-
-        make regression-test-$(params.modelName)
-
-      resources:
-        requests:
-          memory: 32Gi
-          cpu: 16
-          alpha.furiosa.ai/npu: 1
-        limits:
-          memory: 32Gi
-          cpu: 16
-          alpha.furiosa.ai/npu: 1
----
-apiVersion: tekton.dev/v1beta1
-kind: Task
-metadata:
-  name: regression-test-report
-  namespace: ci-furiosa-models
-spec:
-  workspaces:
-    - name: source
-  resources:
-    inputs:
-      - name: image
-        type: image
-  params:
-    - name: GITHUB_TOKEN_SECRET_NAME
-      description: |
-        The name of the Kubernetes Secret that contains the GitHub token.
-      type: string
-      default: github
-
-    - name: GITHUB_TOKEN_SECRET_KEY
-      description: |
-        The key within the Kubernetes Secret that contains the GitHub token.
-      type: string
-      default: token
-
-    - name: prNumber
-      description: The corresponding pr number
-
-    - name: modelName
-      description: Name of the model to run the regression test
-  steps:
-    - name: regression-test-report
-      env:
-        - name: GITHUBTOKEN
+        - name: "GH_TOKEN"
           valueFrom:
             secretKeyRef:
               name: $(params.GITHUB_TOKEN_SECRET_NAME)
@@ -98,14 +55,22 @@ spec:
       workingDir: /workspace/source
       script: |
         #!/usr/bin/env bash
+        set -ex
+        git config --global --add safe.directory /workspace/source
+
         echo -n "## Pip freeze result for " > pip_freeze.txt
         echo $(params.modelName) >> pip_freeze.txt
+        echo "<details>\n    <summary>pip freeze result</summary>" >> pip_freeze.txt
         echo "\`\`\`" >> pip_freeze.txt
         pip freeze >> pip_freeze.txt
         echo "\`\`\`" >> pip_freeze.txt
+        echo "</details>" >> pip_freeze.txt
         gh issue comment $(params.prNumber) --body-file pip_freeze.txt
 
-        git config --global --add safe.directory /workspace/source
+        rm -rf tests/data
+        ln -s /furiosa-models-dataset tests/data
+        make regression-test-$(params.modelName)
+
         git log -n1 --format="%C(auto) %h %s" > report.txt
         echo "\`\`\`" >> report.txt
         py.test-benchmark compare >> report.txt
@@ -115,8 +80,10 @@ spec:
 
       resources:
         requests:
-          memory: 8Gi
-          cpu: 4
+          memory: 32Gi
+          cpu: 16
+          alpha.furiosa.ai/npu: 1
         limits:
-          memory: 8Gi
-          cpu: 4
+          memory: 32Gi
+          cpu: 16
+          alpha.furiosa.ai/npu: 1
