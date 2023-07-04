@@ -122,13 +122,10 @@ class EfficientNetV2s(ImageClassificationModel):
         return "efficientnet_v2_s"
 
     @classmethod
-    def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = False, *args, **kwargs):
+    def load(cls, use_native: bool = False):
         postprocessor = get_field_default(cls, "postprocessor_map")[Platform.PYTHON]()
         return cls(
             name="EfficientNetV2s",
-            source=artifacts[EXT_ONNX],
-            enf=artifacts[EXT_ENF],
-            calib_yaml=artifacts[EXT_CALIB_YAML],
             format=Format.ONNX,
             family="EfficientNetV2",
             version="s",

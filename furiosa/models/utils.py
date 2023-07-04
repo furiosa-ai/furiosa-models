@@ -1,10 +1,8 @@
-import asyncio
 from dataclasses import dataclass
-from functools import partial
 import logging
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple, Type, Union
+from typing import Any, Optional, Tuple, Type, Union
 
 import aiofiles
 import aiohttp
@@ -12,14 +10,14 @@ from pydantic import BaseModel
 import yaml
 
 from furiosa.common.native import DEFAULT_ENCODING, find_native_libs
+from furiosa.common.thread import synchronous
 
 from . import errors
 
 EXT_CALIB_YAML = "calib_range.yaml"
 EXT_ENF = "enf"
 EXT_ONNX = "onnx"
-
-GENERATED_EXTENSIONS = (EXT_ENF,)
+GENERATED_SUFFIX = "_warboy_2pe"
 DATA_DIRECTORY_BASE = Path(__file__).parent / "data"
 CACHE_DIRECTORY_BASE = Path(
     os.getenv(
@@ -27,7 +25,6 @@ CACHE_DIRECTORY_BASE = Path(
         os.path.join(os.getenv("XDG_CACHE_HOME", Path.home() / ".cache"), "furiosa/models"),
     )
 )
-
 DVC_PUBLIC_HTTP_ENDPOINT = (
     "https://furiosa-public-artifacts.s3-accelerate.amazonaws.com/furiosa-artifacts"
 )
@@ -65,7 +62,7 @@ def get_nux_version() -> Optional[CompilerVersion]:
     )
 
 
-def version_info() -> Optional[str]:
+def get_version_info() -> Optional[str]:
     version_info = get_nux_version()
     if not version_info:
         return None
@@ -111,7 +108,7 @@ class ArtifactResolver:
 
     async def read(self) -> bytes:
         # Try to find local cached file
-        local_cache_path = CACHE_DIRECTORY_BASE / version_info() / (self.uri.name)
+        local_cache_path = CACHE_DIRECTORY_BASE / get_version_info() / (self.uri.name)
         if local_cache_path.exists():
             module_logger.debug(f"Local cache exists: {local_cache_path}")
             async with aiofiles.open(local_cache_path, mode="rb") as f:
@@ -128,13 +125,13 @@ class ArtifactResolver:
         if self.dvc_cache_path is not None:
             cached: Path = self.dvc_cache_path / directory / filename
             if cached.exists():
-                module_logger.debug(f"DVC Cache hit: {cached}")
+                module_logger.debug(f"DVC cache hit: {cached}")
                 async with aiofiles.open(cached, mode="rb") as f:
                     data = await f.read()
                     assert len(data) == size
                     return data
             else:
-                module_logger.warning(f"DVC cache directory exists, but not having {self.uri}")
+                module_logger.debug(f"DVC cache directory exists, but not having {self.uri}")
 
         # Fetching from remote
         async with aiohttp.ClientSession() as session:
@@ -145,7 +142,7 @@ class ArtifactResolver:
                     raise errors.NotFoundInDVCRemote(self.uri, f"{directory}{filename}")
                 data = await resp.read()
                 assert len(data) == size
-                caching_path = CACHE_DIRECTORY_BASE / version_info() / (self.uri.name)
+                caching_path = CACHE_DIRECTORY_BASE / get_version_info() / (self.uri.name)
                 module_logger.debug(f"caching to {caching_path}")
                 caching_path.parent.mkdir(parents=True, exist_ok=True)
                 async with aiofiles.open(caching_path, mode="wb") as f:
@@ -153,15 +150,14 @@ class ArtifactResolver:
                 return data
 
 
-async def resolve_file(
-    src_name: str, extension: str, generated_suffix: str = "_warboy_2pe"
-) -> bytes:
+def resolve_file(src_name: str, extension: str) -> bytes:
     # First check whether it is generated file or not
-    if extension.lower() in GENERATED_EXTENSIONS:
-        generated_path_base = f"generated/{version_info()}"
-        if generated_path_base is None:
+    if extension == EXT_ENF:
+        version_info = get_version_info()
+        if version_info is None:
             raise errors.VersionInfoNotFound()
-        file_name = f'{src_name}{generated_suffix}.{extension}'
+        generated_path_base = f"generated/{version_info}"
+        file_name = f'{src_name}{GENERATED_SUFFIX}.{extension}'
         full_path = DATA_DIRECTORY_BASE / f'{generated_path_base}/{file_name}'
     else:
         full_path = next((DATA_DIRECTORY_BASE / src_name).glob(f'*.{extension}.dvc'))
@@ -169,12 +165,6 @@ async def resolve_file(
         full_path = full_path.with_suffix('')
 
     try:
-        return await ArtifactResolver(full_path).read()
+        return synchronous(ArtifactResolver(full_path).read)()
     except Exception as _:
         raise errors.ArtifactNotFound(f"{src_name}:{full_path}.{extension}")
-
-
-async def load_artifacts(name: str) -> Dict[str, bytes]:
-    exts = [EXT_ONNX, EXT_CALIB_YAML, EXT_ENF]
-    resolvers = map(partial(resolve_file, name), exts)
-    return {ext: binary for ext, binary in zip(exts, await asyncio.gather(*resolvers))}

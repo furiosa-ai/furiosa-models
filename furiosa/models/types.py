@@ -9,7 +9,7 @@ from typing_extensions import TypeAlias
 
 from furiosa.common.thread import synchronous
 
-from .utils import load_artifacts
+from .utils import EXT_CALIB_YAML, EXT_ENF, EXT_ONNX, resolve_file
 
 # Context type alias
 Context: TypeAlias = Any
@@ -117,12 +117,16 @@ class Model(ABC, BaseModel):
         # To allow Session, Processor type
         arbitrary_types_allowed = True
         use_enum_values = True
+        # To make aliases for lazy-loaded fields
+        fields = {"source_": "source", "enf_": "enf", "calib_yaml_": "calib_yaml"}
 
     name: str
-    source: bytes = Field(repr=False)
     format: Format
-    enf: Optional[bytes] = Field(repr=False)
-    calib_yaml: Optional[str] = Field(repr=False)
+
+    # These three are aliases for lazy-loaded fields
+    source_: Optional[bytes] = Field(None, repr=False)
+    enf_: Optional[bytes] = Field(None, repr=False)
+    calib_yaml_: Optional[str] = Field(None, repr=False)
 
     family: Optional[str] = None
     version: Optional[str] = None
@@ -144,22 +148,8 @@ class Model(ABC, BaseModel):
 
     @classmethod
     @abstractmethod
-    def load_aux(
-        cls, artifacts: Dict[str, bytes], use_native: Optional[bool] = None, *args, **kwargs
-    ):
+    def load(cls, use_native: Optional[bool] = None) -> 'Model':
         ...
-
-    @classmethod
-    async def load_async(cls, use_native: Optional[bool] = None, *args, **kwargs) -> 'Model':
-        return cls.load_aux(
-            await load_artifacts(cls.get_artifact_name()), use_native, *args, **kwargs
-        )
-
-    @classmethod
-    def load(cls, use_native: Optional[bool] = None, *args, **kwargs) -> 'Model':
-        return cls.load_aux(
-            synchronous(load_artifacts)(cls.get_artifact_name()), use_native, *args, **kwargs
-        )
 
     def preprocess(self, *args, **kwargs) -> Tuple[Sequence[npt.ArrayLike], Sequence[Context]]:
         assert self.preprocessor
@@ -168,6 +158,33 @@ class Model(ABC, BaseModel):
     def postprocess(self, *args, **kwargs):
         assert self.postprocessor
         return self.postprocessor(*args, **kwargs)
+
+    @property
+    def source(self) -> bytes:
+        source = self.__dict__.get('source_')
+        if source is None:
+            source = resolve_file(self.get_artifact_name(), EXT_ONNX)
+            self.__dict__['source_'] = source
+        return source
+
+    @property
+    def enf(self) -> bytes:
+        enf = self.__dict__.get('enf_')
+        if enf is None:
+            enf = resolve_file(self.get_artifact_name(), EXT_ENF)
+            self.__dict__['enf_'] = enf
+        return enf
+
+    @property
+    def calib_yaml(self) -> bytes:
+        calib_yaml = self.__dict__.get('calib_yaml_')
+        if calib_yaml is None:
+            calib_yaml = resolve_file(self.get_artifact_name(), EXT_CALIB_YAML)
+            self.__dict__['calib_yaml_'] = calib_yaml
+        return calib_yaml
+
+    def resolve_all(self):
+        _ = self.source, self.enf, self.calib_yaml
 
 
 class ObjectDetectionModel(Model, ABC):

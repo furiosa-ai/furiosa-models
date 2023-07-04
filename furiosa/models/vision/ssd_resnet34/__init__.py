@@ -431,15 +431,12 @@ class SSDResNet34(ObjectDetectionModel):
         return "mlcommons_ssd_resnet34"
 
     @classmethod
-    def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = True):
+    def load(cls, use_native: bool = True):
         postproc_type = Platform.RUST if use_native else Platform.PYTHON
         logger.debug(f"Using {postproc_type.name} postprocessor")
         postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type]()
         return cls(
             name="SSDResNet34",
-            source=artifacts[EXT_ONNX],
-            enf=artifacts[EXT_ENF],
-            calib_yaml=artifacts[EXT_CALIB_YAML],
             format=Format.ONNX,
             family="ResNet",
             version="v1.1",

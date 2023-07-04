@@ -31,14 +31,11 @@ class YOLOv5l(YOLOv5Base):
         return "yolov5l"
 
     @classmethod
-    def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = False, *args, **kwargs):
+    def load(cls, use_native: bool = False):
         if use_native:
             raise NotImplementedError("No native implementation for YOLOv5")
         return cls(
             name="YOLOv5Large",
-            source=artifacts[EXT_ONNX],
-            enf=artifacts[EXT_ENF],
-            calib_yaml=artifacts[EXT_CALIB_YAML],
             format=Format.ONNX,
             family="YOLOv5",
             version="v5",

@@ -2,7 +2,6 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-import pytest
 
 from furiosa.models.vision import YOLOv5m
 from furiosa.models.vision.postprocess import collate
@@ -15,9 +14,8 @@ NUM_BATCHES = 2
 NUM_DETECTED_BOXES = 21
 
 
-@pytest.mark.asyncio
-async def test_yolov5_medium_batched():
-    m = await YOLOv5m.load_async()
+def test_yolov5_medium_batched():
+    m = YOLOv5m.load()
     assert len(m.classes) == NUM_CLASSES, "expected CLASS is 10"
 
     batch_im = [cv2.imread(TEST_IMAGE_PATH), cv2.imread(TEST_IMAGE_PATH)]
