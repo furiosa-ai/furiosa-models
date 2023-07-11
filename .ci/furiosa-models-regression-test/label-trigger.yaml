@@ -108,6 +108,7 @@ spec:
           - name: source
             volumeClaimTemplate:
               spec:
+                storageClassName: ceph-filesystem
                 accessModes:
                   - ReadWriteMany
                 resources:
@@ -175,7 +176,7 @@ spec:
   resources:
     - name: image
       type: image
- 
+
   workspaces:
     - name: source
       description: Workspace where the git repo is prepared for testing
