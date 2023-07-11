@@ -106,7 +106,7 @@ class ArtifactResolver:
     ) -> str:
         return f"{http_endpoint}/{directory}/{filename}"
 
-    async def read(self) -> bytes:
+    async def _read(self, directory: str, filename: str) -> bytes:
         # Try to find local cached file
         local_cache_path = CACHE_DIRECTORY_BASE / get_version_info() / (self.uri.name)
         if local_cache_path.exists():
@@ -121,15 +121,12 @@ class ArtifactResolver:
                 return await f.read()
 
         module_logger.debug(f"{self.uri} not exists, resolving DVC")
-        directory, filename, size = self.parse_dvc_file(self.uri)
         if self.dvc_cache_path is not None:
             cached: Path = self.dvc_cache_path / directory / filename
             if cached.exists():
                 module_logger.debug(f"DVC cache hit: {cached}")
                 async with aiofiles.open(cached, mode="rb") as f:
-                    data = await f.read()
-                    assert len(data) == size
-                    return data
+                    return await f.read()
             else:
                 module_logger.debug(f"DVC cache directory exists, but not having {self.uri}")
 
@@ -141,13 +138,18 @@ class ArtifactResolver:
                 if resp.status != 200:
                     raise errors.NotFoundInDVCRemote(self.uri, f"{directory}{filename}")
                 data = await resp.read()
-                assert len(data) == size
                 caching_path = CACHE_DIRECTORY_BASE / get_version_info() / (self.uri.name)
                 module_logger.debug(f"caching to {caching_path}")
                 caching_path.parent.mkdir(parents=True, exist_ok=True)
                 async with aiofiles.open(caching_path, mode="wb") as f:
                     await f.write(data)
                 return data
+
+    async def read(self) -> bytes:
+        directory, filename, size = self.parse_dvc_file(self.uri)
+        data = await self._read(directory, filename)
+        assert len(data) == size
+        return data
 
 
 def resolve_file(src_name: str, extension: str) -> bytes:
@@ -166,5 +168,5 @@ def resolve_file(src_name: str, extension: str) -> bytes:
 
     try:
         return synchronous(ArtifactResolver(full_path).read)()
-    except Exception as _:
-        raise errors.ArtifactNotFound(f"{src_name}:{full_path}.{extension}")
+    except Exception as e:
+        raise errors.ArtifactNotFound(f"{src_name}:{full_path}") from e
