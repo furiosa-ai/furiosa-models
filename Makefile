@@ -1,5 +1,9 @@
 SHELL=/bin/bash -o pipefail
 
+ONNXRUNTIME_VERSION := 1.13.1-?
+TOOLCHAIN_VERSION := 0.9.1-?
+LIBHAL_VERSION := 0.11.0-?
+
 .PHONY: check-docker-tag toolchain lint test unit_tests examples regression-test-all \
 regression-test-resnet50 regression-test-ssd-mobilenet \
 regression-test-ssd-resnet34 regression-test-yolov5 doc docker-build docker-push \
@@ -11,9 +15,9 @@ ifndef DOCKER_TAG
 endif
 
 toolchain:
-	env ONNXRUNTIME_VERSION=1.13.1-2 sh -c 'apt-get install -y --allow-downgrades libonnxruntime=$$ONNXRUNTIME_VERSION'
-	env TOOLCHAIN_VERSION=0.9.1-2 sh -c 'apt-get install -y --allow-downgrades furiosa-libcompiler=$$TOOLCHAIN_VERSION furiosa-libnux-extrinsic=$$TOOLCHAIN_VERSION furiosa-libnux=$$TOOLCHAIN_VERSION'
-	env LIBHAL_VERSION=0.11.0-2 sh -c 'apt-get install -y --allow-downgrades furiosa-libhal-warboy=$$LIBHAL_VERSION'
+	apt-get install -y --allow-downgrades libonnxruntime=$(ONNXRUNTIME_VERSION)
+	apt-get install -y --allow-downgrades furiosa-libcompiler=$(TOOLCHAIN_VERSION) furiosa-libnux=$(TOOLCHAIN_VERSION)
+	apt-get install -y --allow-downgrades furiosa-libhal-warboy=$(LIBHAL_VERSION)
 
 lint:
 	isort --diff --check .
