@@ -16,8 +16,7 @@ endif
 
 toolchain:
 	apt-get install -y --allow-downgrades libonnxruntime=$(ONNXRUNTIME_VERSION)
-	apt-get install -y --allow-downgrades furiosa-libcompiler=$(TOOLCHAIN_VERSION) \
-		furiosa-libnux-extrinsic=$(TOOLCHAIN_VERSION) furiosa-libnux=$(TOOLCHAIN_VERSION)
+	apt-get install -y --allow-downgrades furiosa-libcompiler=$(TOOLCHAIN_VERSION) furiosa-libnux=$(TOOLCHAIN_VERSION)
 	apt-get install -y --allow-downgrades furiosa-libhal-warboy=$(LIBHAL_VERSION)
 
 lint:
