@@ -1,6 +1,5 @@
 # Add all published models to make sure if the fetched model image is correct.
 
-import pytest
 import yaml
 
 from furiosa.models.utils import DATA_DIRECTORY_BASE
@@ -17,14 +16,6 @@ def sanity_check_for_dvc_file(model, dvc_file_path: str):
 def test_mlcommons_resnet50():
     sanity_check_for_dvc_file(
         ResNet50.load(use_native=False),
-        next((DATA_DIRECTORY_BASE / "mlcommons_resnet50_v1.5").glob("*.onnx.dvc")),
-    )
-
-
-@pytest.mark.asyncio
-async def test_mlcommons_resnet50_async():
-    sanity_check_for_dvc_file(
-        await ResNet50.load_async(),
         next((DATA_DIRECTORY_BASE / "mlcommons_resnet50_v1.5").glob("*.onnx.dvc")),
     )
 

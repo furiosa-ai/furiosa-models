@@ -7,4 +7,4 @@ mobilenet = SSDMobileNet.load()
 with session.create(mobilenet.enf) as sess:
     inputs, contexts = mobilenet.preprocess(image)
     outputs = sess.run(inputs).numpy()
-    mobilenet.postprocess(outputs, contexts)
+    mobilenet.postprocess(outputs, contexts[0])

@@ -10,17 +10,9 @@ the model images are not included in Python package. When `load()` method is cal
 fetched over the network. It takes some time (usually few seconds) depending on models and network conditions.
 Once the model images are fetched, they will be cached on a local disk.
 
-Non-blocking API `load_async()` also is available, and it can be used
-if your application is running through asynchronous executors (e.g., asyncio).
-
 === "Blocking API"
     ```python
     --8<-- "docs/examples/loading_model.py"
-    ```
-
-=== "Non-blocking API"
-    ```python
-    --8<-- "docs/examples/loading_model_nonblocking.py"
     ```
 
 <a name="accessing_artifacts_and_metadata"></a>

@@ -88,12 +88,9 @@ class ResNet50(ImageClassificationModel):
         return "mlcommons_resnet50_v1.5"
 
     @classmethod
-    def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = False, *args, **kwargs):
+    def load(cls, use_native: bool = False):
         return cls(
             name="ResNet50",
-            source=artifacts[EXT_ONNX],
-            enf=artifacts[EXT_ENF],
-            calib_yaml=artifacts[EXT_CALIB_YAML],
             format=Format.ONNX,
             family="ResNet",
             version="v1.5",

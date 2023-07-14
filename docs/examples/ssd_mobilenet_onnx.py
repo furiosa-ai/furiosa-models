@@ -19,4 +19,4 @@ dfg = quantize(onnx_model, calib_range, with_quantize=False)
 with session.create(dfg, compiler_config=compiler_config) as sess:
     inputs, contexts = mobilenet.preprocess(image)
     outputs = sess.run(inputs).numpy()
-    mobilenet.postprocess(outputs, contexts)
+    mobilenet.postprocess(outputs, contexts[0])

@@ -120,12 +120,9 @@ class EfficientNetB0(ImageClassificationModel):
         return "efficientnet_b0"
 
     @classmethod
-    def load_aux(cls, artifacts: Dict[str, bytes], use_native: bool = False, *args, **kwargs):
+    def load(cls, use_native: bool = False):
         return cls(
             name="EfficientNetB0",
-            source=artifacts[EXT_ONNX],
-            enf=artifacts[EXT_ENF],
-            calib_yaml=artifacts[EXT_CALIB_YAML],
             format=Format.ONNX,
             family="EfficientNet",
             version="1.0.2",
