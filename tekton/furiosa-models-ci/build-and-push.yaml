@@ -35,7 +35,7 @@ spec:
                 --progress=plain \
                 --frontend=dockerfile.v0 \
                 --opt filename=$(params.DOCKERFILE) \
-                --local context=. --local dockerfile=. \
+                --local context=. --local dockerfile=./docker \
                 --secret id=furiosa.conf,src=/etc/apt/auth.conf.d/furiosa.conf \
                 --secret id=.netrc,src=/root/.netrc \
                 --output type=image,name=$(resources.outputs.image.url),push=true

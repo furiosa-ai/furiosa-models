@@ -6,18 +6,15 @@ metadata:
 spec:
   workspaces:
     - name: source
-  params:
-    - name: image
-      description: The container image to use black in
-      default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:lint
   steps:
     - name: lint
-      image: $(params.image)
+      image: python:3.9-bullseye
       workingDir: /workspace/source
       script: |
         #!/usr/bin/env bash
         set -e
 
+        pip3 install --upgrade black isort ruff
         make lint
 
       resources:
