@@ -22,6 +22,7 @@ toolchain:
 lint:
 	isort --diff --check .
 	black --diff --check .
+	ruff check .
 
 test:
 	pytest ./tests -s
