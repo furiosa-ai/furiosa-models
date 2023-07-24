@@ -12,6 +12,7 @@ spec:
       default: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:lint
   steps:
     - name: lint
+      imagePullPolicy: Always
       image: $(params.image)
       workingDir: /workspace/source
       script: |

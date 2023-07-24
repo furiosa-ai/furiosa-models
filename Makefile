@@ -58,7 +58,7 @@ doc:
 	mkdocs build
 
 docker-build: check-docker-tag
-	DOCKER_BUILDKIT=1 docker build -t asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:${DOCKER_TAG}  --secret id=.netrc,src=/root/.netrc --secret id=furiosa.conf,src=/etc/apt/auth.conf.d/furiosa.conf -f docker/docker/Dockerfile ./docker/
+	DOCKER_BUILDKIT=1 docker build -t asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:${DOCKER_TAG}  --secret id=.netrc,src=/root/.netrc --secret id=furiosa.conf,src=/etc/apt/auth.conf.d/furiosa.conf -f docker/Dockerfile ./docker/
 
 docker-push:
 	docker push asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:${DOCKER_TAG}
