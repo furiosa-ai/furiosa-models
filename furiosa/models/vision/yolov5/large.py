@@ -4,13 +4,12 @@ Attributes:
     CLASSES (List[str]): a list of class names
 """
 import pathlib
-from typing import Dict, List
+from typing import List
 
 import numpy as np
 import yaml
 
 from ...types import Format, Metadata, Publication
-from ...utils import EXT_CALIB_YAML, EXT_ENF, EXT_ONNX
 from .core import YOLOv5Base, YOLOv5PostProcessor, YOLOv5PreProcessor
 
 with open(pathlib.Path(__file__).parent / "datasets/yolov5l/cfg.yaml", "r") as f:

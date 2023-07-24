@@ -7,8 +7,6 @@ import numpy.typing as npt
 from pydantic import BaseConfig, BaseModel, Extra, Field
 from typing_extensions import TypeAlias
 
-from furiosa.common.thread import synchronous
-
 from .utils import EXT_CALIB_YAML, EXT_ENF, EXT_ONNX, resolve_file
 
 # Context type alias

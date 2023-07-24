@@ -91,12 +91,13 @@ class ObjectDetectionResult:
     index: int
 
 
-def collate(data: Sequence[Sequence[np.array]], batch_axis=0) -> List[np.array]:
+def collate(data: Sequence[Sequence[np.array]], batch_axis=0) -> List[np.ndarray]:
     """This function converts a list of an numpy.array list into a batch type numpy array.
        The batch axis is specified according to the batch_axis.
 
     Args:
-        data (List[List[np.array]]): a list of numpy.array list. The shape axis of each numpy.array must be 1.
+        data (List[List[np.array]]): a list of numpy.array list. The shape axis of each numpy.array
+            must be 1.
         batch_axis (int, optional): batch axis. Defaults to 0.
 
     Returns:
