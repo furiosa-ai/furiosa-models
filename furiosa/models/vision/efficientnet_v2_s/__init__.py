@@ -14,7 +14,7 @@ from ...types import (
     PreProcessor,
     Publication,
 )
-from ...utils import EXT_CALIB_YAML, EXT_ENF, EXT_ONNX, get_field_default
+from ...utils import get_field_default
 from ..common.datasets import imagenet1k
 
 IMAGENET_DEFAULT_MEAN = np.array((0.485, 0.456, 0.406), dtype=np.float32)[:, np.newaxis, np.newaxis]
@@ -72,9 +72,10 @@ class EfficientNetV2sPreProcessor(PreProcessor):
             image: A path of an image.
 
         Returns:
-            The first element of the tuple is a numpy array that meets the input requirements of the model.
-                The second element of the tuple is unused in this model and has no value.
-                To learn more information about the output numpy array, please refer to [Inputs](efficientnet_v2_s.md#inputs).
+            The first element of the tuple is a numpy array that meets the input requirements of the
+                model. The second element of the tuple is unused in this model and has no value.
+                To learn more information about the output numpy array, please refer to
+                [Inputs](efficientnet_v2_s.md#inputs).
 
         """
 

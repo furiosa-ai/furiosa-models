@@ -20,7 +20,7 @@ from ...types import (
     PreProcessor,
     Publication,
 )
-from ...utils import EXT_CALIB_YAML, EXT_ENF, EXT_ONNX, get_field_default
+from ...utils import get_field_default
 from ..common.datasets import coco
 from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox
 
@@ -168,16 +168,16 @@ def scale_back_batch(bboxes_in, scores_in, scale_xy, scale_wh, dboxes_xywh):
     bboxes_in[:, :, :2] = bboxes_in[:, :, :2] * dboxes_xywh[:, :, 2:] + dboxes_xywh[:, :, :2]
     bboxes_in[:, :, 2:] = bboxes_in[:, :, 2:].exp() * dboxes_xywh[:, :, 2:]
     # Transform format to ltrb
-    l, t, r, b = (
+    left, top, right, bottom = (
         bboxes_in[:, :, 0] - 0.5 * bboxes_in[:, :, 2],
         bboxes_in[:, :, 1] - 0.5 * bboxes_in[:, :, 3],
         bboxes_in[:, :, 0] + 0.5 * bboxes_in[:, :, 2],
         bboxes_in[:, :, 1] + 0.5 * bboxes_in[:, :, 3],
     )
-    bboxes_in[:, :, 0] = l
-    bboxes_in[:, :, 1] = t
-    bboxes_in[:, :, 2] = r
-    bboxes_in[:, :, 3] = b
+    bboxes_in[:, :, 0] = left
+    bboxes_in[:, :, 1] = top
+    bboxes_in[:, :, 2] = right
+    bboxes_in[:, :, 3] = bottom
     return bboxes_in, F.softmax(scores_in, dim=-1)
 
 
@@ -272,8 +272,8 @@ class SSDResNet34PreProcessor(PreProcessor):
 
         Returns:
             The first element is a list of 3-channel images of 1200x1200
-                in NCHW format, and the second element is a list of context about the original image metadata.
-                This context data should be passed and utilized during post-processing.
+                in NCHW format, and the second element is a list of context about the original image
+                metadata. This context data should be passed and utilized during post-processing.
                 To learn more about the outputs of preprocess (i.e., model inputs),
                 please refer to [Inputs](ssd_resnet34.md#inputs).
 
@@ -331,7 +331,8 @@ class SSDResNet34PythonPostProcessor(PostProcessor):
         Returns:
             Detected Bounding Box and its score and label represented as
                 `ObjectDetectionResult`.
-                To learn more about `ObjectDetectionResult`, 'Definition of ObjectDetectionResult' can be found below.
+                To learn more about `ObjectDetectionResult`, 'Definition of ObjectDetectionResult'
+                can be found below.
 
         Definition of ObjectDetectionResult and LtrbBoundingBox:
             ::: furiosa.models.vision.postprocess.LtrbBoundingBox
@@ -372,13 +373,13 @@ class SSDResNet34PythonPostProcessor(PostProcessor):
             )
             cal_boxes = calibration_ltrbbox(boxes, width, height)
             predicted_result = []
-            for b, l, s in zip(cal_boxes, labels, scores):
-                bb_list = b.tolist()
+            for box, label, score in zip(cal_boxes, labels, scores):
+                bb_list = box.tolist()
                 predicted_result.append(
                     ObjectDetectionResult(
-                        index=int(l),
-                        label=CLASSES[l],
-                        score=s,
+                        index=int(label),
+                        label=CLASSES[label],
+                        score=score,
                         boundingbox=LtrbBoundingBox(
                             left=bb_list[0], top=bb_list[1], right=bb_list[2], bottom=bb_list[3]
                         ),

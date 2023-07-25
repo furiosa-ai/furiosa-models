@@ -3,7 +3,15 @@
 import yaml
 
 from furiosa.models.utils import DATA_DIRECTORY_BASE
-from furiosa.models.vision import *
+from furiosa.models.vision import (
+    EfficientNetB0,
+    EfficientNetV2s,
+    ResNet50,
+    SSDMobileNet,
+    SSDResNet34,
+    YOLOv5l,
+    YOLOv5m,
+)
 
 
 def sanity_check_for_dvc_file(model, dvc_file_path: str):

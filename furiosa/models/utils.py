@@ -82,6 +82,7 @@ class ArtifactResolver:
         # Note: DVC_REPO is to locate local DVC directory not remote git repository
         self.dvc_cache_path = os.environ.get("DVC_REPO", self.find_dvc_cache_directory(Path.cwd()))
         if self.dvc_cache_path is not None:
+            self.dvc_cache_path = Path(self.dvc_cache_path)
             if self.dvc_cache_path.is_symlink():
                 self.dvc_cache_path = self.dvc_cache_path.readlink()
             module_logger.debug(f"Found DVC cache directory: {self.dvc_cache_path}")

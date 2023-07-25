@@ -102,17 +102,17 @@ class Encoder(object):
         bboxes_in[:, :, 2:] = np.exp(bboxes_in[:, :, 2:]) * self.dboxes_xywh[:, :, 2:]
 
         # Transform format to ltrb
-        l, t, r, b = (
+        left, top, right, bottom = (
             bboxes_in[:, :, 0] - 0.5 * bboxes_in[:, :, 2],
             bboxes_in[:, :, 1] - 0.5 * bboxes_in[:, :, 3],
             bboxes_in[:, :, 0] + 0.5 * bboxes_in[:, :, 2],
             bboxes_in[:, :, 1] + 0.5 * bboxes_in[:, :, 3],
         )
 
-        bboxes_in[:, :, 1] = l
-        bboxes_in[:, :, 0] = t
-        bboxes_in[:, :, 3] = r
-        bboxes_in[:, :, 2] = b
+        bboxes_in[:, :, 1] = left
+        bboxes_in[:, :, 0] = top
+        bboxes_in[:, :, 3] = right
+        bboxes_in[:, :, 2] = bottom
 
         return bboxes_in, softmax_cpu(scores_in, dim=-1)
 

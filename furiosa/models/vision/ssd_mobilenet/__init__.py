@@ -8,7 +8,6 @@ import numpy.typing as npt
 
 from . import anchor_generator  # type: ignore[import]
 from .. import native
-from ...errors import ArtifactNotFound
 from ...types import (
     Format,
     Metadata,
@@ -18,7 +17,7 @@ from ...types import (
     PreProcessor,
     Publication,
 )
-from ...utils import EXT_CALIB_YAML, EXT_ENF, EXT_ONNX, get_field_default
+from ...utils import get_field_default
 from ..common.datasets import coco
 from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox, sigmoid
 
@@ -106,7 +105,7 @@ def _filter_results(
         labels.append(np.full((box_probs.shape[0],), class_index, dtype=np.int64))
     selected_box_probs = np.concatenate(selected_box_probs)  # type: ignore[assignment]
     labels = np.concatenate(labels)  # type: ignore[assignment]
-    return selected_box_probs[:, :4], labels, selected_box_probs[:, 4]  # type: ignore[call-overload, return-value]
+    return selected_box_probs[:, :4], labels, selected_box_probs[:, 4]
 
 
 def _nms(box_scores: np.ndarray, iou_threshold: float) -> np.ndarray:
@@ -220,7 +219,8 @@ class SSDMobileNetPythonPostProcessor(PostProcessor):
 
         Returns:
             Detected Bounding Box and its score and label represented as `ObjectDetectionResult`.
-                To learn more about `ObjectDetectionResult`, 'Definition of ObjectDetectionResult' can be found below.
+                To learn more about `ObjectDetectionResult`, 'Definition of ObjectDetectionResult'
+                can be found below.
 
         Definitions of ObjectDetectionResult and LtrbBoundingBox:
             ::: furiosa.models.vision.postprocess.LtrbBoundingBox
@@ -263,13 +263,13 @@ class SSDMobileNetPythonPostProcessor(PostProcessor):
             )
             cal_boxes = calibration_ltrbbox(boxes, width, height)
             predicted_result = []
-            for b, l, s in zip(cal_boxes, labels, scores):
-                bb_list = b.tolist()
+            for box, label, score in zip(cal_boxes, labels, scores):
+                bb_list = box.tolist()
                 predicted_result.append(
                     ObjectDetectionResult(
-                        index=l,
-                        label=CLASSES[l],
-                        score=s,
+                        index=label,
+                        label=CLASSES[label],
+                        score=score,
                         boundingbox=LtrbBoundingBox(
                             left=bb_list[0], top=bb_list[1], right=bb_list[2], bottom=bb_list[3]
                         ),

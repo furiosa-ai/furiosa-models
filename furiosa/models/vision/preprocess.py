@@ -20,7 +20,9 @@ def resize_with_aspect_ratio(
     percent: float,
     interpolation: int,
 ) -> np.ndarray:
-    """Resize `image` so that it will be of scaled_width x scaled_height if it is scaled by `percent`."""
+    """Resize `image` so that it will be of scaled_width x scaled_height if it is scaled by
+    `percent`.
+    """
     height, width, _ = image.shape
     new_height = int(100.0 * scaled_height / percent)
     new_width = int(100.0 * scaled_width / percent)

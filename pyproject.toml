@@ -92,3 +92,6 @@ known_first_party = ["furiosa"]
 line_length = 100
 profile = "black"
 extend_skip_glob = ["**/generated/**", "tests/assets/**", ".dvc/**"]
+
+[tool.ruff]
+line-length = 100

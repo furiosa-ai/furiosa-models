@@ -12,7 +12,7 @@ class Yolov5Dataset:
         path = Path(path)
 
         with open(path / (mode + ".txt"), "r") as f:
-            img_files = [(path / l.rstrip()) for l in f.readlines()]
+            img_files = [(path / line.rstrip()) for line in f.readlines()]
 
         if limit is not None:
             img_files = img_files[:limit]
@@ -25,7 +25,7 @@ class Yolov5Dataset:
         labels = []
         for label_file in self.label_files:
             with open(label_file, "r") as f:
-                label = [l.rstrip().split(" ") for l in f.readlines()]
+                label = [line.rstrip().split(" ") for line in f.readlines()]
                 label = np.float32(label)
                 labels.append(label)
 
@@ -113,7 +113,7 @@ class MAPMetricYolov5:
         nc = unique_classes.shape[0]  # number of classes, number of detections
 
         # Create Precision-Recall curve and compute AP for each class
-        px, py = np.linspace(0, 1, 1000), []  # for plotting
+        px, _py = np.linspace(0, 1, 1000), []  # for plotting
         ap, p, r = np.zeros((nc, tp.shape[1])), np.zeros((nc, 1000)), np.zeros((nc, 1000))
         for ci, c in enumerate(unique_classes):
             i = pred_cls == c
@@ -204,7 +204,7 @@ class MAPMetricYolov5:
         assert len(stats) and stats[0].any()
         tp, fp, p, r, f1, ap, ap_class = self._ap_per_class(*stats)
         ap50, ap = ap[:, 0], ap.mean(1)  # AP@0.5, AP@0.5:0.95
-        mp, mr, map50, map = p.mean(), r.mean(), ap50.mean(), ap.mean()
+        _mp, _mr, map50, map = p.mean(), r.mean(), ap50.mean(), ap.mean()
         nt = np.bincount(
             stats[3].astype(np.int64), minlength=self.nc
         )  # number of targets per class
