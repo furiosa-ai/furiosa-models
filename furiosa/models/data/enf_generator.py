@@ -1,3 +1,4 @@
+from itertools import product
 from multiprocessing import Pool
 import os
 from pathlib import Path
@@ -12,9 +13,6 @@ from furiosa.tools.compiler.api import VersionInfo, compile
 
 QUANTIZER_CONFIG = {"with_quantize": False}
 COMPILER_CONFIG = {"lower_tabulated_dequantize": True}
-TARGET_NPU = "warboy-2pe"
-COMPILED_SUFFIX = "_warboy_2pe"
-MAX_WORKER_PROCESSES = 8
 
 base_path = Path(__file__).parent
 compiler_version = VersionInfo()
@@ -36,10 +34,10 @@ def set_compiler_config(compiler_config: dict):
     os.environ['NPU_COMPILER_CONFIG_PATH'] = compiler_config_path
 
 
-def quantize_and_compile_model(arg: Tuple[int, Path]):
-    index, model_dir_path = arg
+def quantize_and_compile_model(arg: Tuple[int, Path, int]):
+    index, model_dir_path, num_pe = arg
     model_full_name = model_dir_path.name
-    enf_path = generated_path / f"{model_full_name}{COMPILED_SUFFIX}.enf"
+    enf_path = generated_path / f"{model_full_name}_warboy_{num_pe}pe.enf"
     if enf_path.exists() and enf_path.is_file():
         print(f"  [{index}] {enf_path} already exists, so skipped", flush=True)
         return
@@ -73,16 +71,17 @@ def quantize_and_compile_model(arg: Tuple[int, Path]):
         os.dup2(devnull.fileno(), 2)
 
         # Compile and write to file
-        enf = compile(bytes(dfg), target_npu=TARGET_NPU)
+        target_npu = "warboy" if num_pe == 1 else "warboy-2pe"
+        enf = compile(bytes(dfg), target_npu=target_npu)
         with open(enf_path, 'wb') as f:
             f.write(enf)
         print(f"  [{index}] {model_short_name} compiled to {enf_path}", flush=True)
 
 
 if __name__ == '__main__':
-    print(f"Spawn {MAX_WORKER_PROCESSES} worker processes")
-    print("=" * 80)
+    lst = product(model_directories, [1, 2])  # [(idx, model_dir_path, num_pe), ...]
+    lst = [(a, b, c) for (a, b), c in lst]
 
     # Do the job parallelly
-    with Pool(processes=MAX_WORKER_PROCESSES) as pool:
-        pool.map(quantize_and_compile_model, model_directories)
+    with Pool() as pool:
+        pool.map(quantize_and_compile_model, lst)

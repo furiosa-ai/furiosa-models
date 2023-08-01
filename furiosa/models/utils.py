@@ -17,7 +17,6 @@ from . import errors
 EXT_CALIB_YAML = "calib_range.yaml"
 EXT_ENF = "enf"
 EXT_ONNX = "onnx"
-GENERATED_SUFFIX = "_warboy_2pe"
 DATA_DIRECTORY_BASE = Path(__file__).parent / "data"
 CACHE_DIRECTORY_BASE = Path(
     os.getenv(
@@ -153,14 +152,14 @@ class ArtifactResolver:
         return data
 
 
-def resolve_file(src_name: str, extension: str) -> bytes:
+def resolve_file(src_name: str, extension: str, num_pe: int = 2) -> bytes:
     # First check whether it is generated file or not
     if extension == EXT_ENF:
         version_info = get_version_info()
         if version_info is None:
             raise errors.VersionInfoNotFound()
         generated_path_base = f"generated/{version_info}"
-        file_name = f'{src_name}{GENERATED_SUFFIX}.{extension}'
+        file_name = f'{src_name}_warboy_{num_pe}pe.{extension}'
         full_path = DATA_DIRECTORY_BASE / f'{generated_path_base}/{file_name}'
     else:
         full_path = next((DATA_DIRECTORY_BASE / src_name).glob(f'*.{extension}.dvc'))

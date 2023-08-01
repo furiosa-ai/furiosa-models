@@ -1,0 +1,5 @@
+outs:
+- md5: 470ee2f35474b5ac6d19a60552315cc6
+  size: 24006388
+  hash: md5
+  path: mlcommons_ssd_resnet34_warboy_1pe.enf

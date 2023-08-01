@@ -116,13 +116,19 @@ class Model(ABC, BaseModel):
         arbitrary_types_allowed = True
         use_enum_values = True
         # To make aliases for lazy-loaded fields
-        fields = {"source_": "source", "enf_": "enf", "calib_yaml_": "calib_yaml"}
+        fields = {
+            "source_": "source",
+            "enf_": "enf",
+            "enf_1pe_": "enf_1pe",
+            "calib_yaml_": "calib_yaml",
+        }
 
     name: str
     format: Format
 
-    # These three are aliases for lazy-loaded fields
+    # These fields are aliases for lazy-loaded fields
     source_: Optional[bytes] = Field(None, repr=False)
+    enf_1pe_: Optional[bytes] = Field(None, repr=False)
     enf_: Optional[bytes] = Field(None, repr=False)
     calib_yaml_: Optional[str] = Field(None, repr=False)
 
@@ -174,6 +180,14 @@ class Model(ABC, BaseModel):
         return enf
 
     @property
+    def enf_1pe(self) -> bytes:
+        enf = self.__dict__.get('enf_1pe_')
+        if enf is None:
+            enf = resolve_file(self.get_artifact_name(), EXT_ENF, num_pe=1)
+            self.__dict__['enf_1pe_'] = enf
+        return enf
+
+    @property
     def calib_yaml(self) -> bytes:
         calib_yaml = self.__dict__.get('calib_yaml_')
         if calib_yaml is None:
@@ -182,7 +196,7 @@ class Model(ABC, BaseModel):
         return calib_yaml
 
     def resolve_all(self):
-        _ = self.source, self.enf, self.calib_yaml
+        _ = self.source, self.enf, self.enf_1pe, self.calib_yaml
 
 
 class ObjectDetectionModel(Model, ABC):
