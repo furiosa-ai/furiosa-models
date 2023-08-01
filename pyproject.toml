@@ -28,8 +28,8 @@ description = "Furiosa Models"
 requires-python = "~=3.8"
 dynamic = ["version"]
 dependencies = [
-    "furiosa-common == 0.9.*",
-    "furiosa-runtime == 0.9.*",
+    "furiosa-common == 0.10.*",
+    "furiosa-runtime == 0.10.*",
     "furiosa-native-postprocess == 0.9.0_dev0",
 
     "aiofiles ~= 22.1.0",
@@ -51,9 +51,7 @@ test = [
     "pytest-asyncio ~= 0.17.2",
     "pycocotools ~= 2.0.4",
 ]
-dvc = [
-    "dvc[s3]",
-]
+dvc = ["dvc[s3]"]
 
 [project.scripts]
 furiosa-models = "furiosa.models.client.main:main"

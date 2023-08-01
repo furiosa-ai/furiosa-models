@@ -1,7 +1,7 @@
 SHELL=/bin/bash -o pipefail
 
-ONNXRUNTIME_VERSION := 1.13.1-?
-TOOLCHAIN_VERSION := 0.9.1-?
+ONNXRUNTIME_VERSION := 1.15.1-?
+TOOLCHAIN_VERSION := 0.10.0-?
 LIBHAL_VERSION := 0.11.0-?
 
 .PHONY: check-docker-tag toolchain lint test unit_tests examples regression-test-all \

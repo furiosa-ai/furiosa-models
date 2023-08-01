@@ -19,6 +19,8 @@ RUN pip3 install --upgrade pip wheel setuptools Cython pytest pycocotools \
 
 RUN echo "deb [arch=amd64] https://internal-archive.furiosa.dev/ubuntu focal restricted" \
     > /etc/apt/sources.list.d/furiosa.list && \
+    echo "deb [arch=amd64] https://internal-archive.furiosa.dev/ubuntu focal-rc restricted" \
+    >> /etc/apt/sources.list.d/furiosa.list && \
     echo "deb [arch=amd64] https://internal-archive.furiosa.dev/ubuntu focal-nightly restricted" \
     >> /etc/apt/sources.list.d/furiosa.list
 
