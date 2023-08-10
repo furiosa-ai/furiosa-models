@@ -92,7 +92,7 @@ class Model(ABC, BaseModel):
 
     Attributes:
         name: a name of this model
-        tasy_type: the task type of this model
+        task_type: the task type of this model
         format: the binary format type of model origin; e.g., ONNX, tflite
         family: the model family
         version: the model version

@@ -26,7 +26,7 @@ def load_coco_from_env_variable():
 
 
 def test_mlcommons_ssd_mobilenet_accuracy(benchmark):
-    model: Model = SSDMobileNet("Python")
+    model: Model = SSDMobileNet(postprocessor_type="Python")
 
     image_directory, coco = load_coco_from_env_variable()
     image_src_iter = iter(tqdm.tqdm(coco.dataset["images"]))
@@ -76,7 +76,7 @@ def test_mlcommons_ssd_mobilenet_accuracy(benchmark):
 
 
 def test_mlcommons_ssd_mobilenet_with_native_rust_pp_accuracy(benchmark):
-    model = SSDMobileNet("Rust")
+    model = SSDMobileNet(postprocessor_type="Rust")
 
     image_directory, coco = load_coco_from_env_variable()
     image_src_iter = iter(tqdm.tqdm(coco.dataset["images"]))

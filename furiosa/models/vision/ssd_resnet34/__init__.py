@@ -434,6 +434,7 @@ class SSDResNet34(ObjectDetectionModel):
         super().__init__(
             name="SSDResNet34",
             format=Format.ONNX,
+            family="ResNet",
             version="v1.1",
             metadata=Metadata(
                 description="SSD ResNet34 model for MLCommons v1.1",

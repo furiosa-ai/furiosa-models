@@ -19,7 +19,7 @@ def test_mlcommons_resnet50_accuracy(benchmark):
         os.environ.get('IMAGENET_VAL_LABELS', 'tests/data/imagenet/aux/val.txt')
     )
 
-    model = ResNet50("Python")
+    model = ResNet50(postprocessor_type="Python")
 
     image_paths = list(imagenet_val_images.glob("*.[Jj][Pp][Ee][Gg]"))
     with open(imagenet_val_labels, encoding="ascii") as file:

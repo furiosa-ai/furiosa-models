@@ -34,13 +34,6 @@ def get_version_info() -> Optional[str]:
     return f"{version_info.version}_{version_info.git_hash}"
 
 
-def removesuffix(base: str, suffix: str) -> str:
-    # Copied from https://github.com/python/cpython/blob/6dab8c95/Tools/scripts/deepfreeze.py#L105-L108
-    if base.endswith(suffix):
-        return base[: len(base) - len(suffix)]
-    return base
-
-
 def find_dvc_cache_directory(path: Path) -> Optional[Path]:
     if path is None or path == path.parent:
         return None
@@ -139,13 +132,14 @@ def resolve_model_source(src_name: str, num_pe: int = 2) -> bytes:
     generated_path_base = DATA_DIRECTORY_BASE / f"generated/{version_info}"
     if not generated_path_base.exists():
         module_logger.warning("ENF does not exist. Trying to generate from source..")
-        import onnx
-        import yaml
 
         try:
+            import onnx
+            import yaml
+
             from furiosa.quantizer import ModelEditor, TensorType, get_pure_input_names, quantize
         except ImportError:
-            raise errors.QuantizerNotFound()
+            raise errors.ExtraPackageRequired()
         module_logger.warning(f"Returning quantized ONNX for {src_name}")
         onnx_model = onnx.load_from_string(resolve_source(src_name, EXT_ONNX))
         calib_range = yaml.full_load(resolve_source(src_name, EXT_CALIB_YAML))

@@ -34,10 +34,11 @@ class VersionInfoNotFound(FuriosaModelException):
         )
 
 
-class QuantizerNotFound(FuriosaModelException):
-    """Could not find `furiosa-quantizer` package"""
+class ExtraPackageRequired(FuriosaModelException):
+    """Needs extra packges to quantize and compile"""
 
     def __init__(self):
         super().__init__(
-            "Could not find `furiosa-quantizer` package. Try: `pip install furiosa-quantizer`"
+            "Needs extra packges to quantize and compile manually. Try: `pip install "
+            "furiosa-models[full]`"
         )
