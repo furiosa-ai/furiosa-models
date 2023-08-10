@@ -19,6 +19,7 @@ from ...types import (
 )
 from ..common.datasets import coco
 from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox, sigmoid
+from ..preprocess import read_image_opencv_if_needed
 
 NUM_OUTPUTS: int = 12
 CLASSES = coco.MobileNetSSD_CLASSES
@@ -178,10 +179,8 @@ class SSDMobileNetPreProcessor(PreProcessor):
         if isinstance(images, str):
             images = [images]
         for image in images:
-            if isinstance(image, str):
-                image = cv2.imread(image)
-                if image is None:
-                    raise FileNotFoundError(image)
+            image = read_image_opencv_if_needed(image)
+            assert image.dtype == np.uint8
 
             if with_quantize:
                 image = np.array(image, dtype=np.float32)

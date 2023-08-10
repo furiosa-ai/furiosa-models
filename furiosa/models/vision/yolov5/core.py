@@ -8,6 +8,7 @@ import numpy.typing as npt
 from .. import native
 from ...types import Format, ObjectDetectionModel, Platform, PostProcessor, PreProcessor
 from ...vision.postprocess import LtrbBoundingBox, ObjectDetectionResult
+from ..preprocess import read_image_opencv_if_needed
 
 _INPUT_SIZE = (640, 640)
 _STRIDES = [8, 16, 32]
@@ -124,22 +125,20 @@ class YOLOv5PreProcessor(PreProcessor):
         batched_proc_params = []
         if isinstance(images, str):
             images = [images]
-        for img in images:
-            if isinstance(img, str):
-                img = cv2.imread(img)
-                if img is None:
-                    raise FileNotFoundError(img)
+        for image in images:
+            image = read_image_opencv_if_needed(image)
+            assert image.dtype == np.uint8
             if with_quantize:
-                img = img.astype(np.float32)
-            img, (sx, sy), (padw, padh) = _resize(img, _INPUT_SIZE)
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                image = image.astype(np.float32)
+            image, (sx, sy), (padw, padh) = _resize(image, _INPUT_SIZE)
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
             if with_quantize:
-                img /= 255.0
-            img = img.transpose([2, 0, 1])
+                image /= 255.0
+            image = image.transpose([2, 0, 1])
             assert sx == sy, "yolov5 must be the same rescale for width and height"
             scale = sx
-            batched_image.append(img)
+            batched_image.append(image)
             batched_proc_params.append({"scale": scale, "pad": (padw, padh)})
 
         return np.stack(batched_image, axis=0), batched_proc_params

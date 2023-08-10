@@ -85,6 +85,7 @@ class EfficientNetV2sPreProcessor(PreProcessor):
         image = center_crop(image, INPUT_SIZE)
 
         image = np.ascontiguousarray(image)
+        assert image.dtype == np.uint8
         data = np.transpose(image, (2, 0, 1))
 
         if with_quantize:

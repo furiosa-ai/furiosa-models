@@ -79,6 +79,7 @@ class EfficientNetB0PreProcessor(PreProcessor):
 
         data = center_crop(image, 224, 224)
         data = np.transpose(data, axes=(2, 0, 1))
+        assert data.dtype == np.uint8
 
         if with_quantize:
             data = np.asarray(data, dtype=np.float32)

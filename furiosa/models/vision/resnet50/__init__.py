@@ -15,7 +15,7 @@ from ...types import (
     Publication,
 )
 from ..common.datasets import imagenet1k
-from ..preprocess import center_crop, resize_with_aspect_ratio
+from ..preprocess import center_crop, read_image_opencv_if_needed, resize_with_aspect_ratio
 
 CLASSES: List[str] = imagenet1k.ImageNet1k_CLASSES
 
@@ -41,10 +41,8 @@ class ResNet50PreProcessor(PreProcessor):
         """
         # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/main.py#L37-L39
         # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L168-L184
-        if isinstance(image, str):
-            image = cv2.imread(image)
-            if image is None:
-                raise FileNotFoundError(image)
+        image = read_image_opencv_if_needed(image)
+        assert image.dtype == np.uint8
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image = resize_with_aspect_ratio(
             image, 224, 224, percent=87.5, interpolation=cv2.INTER_AREA

@@ -1,5 +1,9 @@
+import os
+from typing import Union
+
 import cv2
 import numpy as np
+from numpy import ndarray
 
 
 def center_crop(image: np.ndarray, cropped_height: int, cropped_width: int) -> np.ndarray:
@@ -31,4 +35,15 @@ def resize_with_aspect_ratio(
     else:
         new_width = int(new_width * width / height)
     image = cv2.resize(image, (new_width, new_height), interpolation=interpolation)
+    return image
+
+
+def read_image_opencv_if_needed(image: Union[str, os.PathLike, ndarray]):
+    if isinstance(image, ndarray):
+        return image
+    if isinstance(image, os.PathLike):
+        image = image.__fspath__()  # imread only accepts str (opencv/opencv#15731)
+    image = cv2.imread(image)
+    if image is None:
+        raise FileNotFoundError(image)
     return image
