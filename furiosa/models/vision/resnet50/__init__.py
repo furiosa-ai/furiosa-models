@@ -41,7 +41,7 @@ class ResNet50PreProcessor(PreProcessor):
         """
         # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/main.py#L37-L39
         # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L168-L184
-        if type(image) == str:
+        if isinstance(image, str):
             image = cv2.imread(image)
             if image is None:
                 raise FileNotFoundError(image)

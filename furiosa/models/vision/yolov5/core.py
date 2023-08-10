@@ -125,7 +125,7 @@ class YOLOv5PreProcessor(PreProcessor):
         if isinstance(images, str):
             images = [images]
         for img in images:
-            if type(img) == str:
+            if isinstance(img, str):
                 img = cv2.imread(img)
                 if img is None:
                     raise FileNotFoundError(img)

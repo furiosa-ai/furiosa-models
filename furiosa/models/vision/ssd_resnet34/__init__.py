@@ -285,7 +285,7 @@ class SSDResNet34PreProcessor(PreProcessor):
         if isinstance(images, str):
             images = [images]
         for image in images:
-            if type(image) == str:
+            if isinstance(image, str):
                 image = cv2.imread(image)
                 if image is None:
                     raise FileNotFoundError(image)
