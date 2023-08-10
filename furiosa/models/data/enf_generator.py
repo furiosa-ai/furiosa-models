@@ -8,10 +8,9 @@ from typing import Tuple
 import onnx
 import yaml
 
-import furiosa.quantizer
+from furiosa.quantizer import ModelEditor, TensorType, get_pure_input_names, quantize
 from furiosa.tools.compiler.api import VersionInfo, compile
 
-QUANTIZER_CONFIG = {"with_quantize": False}
 COMPILER_CONFIG = {"lower_tabulated_dequantize": True}
 
 base_path = Path(__file__).parent
@@ -48,12 +47,15 @@ def quantize_and_compile_model(arg: Tuple[int, Path, int]):
     print(f"  [{index}] {model_short_name} starts from {onnx_path}", flush=True)
 
     # Load ONNX model
-    onnx_model = onnx.load(onnx_path).SerializeToString()
+    onnx_model = onnx.load(onnx_path)
 
     # Quantize
     with open(calib_range_path) as f:
         calib_ranges = yaml.full_load(f)
-    dfg = furiosa.quantizer.quantize(onnx_model, calib_ranges, **QUANTIZER_CONFIG)
+    editor = ModelEditor(onnx_model)
+    for input_name in get_pure_input_names(onnx_model):
+        editor.convert_input_type(input_name, TensorType.UINT8)
+    dfg = quantize(onnx_model, calib_ranges)
     print(f"  [{index}] {model_short_name} quantized", flush=True)
 
     compiler_config = dict(COMPILER_CONFIG)
