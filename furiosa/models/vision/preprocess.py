@@ -41,9 +41,11 @@ def resize_with_aspect_ratio(
 def read_image_opencv_if_needed(image: Union[str, os.PathLike, ndarray]):
     if isinstance(image, ndarray):
         return image
-    if isinstance(image, os.PathLike):
-        image = image.__fspath__()  # imread only accepts str (opencv/opencv#15731)
-    image = cv2.imread(image)
+    elif isinstance(image, os.PathLike):
+        path = image.__fspath__()  # imread only accepts str (opencv/opencv#15731)
+    else:
+        path = image
+    image = cv2.imread(path)
     if image is None:
-        raise FileNotFoundError(image)
+        raise FileNotFoundError(path)
     return image
