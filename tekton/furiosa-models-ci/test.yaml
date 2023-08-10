@@ -35,9 +35,9 @@ spec:
         #!/usr/bin/env bash
         set -e
 
-        TOOLCHAIN_VERSION=$(apt-cache policy furiosa-libcompiler | grep Installed | awk '{print $2}')
-        apt-get update && apt-get install -y furiosa-libhal-sim=$TOOLCHAIN_VERSION
-        NPU_GLOBAL_CONFIG_PATH=warboy-b0-2pe make unit_tests
+        # FIXME: Remove me when TLS problem is solved (https://github.com/furiosa-ai/furiosa-sdk-private/issues/719)
+        export LD_PRELOAD=$(find $(python -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')/torch/lib/ -name "libgomp*"):$LD_PRELOAD
+        make unit_tests
 
       resources:
         requests:
@@ -86,12 +86,9 @@ spec:
         #!/usr/bin/env bash
         set -e
 
-        TOOLCHAIN_VERSION=$(apt-cache policy furiosa-libcompiler | grep Installed | awk '{print $2}')
-        apt-get update && apt-get install -y furiosa-libhal-sim=$TOOLCHAIN_VERSION
-
-        pip install 'furiosa-quantizer==0.9.*'
-
-        NPU_GLOBAL_CONFIG_PATH=warboy-b0-2pe make examples
+        # FIXME: Remove me when TLS problem is solved (https://github.com/furiosa-ai/furiosa-sdk-private/issues/719)
+        export LD_PRELOAD=$(find $(python -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')/torch/lib/ -name "libgomp*"):$LD_PRELOAD
+        make examples
 
       resources:
         requests:
