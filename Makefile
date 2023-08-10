@@ -18,6 +18,8 @@ toolchain:
 	apt-get update
 	apt-get install -y --allow-downgrades libonnxruntime=$(ONNXRUNTIME_VERSION)
 	apt-get install -y --allow-downgrades furiosa-compiler=$(TOOLCHAIN_VERSION)
+	# TODO: remove me when possible
+	apt-get install -y --allow-downgrades furiosa-libcompiler=$(TOOLCHAIN_VERSION)
 	apt-get install -y --allow-downgrades furiosa-libhal-warboy=$(LIBHAL_VERSION)
 
 lint:
