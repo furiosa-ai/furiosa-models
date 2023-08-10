@@ -1,0 +1,5 @@
+outs:
+- md5: 621c7fca75cce85a2a13619c349f30b0
+  size: 44861541
+  hash: md5
+  path: efficientnet_v2_s_warboy_1pe.enf

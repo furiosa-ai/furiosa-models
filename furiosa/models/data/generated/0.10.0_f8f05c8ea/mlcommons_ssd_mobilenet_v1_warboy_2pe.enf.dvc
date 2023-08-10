@@ -1,0 +1,5 @@
+outs:
+- md5: 7a55ebcf34cfa3a2ae047dc8272a0a54
+  size: 17356401
+  hash: md5
+  path: mlcommons_ssd_mobilenet_v1_warboy_2pe.enf

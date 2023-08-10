@@ -1,0 +1,5 @@
+outs:
+- md5: bf32798392e40b6fee7324fa09907036
+  size: 54142786
+  hash: md5
+  path: yolov5l_warboy_1pe.enf
