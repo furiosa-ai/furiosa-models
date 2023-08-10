@@ -1,7 +1,7 @@
 import itertools
 import logging
 from math import sqrt
-from typing import Any, Dict, List, Sequence, Tuple, Type, Union
+from typing import Any, Dict, List, Sequence, Tuple, Union
 
 import cv2
 import numpy
@@ -20,7 +20,6 @@ from ...types import (
     PreProcessor,
     Publication,
 )
-from ...utils import get_field_default
 from ..common.datasets import coco
 from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox
 
@@ -422,24 +421,10 @@ class SSDResNet34NativePostProcessor(PostProcessor):
 class SSDResNet34(ObjectDetectionModel):
     """MLCommons SSD ResNet34 model"""
 
-    postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
-        Platform.PYTHON: SSDResNet34PythonPostProcessor,
-        Platform.RUST: SSDResNet34NativePostProcessor,
-    }
-
-    @staticmethod
-    def get_artifact_name():
-        return "mlcommons_ssd_resnet34"
-
-    @classmethod
-    def load(cls, use_native: bool = True):
-        postproc_type = Platform.RUST if use_native else Platform.PYTHON
-        logger.debug(f"Using {postproc_type.name} postprocessor")
-        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type]()
-        return cls(
+    def __init__(self, postprocessor_type: Union[str, Platform] = Platform.RUST):
+        super().__init__(
             name="SSDResNet34",
             format=Format.ONNX,
-            family="ResNet",
             version="v1.1",
             metadata=Metadata(
                 description="SSD ResNet34 model for MLCommons v1.1",
@@ -449,5 +434,11 @@ class SSDResNet34(ObjectDetectionModel):
                 ),
             ),
             preprocessor=SSDResNet34PreProcessor(),
-            postprocessor=postprocessor,
+            postprocessor_type=postprocessor_type,
+            postprocessor_map={
+                Platform.PYTHON: SSDResNet34PythonPostProcessor,
+                Platform.RUST: SSDResNet34NativePostProcessor,
+            },
         )
+
+        self._artifact_name = "mlcommons_ssd_resnet34"

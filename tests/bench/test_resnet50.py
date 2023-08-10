@@ -19,7 +19,7 @@ def test_mlcommons_resnet50_accuracy(benchmark):
         os.environ.get('IMAGENET_VAL_LABELS', 'tests/data/imagenet/aux/val.txt')
     )
 
-    model = ResNet50.load(use_native=False)
+    model = ResNet50("Python")
 
     image_paths = list(imagenet_val_images.glob("*.[Jj][Pp][Ee][Gg]"))
     with open(imagenet_val_labels, encoding="ascii") as file:
@@ -47,7 +47,7 @@ def test_mlcommons_resnet50_accuracy(benchmark):
         else:
             incorrect_predictions += 1
 
-    sess = session.create(model.enf)
+    sess = session.create(model.model_source())
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 

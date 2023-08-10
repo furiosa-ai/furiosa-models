@@ -15,11 +15,11 @@ NUM_DETECTED_BOXES = 21
 
 
 def test_yolov5_medium_batched():
-    m = YOLOv5m.load()
+    m = YOLOv5m()
     assert len(m.classes) == NUM_CLASSES, "expected CLASS is 10"
 
     batch_im = [cv2.imread(TEST_IMAGE_PATH), cv2.imread(TEST_IMAGE_PATH)]
-    with session.create(m.enf) as sess:
+    with session.create(m.model_source()) as sess:
         batch_pre_img, batch_preproc_param = m.preprocess(batch_im)
         batch_feat = []
         for pre_image in batch_pre_img:

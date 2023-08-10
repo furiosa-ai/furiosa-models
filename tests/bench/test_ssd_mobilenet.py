@@ -26,7 +26,7 @@ def load_coco_from_env_variable():
 
 
 def test_mlcommons_ssd_mobilenet_accuracy(benchmark):
-    model: Model = SSDMobileNet.load(use_native=False)
+    model: Model = SSDMobileNet("Python")
 
     image_directory, coco = load_coco_from_env_variable()
     image_src_iter = iter(tqdm.tqdm(coco.dataset["images"]))
@@ -61,7 +61,7 @@ def test_mlcommons_ssd_mobilenet_accuracy(benchmark):
             }
             detections.append(detection)
 
-    sess = session.create(model.enf)
+    sess = session.create(model.model_source())
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 
@@ -76,7 +76,7 @@ def test_mlcommons_ssd_mobilenet_accuracy(benchmark):
 
 
 def test_mlcommons_ssd_mobilenet_with_native_rust_pp_accuracy(benchmark):
-    model = SSDMobileNet.load(use_native=True)
+    model = SSDMobileNet("Rust")
 
     image_directory, coco = load_coco_from_env_variable()
     image_src_iter = iter(tqdm.tqdm(coco.dataset["images"]))
@@ -110,7 +110,7 @@ def test_mlcommons_ssd_mobilenet_with_native_rust_pp_accuracy(benchmark):
             }
             detections.append(detection)
 
-    sess = session.create(model.enf)
+    sess = session.create(model.model_source())
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 

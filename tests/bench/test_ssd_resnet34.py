@@ -27,7 +27,7 @@ def load_coco_from_env_variable():
 
 
 def test_mlcommons_ssd_resnet34_accuracy(benchmark):
-    model: Model = SSDResNet34.load()
+    model: Model = SSDResNet34("Python")
 
     image_directory, coco = load_coco_from_env_variable()
     instances_val2017 = Path(
@@ -70,7 +70,7 @@ def test_mlcommons_ssd_resnet34_accuracy(benchmark):
             }
             detections.append(detection)
 
-    sess = session.create(model.enf)
+    sess = session.create(model.model_source())
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 
@@ -84,7 +84,7 @@ def test_mlcommons_ssd_resnet34_accuracy(benchmark):
 
 
 def test_mlcommons_ssd_resnet34_with_native_rust_pp_accuracy(benchmark):
-    model = SSDResNet34.load(use_native=True)
+    model = SSDResNet34("Rust")
 
     image_directory, coco = load_coco_from_env_variable()
     instances_val2017 = Path(
@@ -126,7 +126,7 @@ def test_mlcommons_ssd_resnet34_with_native_rust_pp_accuracy(benchmark):
             }
             detections.append(detection)
 
-    sess = session.create(model.enf)
+    sess = session.create(model.model_source())
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 

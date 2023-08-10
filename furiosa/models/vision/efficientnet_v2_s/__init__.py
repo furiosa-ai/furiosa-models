@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List, Sequence, Tuple, Type, Union
+from typing import Any, List, Sequence, Tuple, Union
 
 from PIL import Image, ImageOps
 import numpy as np
@@ -14,7 +14,6 @@ from ...types import (
     PreProcessor,
     Publication,
 )
-from ...utils import get_field_default
 from ..common.datasets import imagenet1k
 
 IMAGENET_DEFAULT_MEAN = np.array((0.485, 0.456, 0.406), dtype=np.float32)[:, np.newaxis, np.newaxis]
@@ -114,18 +113,8 @@ class EfficientNetV2sPostProcessor(PostProcessor):
 class EfficientNetV2s(ImageClassificationModel):
     """EfficientNetV2-s model"""
 
-    postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
-        Platform.PYTHON: EfficientNetV2sPostProcessor,
-    }
-
-    @staticmethod
-    def get_artifact_name():
-        return "efficientnet_v2_s"
-
-    @classmethod
-    def load(cls, use_native: bool = False):
-        postprocessor = get_field_default(cls, "postprocessor_map")[Platform.PYTHON]()
-        return cls(
+    def __init__(self, postprocessor_type: Union[str, Platform] = Platform.PYTHON):
+        super().__init__(
             name="EfficientNetV2s",
             format=Format.ONNX,
             family="EfficientNetV2",
@@ -135,5 +124,10 @@ class EfficientNetV2s(ImageClassificationModel):
                 publication=Publication(url="https://arxiv.org/abs/2104.00298"),
             ),
             preprocessor=EfficientNetV2sPreProcessor(),
-            postprocessor=postprocessor,
+            postprocessor_type=postprocessor_type,
+            postprocessor_map={
+                Platform.PYTHON: EfficientNetV2sPostProcessor,
+            },
         )
+
+        self._artifact_name = "efficientnet_v2_s"

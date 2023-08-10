@@ -1,34 +1,53 @@
 from abc import ABC, abstractmethod
 import datetime
-from enum import Enum, IntEnum
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Type
+from enum import Enum
+from functools import cached_property
+from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple, Type
 
 import numpy.typing as npt
-from pydantic import BaseConfig, BaseModel, Extra, Field
+from pydantic import BaseModel, ConfigDict, Field, computed_field, field_serializer, model_validator
 from typing_extensions import TypeAlias
+import yaml
 
-from .utils import EXT_CALIB_YAML, EXT_ENF, EXT_ONNX, resolve_file
+from ._utils import EXT_CALIB_YAML, EXT_ONNX, resolve_model_source, resolve_source
 
 # Context type alias
 Context: TypeAlias = Any
+
+
+class Platform(str, Enum):
+    """Implemented platform"""
+
+    PYTHON = "PYTHON"
+    C = "C"
+    CPP = "CPP"
+    RUST = "RUST"
+
+    @classmethod
+    def _missing_(cls, value):
+        for member in cls:
+            if member.value == value.upper():
+                return member
+
+
+class ModelTaskType(str, Enum):
+    """Model's task type"""
+
+    OBJECT_DETECTION = "OBJECT_DETECTION"
+    IMAGE_CLASSIFICATION = "IMAGE_CLASSIFICATION"
+
+
+class Format(str, Enum):
+    """Model binary format to represent the binary specified."""
+
+    ONNX = "ONNX"
+    TFLite = "TFLITE"
 
 
 class PreProcessor(ABC):
     @abstractmethod
     def __call__(self, inputs: Any) -> Tuple[Sequence[npt.ArrayLike], Sequence[Context]]:
         ...
-
-
-class Platform(IntEnum):
-    """Implemented platform"""
-
-    PYTHON = 0
-    C = 1
-    CPP = 2
-    RUST = 3
-
-    def is_native_platform(self):
-        return self != self.PYTHON
 
 
 class PostProcessor(ABC):
@@ -40,29 +59,8 @@ class PostProcessor(ABC):
         ...
 
 
-class ModelTaskType(IntEnum):
-    """Model's task type"""
-
-    OBJECT_DETECTION = 0
-    IMAGE_CLASSIFICATION = 1
-
-
-class Config(BaseConfig):
-    # Extra fields not permitted
-    extra: Extra = Extra.forbid
-
-
-class Format(str, Enum):
-    """Model binary format to represent the binary specified."""
-
-    ONNX = "onnx"
-    TFLite = "tflite"
-
-
-class Publication(BaseModel):
+class Publication(BaseModel, extra='forbid'):
     """Model publication information."""
-
-    __config__ = Config
 
     authors: Optional[List[str]] = None
     title: Optional[str] = None
@@ -71,27 +69,17 @@ class Publication(BaseModel):
     url: Optional[str] = None
 
 
-class Metadata(BaseModel):
+class Metadata(BaseModel, extra='forbid'):
     """Model metadata to understand a model."""
-
-    __config__ = Config
 
     description: Optional[str] = None
     publication: Optional[Publication] = None
 
 
-class Tags(BaseModel):
-    class Config:
-        extra = Extra.allow
+class Tags(BaseModel, extra='forbid'):
+    """Model tags to understand a model."""
 
     content_type: Optional[str] = None
-
-
-class ModelTensor(BaseModel):
-    name: str
-    datatype: str
-    shape: List[int]
-    tags: Optional[Tags] = None
 
 
 class Model(ABC, BaseModel):
@@ -99,61 +87,57 @@ class Model(ABC, BaseModel):
 
     Attributes:
         name: a name of this model
-        format: the binary format type of model source; e.g., ONNX, tflite
-        source: a source binary in ONNX or tflite. It can be used for compiling this model
-            with a custom compiler configuration.
-        enf: the executable binary for furiosa runtime and NPU
-        calib_yaml: the calibration ranges in yaml format for quantization
-        version: model version
-        inputs: data type and shape of input tensors
-        outputs: data type and shape of output tensors
-        compiler_config: a pre-defined compiler option
+        tasy_type: the task type of this model
+        format: the binary format type of model origin; e.g., ONNX, tflite
+        family: the model family
+        version: the model version
+        metadata: the model metadata
+        tags: the model tags
+        origin: an origin f32 binary in ONNX or tflite. It can be used for compiling this model
+            with or without quantization and proper compiler configuration
+        tensor_name_to_range: the calibration ranges of each tensor in origin
+        preprocessor: a preprocessor to preprocess input tensors
+        postprocessor_map: a mapping from platform(Python, Rust) to postprocessor
+        postprocessor_type: the postprocessor type of this model
+        postprocessor: a postprocessor to postprocess output tensors
+
+    Methods:
+        preprocess: preprocess input tensors
+        postprocess: postprocess output tensors
+        model_source(num_pe=[1|2]): the executable binary for furiosa runtime and NPU. It can be
+            directly fed to `furiosa.runtime.create_runner`. If model binary is not compiled yet,
+            it will be quantized & compiled automatically if possible
+        resolve_all: resolve all non-cached properties(origin, tensor_name_to_range, model_sources)
     """
 
-    class Config(BaseConfig):
-        extra: Extra = Extra.forbid
-        # To allow Session, Processor type
-        arbitrary_types_allowed = True
-        use_enum_values = True
-        # To make aliases for lazy-loaded fields
-        fields = {
-            "source_": "source",
-            "enf_": "enf",
-            "enf_1pe_": "enf_1pe",
-            "calib_yaml_": "calib_yaml",
-        }
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     name: str
+    task_type: ModelTaskType
     format: Format
-
-    # These fields are aliases for lazy-loaded fields
-    source_: Optional[bytes] = Field(None, repr=False)
-    enf_1pe_: Optional[bytes] = Field(None, repr=False)
-    enf_: Optional[bytes] = Field(None, repr=False)
-    calib_yaml_: Optional[str] = Field(None, repr=False)
-
     family: Optional[str] = None
     version: Optional[str] = None
-
     metadata: Optional[Metadata] = None
+    tags: Optional[Tags] = None
 
-    inputs: Optional[List[ModelTensor]] = []
-    outputs: Optional[List[ModelTensor]] = []
+    _artifact_name: str
 
-    postprocessor_map: Optional[Dict[Platform, Type[PostProcessor]]] = None
+    preprocessor: PreProcessor = Field(..., repr=False, exclude=True)
+    postprocessor_map: Mapping[Platform, Type[PostProcessor]] = Field(..., repr=False, exclude=True)
+    postprocessor_type: Platform
 
-    preprocessor: Optional[PreProcessor] = None
-    postprocessor: Optional[PostProcessor] = None
+    @model_validator(mode='after')
+    def is_present_in_postprocessor_map(self):
+        postprocessor_type = self.postprocessor_type
+        if postprocessor_type not in self.postprocessor_map:
+            raise ValueError(
+                f"Postprocessor type {postprocessor_type.name} is not supported for {self.name}"
+            )
 
-    @staticmethod
-    @abstractmethod
-    def get_artifact_name() -> str:
-        ...
-
-    @classmethod
-    @abstractmethod
-    def load(cls, use_native: Optional[bool] = None) -> 'Model':
-        ...
+    @computed_field(repr=False)
+    @cached_property
+    def postprocessor(self) -> PostProcessor:
+        return self.postprocessor_map[self.postprocessor_type]()
 
     def preprocess(self, *args, **kwargs) -> Tuple[Sequence[npt.ArrayLike], Sequence[Context]]:
         assert self.preprocessor
@@ -163,49 +147,47 @@ class Model(ABC, BaseModel):
         assert self.postprocessor
         return self.postprocessor(*args, **kwargs)
 
-    @property
-    def source(self) -> bytes:
-        source = self.__dict__.get('source_')
-        if source is None:
-            source = resolve_file(self.get_artifact_name(), EXT_ONNX)
-            self.__dict__['source_'] = source
-        return source
+    @computed_field(repr=False)
+    @cached_property
+    def origin(self) -> bytes:
+        return resolve_source(self._artifact_name, EXT_ONNX)
 
-    @property
-    def enf(self) -> bytes:
-        enf = self.__dict__.get('enf_')
-        if enf is None:
-            enf = resolve_file(self.get_artifact_name(), EXT_ENF)
-            self.__dict__['enf_'] = enf
-        return enf
+    @computed_field(repr=False)
+    @cached_property
+    def tensor_name_to_range(self) -> Dict[str, List[float]]:
+        calib_yaml = resolve_source(self._artifact_name, EXT_CALIB_YAML)
+        return yaml.full_load(calib_yaml)
 
-    @property
-    def enf_1pe(self) -> bytes:
-        enf = self.__dict__.get('enf_1pe_')
-        if enf is None:
-            enf = resolve_file(self.get_artifact_name(), EXT_ENF, num_pe=1)
-            self.__dict__['enf_1pe_'] = enf
-        return enf
+    def model_source(self, num_pe: int = 2) -> bytes:
+        if num_pe not in (1, 2):
+            raise ValueError(f"Invalid num_pe: {num_pe}")
 
-    @property
-    def calib_yaml(self) -> bytes:
-        calib_yaml = self.__dict__.get('calib_yaml_')
-        if calib_yaml is None:
-            calib_yaml = resolve_file(self.get_artifact_name(), EXT_CALIB_YAML)
-            self.__dict__['calib_yaml_'] = calib_yaml
-        return calib_yaml
+        # TODO: Add in-memory cached value(like cached_property), currently uses disk-cached value
+        return resolve_model_source(self._artifact_name, num_pe=num_pe)
 
     def resolve_all(self):
-        _ = self.source, self.enf, self.enf_1pe, self.calib_yaml
+        _ = self.origin, self.tensor_name_to_range
+        for num_pe in (1, 2):
+            _ = self.model_source(num_pe=num_pe)
+
+    @field_serializer('format')
+    def serialize_format(self, format: Format):
+        return format.value
+
+    @field_serializer('task_type')
+    def serialize_task_type(self, task_type: ModelTaskType):
+        return task_type.value
 
 
 class ObjectDetectionModel(Model, ABC):
     """Object Detection Model Base Class"""
 
-    task_type: ModelTaskType = ModelTaskType.OBJECT_DETECTION
+    def __init__(self, *args, **kwargs):
+        super().__init__(task_type=ModelTaskType.OBJECT_DETECTION, *args, **kwargs)
 
 
 class ImageClassificationModel(Model, ABC):
     """Image Classification Model Base Class"""
 
-    task_type: ModelTaskType = ModelTaskType.IMAGE_CLASSIFICATION
+    def __init__(self, *args, **kwargs):
+        super().__init__(task_type=ModelTaskType.IMAGE_CLASSIFICATION, *args, **kwargs)

@@ -30,5 +30,14 @@ class VersionInfoNotFound(FuriosaModelException):
 
     def __init__(self):
         super().__init__(
-            "Could not retrieve furiosa compiler information. Try: `pip install furiosa-sdk`."
+            "Could not retrieve furiosa compiler information. Try: `pip install furiosa-sdk`"
+        )
+
+
+class QuantizerNotFound(FuriosaModelException):
+    """Could not find `furiosa-quantizer` package"""
+
+    def __init__(self):
+        super().__init__(
+            "Could not find `furiosa-quantizer` package. Try: `pip install furiosa-quantizer`"
         )

@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List, Sequence, Tuple, Type, Union
+from typing import Any, Dict, List, Sequence, Tuple, Union
 
 import cv2
 import numpy
@@ -17,7 +17,6 @@ from ...types import (
     PreProcessor,
     Publication,
 )
-from ...utils import get_field_default
 from ..common.datasets import coco
 from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox, sigmoid
 
@@ -313,21 +312,8 @@ class SSDMobileNetNativePostProcessor(PostProcessor):
 class SSDMobileNet(ObjectDetectionModel):
     """MLCommons MobileNet v1 model"""
 
-    postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
-        Platform.PYTHON: SSDMobileNetPythonPostProcessor,
-        Platform.RUST: SSDMobileNetNativePostProcessor,
-    }
-
-    @staticmethod
-    def get_artifact_name():
-        return "mlcommons_ssd_mobilenet_v1"
-
-    @classmethod
-    def load(cls, use_native: bool = True):
-        postproc_type = Platform.RUST if use_native else Platform.PYTHON
-        logger.debug(f"Using {postproc_type.name} postprocessor")
-        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type]()
-        return cls(
+    def __init__(self, postprocessor_type: Union[str, Platform] = Platform.RUST):
+        super().__init__(
             name="MLCommonsSSDMobileNet",
             format=Format.ONNX,
             family="MobileNetV1",
@@ -337,5 +323,11 @@ class SSDMobileNet(ObjectDetectionModel):
                 publication=Publication(url="https://arxiv.org/abs/1704.04861.pdf"),
             ),
             preprocessor=SSDMobileNetPreProcessor(),
-            postprocessor=postprocessor,
+            postprocessor_type=postprocessor_type,
+            postprocessor_map={
+                Platform.PYTHON: SSDMobileNetPythonPostProcessor,
+                Platform.RUST: SSDMobileNetNativePostProcessor,
+            },
         )
+
+        self._artifact_name = "mlcommons_ssd_mobilenet_v1"

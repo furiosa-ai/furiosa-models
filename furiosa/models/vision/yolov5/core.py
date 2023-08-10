@@ -1,12 +1,12 @@
 from abc import ABC
-from typing import Any, Dict, List, Sequence, Tuple, Type, Union
+from typing import Any, Dict, List, Sequence, Tuple, Union
 
 import cv2
 import numpy as np
 import numpy.typing as npt
 
 from .. import native
-from ...types import ObjectDetectionModel, Platform, PostProcessor, PreProcessor
+from ...types import Format, ObjectDetectionModel, Platform, PostProcessor, PreProcessor
 from ...vision.postprocess import LtrbBoundingBox, ObjectDetectionResult
 
 _INPUT_SIZE = (640, 640)
@@ -224,6 +224,15 @@ class YOLOv5PostProcessor(PostProcessor):
 
 
 class YOLOv5Base(ObjectDetectionModel, ABC):
-    postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
-        Platform.PYTHON: YOLOv5PostProcessor,
-    }
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+            family="YOLO",
+            version="v5",
+            format=Format.ONNX,
+            preprocessor=YOLOv5PreProcessor(),
+            postprocessor_map={
+                Platform.RUST: YOLOv5PostProcessor,
+            },
+            *args,
+            **kwargs,
+        )

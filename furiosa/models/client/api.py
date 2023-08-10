@@ -4,8 +4,7 @@ from typing import Callable, List, Optional, Sequence, Type
 from tqdm import tqdm
 
 from .. import vision
-from ..types import Model
-from ..utils import get_field_default
+from ..types import Model, Platform
 
 
 def normalize(text: str) -> str:
@@ -30,7 +29,7 @@ def prettified_task_type(model: Type[Model]):
     Returns:
         Prettified string for model's task type
     """
-    task_type = get_field_default(model, "task_type").name
+    task_type = model.task_type.name
     return " ".join(map(lambda x: x.capitalize(), task_type.split("_")))
 
 
@@ -46,10 +45,11 @@ def get_model_list(filter_func: Optional[Callable[..., bool]] = None) -> List[Li
     filter_func = filter_func or (lambda _: True)
     model_list = []
     for model_name in vision.__all__:
-        model = getattr(vision, model_name)
-        if not filter_func(model):
+        model_cls = getattr(vision, model_name)
+        if not filter_func(model_cls):
             continue
-        postproc_map = get_field_default(model, "postprocessor_map")
+        model = model_cls()
+        postproc_map = model.postprocessor_map
         if not postproc_map:
             raise ValueError(f"No postprocessor map found for {model_name.capitalize()}")
         postprocs = ', '.join(map(lambda x: x.name.capitalize(), postproc_map.keys()))
@@ -106,18 +106,15 @@ def run_inferences(model_cls: Type[Model], input_paths: Sequence[str], postproce
 
     warning = """WARN: the benchmark results may depend on the number of input samples,
 sizes of the images, and a machine where this benchmark is running."""
-    postprocess = postprocess and postprocess.lower()
-    use_native = any(
-        map(
-            lambda x: x.is_native_platform(),
-            get_field_default(model_cls, "postprocessor_map").keys(),
-        )
-    )
-    model = model_cls.load(use_native=use_native)
+    if postprocess:
+        model = model_cls(postprocessor_type=postprocess)
+    else:
+        model = model_cls()
     queries = len(input_paths)
+    use_native = model.postprocessor_type != Platform.PYTHON
     print(f"Running {queries} input samples ...")
     print(decorate_with_bar(warning))
-    sess, queue = session.create_async(model.enf)
+    sess, queue = session.create_async(model.model_source())
     model_inputs, model_outputs = [], []
     initial_time = perf_counter()
     for input_path in tqdm(input_paths, desc="Preprocess"):
@@ -130,6 +127,8 @@ sizes of the images, and a machine where this benchmark is running."""
     after_npu = perf_counter()
     for ctx, model_output in tqdm(model_outputs, desc="Postprocess"):
         contexts = model_inputs[ctx][1]
+        # FIXME: Only YOLO can handle multiple contexts
+        use_native = False if isinstance(model, (vision.YOLOv5m, vision.YOLOv5l)) else use_native
         contexts = contexts[0] if contexts is not None and use_native else contexts
         model.postprocess(model_output.numpy(), contexts)
     all_done = perf_counter()

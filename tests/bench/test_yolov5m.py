@@ -23,7 +23,7 @@ def load_db_from_env_variable() -> Tuple[Path, bdd100k.Yolov5Dataset]:
 
 
 def test_yolov5m_accuracy(benchmark):
-    model: YOLOv5m = YOLOv5m.load()
+    model: YOLOv5m = YOLOv5m()
 
     image_directory, yolov5db = load_db_from_env_variable()
 
@@ -58,7 +58,7 @@ def test_yolov5m_accuracy(benchmark):
             classes_target=classes_target,
         )
 
-    sess = session.create(model.enf)
+    sess = session.create(model.model_source())
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 

@@ -8,15 +8,15 @@ compiler_config = {"lower_tabulated_dequantize": True}
 
 image = ["tests/assets/cat.jpg"]
 
-mobilenet = SSDMobileNet.load()
-onnx_model: bytes = mobilenet.source
-calib_range: dict = yaml.full_load(mobilenet.calib_yaml)
+mobilenet = SSDMobileNet()
+onnx_model: bytes = mobilenet.origin
+calib_range: dict = mobilenet.tensor_name_to_range
 
 # See https://furiosa-ai.github.io/docs/latest/en/api/python/furiosa.quantizer.html#furiosa.quantizer.quantize
 # for more details
-dfg = quantize(onnx_model, calib_range, with_quantize=False)
+quantized_onnx = quantize(onnx_model, calib_range)
 
-with session.create(dfg, compiler_config=compiler_config) as sess:
+with session.create(quantized_onnx, compiler_config=compiler_config) as sess:
     inputs, contexts = mobilenet.preprocess(image)
     outputs = sess.run(inputs).numpy()
     mobilenet.postprocess(outputs, contexts[0])

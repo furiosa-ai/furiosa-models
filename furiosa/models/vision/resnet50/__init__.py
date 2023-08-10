@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List, Sequence, Tuple, Type, Union
+from typing import Any, List, Sequence, Tuple, Union
 
 import cv2
 import numpy as np
@@ -77,17 +77,8 @@ class ResNet50PostProcessor(PostProcessor):
 class ResNet50(ImageClassificationModel):
     """MLCommons ResNet50 model"""
 
-    postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
-        Platform.PYTHON: ResNet50PostProcessor,
-    }
-
-    @staticmethod
-    def get_artifact_name():
-        return "mlcommons_resnet50_v1.5"
-
-    @classmethod
-    def load(cls, use_native: bool = False):
-        return cls(
+    def __init__(self, postprocessor_type: Union[str, Platform] = Platform.PYTHON):
+        super().__init__(
             name="ResNet50",
             format=Format.ONNX,
             family="ResNet",
@@ -97,5 +88,10 @@ class ResNet50(ImageClassificationModel):
                 publication=Publication(url="https://arxiv.org/abs/1512.03385.pdf"),
             ),
             preprocessor=ResNet50PreProcessor(),
-            postprocessor=ResNet50PostProcessor(),
+            postprocessor_type=postprocessor_type,
+            postprocessor_map={
+                Platform.PYTHON: ResNet50PostProcessor,
+            },
         )
+
+        self._artifact_name = "mlcommons_resnet50_v1.5"

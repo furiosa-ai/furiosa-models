@@ -18,7 +18,7 @@ def test_efficientnetb0_accuracy(benchmark):
         os.environ.get('IMAGENET_VAL_LABELS', 'tests/data/imagenet/aux/val.txt')
     )
 
-    model = EfficientNetB0.load()
+    model = EfficientNetB0()
 
     image_paths = list(imagenet_val_images.glob("*.[Jj][Pp][Ee][Gg]"))
     with open(imagenet_val_labels, encoding="ascii") as file:
@@ -46,7 +46,7 @@ def test_efficientnetb0_accuracy(benchmark):
         else:
             incorrect_predictions += 1
 
-    sess = session.create(model.enf)
+    sess = session.create(model.model_source())
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
     sess.close()
 

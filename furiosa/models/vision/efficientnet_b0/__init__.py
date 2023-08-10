@@ -1,6 +1,6 @@
 import math
 from pathlib import Path
-from typing import Any, Dict, List, Sequence, Tuple, Type, Union
+from typing import Any, List, Sequence, Tuple, Union
 
 from PIL import Image
 import numpy as np
@@ -109,17 +109,8 @@ class EfficientNetB0PostProcessor(PostProcessor):
 class EfficientNetB0(ImageClassificationModel):
     """EfficientNet B0 model"""
 
-    postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
-        Platform.PYTHON: EfficientNetB0PostProcessor,
-    }
-
-    @staticmethod
-    def get_artifact_name():
-        return "efficientnet_b0"
-
-    @classmethod
-    def load(cls, use_native: bool = False):
-        return cls(
+    def __init__(self, postprocessor_type: Union[str, Platform] = Platform.PYTHON):
+        super().__init__(
             name="EfficientNetB0",
             format=Format.ONNX,
             family="EfficientNet",
@@ -129,5 +120,10 @@ class EfficientNetB0(ImageClassificationModel):
                 publication=Publication(url="https://arxiv.org/abs/1905.11946"),
             ),
             preprocessor=EfficientNetB0PreProcessor(),
-            postprocessor=EfficientNetB0PostProcessor(),
+            postprocessor_type=postprocessor_type,
+            postprocessor_map={
+                Platform.PYTHON: EfficientNetB0PostProcessor,
+            },
         )
+
+        self._artifact_name = "efficientnet_b0"
