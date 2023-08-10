@@ -10,13 +10,9 @@ license-files = { paths = ["LICENSE"] }
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
-    "Environment :: Web Environment",
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
     "License :: OSI Approved :: Apache Software License",
-    "Programming Language :: Rust",
-    "Programming Language :: Python :: Implementation :: CPython",
-    "Programming Language :: Python :: Implementation :: PyPy",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
@@ -33,16 +29,14 @@ dependencies = [
     "furiosa-runtime == 0.10.*",
     "furiosa-native-postprocess == 0.9.0_dev0",
 
-    "aiofiles ~= 22.1.0",
-    "aiohttp ~= 3.8.3",
-    "opencv-python-headless ~= 4.6",
-    "torch ~= 1.13",
-    "torchvision ~= 0.14",
     "pydantic ~= 1.10",
-    "tabulate ~= 0.9.0",
-    "PyYAML ~= 6.0",
+    "opencv-python-headless",
+    "torch",
+    "torchvision",
+    "tabulate",
+    "PyYAML",
 
-    "numpy ~= 1.21",
+    "numpy",
 ]
 
 [project.optional-dependencies]
