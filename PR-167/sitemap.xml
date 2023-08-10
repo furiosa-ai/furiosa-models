@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+         <loc>https://furiosa-ai.github.io/furiosa-models/</loc>
+         <lastmod>2023-08-10</lastmod>
+         <changefreq>daily</changefreq>
+         <xhtml:link rel="alternate" hreflang="en" href="https://furiosa-ai.github.io/furiosa-models/en/"/>
+         <xhtml:link rel="alternate" hreflang="ko" href="https://furiosa-ai.github.io/furiosa-models/ko/"/>
+         
+    </url>
+    <url>
+         <loc>https://furiosa-ai.github.io/furiosa-models/changelog/</loc>
+         <lastmod>2023-08-10</lastmod>
+         <changefreq>daily</changefreq>
+         <xhtml:link rel="alternate" hreflang="en" href="https://furiosa-ai.github.io/furiosa-models/en/changelog/"/>
+         <xhtml:link rel="alternate" hreflang="ko" href="https://furiosa-ai.github.io/furiosa-models/ko/changelog/"/>
+         
+    </url>
+    <url>
+         <loc>https://furiosa-ai.github.io/furiosa-models/command_tool/</loc>
+         <lastmod>2023-08-10</lastmod>
+         <changefreq>daily</changefreq>
+         <xhtml:link rel="alternate" hreflang="en" href="https://furiosa-ai.github.io/furiosa-models/en/command_tool/"/>
+         <xhtml:link rel="alternate" hreflang="ko" href="https://furiosa-ai.github.io/furiosa-models/ko/command_tool/"/>
+         
+    </url>
+    <url>
+         <loc>https://furiosa-ai.github.io/furiosa-models/developers-guide/</loc>
+         <lastmod>2023-08-10</lastmod>
+         <changefreq>daily</changefreq>
+         <xhtml:link rel="alternate" hreflang="en" href="https://furiosa-ai.github.io/furiosa-models/en/developers-guide/"/>
+         <xhtml:link rel="alternate" hreflang="ko" href="https://furiosa-ai.github.io/furiosa-models/ko/developers-guide/"/>
+         
+    </url>
+    <url>
+         <loc>https://furiosa-ai.github.io/furiosa-models/getting_started/</loc>
+         <lastmod>2023-08-10</lastmod>
+         <changefreq>daily</changefreq>
+         <xhtml:link rel="alternate" hreflang="en" href="https://furiosa-ai.github.io/furiosa-models/en/getting_started/"/>
+         <xhtml:link rel="alternate" hreflang="ko" href="https://furiosa-ai.github.io/furiosa-models/ko/getting_started/"/>
+         
+    </url>
+    <url>
+         <loc>https://furiosa-ai.github.io/furiosa-models/model_object/</loc>
+         <lastmod>2023-08-10</lastmod>
+         <changefreq>daily</changefreq>
+         <xhtml:link rel="alternate" hreflang="en" href="https://furiosa-ai.github.io/furiosa-models/en/model_object/"/>
+         <xhtml:link rel="alternate" hreflang="ko" href="https://furiosa-ai.github.io/furiosa-models/ko/model_object/"/>
+         
+    </url>
+    <url>
+         <loc>https://furiosa-ai.github.io/furiosa-models/models/efficientnet_b0/</loc>
+         <lastmod>2023-08-10</lastmod>
+         <changefreq>daily</changefreq>
+         <xhtml:link rel="alternate" hreflang="en" href="https://furiosa-ai.github.io/furiosa-models/en/models/efficientnet_b0/"/>
+         <xhtml:link rel="alternate" hreflang="ko" href="https://furiosa-ai.github.io/furiosa-models/ko/models/efficientnet_b0/"/>
+         
+    </url>
+    <url>
+         <loc>https://furiosa-ai.github.io/furiosa-models/models/efficientnet_v2_s/</loc>
+         <lastmod>2023-08-10</lastmod>
+         <changefreq>daily</changefreq>
+         <xhtml:link rel="alternate" hreflang="en" href="https://furiosa-ai.github.io/furiosa-models/en/models/efficientnet_v2_s/"/>
+         <xhtml:link rel="alternate" hreflang="ko" href="https://furiosa-ai.github.io/furiosa-models/ko/models/efficientnet_v2_s/"/>
+         
+    </url>
+    <url>
+         <loc>https://furiosa-ai.github.io/furiosa-models/models/resnet50_v1.5/</loc>
+         <lastmod>2023-08-10</lastmod>
+         <changefreq>daily</changefreq>
+         <xhtml:link rel="alternate" hreflang="en" href="https://furiosa-ai.github.io/furiosa-models/en/models/resnet50_v1.5/"/>
+         <xhtml:link rel="alternate" hreflang="ko" href="https://furiosa-ai.github.io/furiosa-models/ko/models/resnet50_v1.5/"/>
+         
+    </url>
+    <url>
+         <loc>https://furiosa-ai.github.io/furiosa-models/models/ssd_mobilenet/</loc>
+         <lastmod>2023-08-10</lastmod>
+         <changefreq>daily</changefreq>
+         <xhtml:link rel="alternate" hreflang="en" href="https://furiosa-ai.github.io/furiosa-models/en/models/ssd_mobilenet/"/>
+         <xhtml:link rel="alternate" hreflang="ko" href="https://furiosa-ai.github.io/furiosa-models/ko/models/ssd_mobilenet/"/>
+         
+    </url>
+    <url>
+         <loc>https://furiosa-ai.github.io/furiosa-models/models/ssd_resnet34/</loc>
+         <lastmod>2023-08-10</lastmod>
+         <changefreq>daily</changefreq>
+         <xhtml:link rel="alternate" hreflang="en" href="https://furiosa-ai.github.io/furiosa-models/en/models/ssd_resnet34/"/>
+         <xhtml:link rel="alternate" hreflang="ko" href="https://furiosa-ai.github.io/furiosa-models/ko/models/ssd_resnet34/"/>
+         
+    </url>
+    <url>
+         <loc>https://furiosa-ai.github.io/furiosa-models/models/yolov5l/</loc>
+         <lastmod>2023-08-10</lastmod>
+         <changefreq>daily</changefreq>
+         <xhtml:link rel="alternate" hreflang="en" href="https://furiosa-ai.github.io/furiosa-models/en/models/yolov5l/"/>
+         <xhtml:link rel="alternate" hreflang="ko" href="https://furiosa-ai.github.io/furiosa-models/ko/models/yolov5l/"/>
+         
+    </url>
+    <url>
+         <loc>https://furiosa-ai.github.io/furiosa-models/models/yolov5m/</loc>
+         <lastmod>2023-08-10</lastmod>
+         <changefreq>daily</changefreq>
+         <xhtml:link rel="alternate" hreflang="en" href="https://furiosa-ai.github.io/furiosa-models/en/models/yolov5m/"/>
+         <xhtml:link rel="alternate" hreflang="ko" href="https://furiosa-ai.github.io/furiosa-models/ko/models/yolov5m/"/>
+         
+    </url>
+</urlset>
