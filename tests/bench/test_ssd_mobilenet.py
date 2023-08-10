@@ -43,7 +43,7 @@ def test_mlcommons_ssd_mobilenet_accuracy(benchmark):
 
     def workload(image_id, image):
         image, contexts = model.preprocess([image])
-        outputs = sess.run(image).numpy()
+        outputs = sess.run(image)
         batch_result = model.postprocess(outputs, contexts, confidence_threshold=0.3)
         result = np.squeeze(batch_result, axis=0)  # squeeze the batch axis
 
@@ -93,7 +93,7 @@ def test_mlcommons_ssd_mobilenet_with_native_rust_pp_accuracy(benchmark):
 
     def workload(image_id, image):
         image, contexts = model.preprocess([image])
-        outputs = sess.run(image).numpy()
+        outputs = sess.run(image)
         result = model.postprocess(outputs, contexts[0])
 
         for res in result:

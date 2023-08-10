@@ -130,7 +130,7 @@ sizes of the images, and a machine where this benchmark is running."""
         # FIXME: Only YOLO can handle multiple contexts
         use_native = False if isinstance(model, (vision.YOLOv5m, vision.YOLOv5l)) else use_native
         contexts = contexts[0] if contexts is not None and use_native else contexts
-        model.postprocess(model_output.numpy(), contexts)
+        model.postprocess(model_output, contexts)
     all_done = perf_counter()
     sess.close()
 

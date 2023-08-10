@@ -23,7 +23,7 @@ def test_yolov5_large_batched():
         batch_pre_img, batch_preproc_param = m.preprocess(batch_im)
         batch_feat = []
         for pre_image in batch_pre_img:
-            batch_feat.append(sess.run(np.expand_dims(pre_image, axis=0)).numpy())
+            batch_feat.append(sess.run(np.expand_dims(pre_image, axis=0)))
         batch_feat = collate(batch_feat)
         detected_boxes = m.postprocess(batch_feat, batch_preproc_param)
 

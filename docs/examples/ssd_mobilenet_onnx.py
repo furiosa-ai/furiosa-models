@@ -18,5 +18,5 @@ quantized_onnx = quantize(onnx_model, calib_range)
 
 with session.create(quantized_onnx, compiler_config=compiler_config) as sess:
     inputs, contexts = mobilenet.preprocess(image)
-    outputs = sess.run(inputs).numpy()
+    outputs = sess.run(inputs)
     mobilenet.postprocess(outputs, contexts[0])
