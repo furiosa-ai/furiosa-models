@@ -57,6 +57,37 @@ spec:
             value: "$(tt.params.triggerContext)"
           - name: headRef
             value: "$(tt.params.headRef)"
+        taskRunSpecs:
+          - pipelineTaskName: unittests
+            taskPodTemplate:
+              tolerations:
+              - key: "npu"
+                operator: "Exists"
+                effect: "NoSchedule"
+              affinity:
+                nodeAffinity:
+                  requiredDuringSchedulingIgnoredDuringExecution:
+                    nodeSelectorTerms:
+                    - matchExpressions:
+                      - key: role
+                        operator: In
+                        values:
+                        - npu
+          - pipelineTaskName: test-examples
+            taskPodTemplate:
+              tolerations:
+              - key: "npu"
+                operator: "Exists"
+                effect: "NoSchedule"
+              affinity:
+                nodeAffinity:
+                  requiredDuringSchedulingIgnoredDuringExecution:
+                    nodeSelectorTerms:
+                    - matchExpressions:
+                      - key: role
+                        operator: In
+                        values:
+                        - npu
         resources:
           - name: image
             resourceSpec:
