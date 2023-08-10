@@ -65,7 +65,7 @@ def normalize(image: Image.Image) -> np.ndarray:
 class EfficientNetV2sPreProcessor(PreProcessor):
     @staticmethod
     def __call__(
-        image: Union[str, Path, npt.ArrayLike], with_quantize: bool = False
+        image: Union[str, Path, npt.ArrayLike], skip_quantize: bool = True
     ) -> Tuple[np.ndarray, None]:
         """Read and preprocess an image located at image_path.
 
@@ -90,7 +90,7 @@ class EfficientNetV2sPreProcessor(PreProcessor):
         assert image.dtype == np.uint8
         data = np.transpose(image, (2, 0, 1))
 
-        if with_quantize:
+        if not skip_quantize:
             data = data.astype(np.float32) / 255
             data = normalize(data)
 

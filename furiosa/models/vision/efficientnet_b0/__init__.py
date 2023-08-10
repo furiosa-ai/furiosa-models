@@ -59,7 +59,7 @@ def center_crop(image: Image.Image, cropped_height: int, cropped_width: int) -> 
 class EfficientNetB0PreProcessor(PreProcessor):
     @staticmethod
     def __call__(
-        image: Union[str, Path, npt.ArrayLike], with_quantize: bool = False
+        image: Union[str, Path, npt.ArrayLike], skip_quantize: bool = True
     ) -> Tuple[np.ndarray, None]:
         """Read and preprocess an image located at image_path.
 
@@ -83,7 +83,7 @@ class EfficientNetB0PreProcessor(PreProcessor):
         data = np.transpose(data, axes=(2, 0, 1))
         assert data.dtype == np.uint8
 
-        if with_quantize:
+        if not skip_quantize:
             data = np.asarray(data, dtype=np.float32)
             data /= 255
 

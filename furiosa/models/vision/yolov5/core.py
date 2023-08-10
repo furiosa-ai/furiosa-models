@@ -105,13 +105,13 @@ def _reshape_output(feat: np.ndarray, anchor_per_layer_count: int, num_classes: 
 class YOLOv5PreProcessor(PreProcessor):
     @staticmethod
     def __call__(
-        images: Sequence[Union[str, np.ndarray]], with_quantize: bool = False
+        images: Sequence[Union[str, np.ndarray]], skip_quantize: bool = True
     ) -> Tuple[np.ndarray, List[Dict[str, Any]]]:
         """Preprocess input images to a batch of input tensors
 
         Args:
             images: Color images have (NCHW: Batch, Channel, Height, Width) dimensions.
-            with_quantize: Whether to put quantize operator in front of the model or not.
+            skip_quantize: Whether to skip quantize operator in front of the model or not.
 
         Returns:
             a pre-processed image, scales and padded sizes(width,height) per images.
@@ -135,12 +135,12 @@ class YOLOv5PreProcessor(PreProcessor):
         for image in images:
             image = read_image_opencv_if_needed(image)
             assert image.dtype == np.uint8
-            if with_quantize:
+            if not skip_quantize:
                 image = image.astype(np.float32)
             image, (sx, sy), (padw, padh) = _resize(image, _INPUT_SIZE)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-            if with_quantize:
+            if not skip_quantize:
                 image /= 255.0
             image = image.transpose([2, 0, 1])
             assert sx == sy, "yolov5 must be the same rescale for width and height"
