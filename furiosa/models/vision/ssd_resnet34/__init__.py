@@ -1,7 +1,7 @@
 import itertools
 import logging
 from math import sqrt
-from typing import Any, Dict, List, Sequence, Tuple, Union
+from typing import Any, ClassVar, Dict, List, Sequence, Tuple, Type, Union
 
 import cv2
 import numpy
@@ -11,6 +11,7 @@ import torch
 import torch.nn.functional as F
 
 from .. import native
+from ..._utils import validate_postprocessor_type
 from ...types import (
     Format,
     Metadata,
@@ -19,6 +20,8 @@ from ...types import (
     PostProcessor,
     PreProcessor,
     Publication,
+    PythonPostProcessor,
+    RustPostProcessor,
 )
 from ..common.datasets import coco
 from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox
@@ -312,7 +315,7 @@ class SSDResNet34PreProcessor(PreProcessor):
         return np.stack(batch_image, axis=0), batch_preproc_param
 
 
-class SSDResNet34PythonPostProcessor(PostProcessor):
+class SSDResNet34PythonPostProcessor(PythonPostProcessor):
     @staticmethod
     def __call__(
         model_outputs: Sequence[np.ndarray],
@@ -387,7 +390,7 @@ class SSDResNet34PythonPostProcessor(PostProcessor):
         return batch_results
 
 
-class SSDResNet34NativePostProcessor(PostProcessor):
+class SSDResNet34NativePostProcessor(RustPostProcessor):
     def __init__(self):
         self._native = native.ssd_resnet34.RustPostProcessor()
 
@@ -420,7 +423,14 @@ class SSDResNet34NativePostProcessor(PostProcessor):
 class SSDResNet34(ObjectDetectionModel):
     """MLCommons SSD ResNet34 model"""
 
-    def __init__(self, postprocessor_type: Union[str, Platform] = Platform.RUST):
+    postprocessor_map: ClassVar[Dict[Platform, Type[PostProcessor]]] = {
+        Platform.PYTHON: SSDResNet34PythonPostProcessor,
+        Platform.RUST: SSDResNet34NativePostProcessor,
+    }
+
+    def __init__(self, *, postprocessor_type: Union[str, Platform] = Platform.RUST):
+        postprocessor_type = Platform(postprocessor_type)
+        validate_postprocessor_type(postprocessor_type, self.postprocessor_map.keys())
         super().__init__(
             name="SSDResNet34",
             format=Format.ONNX,
@@ -433,11 +443,7 @@ class SSDResNet34(ObjectDetectionModel):
                 ),
             ),
             preprocessor=SSDResNet34PreProcessor(),
-            postprocessor_type=postprocessor_type,
-            postprocessor_map={
-                Platform.PYTHON: SSDResNet34PythonPostProcessor,
-                Platform.RUST: SSDResNet34NativePostProcessor,
-            },
+            postprocessor=self.postprocessor_map[postprocessor_type](),
         )
 
         self._artifact_name = "mlcommons_ssd_resnet34"

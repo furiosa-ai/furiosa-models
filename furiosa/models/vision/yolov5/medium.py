@@ -3,15 +3,14 @@
 Attributes:
     CLASSES (List[str]): a list of class names
 """
-from functools import cached_property
 import pathlib
 from typing import List, Union
 
 import numpy as np
-from pydantic import computed_field
 import yaml
 
-from ...types import Metadata, Platform, PostProcessor, Publication
+from ..._utils import validate_postprocessor_type
+from ...types import Metadata, Platform, Publication
 from .core import YOLOv5Base
 
 with open(pathlib.Path(__file__).parent / "datasets/yolov5m/cfg.yaml", "r") as f:
@@ -27,19 +26,16 @@ class YOLOv5m(YOLOv5Base):
 
     classes: List[str] = CLASSES
 
-    def __init__(self, postprocessor_type: Union[str, Platform] = Platform.RUST):
+    def __init__(self, *, postprocessor_type: Union[str, Platform] = Platform.RUST):
+        postprocessor_type = Platform(postprocessor_type)
+        validate_postprocessor_type(postprocessor_type, self.postprocessor_map.keys())
         super().__init__(
             name="YOLOv5Medium",
             metadata=Metadata(
                 description="YOLOv5 medium model",
                 publication=Publication(url="https://github.com/ultralytics/yolov5"),
             ),
-            postprocessor_type=postprocessor_type,
+            postprocessor=self.postprocessor_map[postprocessor_type](_ANCHORS, CLASSES),
         )
 
         self._artifact_name = "yolov5m"
-
-    @computed_field(repr=False)
-    @cached_property
-    def postprocessor(self) -> PostProcessor:
-        return self.postprocessor_map[self.postprocessor_type](_ANCHORS, CLASSES)

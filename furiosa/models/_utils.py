@@ -1,7 +1,10 @@
 import logging
 import os
 from pathlib import Path
-from typing import Optional, Tuple, Union
+from typing import TYPE_CHECKING, Collection, Optional, Tuple, Union
+
+if TYPE_CHECKING:
+    from .types import Platform
 
 import requests
 import yaml
@@ -152,3 +155,13 @@ def resolve_model_source(src_name: str, num_pe: int = 2) -> bytes:
         return quantize(onnx_model, calib_range)
     file_name = f'{src_name}_warboy_{num_pe}pe.enf'
     return resolve_artifact(src_name, generated_path_base / file_name)
+
+
+def validate_postprocessor_type(
+    postprocessor_type: Union[str, "Platform"], postprocessor_map: Collection["Platform"]
+):
+    if postprocessor_type not in postprocessor_map:
+        raise ValueError(
+            f"Not supported postprocessor type: {postprocessor_type}, "
+            f"Available choices: {', '.join(postprocessor_map)}"
+        )

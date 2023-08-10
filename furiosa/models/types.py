@@ -2,10 +2,10 @@ from abc import ABC, abstractmethod
 import datetime
 from enum import Enum
 from functools import cached_property
-from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple, Type
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import numpy.typing as npt
-from pydantic import BaseModel, ConfigDict, Field, computed_field, field_serializer, model_validator
+from pydantic import BaseModel, ConfigDict, Field, computed_field, field_serializer
 from typing_extensions import TypeAlias
 import yaml
 
@@ -51,12 +51,17 @@ class PreProcessor(ABC):
 
 
 class PostProcessor(ABC):
-    def __init__(self, *args, **kwargs):
-        ...
-
     @abstractmethod
     def __call__(self, model_outputs: Sequence[npt.ArrayLike], contexts: Sequence[Context]) -> Any:
         ...
+
+
+class RustPostProcessor(PostProcessor):
+    platform = Platform.RUST
+
+
+class PythonPostProcessor(PostProcessor):
+    platform = Platform.PYTHON
 
 
 class Publication(BaseModel, extra='forbid'):
@@ -97,8 +102,6 @@ class Model(ABC, BaseModel):
             with or without quantization and proper compiler configuration
         tensor_name_to_range: the calibration ranges of each tensor in origin
         preprocessor: a preprocessor to preprocess input tensors
-        postprocessor_map: a mapping from platform(Python, Rust) to postprocessor
-        postprocessor_type: the postprocessor type of this model
         postprocessor: a postprocessor to postprocess output tensors
 
     Methods:
@@ -123,28 +126,12 @@ class Model(ABC, BaseModel):
     _artifact_name: str
 
     preprocessor: PreProcessor = Field(..., repr=False, exclude=True)
-    postprocessor_map: Mapping[Platform, Type[PostProcessor]] = Field(..., repr=False, exclude=True)
-    postprocessor_type: Platform
-
-    @model_validator(mode='after')
-    def is_present_in_postprocessor_map(self):
-        postprocessor_type = self.postprocessor_type
-        if postprocessor_type not in self.postprocessor_map:
-            raise ValueError(
-                f"Postprocessor type {postprocessor_type.name} is not supported for {self.name}"
-            )
-
-    @computed_field(repr=False)
-    @cached_property
-    def postprocessor(self) -> PostProcessor:
-        return self.postprocessor_map[self.postprocessor_type]()
+    postprocessor: PostProcessor = Field(..., repr=False, exclude=True)
 
     def preprocess(self, *args, **kwargs) -> Tuple[Sequence[npt.ArrayLike], Sequence[Context]]:
-        assert self.preprocessor
         return self.preprocessor(*args, **kwargs)
 
     def postprocess(self, *args, **kwargs):
-        assert self.postprocessor
         return self.postprocessor(*args, **kwargs)
 
     @computed_field(repr=False)

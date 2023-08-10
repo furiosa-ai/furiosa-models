@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List, Sequence, Tuple, Union
+from typing import Any, ClassVar, Dict, List, Sequence, Tuple, Type, Union
 
 import cv2
 import numpy
@@ -8,6 +8,7 @@ import numpy.typing as npt
 
 from . import anchor_generator  # type: ignore[import]
 from .. import native
+from ..._utils import validate_postprocessor_type
 from ...types import (
     Format,
     Metadata,
@@ -16,6 +17,8 @@ from ...types import (
     PostProcessor,
     PreProcessor,
     Publication,
+    PythonPostProcessor,
+    RustPostProcessor,
 )
 from ..common.datasets import coco
 from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox, sigmoid
@@ -200,7 +203,7 @@ class SSDMobileNetPreProcessor(PreProcessor):
         return np.stack(batch_image, axis=0), batch_preproc_param
 
 
-class SSDMobileNetPythonPostProcessor(PostProcessor):
+class SSDMobileNetPythonPostProcessor(PythonPostProcessor):
     @staticmethod
     def __call__(
         model_outputs: Sequence[numpy.ndarray],
@@ -277,7 +280,7 @@ class SSDMobileNetPythonPostProcessor(PostProcessor):
         return batch_results
 
 
-class SSDMobileNetNativePostProcessor(PostProcessor):
+class SSDMobileNetNativePostProcessor(RustPostProcessor):
     def __init__(self):
         self._native = native.ssd_mobilenet.RustPostProcessor()
 
@@ -311,7 +314,14 @@ class SSDMobileNetNativePostProcessor(PostProcessor):
 class SSDMobileNet(ObjectDetectionModel):
     """MLCommons MobileNet v1 model"""
 
-    def __init__(self, postprocessor_type: Union[str, Platform] = Platform.RUST):
+    postprocessor_map: ClassVar[Dict[Platform, Type[PostProcessor]]] = {
+        Platform.PYTHON: SSDMobileNetPythonPostProcessor,
+        Platform.RUST: SSDMobileNetNativePostProcessor,
+    }
+
+    def __init__(self, *, postprocessor_type: Union[str, Platform] = Platform.RUST):
+        postprocessor_type = Platform(postprocessor_type)
+        validate_postprocessor_type(postprocessor_type, self.postprocessor_map.keys())
         super().__init__(
             name="MLCommonsSSDMobileNet",
             format=Format.ONNX,
@@ -322,11 +332,7 @@ class SSDMobileNet(ObjectDetectionModel):
                 publication=Publication(url="https://arxiv.org/abs/1704.04861.pdf"),
             ),
             preprocessor=SSDMobileNetPreProcessor(),
-            postprocessor_type=postprocessor_type,
-            postprocessor_map={
-                Platform.PYTHON: SSDMobileNetPythonPostProcessor,
-                Platform.RUST: SSDMobileNetNativePostProcessor,
-            },
+            postprocessor=self.postprocessor_map[postprocessor_type](),
         )
 
         self._artifact_name = "mlcommons_ssd_mobilenet_v1"

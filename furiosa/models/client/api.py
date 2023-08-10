@@ -4,7 +4,7 @@ from typing import Callable, List, Optional, Sequence, Type
 from tqdm import tqdm
 
 from .. import vision
-from ..types import Model, Platform
+from ..types import Model, PythonPostProcessor
 
 
 def normalize(text: str) -> str:
@@ -111,7 +111,6 @@ sizes of the images, and a machine where this benchmark is running."""
     else:
         model = model_cls()
     queries = len(input_paths)
-    use_native = model.postprocessor_type != Platform.PYTHON
     print(f"Running {queries} input samples ...")
     print(decorate_with_bar(warning))
     with create_runner(model.model_source()) as runner:
@@ -126,10 +125,10 @@ sizes of the images, and a machine where this benchmark is running."""
         for contexted_model_output in tqdm(model_outputs, desc="Postprocess"):
             model_output, context = contexted_model_output
             # FIXME: Only YOLO can handle multiple contexts
-            use_native = (
-                False if isinstance(model, (vision.YOLOv5m, vision.YOLOv5l)) else use_native
-            )
-            context = context[0] if context is not None and use_native else context
+            single_context = not isinstance(
+                model.postprocessor, PythonPostProcessor
+            ) and not isinstance(model, (vision.YOLOv5m, vision.YOLOv5l))
+            context = context[0] if context is not None and single_context else context
             model.postprocess(model_output, context)
         all_done = perf_counter()
 

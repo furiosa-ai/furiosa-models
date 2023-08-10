@@ -1,10 +1,11 @@
 import logging
-from typing import Any, List, Sequence, Tuple, Union
+from typing import Any, ClassVar, Dict, List, Sequence, Tuple, Type, Union
 
 import cv2
 import numpy as np
 import numpy.typing as npt
 
+from ..._utils import validate_postprocessor_type
 from ...types import (
     Format,
     ImageClassificationModel,
@@ -13,6 +14,7 @@ from ...types import (
     PostProcessor,
     PreProcessor,
     Publication,
+    PythonPostProcessor,
 )
 from ..common.datasets import imagenet1k
 from ..preprocess import center_crop, read_image_opencv_if_needed, resize_with_aspect_ratio
@@ -56,7 +58,7 @@ class ResNet50PreProcessor(PreProcessor):
         return image[np.newaxis, ...], None
 
 
-class ResNet50PostProcessor(PostProcessor):
+class ResNet50PostProcessor(PythonPostProcessor):
     """Convert the outputs of a model to a label string, such as car and cat.
 
     Args:
@@ -75,7 +77,13 @@ class ResNet50PostProcessor(PostProcessor):
 class ResNet50(ImageClassificationModel):
     """MLCommons ResNet50 model"""
 
-    def __init__(self, postprocessor_type: Union[str, Platform] = Platform.PYTHON):
+    postprocessor_map: ClassVar[Dict[Platform, Type[PostProcessor]]] = {
+        Platform.PYTHON: ResNet50PostProcessor,
+    }
+
+    def __init__(self, *, postprocessor_type: Union[str, Platform] = Platform.PYTHON):
+        postprocessor_type = Platform(postprocessor_type)
+        validate_postprocessor_type(postprocessor_type, self.postprocessor_map.keys())
         super().__init__(
             name="ResNet50",
             format=Format.ONNX,
@@ -86,10 +94,7 @@ class ResNet50(ImageClassificationModel):
                 publication=Publication(url="https://arxiv.org/abs/1512.03385.pdf"),
             ),
             preprocessor=ResNet50PreProcessor(),
-            postprocessor_type=postprocessor_type,
-            postprocessor_map={
-                Platform.PYTHON: ResNet50PostProcessor,
-            },
+            postprocessor=self.postprocessor_map[postprocessor_type](),
         )
 
         self._artifact_name = "mlcommons_resnet50_v1.5"

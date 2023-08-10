@@ -1,11 +1,12 @@
 import math
 from pathlib import Path
-from typing import Any, List, Sequence, Tuple, Union
+from typing import Any, ClassVar, Dict, List, Sequence, Tuple, Type, Union
 
 from PIL import Image
 import numpy as np
 import numpy.typing as npt
 
+from ..._utils import validate_postprocessor_type
 from ...types import (
     Format,
     ImageClassificationModel,
@@ -14,6 +15,7 @@ from ...types import (
     PostProcessor,
     PreProcessor,
     Publication,
+    PythonPostProcessor,
 )
 from ..common.datasets import imagenet1k
 
@@ -91,7 +93,7 @@ class EfficientNetB0PreProcessor(PreProcessor):
         return data[np.newaxis, ...], None
 
 
-class EfficientNetB0PostProcessor(PostProcessor):
+class EfficientNetB0PostProcessor(PythonPostProcessor):
     def __call__(self, model_outputs: Sequence[npt.ArrayLike], contexts: Any = None) -> str:
         """Convert the outputs of a model to a label string, such as car and cat.
 
@@ -110,7 +112,13 @@ class EfficientNetB0PostProcessor(PostProcessor):
 class EfficientNetB0(ImageClassificationModel):
     """EfficientNet B0 model"""
 
-    def __init__(self, postprocessor_type: Union[str, Platform] = Platform.PYTHON):
+    postprocessor_map: ClassVar[Dict[Platform, Type[PostProcessor]]] = {
+        Platform.PYTHON: EfficientNetB0PostProcessor,
+    }
+
+    def __init__(self, *, postprocessor_type: Union[str, Platform] = Platform.PYTHON):
+        postprocessor_type = Platform(postprocessor_type)
+        validate_postprocessor_type(postprocessor_type, self.postprocessor_map.keys())
         super().__init__(
             name="EfficientNetB0",
             format=Format.ONNX,
@@ -121,10 +129,7 @@ class EfficientNetB0(ImageClassificationModel):
                 publication=Publication(url="https://arxiv.org/abs/1905.11946"),
             ),
             preprocessor=EfficientNetB0PreProcessor(),
-            postprocessor_type=postprocessor_type,
-            postprocessor_map={
-                Platform.PYTHON: EfficientNetB0PostProcessor,
-            },
+            postprocessor=self.postprocessor_map[postprocessor_type](),
         )
 
         self._artifact_name = "efficientnet_b0"

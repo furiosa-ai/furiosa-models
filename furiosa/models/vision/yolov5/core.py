@@ -1,12 +1,19 @@
 from abc import ABC
-from typing import Any, Dict, List, Sequence, Tuple, Union
+from typing import Any, ClassVar, Dict, List, Sequence, Tuple, Type, Union
 
 import cv2
 import numpy as np
 import numpy.typing as npt
 
 from .. import native
-from ...types import Format, ObjectDetectionModel, Platform, PostProcessor, PreProcessor
+from ...types import (
+    Format,
+    ObjectDetectionModel,
+    Platform,
+    PostProcessor,
+    PreProcessor,
+    RustPostProcessor,
+)
 from ...vision.postprocess import LtrbBoundingBox, ObjectDetectionResult
 from ..preprocess import read_image_opencv_if_needed
 
@@ -144,7 +151,7 @@ class YOLOv5PreProcessor(PreProcessor):
         return np.stack(batched_image, axis=0), batched_proc_params
 
 
-class YOLOv5PostProcessor(PostProcessor):
+class YOLOv5PostProcessor(RustPostProcessor):
     def __init__(self, anchors: npt.ArrayLike, class_names: Sequence[str]):
         """
         native (RustProcessor): A native postprocessor. It has several information to decode: (xyxy,
@@ -223,15 +230,16 @@ class YOLOv5PostProcessor(PostProcessor):
 
 
 class YOLOv5Base(ObjectDetectionModel, ABC):
+    postprocessor_map: ClassVar[Dict[Platform, Type[PostProcessor]]] = {
+        Platform.RUST: YOLOv5PostProcessor,
+    }
+
     def __init__(self, *args, **kwargs):
         super().__init__(
             family="YOLO",
             version="v5",
             format=Format.ONNX,
             preprocessor=YOLOv5PreProcessor(),
-            postprocessor_map={
-                Platform.RUST: YOLOv5PostProcessor,
-            },
             *args,
             **kwargs,
         )
