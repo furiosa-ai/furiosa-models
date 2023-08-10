@@ -102,7 +102,7 @@ def decorate_result(
 
 
 def run_inferences(model_cls: Type[Model], input_paths: Sequence[str], postprocess: Optional[str]):
-    from furiosa.runtime import session
+    from furiosa.runtime.sync import create_runner
 
     warning = """WARN: the benchmark results may depend on the number of input samples,
 sizes of the images, and a machine where this benchmark is running."""
@@ -114,25 +114,24 @@ sizes of the images, and a machine where this benchmark is running."""
     use_native = model.postprocessor_type != Platform.PYTHON
     print(f"Running {queries} input samples ...")
     print(decorate_with_bar(warning))
-    sess, queue = session.create_async(model.model_source())
-    model_inputs, model_outputs = [], []
-    initial_time = perf_counter()
-    for input_path in tqdm(input_paths, desc="Preprocess"):
-        model_inputs.append(model.preprocess(input_path))
-    after_preprocess = perf_counter()
-    for idx, (model_input, ctx) in enumerate(model_inputs):
-        sess.submit(model_input, context=idx)
-    for _ in tqdm(range(queries), desc="Inference"):
-        model_outputs.append(queue.recv())
-    after_npu = perf_counter()
-    for ctx, model_output in tqdm(model_outputs, desc="Postprocess"):
-        contexts = model_inputs[ctx][1]
-        # FIXME: Only YOLO can handle multiple contexts
-        use_native = False if isinstance(model, (vision.YOLOv5m, vision.YOLOv5l)) else use_native
-        contexts = contexts[0] if contexts is not None and use_native else contexts
-        model.postprocess(model_output, contexts)
-    all_done = perf_counter()
-    sess.close()
+    with create_runner(model.model_source()) as runner:
+        model_inputs, model_outputs = [], []
+        initial_time = perf_counter()
+        for input_path in tqdm(input_paths, desc="Preprocess"):
+            model_inputs.append(model.preprocess(input_path))
+        after_preprocess = perf_counter()
+        for model_input in tqdm(model_inputs, desc="Inference"):
+            model_outputs.append([runner.run(model_input[0]), model_input[1]])
+        after_npu = perf_counter()
+        for contexted_model_output in tqdm(model_outputs, desc="Postprocess"):
+            model_output, context = contexted_model_output
+            # FIXME: Only YOLO can handle multiple contexts
+            use_native = (
+                False if isinstance(model, (vision.YOLOv5m, vision.YOLOv5l)) else use_native
+            )
+            context = context[0] if context is not None and use_native else context
+            model.postprocess(model_output, context)
+        all_done = perf_counter()
 
     print(
         decorate_result(all_done - initial_time, queries, "Preprocess -> Inference -> Postprocess")

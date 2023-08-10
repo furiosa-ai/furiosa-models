@@ -6,7 +6,7 @@ import numpy as np
 from tqdm import tqdm
 
 from furiosa.models.vision import YOLOv5l
-from furiosa.runtime import session
+from furiosa.runtime.sync import create_runner
 
 from .test_acc_util import bdd100k
 
@@ -43,7 +43,7 @@ def test_yolov5l_accuracy(benchmark):
         batch_pre_img, batch_preproc_param = model.preprocess(
             batch_im,
         )  # single-batch
-        batch_feat = sess.run(np.expand_dims(batch_pre_img[0], axis=0))
+        batch_feat = runner.run(np.expand_dims(batch_pre_img[0], axis=0))
         detected_boxes = model.postprocess(
             batch_feat, batch_preproc_param, conf_thres=0.001, iou_thres=0.6
         )
@@ -56,9 +56,9 @@ def test_yolov5l_accuracy(benchmark):
             classes_target=classes_target,
         )
 
-    sess = session.create(model.model_source())
+    runner = create_runner(model.model_source())
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
-    sess.close()
+    runner.close()
 
     result = metric.compute()
     print("YOLOv5Large mAP:", result['map'])

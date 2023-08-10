@@ -7,7 +7,7 @@ import tqdm
 
 from furiosa.models.vision import ResNet50
 from furiosa.models.vision.common.datasets import imagenet1k
-from furiosa.runtime import session
+from furiosa.runtime.sync import create_runner
 
 EXPECTED_ACCURACY = 75.618
 CLASSES: List[str] = imagenet1k.ImageNet1k_CLASSES
@@ -40,16 +40,16 @@ def test_mlcommons_resnet50_accuracy(benchmark):
     def workload(image, answer):
         global correct_predictions, incorrect_predictions
         image, _ = model.preprocess(image)
-        output = model.postprocess(sess.run(image))
+        output = model.postprocess(runner.run(image))
 
         if output == answer:
             correct_predictions += 1
         else:
             incorrect_predictions += 1
 
-    sess = session.create(model.model_source())
+    runner = create_runner(model.model_source())
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
-    sess.close()
+    runner.close()
 
     total_predictions = correct_predictions + incorrect_predictions
     accuracy = 100.0 * correct_predictions / total_predictions

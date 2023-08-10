@@ -1,6 +1,6 @@
 from furiosa.models.vision import SSDMobileNet
 from furiosa.quantizer import quantize
-from furiosa.runtime import session
+from furiosa.runtime.sync import create_runner
 
 compiler_config = {"lower_tabulated_dequantize": True}
 
@@ -14,7 +14,7 @@ calib_range: dict = mobilenet.tensor_name_to_range
 # for more details
 quantized_onnx = quantize(onnx_model, calib_range)
 
-with session.create(quantized_onnx, compiler_config=compiler_config) as sess:
+with create_runner(quantized_onnx, compiler_config=compiler_config) as runner:
     inputs, contexts = mobilenet.preprocess(image, with_quantize=True)
-    outputs = sess.run(inputs)
+    outputs = runner.run(inputs)
     mobilenet.postprocess(outputs, contexts[0])

@@ -10,7 +10,7 @@ import tqdm
 
 from furiosa.models.types import Model
 from furiosa.models.vision import SSDResNet34
-from furiosa.runtime import session
+from furiosa.runtime.sync import create_runner
 
 EXPECTED_ACCURACY = 0.2132147932
 EXPECTED_ACCURACY_RUST = 0.2201333639
@@ -52,7 +52,7 @@ def test_mlcommons_ssd_resnet34_accuracy(benchmark):
 
     def workload(image_id, image):
         image, contexts = model.preprocess([image])
-        outputs = sess.run(image)
+        outputs = runner.run(image)
         batch_result = model.postprocess(outputs, contexts, confidence_threshold=0.05)
         result = np.squeeze(batch_result, axis=0)  # squeeze the batch axis
 
@@ -70,9 +70,9 @@ def test_mlcommons_ssd_resnet34_accuracy(benchmark):
             }
             detections.append(detection)
 
-    sess = session.create(model.model_source())
+    runner = create_runner(model.model_source())
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
-    sess.close()
+    runner.close()
 
     coco_detections = coco.loadRes(detections)
     coco_eval = COCOeval(coco, coco_detections, iouType="bbox")
@@ -109,7 +109,7 @@ def test_mlcommons_ssd_resnet34_with_native_rust_pp_accuracy(benchmark):
 
     def workload(image_id, image):
         image, contexts = model.preprocess([image])
-        outputs = sess.run(image)
+        outputs = runner.run(image)
         result = model.postprocess(outputs, contexts[0])
 
         for res in result:
@@ -126,9 +126,9 @@ def test_mlcommons_ssd_resnet34_with_native_rust_pp_accuracy(benchmark):
             }
             detections.append(detection)
 
-    sess = session.create(model.model_source())
+    runner = create_runner(model.model_source())
     benchmark.pedantic(workload, setup=read_image, rounds=num_images)
-    sess.close()
+    runner.close()
 
     coco_detections = coco.loadRes(detections)
     coco_eval = COCOeval(coco, coco_detections, iouType="bbox")

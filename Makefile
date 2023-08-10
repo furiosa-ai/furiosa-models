@@ -34,7 +34,7 @@ unit_tests:
 	pytest ./tests/unit/ -s
 
 examples:
-	for f in $$(find docs/examples/ -name *.py); do echo"";echo "[TEST] $$f ..."; python3 $$f || exit 1; done
+	for f in $$(find docs/examples/ -name *.py); do printf "\n[TEST] $$f ...\n"; python3 $$f || exit 1; done
 
 regression-test-all:
 	pytest ./tests/bench/

@@ -1,10 +1,10 @@
 from furiosa.models.vision import SSDMobileNet
-from furiosa.runtime import session
+from furiosa.runtime.sync import create_runner
 
 image = ["tests/assets/cat.jpg"]
 
 mobilenet = SSDMobileNet("Rust")
-with session.create(mobilenet.model_source()) as sess:
+with create_runner(mobilenet.model_source()) as runner:
     inputs, contexts = mobilenet.preprocess(image)
-    outputs = sess.run(inputs)
+    outputs = runner.run(inputs)
     mobilenet.postprocess(outputs, contexts[0])
