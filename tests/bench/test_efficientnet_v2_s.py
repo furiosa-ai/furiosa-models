@@ -46,9 +46,8 @@ def test_efficientnetv2s_accuracy(benchmark):
         else:
             incorrect_predictions += 1
 
-    runner = create_runner(model.model_source())
-    benchmark.pedantic(workload, setup=read_image, rounds=num_images)
-    runner.close()
+    with create_runner(model.model_source()) as runner:
+        benchmark.pedantic(workload, setup=read_image, rounds=num_images)
 
     total_predictions = correct_predictions + incorrect_predictions
     accuracy = 100.0 * correct_predictions / total_predictions

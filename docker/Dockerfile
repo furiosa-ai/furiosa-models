@@ -33,4 +33,4 @@ RUN --mount=type=secret,id=furiosa.conf,dst=/etc/apt/auth.conf.d/furiosa.conf,re
     apt-get update && \
     make toolchain
 RUN --mount=type=secret,id=.netrc,dst=/root/.netrc,required \
-    pip install --pre --extra-index-url https://internal-pypi.furiosa.dev/simple --constraint constraints.txt .[test]
+    pip install --pre --extra-index-url https://internal-pypi.furiosa.dev/simple --constraint ci-constraints.txt .[test]

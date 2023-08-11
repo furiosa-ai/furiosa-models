@@ -70,9 +70,8 @@ def test_mlcommons_ssd_resnet34_accuracy(benchmark):
             }
             detections.append(detection)
 
-    runner = create_runner(model.model_source())
-    benchmark.pedantic(workload, setup=read_image, rounds=num_images)
-    runner.close()
+    with create_runner(model.model_source()) as runner:
+        benchmark.pedantic(workload, setup=read_image, rounds=num_images)
 
     coco_detections = coco.loadRes(detections)
     coco_eval = COCOeval(coco, coco_detections, iouType="bbox")
@@ -126,9 +125,8 @@ def test_mlcommons_ssd_resnet34_with_native_rust_pp_accuracy(benchmark):
             }
             detections.append(detection)
 
-    runner = create_runner(model.model_source())
-    benchmark.pedantic(workload, setup=read_image, rounds=num_images)
-    runner.close()
+    with create_runner(model.model_source()) as runner:
+        benchmark.pedantic(workload, setup=read_image, rounds=num_images)
 
     coco_detections = coco.loadRes(detections)
     coco_eval = COCOeval(coco, coco_detections, iouType="bbox")

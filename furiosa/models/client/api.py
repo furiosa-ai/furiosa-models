@@ -110,6 +110,10 @@ sizes of the images, and a machine where this benchmark is running."""
         model = model_cls(postprocessor_type=postprocess)
     else:
         model = model_cls()
+    # FIXME: For native postprocess implementations, only YOLO can handle multiple contexts
+    single_context = not isinstance(model.postprocessor, PythonPostProcessor) and not isinstance(
+        model, (vision.YOLOv5m, vision.YOLOv5l)
+    )
     queries = len(input_paths)
     print(f"Running {queries} input samples ...")
     print(decorate_with_bar(warning))
@@ -124,10 +128,6 @@ sizes of the images, and a machine where this benchmark is running."""
         after_npu = perf_counter()
         for contexted_model_output in tqdm(model_outputs, desc="Postprocess"):
             model_output, context = contexted_model_output
-            # FIXME: Only YOLO can handle multiple contexts
-            single_context = not isinstance(
-                model.postprocessor, PythonPostProcessor
-            ) and not isinstance(model, (vision.YOLOv5m, vision.YOLOv5l))
             context = context[0] if context is not None and single_context else context
             model.postprocess(model_output, context)
         all_done = perf_counter()

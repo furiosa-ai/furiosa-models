@@ -56,9 +56,8 @@ def test_yolov5l_accuracy(benchmark):
             classes_target=classes_target,
         )
 
-    runner = create_runner(model.model_source())
-    benchmark.pedantic(workload, setup=read_image, rounds=num_images)
-    runner.close()
+    with create_runner(model.model_source()) as runner:
+        benchmark.pedantic(workload, setup=read_image, rounds=num_images)
 
     result = metric.compute()
     print("YOLOv5Large mAP:", result['map'])
