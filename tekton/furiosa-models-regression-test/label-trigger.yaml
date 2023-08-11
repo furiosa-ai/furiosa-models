@@ -231,6 +231,17 @@ spec:
     - name: depth
       value: $(params.gitCloneDepth)
 
+  - name: wait-for-image
+    taskRef:
+      name: wait-for-image
+    workspaces:
+      - name: aws-credential
+        workspace: aws-credential
+    resources:
+      inputs:
+        - name: image
+          resource: image
+
   - name: regression-test-with-npu
     taskRef:
       name: regression-test-with-npu
@@ -267,7 +278,7 @@ spec:
         - name: image
           resource: image
     runAfter:
-      - clone
+      - wait-for-image
 
   finally:
   - name: set-status-success
