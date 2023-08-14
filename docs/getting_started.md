@@ -28,7 +28,7 @@ pip install 'furiosa-models'
 
     ```
     git clone https://github.com/furiosa-ai/furiosa-models
-    pip install .
+    pip install ./furiosa-models
     ```
 
 ## Quick example and Guides
