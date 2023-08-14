@@ -152,7 +152,7 @@ def resolve_model_source(src_name: str, num_pe: int = 2) -> bytes:
 
 
 def validate_postprocessor_type(
-    postprocessor_type: Union[str, "Platform"], postprocessor_map: Collection["Platform"]
+    postprocessor_type: "Platform", postprocessor_map: Collection["Platform"]
 ):
     if postprocessor_type not in postprocessor_map:
         raise ValueError(

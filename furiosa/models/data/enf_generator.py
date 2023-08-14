@@ -55,7 +55,7 @@ def quantize_and_compile_model(arg: Tuple[int, Path, int]):
     editor = ModelEditor(onnx_model)
     for input_name in get_pure_input_names(onnx_model):
         editor.convert_input_type(input_name, TensorType.UINT8)
-    dfg = quantize(onnx_model, calib_ranges)
+    quantized_onnx = quantize(onnx_model, calib_ranges)
     print(f"  [{index}] {model_short_name} quantized", flush=True)
 
     compiler_config = dict(COMPILER_CONFIG)
@@ -74,7 +74,7 @@ def quantize_and_compile_model(arg: Tuple[int, Path, int]):
 
         # Compile and write to file
         target_npu = "warboy" if num_pe == 1 else "warboy-2pe"
-        enf = compile(bytes(dfg), target_npu=target_npu)
+        enf = compile(bytes(quantized_onnx), target_npu=target_npu)
         with open(enf_path, 'wb') as f:
             f.write(enf)
         print(f"  [{index}] {model_short_name} compiled to {enf_path}", flush=True)
