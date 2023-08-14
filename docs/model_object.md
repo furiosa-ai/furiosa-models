@@ -17,7 +17,7 @@ Once the model images are fetched, they will be cached on a local disk.
 
 <a name="accessing_artifacts_and_metadata"></a>
 ## Accessing artifacts and metadata
-A `Model` object includes model artifacts, such as ONNX, tflite, calibration range in yaml format, and ENF.
+A `Model` object includes model artifacts, such as ONNX, tflite, mapping from a tensor name to the tensor's min and max, and ENF.
 
 ENF format is [FuriosaAI Compiler](https://furiosa-ai.github.io/docs/latest/en/software/compiler.html) specific format.
 Once you have the ENF file, you can reuse it to omit the compilation process that take up to minutes.
@@ -27,6 +27,7 @@ In addition, a `Model` object has various metadata. The followings are all attri
 ::: furiosa.models.types.Model
     options:
         show_source: true
+        show_symbol_type_toc: true
 
 
 ## Inferencing with Session API
@@ -45,14 +46,10 @@ Passing `Model.origin` to `session.create()` allows users to start from source m
 To utilize f32 source models, it is necessary to perform calibration and quantization.
 Pre-calibrated data is readily available in Furiosa-models, facilitating direct access to the quantization process.
 For manual quantization of the model, you can install the `furiosa-quantizer` package, which can be found at this  [package link](https://furiosa-ai.github.io/docs/latest/en/software/python-sdk.html#quantizer).
-The calib_range field of the model class represents this pre-calibrated data.
+The tensor_name_to_range field of the model class represents this pre-calibrated data.
 After quantization, the output will be in the form of FuriosaAI's IR which can then be passed to the session.
 At this stage, the compiler configuration can be specified.
 
-
-!!!Info
-    The calibration range field is actually in yaml format but serialized in string type.
-    To deserialize the calibration range, use `import yaml; yaml.full_load(calib_range)`.
 
 <a name="Examples"></a>
 !!! Example
