@@ -59,12 +59,15 @@ def center_crop(image: Image.Image, cropped_height: int, cropped_width: int) -> 
 class EfficientNetB0PreProcessor(PreProcessor):
     @staticmethod
     def __call__(
-        image: Union[str, Path, npt.ArrayLike], skip_quantize: bool = True
+        image: Union[str, Path, npt.ArrayLike], with_scaling: bool = False
     ) -> Tuple[np.ndarray, None]:
         """Read and preprocess an image located at image_path.
 
         Args:
             image: A path of an image.
+            with_scaling: Whether to apply model-specific techniques that involve scaling the
+                model's input and converting its data type to float32. Refer to the code to gain a
+                precise understanding of the techniques used. Defaults to False.
 
         Returns:
             The first element of the tuple is a numpy array that meets the input requirements of
@@ -83,7 +86,7 @@ class EfficientNetB0PreProcessor(PreProcessor):
         data = np.transpose(data, axes=(2, 0, 1))
         assert data.dtype == np.uint8
 
-        if not skip_quantize:
+        if with_scaling:
             data = np.asarray(data, dtype=np.float32)
             data /= 255
 

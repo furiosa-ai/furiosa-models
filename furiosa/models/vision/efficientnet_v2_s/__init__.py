@@ -65,12 +65,15 @@ def normalize(image: Image.Image) -> np.ndarray:
 class EfficientNetV2sPreProcessor(PreProcessor):
     @staticmethod
     def __call__(
-        image: Union[str, Path, npt.ArrayLike], skip_quantize: bool = True
+        image: Union[str, Path, npt.ArrayLike], with_scaling: bool = False
     ) -> Tuple[np.ndarray, None]:
         """Read and preprocess an image located at image_path.
 
         Args:
             image: A path of an image.
+            with_scaling: Whether to apply model-specific techniques that involve scaling the
+                model's input and converting its data type to float32. Refer to the code to gain a
+                precise understanding of the techniques used. Defaults to False.
 
         Returns:
             The first element of the tuple is a numpy array that meets the input requirements of the
@@ -90,7 +93,7 @@ class EfficientNetV2sPreProcessor(PreProcessor):
         assert image.dtype == np.uint8
         data = np.transpose(image, (2, 0, 1))
 
-        if not skip_quantize:
+        if with_scaling:
             data = data.astype(np.float32) / 255
             data = normalize(data)
 

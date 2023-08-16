@@ -159,13 +159,16 @@ class SSDMobileNetPreProcessor(PreProcessor):
     @staticmethod
     def __call__(
         images: Sequence[Union[str, np.ndarray]],
-        skip_quantize: bool = True,
+        with_scaling: bool = False,
     ) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
         """Preprocess input images to a batch of input tensors.
 
         Args:
             images: A list of paths of image files (e.g., JPEG, PNG)
                 or a stacked image loaded as a numpy array in BGR order or gray order.
+            with_scaling: Whether to apply model-specific techniques that involve scaling the
+                model's input and converting its data type to float32. Refer to the code to gain a
+                precise understanding of the techniques used. Defaults to False.
 
         Returns:
             The first element is 3-channel images of 300x300 in NCHW format,
@@ -185,7 +188,7 @@ class SSDMobileNetPreProcessor(PreProcessor):
             image = read_image_opencv_if_needed(image)
             assert image.dtype == np.uint8
 
-            if not skip_quantize:
+            if with_scaling:
                 image = np.array(image, dtype=np.float32)
             if len(image.shape) < 3 or image.shape[2] != 3:
                 image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
@@ -194,7 +197,7 @@ class SSDMobileNetPreProcessor(PreProcessor):
             width = image.shape[1]
             height = image.shape[0]
             image = cv2.resize(image, (300, 300), interpolation=cv2.INTER_LINEAR)
-            if not skip_quantize:
+            if with_scaling:
                 image -= 127
                 image /= 127
             image = image.transpose([2, 0, 1])

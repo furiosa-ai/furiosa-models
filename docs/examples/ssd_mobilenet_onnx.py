@@ -15,6 +15,6 @@ calib_range: dict = mobilenet.tensor_name_to_range
 quantized_onnx = quantize(onnx_model, calib_range)
 
 with create_runner(quantized_onnx, compiler_config=compiler_config) as runner:
-    inputs, contexts = mobilenet.preprocess(image, skip_quantize=False)
+    inputs, contexts = mobilenet.preprocess(image, with_scaling=True)
     outputs = runner.run(inputs)
     mobilenet.postprocess(outputs, contexts[0])

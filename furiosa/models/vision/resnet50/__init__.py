@@ -27,13 +27,16 @@ logger = logging.getLogger(__name__)
 class ResNet50PreProcessor(PreProcessor):
     @staticmethod
     def __call__(
-        image: Union[str, npt.ArrayLike], skip_quantize: bool = True
+        image: Union[str, npt.ArrayLike], with_scaling: bool = False
     ) -> Tuple[np.ndarray, None]:
         """Convert an input image to a model input tensor
 
         Args:
             image: A path of an image or
                 an image loaded as a numpy array in BGR order.
+            with_scaling: Whether to apply model-specific techniques that involve scaling the
+                model's input and converting its data type to float32. Refer to the code to gain a
+                precise understanding of the techniques used. Defaults to False.
 
         Returns:
             The first element of the tuple is a numpy array that meets the input requirements of the
@@ -50,7 +53,7 @@ class ResNet50PreProcessor(PreProcessor):
             image, 224, 224, percent=87.5, interpolation=cv2.INTER_AREA
         )
         image = center_crop(image, 224, 224)
-        if not skip_quantize:
+        if with_scaling:
             image = np.asarray(image, dtype=np.float32)
             # https://github.com/mlcommons/inference/blob/af7f5a0b856402b9f461002cfcad116736a8f8af/vision/classification_and_detection/python/dataset.py#L178
             image -= np.array([123.68, 116.78, 103.94], dtype=np.float32)

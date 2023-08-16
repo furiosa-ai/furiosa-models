@@ -105,14 +105,15 @@ def _reshape_output(feat: np.ndarray, anchor_per_layer_count: int, num_classes: 
 class YOLOv5PreProcessor(PreProcessor):
     @staticmethod
     def __call__(
-        images: Sequence[Union[str, np.ndarray]], skip_quantize: bool = True
+        images: Sequence[Union[str, np.ndarray]], with_scaling: bool = False
     ) -> Tuple[np.ndarray, List[Dict[str, Any]]]:
         """Preprocess input images to a batch of input tensors
 
         Args:
-            images: Color images have (NCHW: Batch, Channel, Height, Width) dimensions.
-            skip_quantize: Whether to skip quantize operator in front of the model or not.
-
+            images: Color images have (NHWC: Batch, Height, Width, Channel) dimensions.
+            with_scaling: Whether to apply model-specific techniques that involve scaling the
+                model's input and converting its data type to float32. Refer to the code to gain a
+                precise understanding of the techniques used. Defaults to False.
         Returns:
             a pre-processed image, scales and padded sizes(width,height) per images.
                 The first element is a stacked numpy array containing a batch of images.
@@ -135,14 +136,14 @@ class YOLOv5PreProcessor(PreProcessor):
         for image in images:
             image = read_image_opencv_if_needed(image)
             assert image.dtype == np.uint8
-            if not skip_quantize:
+            if with_scaling:
                 image = image.astype(np.float32)
             image, (sx, sy), (padw, padh) = _resize(image, _INPUT_SIZE)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-            if not skip_quantize:
+            if with_scaling:
                 image /= 255.0
-            image = image.transpose([2, 0, 1])
+            image = image.transpose([2, 0, 1])  # NHWC -> NCHW
             assert sx == sy, "yolov5 must be the same rescale for width and height"
             scale = sx
             batched_image.append(image)
