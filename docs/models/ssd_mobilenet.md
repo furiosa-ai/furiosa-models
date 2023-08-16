@@ -74,7 +74,7 @@ You can find examples at [SSDMobileNet Usage](#SSDMobileNet_Usage).
 This class provides another version of the postprocessing implementation
 which is highly optimized for NPU. The implementation leverages the NPU IO architecture and runtime.
 
-To use this implementation, when this model is called, the parameter `postprocessor_type="Rust"`
+To use this implementation, when this model is called, the parameter `postprocessor_type=Platform.RUST`
 should be passed. The following is an example:
 
 !!! Example

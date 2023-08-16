@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import datetime
 from enum import Enum
 from functools import cached_property
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Literal
 
 import numpy.typing as npt
 from pydantic import BaseModel, ConfigDict, Field, computed_field, field_serializer
@@ -141,7 +141,7 @@ class Model(ABC, BaseModel):
         calib_yaml = resolve_source(self._artifact_name, EXT_CALIB_YAML)
         return yaml.full_load(calib_yaml)
 
-    def model_source(self, num_pe: [1|2] = 2) -> bytes:
+    def model_source(self, num_pe: Literal[1, 2] = 2) -> bytes:
         """the executable binary for furiosa runtime and NPU. It can be
             directly fed to `furiosa.runtime.create_runner`. If model binary is not compiled yet,
             it will be quantized & compiled automatically if possible

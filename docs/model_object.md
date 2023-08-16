@@ -95,7 +95,7 @@ In sum, typical steps of a single inference is as the following, as also shown a
     such as CPU cache, SIMD instructions and CPU pipelining.
     According to our benchmark, the native implementations show at most 70% lower latency.
 
-    To use native post processor, please pass `postprocessor_type="Rust"` to `Model()`.
+    To use native post processor, please pass `postprocessor_type=Platform.RUST` to `Model()`.
 
     The following is an example to use native post processor for [SSDMobileNet](models/ssd_mobilenet.md).
     You can find more details of each model page.
