@@ -1,0 +1,5 @@
+outs:
+- md5: a17838cd3dbd863a4ea396aa758899a2
+  size: 39525369
+  hash: md5
+  path: mlcommons_resnet50_v1.5_warboy_1pe.enf

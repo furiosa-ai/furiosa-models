@@ -4,8 +4,7 @@ from typing import Callable, List, Optional, Sequence, Type
 from tqdm import tqdm
 
 from .. import vision
-from ..types import Model
-from ..utils import get_field_default
+from ..types import Model, PythonPostProcessor
 
 
 def normalize(text: str) -> str:
@@ -30,7 +29,7 @@ def prettified_task_type(model: Type[Model]):
     Returns:
         Prettified string for model's task type
     """
-    task_type = get_field_default(model, "task_type").name
+    task_type = model.task_type.name
     return " ".join(map(lambda x: x.capitalize(), task_type.split("_")))
 
 
@@ -46,10 +45,11 @@ def get_model_list(filter_func: Optional[Callable[..., bool]] = None) -> List[Li
     filter_func = filter_func or (lambda _: True)
     model_list = []
     for model_name in vision.__all__:
-        model = getattr(vision, model_name)
-        if not filter_func(model):
+        model_cls = getattr(vision, model_name)
+        if not filter_func(model_cls):
             continue
-        postproc_map = get_field_default(model, "postprocessor_map")
+        model = model_cls()
+        postproc_map = model.postprocessor_map
         if not postproc_map:
             raise ValueError(f"No postprocessor map found for {model_name.capitalize()}")
         postprocs = ', '.join(map(lambda x: x.name.capitalize(), postproc_map.keys()))
@@ -102,38 +102,35 @@ def decorate_result(
 
 
 def run_inferences(model_cls: Type[Model], input_paths: Sequence[str], postprocess: Optional[str]):
-    from furiosa.runtime import session
+    from furiosa.runtime.sync import create_runner
 
     warning = """WARN: the benchmark results may depend on the number of input samples,
 sizes of the images, and a machine where this benchmark is running."""
-    postprocess = postprocess and postprocess.lower()
-    use_native = any(
-        map(
-            lambda x: x.is_native_platform(),
-            get_field_default(model_cls, "postprocessor_map").keys(),
-        )
+    if postprocess:
+        model = model_cls(postprocessor_type=postprocess)
+    else:
+        model = model_cls()
+    # FIXME: For native postprocess implementations, only YOLO can handle multiple contexts
+    single_context = not isinstance(model.postprocessor, PythonPostProcessor) and not isinstance(
+        model, (vision.YOLOv5m, vision.YOLOv5l)
     )
-    model = model_cls.load(use_native=use_native)
     queries = len(input_paths)
     print(f"Running {queries} input samples ...")
     print(decorate_with_bar(warning))
-    sess, queue = session.create_async(model.enf)
-    model_inputs, model_outputs = [], []
-    initial_time = perf_counter()
-    for input_path in tqdm(input_paths, desc="Preprocess"):
-        model_inputs.append(model.preprocess(input_path))
-    after_preprocess = perf_counter()
-    for idx, (model_input, ctx) in enumerate(model_inputs):
-        sess.submit(model_input, context=idx)
-    for _ in tqdm(range(queries), desc="Inference"):
-        model_outputs.append(queue.recv())
-    after_npu = perf_counter()
-    for ctx, model_output in tqdm(model_outputs, desc="Postprocess"):
-        contexts = model_inputs[ctx][1]
-        contexts = contexts[0] if contexts is not None and use_native else contexts
-        model.postprocess(model_output.numpy(), contexts)
-    all_done = perf_counter()
-    sess.close()
+    with create_runner(model.model_source()) as runner:
+        model_inputs, model_outputs = [], []
+        initial_time = perf_counter()
+        for input_path in tqdm(input_paths, desc="Preprocess"):
+            model_inputs.append(model.preprocess(input_path))
+        after_preprocess = perf_counter()
+        for model_input in tqdm(model_inputs, desc="Inference"):
+            model_outputs.append([runner.run(model_input[0]), model_input[1]])
+        after_npu = perf_counter()
+        for contexted_model_output in tqdm(model_outputs, desc="Postprocess"):
+            model_output, context = contexted_model_output
+            context = context[0] if context is not None and single_context else context
+            model.postprocess(model_output, context)
+        all_done = perf_counter()
 
     print(
         decorate_result(all_done - initial_time, queries, "Preprocess -> Inference -> Postprocess")

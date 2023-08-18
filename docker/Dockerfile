@@ -19,6 +19,8 @@ RUN pip3 install --upgrade pip wheel setuptools Cython pytest pycocotools \
 
 RUN echo "deb [arch=amd64] https://internal-archive.furiosa.dev/ubuntu focal restricted" \
     > /etc/apt/sources.list.d/furiosa.list && \
+    echo "deb [arch=amd64] https://internal-archive.furiosa.dev/ubuntu focal-rc restricted" \
+    >> /etc/apt/sources.list.d/furiosa.list && \
     echo "deb [arch=amd64] https://internal-archive.furiosa.dev/ubuntu focal-nightly restricted" \
     >> /etc/apt/sources.list.d/furiosa.list
 
@@ -31,4 +33,4 @@ RUN --mount=type=secret,id=furiosa.conf,dst=/etc/apt/auth.conf.d/furiosa.conf,re
     apt-get update && \
     make toolchain
 RUN --mount=type=secret,id=.netrc,dst=/root/.netrc,required \
-    pip install --extra-index-url https://internal-pypi.furiosa.dev/simple .[test]
+    pip install --pre --extra-index-url https://internal-pypi.furiosa.dev/simple --constraint ci-constraints.txt .[test]

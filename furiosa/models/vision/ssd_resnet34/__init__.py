@@ -1,7 +1,7 @@
 import itertools
 import logging
 from math import sqrt
-from typing import Any, Dict, List, Sequence, Tuple, Type, Union
+from typing import Any, ClassVar, Dict, List, Sequence, Tuple, Type, Union
 
 import cv2
 import numpy
@@ -11,6 +11,7 @@ import torch
 import torch.nn.functional as F
 
 from .. import native
+from ..._utils import validate_postprocessor_type
 from ...types import (
     Format,
     Metadata,
@@ -19,10 +20,12 @@ from ...types import (
     PostProcessor,
     PreProcessor,
     Publication,
+    PythonPostProcessor,
+    RustPostProcessor,
 )
-from ...utils import get_field_default
 from ..common.datasets import coco
 from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox
+from ..preprocess import read_image_opencv_if_needed
 
 NUM_OUTPUTS: int = 12
 CLASSES = coco.MobileNetSSD_Large_CLASSES
@@ -262,13 +265,16 @@ class SSDResNet34PreProcessor(PreProcessor):
     @staticmethod
     def __call__(
         images: Sequence[Union[str, np.ndarray]],
-        with_quantize: bool = False,
+        with_scaling: bool = False,
     ) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
         """Preprocess input images to a batch of input tensors
 
         Args:
             images: A list of paths of image files (e.g., JPEG, PNG)
                 or a stacked image loaded as a numpy array in BGR order or gray order.
+            with_scaling: Whether to apply model-specific techniques that involve scaling the
+                model's input and converting its data type to float32. Refer to the code to gain a
+                precise understanding of the techniques used. Defaults to False.
 
         Returns:
             The first element is a list of 3-channel images of 1200x1200
@@ -286,12 +292,10 @@ class SSDResNet34PreProcessor(PreProcessor):
         if isinstance(images, str):
             images = [images]
         for image in images:
-            if type(image) == str:
-                image = cv2.imread(image)
-                if image is None:
-                    raise FileNotFoundError(image)
+            image = read_image_opencv_if_needed(image)
+            assert image.dtype == np.uint8
 
-            if with_quantize:
+            if with_scaling:
                 image = np.array(image, dtype=np.float32)
             if len(image.shape) < 3 or image.shape[2] != 3:
                 image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
@@ -300,7 +304,7 @@ class SSDResNet34PreProcessor(PreProcessor):
             width = image.shape[1]
             height = image.shape[0]
             image = cv2.resize(image, (1200, 1200), interpolation=cv2.INTER_LINEAR)
-            if with_quantize:
+            if with_scaling:
                 mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
                 std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
                 image = image / 255.0 - mean
@@ -314,7 +318,7 @@ class SSDResNet34PreProcessor(PreProcessor):
         return np.stack(batch_image, axis=0), batch_preproc_param
 
 
-class SSDResNet34PythonPostProcessor(PostProcessor):
+class SSDResNet34PythonPostProcessor(PythonPostProcessor):
     @staticmethod
     def __call__(
         model_outputs: Sequence[np.ndarray],
@@ -389,7 +393,7 @@ class SSDResNet34PythonPostProcessor(PostProcessor):
         return batch_results
 
 
-class SSDResNet34NativePostProcessor(PostProcessor):
+class SSDResNet34NativePostProcessor(RustPostProcessor):
     def __init__(self):
         self._native = native.ssd_resnet34.RustPostProcessor()
 
@@ -422,21 +426,15 @@ class SSDResNet34NativePostProcessor(PostProcessor):
 class SSDResNet34(ObjectDetectionModel):
     """MLCommons SSD ResNet34 model"""
 
-    postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
+    postprocessor_map: ClassVar[Dict[Platform, Type[PostProcessor]]] = {
         Platform.PYTHON: SSDResNet34PythonPostProcessor,
         Platform.RUST: SSDResNet34NativePostProcessor,
     }
 
-    @staticmethod
-    def get_artifact_name():
-        return "mlcommons_ssd_resnet34"
-
-    @classmethod
-    def load(cls, use_native: bool = True):
-        postproc_type = Platform.RUST if use_native else Platform.PYTHON
-        logger.debug(f"Using {postproc_type.name} postprocessor")
-        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type]()
-        return cls(
+    def __init__(self, *, postprocessor_type: Union[str, Platform] = Platform.RUST):
+        postprocessor_type = Platform(postprocessor_type)
+        validate_postprocessor_type(postprocessor_type, self.postprocessor_map.keys())
+        super().__init__(
             name="SSDResNet34",
             format=Format.ONNX,
             family="ResNet",
@@ -449,5 +447,7 @@ class SSDResNet34(ObjectDetectionModel):
                 ),
             ),
             preprocessor=SSDResNet34PreProcessor(),
-            postprocessor=postprocessor,
+            postprocessor=self.postprocessor_map[postprocessor_type](),
         )
+
+        self._artifact_name = "mlcommons_ssd_resnet34"

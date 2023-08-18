@@ -1,13 +1,21 @@
 from abc import ABC
-from typing import Any, Dict, List, Sequence, Tuple, Type, Union
+from typing import Any, ClassVar, Dict, List, Sequence, Tuple, Type, Union
 
 import cv2
 import numpy as np
 import numpy.typing as npt
 
 from .. import native
-from ...types import ObjectDetectionModel, Platform, PostProcessor, PreProcessor
+from ...types import (
+    Format,
+    ObjectDetectionModel,
+    Platform,
+    PostProcessor,
+    PreProcessor,
+    RustPostProcessor,
+)
 from ...vision.postprocess import LtrbBoundingBox, ObjectDetectionResult
+from ..preprocess import read_image_opencv_if_needed
 
 _INPUT_SIZE = (640, 640)
 _STRIDES = [8, 16, 32]
@@ -97,14 +105,15 @@ def _reshape_output(feat: np.ndarray, anchor_per_layer_count: int, num_classes: 
 class YOLOv5PreProcessor(PreProcessor):
     @staticmethod
     def __call__(
-        images: Sequence[Union[str, np.ndarray]], with_quantize: bool = False
+        images: Sequence[Union[str, np.ndarray]], with_scaling: bool = False
     ) -> Tuple[np.ndarray, List[Dict[str, Any]]]:
         """Preprocess input images to a batch of input tensors
 
         Args:
-            images: Color images have (NCHW: Batch, Channel, Height, Width) dimensions.
-            with_quantize: Whether to put quantize operator in front of the model or not.
-
+            images: Color images have (NHWC: Batch, Height, Width, Channel) dimensions.
+            with_scaling: Whether to apply model-specific techniques that involve scaling the
+                model's input and converting its data type to float32. Refer to the code to gain a
+                precise understanding of the techniques used. Defaults to False.
         Returns:
             a pre-processed image, scales and padded sizes(width,height) per images.
                 The first element is a stacked numpy array containing a batch of images.
@@ -124,28 +133,26 @@ class YOLOv5PreProcessor(PreProcessor):
         batched_proc_params = []
         if isinstance(images, str):
             images = [images]
-        for img in images:
-            if type(img) == str:
-                img = cv2.imread(img)
-                if img is None:
-                    raise FileNotFoundError(img)
-            if with_quantize:
-                img = img.astype(np.float32)
-            img, (sx, sy), (padw, padh) = _resize(img, _INPUT_SIZE)
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        for image in images:
+            image = read_image_opencv_if_needed(image)
+            assert image.dtype == np.uint8
+            if with_scaling:
+                image = image.astype(np.float32)
+            image, (sx, sy), (padw, padh) = _resize(image, _INPUT_SIZE)
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-            if with_quantize:
-                img /= 255.0
-            img = img.transpose([2, 0, 1])
+            if with_scaling:
+                image /= 255.0
+            image = image.transpose([2, 0, 1])  # NHWC -> NCHW
             assert sx == sy, "yolov5 must be the same rescale for width and height"
             scale = sx
-            batched_image.append(img)
+            batched_image.append(image)
             batched_proc_params.append({"scale": scale, "pad": (padw, padh)})
 
         return np.stack(batched_image, axis=0), batched_proc_params
 
 
-class YOLOv5PostProcessor(PostProcessor):
+class YOLOv5PostProcessor(RustPostProcessor):
     def __init__(self, anchors: npt.ArrayLike, class_names: Sequence[str]):
         """
         native (RustProcessor): A native postprocessor. It has several information to decode: (xyxy,
@@ -224,6 +231,16 @@ class YOLOv5PostProcessor(PostProcessor):
 
 
 class YOLOv5Base(ObjectDetectionModel, ABC):
-    postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
-        Platform.PYTHON: YOLOv5PostProcessor,
+    postprocessor_map: ClassVar[Dict[Platform, Type[PostProcessor]]] = {
+        Platform.RUST: YOLOv5PostProcessor,
     }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+            family="YOLO",
+            version="v5",
+            format=Format.ONNX,
+            preprocessor=YOLOv5PreProcessor(),
+            *args,
+            **kwargs,
+        )

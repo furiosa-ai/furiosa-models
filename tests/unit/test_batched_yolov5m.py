@@ -5,7 +5,7 @@ import numpy as np
 
 from furiosa.models.vision import YOLOv5m
 from furiosa.models.vision.postprocess import collate
-from furiosa.runtime import session
+from furiosa.runtime.sync import create_runner
 
 TEST_IMAGE_PATH = str(Path(__file__).parent / "../assets/yolov5-test.jpg")
 
@@ -15,15 +15,15 @@ NUM_DETECTED_BOXES = 21
 
 
 def test_yolov5_medium_batched():
-    m = YOLOv5m.load()
+    m = YOLOv5m()
     assert len(m.classes) == NUM_CLASSES, "expected CLASS is 10"
 
     batch_im = [cv2.imread(TEST_IMAGE_PATH), cv2.imread(TEST_IMAGE_PATH)]
-    with session.create(m.enf) as sess:
+    with create_runner(m.model_source()) as runner:
         batch_pre_img, batch_preproc_param = m.preprocess(batch_im)
         batch_feat = []
         for pre_image in batch_pre_img:
-            batch_feat.append(sess.run(np.expand_dims(pre_image, axis=0)).numpy())
+            batch_feat.append(runner.run(np.expand_dims(pre_image, axis=0)))
         batch_feat = collate(batch_feat)
         detected_boxes = m.postprocess(batch_feat, batch_preproc_param)
 

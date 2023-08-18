@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List, Sequence, Tuple, Type, Union
+from typing import Any, ClassVar, Dict, List, Sequence, Tuple, Type, Union
 
 import cv2
 import numpy
@@ -8,6 +8,7 @@ import numpy.typing as npt
 
 from . import anchor_generator  # type: ignore[import]
 from .. import native
+from ..._utils import validate_postprocessor_type
 from ...types import (
     Format,
     Metadata,
@@ -16,10 +17,12 @@ from ...types import (
     PostProcessor,
     PreProcessor,
     Publication,
+    PythonPostProcessor,
+    RustPostProcessor,
 )
-from ...utils import get_field_default
 from ..common.datasets import coco
 from ..postprocess import LtrbBoundingBox, ObjectDetectionResult, calibration_ltrbbox, sigmoid
+from ..preprocess import read_image_opencv_if_needed
 
 NUM_OUTPUTS: int = 12
 CLASSES = coco.MobileNetSSD_CLASSES
@@ -156,13 +159,16 @@ class SSDMobileNetPreProcessor(PreProcessor):
     @staticmethod
     def __call__(
         images: Sequence[Union[str, np.ndarray]],
-        with_quantize: bool = False,
+        with_scaling: bool = False,
     ) -> Tuple[npt.ArrayLike, List[Dict[str, Any]]]:
         """Preprocess input images to a batch of input tensors.
 
         Args:
             images: A list of paths of image files (e.g., JPEG, PNG)
                 or a stacked image loaded as a numpy array in BGR order or gray order.
+            with_scaling: Whether to apply model-specific techniques that involve scaling the
+                model's input and converting its data type to float32. Refer to the code to gain a
+                precise understanding of the techniques used. Defaults to False.
 
         Returns:
             The first element is 3-channel images of 300x300 in NCHW format,
@@ -179,12 +185,10 @@ class SSDMobileNetPreProcessor(PreProcessor):
         if isinstance(images, str):
             images = [images]
         for image in images:
-            if type(image) == str:
-                image = cv2.imread(image)
-                if image is None:
-                    raise FileNotFoundError(image)
+            image = read_image_opencv_if_needed(image)
+            assert image.dtype == np.uint8
 
-            if with_quantize:
+            if with_scaling:
                 image = np.array(image, dtype=np.float32)
             if len(image.shape) < 3 or image.shape[2] != 3:
                 image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
@@ -193,7 +197,7 @@ class SSDMobileNetPreProcessor(PreProcessor):
             width = image.shape[1]
             height = image.shape[0]
             image = cv2.resize(image, (300, 300), interpolation=cv2.INTER_LINEAR)
-            if with_quantize:
+            if with_scaling:
                 image -= 127
                 image /= 127
             image = image.transpose([2, 0, 1])
@@ -202,7 +206,7 @@ class SSDMobileNetPreProcessor(PreProcessor):
         return np.stack(batch_image, axis=0), batch_preproc_param
 
 
-class SSDMobileNetPythonPostProcessor(PostProcessor):
+class SSDMobileNetPythonPostProcessor(PythonPostProcessor):
     @staticmethod
     def __call__(
         model_outputs: Sequence[numpy.ndarray],
@@ -279,7 +283,7 @@ class SSDMobileNetPythonPostProcessor(PostProcessor):
         return batch_results
 
 
-class SSDMobileNetNativePostProcessor(PostProcessor):
+class SSDMobileNetNativePostProcessor(RustPostProcessor):
     def __init__(self):
         self._native = native.ssd_mobilenet.RustPostProcessor()
 
@@ -313,21 +317,15 @@ class SSDMobileNetNativePostProcessor(PostProcessor):
 class SSDMobileNet(ObjectDetectionModel):
     """MLCommons MobileNet v1 model"""
 
-    postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
+    postprocessor_map: ClassVar[Dict[Platform, Type[PostProcessor]]] = {
         Platform.PYTHON: SSDMobileNetPythonPostProcessor,
         Platform.RUST: SSDMobileNetNativePostProcessor,
     }
 
-    @staticmethod
-    def get_artifact_name():
-        return "mlcommons_ssd_mobilenet_v1"
-
-    @classmethod
-    def load(cls, use_native: bool = True):
-        postproc_type = Platform.RUST if use_native else Platform.PYTHON
-        logger.debug(f"Using {postproc_type.name} postprocessor")
-        postprocessor = get_field_default(cls, "postprocessor_map")[postproc_type]()
-        return cls(
+    def __init__(self, *, postprocessor_type: Union[str, Platform] = Platform.RUST):
+        postprocessor_type = Platform(postprocessor_type)
+        validate_postprocessor_type(postprocessor_type, self.postprocessor_map.keys())
+        super().__init__(
             name="MLCommonsSSDMobileNet",
             format=Format.ONNX,
             family="MobileNetV1",
@@ -337,5 +335,7 @@ class SSDMobileNet(ObjectDetectionModel):
                 publication=Publication(url="https://arxiv.org/abs/1704.04861.pdf"),
             ),
             preprocessor=SSDMobileNetPreProcessor(),
-            postprocessor=postprocessor,
+            postprocessor=self.postprocessor_map[postprocessor_type](),
         )
+
+        self._artifact_name = "mlcommons_ssd_mobilenet_v1"

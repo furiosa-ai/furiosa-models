@@ -9,7 +9,7 @@ import tqdm
 
 from furiosa.models.types import Model
 from furiosa.models.vision import SSDMobileNet
-from furiosa.runtime import session
+from furiosa.runtime.sync import create_runner
 
 EXPECTED_ACCURACY = 0.2319698092633901
 EXPECTED_ACCURACY_NATIVE_RUST_PP = 0.23178397430922199
@@ -26,7 +26,7 @@ def load_coco_from_env_variable():
 
 
 def test_mlcommons_ssd_mobilenet_accuracy(benchmark):
-    model: Model = SSDMobileNet.load(use_native=False)
+    model: Model = SSDMobileNet(postprocessor_type="Python")
 
     image_directory, coco = load_coco_from_env_variable()
     image_src_iter = iter(tqdm.tqdm(coco.dataset["images"]))
@@ -43,7 +43,7 @@ def test_mlcommons_ssd_mobilenet_accuracy(benchmark):
 
     def workload(image_id, image):
         image, contexts = model.preprocess([image])
-        outputs = sess.run(image).numpy()
+        outputs = runner.run(image)
         batch_result = model.postprocess(outputs, contexts, confidence_threshold=0.3)
         result = np.squeeze(batch_result, axis=0)  # squeeze the batch axis
 
@@ -61,9 +61,8 @@ def test_mlcommons_ssd_mobilenet_accuracy(benchmark):
             }
             detections.append(detection)
 
-    sess = session.create(model.enf)
-    benchmark.pedantic(workload, setup=read_image, rounds=num_images)
-    sess.close()
+    with create_runner(model.model_source()) as runner:
+        benchmark.pedantic(workload, setup=read_image, rounds=num_images)
 
     coco_detections = coco.loadRes(detections)
     coco_eval = COCOeval(coco, coco_detections, iouType="bbox")
@@ -76,7 +75,7 @@ def test_mlcommons_ssd_mobilenet_accuracy(benchmark):
 
 
 def test_mlcommons_ssd_mobilenet_with_native_rust_pp_accuracy(benchmark):
-    model = SSDMobileNet.load(use_native=True)
+    model = SSDMobileNet(postprocessor_type="Rust")
 
     image_directory, coco = load_coco_from_env_variable()
     image_src_iter = iter(tqdm.tqdm(coco.dataset["images"]))
@@ -93,7 +92,7 @@ def test_mlcommons_ssd_mobilenet_with_native_rust_pp_accuracy(benchmark):
 
     def workload(image_id, image):
         image, contexts = model.preprocess([image])
-        outputs = sess.run(image).numpy()
+        outputs = runner.run(image)
         result = model.postprocess(outputs, contexts[0])
 
         for res in result:
@@ -110,9 +109,8 @@ def test_mlcommons_ssd_mobilenet_with_native_rust_pp_accuracy(benchmark):
             }
             detections.append(detection)
 
-    sess = session.create(model.enf)
-    benchmark.pedantic(workload, setup=read_image, rounds=num_images)
-    sess.close()
+    with create_runner(model.model_source()) as runner:
+        benchmark.pedantic(workload, setup=read_image, rounds=num_images)
 
     coco_detections = coco.loadRes(detections)
     coco_eval = COCOeval(coco, coco_detections, iouType="bbox")

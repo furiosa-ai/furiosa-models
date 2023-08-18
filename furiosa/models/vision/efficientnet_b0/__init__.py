@@ -1,11 +1,12 @@
 import math
 from pathlib import Path
-from typing import Any, Dict, List, Sequence, Tuple, Type, Union
+from typing import Any, ClassVar, Dict, List, Sequence, Tuple, Type, Union
 
 from PIL import Image
 import numpy as np
 import numpy.typing as npt
 
+from ..._utils import validate_postprocessor_type
 from ...types import (
     Format,
     ImageClassificationModel,
@@ -14,6 +15,7 @@ from ...types import (
     PostProcessor,
     PreProcessor,
     Publication,
+    PythonPostProcessor,
 )
 from ..common.datasets import imagenet1k
 
@@ -57,12 +59,15 @@ def center_crop(image: Image.Image, cropped_height: int, cropped_width: int) -> 
 class EfficientNetB0PreProcessor(PreProcessor):
     @staticmethod
     def __call__(
-        image: Union[str, Path, npt.ArrayLike], with_quantize: bool = False
+        image: Union[str, Path, npt.ArrayLike], with_scaling: bool = False
     ) -> Tuple[np.ndarray, None]:
         """Read and preprocess an image located at image_path.
 
         Args:
             image: A path of an image.
+            with_scaling: Whether to apply model-specific techniques that involve scaling the
+                model's input and converting its data type to float32. Refer to the code to gain a
+                precise understanding of the techniques used. Defaults to False.
 
         Returns:
             The first element of the tuple is a numpy array that meets the input requirements of
@@ -79,8 +84,9 @@ class EfficientNetB0PreProcessor(PreProcessor):
 
         data = center_crop(image, 224, 224)
         data = np.transpose(data, axes=(2, 0, 1))
+        assert data.dtype == np.uint8
 
-        if with_quantize:
+        if with_scaling:
             data = np.asarray(data, dtype=np.float32)
             data /= 255
 
@@ -90,7 +96,7 @@ class EfficientNetB0PreProcessor(PreProcessor):
         return data[np.newaxis, ...], None
 
 
-class EfficientNetB0PostProcessor(PostProcessor):
+class EfficientNetB0PostProcessor(PythonPostProcessor):
     def __call__(self, model_outputs: Sequence[npt.ArrayLike], contexts: Any = None) -> str:
         """Convert the outputs of a model to a label string, such as car and cat.
 
@@ -109,17 +115,14 @@ class EfficientNetB0PostProcessor(PostProcessor):
 class EfficientNetB0(ImageClassificationModel):
     """EfficientNet B0 model"""
 
-    postprocessor_map: Dict[Platform, Type[PostProcessor]] = {
+    postprocessor_map: ClassVar[Dict[Platform, Type[PostProcessor]]] = {
         Platform.PYTHON: EfficientNetB0PostProcessor,
     }
 
-    @staticmethod
-    def get_artifact_name():
-        return "efficientnet_b0"
-
-    @classmethod
-    def load(cls, use_native: bool = False):
-        return cls(
+    def __init__(self, *, postprocessor_type: Union[str, Platform] = Platform.PYTHON):
+        postprocessor_type = Platform(postprocessor_type)
+        validate_postprocessor_type(postprocessor_type, self.postprocessor_map.keys())
+        super().__init__(
             name="EfficientNetB0",
             format=Format.ONNX,
             family="EfficientNet",
@@ -129,5 +132,7 @@ class EfficientNetB0(ImageClassificationModel):
                 publication=Publication(url="https://arxiv.org/abs/1905.11946"),
             ),
             preprocessor=EfficientNetB0PreProcessor(),
-            postprocessor=EfficientNetB0PostProcessor(),
+            postprocessor=self.postprocessor_map[postprocessor_type](),
         )
+
+        self._artifact_name = "efficientnet_b0"

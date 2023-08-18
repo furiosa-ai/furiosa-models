@@ -30,5 +30,15 @@ class VersionInfoNotFound(FuriosaModelException):
 
     def __init__(self):
         super().__init__(
-            "Could not retrieve furiosa compiler information. Try: `pip install furiosa-sdk`."
+            "Could not retrieve furiosa compiler information. Try: `pip install furiosa-sdk`"
+        )
+
+
+class ExtraPackageRequired(FuriosaModelException):
+    """Needs extra packges to quantize and compile"""
+
+    def __init__(self):
+        super().__init__(
+            "Needs extra packges to quantize and compile manually. Try: `pip install "
+            "furiosa-models[full]`"
         )

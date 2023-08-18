@@ -10,7 +10,7 @@ import tqdm
 
 from furiosa.models.types import Model
 from furiosa.models.vision import SSDResNet34
-from furiosa.runtime import session
+from furiosa.runtime.sync import create_runner
 
 EXPECTED_ACCURACY = 0.2132147932
 EXPECTED_ACCURACY_RUST = 0.2201333639
@@ -27,7 +27,7 @@ def load_coco_from_env_variable():
 
 
 def test_mlcommons_ssd_resnet34_accuracy(benchmark):
-    model: Model = SSDResNet34.load()
+    model: Model = SSDResNet34(postprocessor_type="Python")
 
     image_directory, coco = load_coco_from_env_variable()
     instances_val2017 = Path(
@@ -52,7 +52,7 @@ def test_mlcommons_ssd_resnet34_accuracy(benchmark):
 
     def workload(image_id, image):
         image, contexts = model.preprocess([image])
-        outputs = sess.run(image).numpy()
+        outputs = runner.run(image)
         batch_result = model.postprocess(outputs, contexts, confidence_threshold=0.05)
         result = np.squeeze(batch_result, axis=0)  # squeeze the batch axis
 
@@ -70,9 +70,8 @@ def test_mlcommons_ssd_resnet34_accuracy(benchmark):
             }
             detections.append(detection)
 
-    sess = session.create(model.enf)
-    benchmark.pedantic(workload, setup=read_image, rounds=num_images)
-    sess.close()
+    with create_runner(model.model_source()) as runner:
+        benchmark.pedantic(workload, setup=read_image, rounds=num_images)
 
     coco_detections = coco.loadRes(detections)
     coco_eval = COCOeval(coco, coco_detections, iouType="bbox")
@@ -84,7 +83,7 @@ def test_mlcommons_ssd_resnet34_accuracy(benchmark):
 
 
 def test_mlcommons_ssd_resnet34_with_native_rust_pp_accuracy(benchmark):
-    model = SSDResNet34.load(use_native=True)
+    model = SSDResNet34(postprocessor_type="Rust")
 
     image_directory, coco = load_coco_from_env_variable()
     instances_val2017 = Path(
@@ -109,7 +108,7 @@ def test_mlcommons_ssd_resnet34_with_native_rust_pp_accuracy(benchmark):
 
     def workload(image_id, image):
         image, contexts = model.preprocess([image])
-        outputs = sess.run(image).numpy()
+        outputs = runner.run(image)
         result = model.postprocess(outputs, contexts[0])
 
         for res in result:
@@ -126,9 +125,8 @@ def test_mlcommons_ssd_resnet34_with_native_rust_pp_accuracy(benchmark):
             }
             detections.append(detection)
 
-    sess = session.create(model.enf)
-    benchmark.pedantic(workload, setup=read_image, rounds=num_images)
-    sess.close()
+    with create_runner(model.model_source()) as runner:
+        benchmark.pedantic(workload, setup=read_image, rounds=num_images)
 
     coco_detections = coco.loadRes(detections)
     coco_eval = COCOeval(coco, coco_detections, iouType="bbox")

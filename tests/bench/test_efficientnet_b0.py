@@ -6,7 +6,7 @@ import tqdm
 
 from furiosa.models.vision import EfficientNetB0
 from furiosa.models.vision.common.datasets import imagenet1k
-from furiosa.runtime import session
+from furiosa.runtime.sync import create_runner
 
 EXPECTED_ACCURACY = 72.44
 CLASSES: List[str] = imagenet1k.ImageNet1k_CLASSES
@@ -18,7 +18,7 @@ def test_efficientnetb0_accuracy(benchmark):
         os.environ.get('IMAGENET_VAL_LABELS', 'tests/data/imagenet/aux/val.txt')
     )
 
-    model = EfficientNetB0.load()
+    model = EfficientNetB0()
 
     image_paths = list(imagenet_val_images.glob("*.[Jj][Pp][Ee][Gg]"))
     with open(imagenet_val_labels, encoding="ascii") as file:
@@ -38,7 +38,7 @@ def test_efficientnetb0_accuracy(benchmark):
     def workload(image, answer):
         global correct_predictions, incorrect_predictions
         image, _ = model.preprocess(image)
-        output = sess.run(image).numpy()
+        output = runner.run(image)
         output = model.postprocess(output)
 
         if output == answer:
@@ -46,9 +46,8 @@ def test_efficientnetb0_accuracy(benchmark):
         else:
             incorrect_predictions += 1
 
-    sess = session.create(model.enf)
-    benchmark.pedantic(workload, setup=read_image, rounds=num_images)
-    sess.close()
+    with create_runner(model.model_source()) as runner:
+        benchmark.pedantic(workload, setup=read_image, rounds=num_images)
 
     total_predictions = correct_predictions + incorrect_predictions
     accuracy = 100.0 * correct_predictions / total_predictions

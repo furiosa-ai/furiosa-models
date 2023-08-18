@@ -2,7 +2,7 @@ import argparse
 import logging
 from pathlib import Path
 import sys
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Type
 
 from tabulate import tabulate
 import yaml
@@ -105,12 +105,11 @@ def get_model_or_exit(model_name: str) -> Model:
     return model
 
 
-def describe_model(model_cls: Model) -> str:
-    # TODO: Make dry load (to avoid resolving heavy artifacts)
-    model = model_cls.load()
-    include = {'name', 'format', 'family', 'version', 'metadata'}
+def describe_model(model_cls: Type[Model]) -> str:
+    model = model_cls()
+    include = {"name", "format", "family", "version", "metadata", "tags"}
     output = []
-    output.append(yaml.dump(model.dict(include=include)))
+    output.append(yaml.dump(model.model_dump(include=include, exclude_none=True), sort_keys=False))
     output.append(f"task type: {api.prettified_task_type(model)}\n")
     available_postprocs = ', '.join(
         map(lambda x: x.name.capitalize(), model.postprocessor_map.keys())

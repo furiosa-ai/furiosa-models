@@ -1,7 +1,7 @@
 SHELL=/bin/bash -o pipefail
 
-ONNXRUNTIME_VERSION := 1.13.1-?
-TOOLCHAIN_VERSION := 0.9.1-?
+ONNXRUNTIME_VERSION := 1.15.1-?
+TOOLCHAIN_VERSION := 0.10.0-?
 LIBHAL_VERSION := 0.11.0-?
 
 .PHONY: check-docker-tag toolchain lint test unit_tests examples regression-test-all \
@@ -15,8 +15,11 @@ ifndef DOCKER_TAG
 endif
 
 toolchain:
+	apt-get update
 	apt-get install -y --allow-downgrades libonnxruntime=$(ONNXRUNTIME_VERSION)
-	apt-get install -y --allow-downgrades furiosa-libcompiler=$(TOOLCHAIN_VERSION) furiosa-libnux=$(TOOLCHAIN_VERSION)
+	apt-get install -y --allow-downgrades furiosa-compiler=$(TOOLCHAIN_VERSION)
+	# TODO: remove me when possible
+	apt-get install -y --allow-downgrades furiosa-libcompiler=$(TOOLCHAIN_VERSION)
 	apt-get install -y --allow-downgrades furiosa-libhal-warboy=$(LIBHAL_VERSION)
 
 lint:
@@ -31,7 +34,7 @@ unit_tests:
 	pytest ./tests/unit/ -s
 
 examples:
-	for f in $$(ls docs/examples/*.py | grep -v "ssd_resnet34"); do echo"";echo "[TEST] $$f ..."; python3 $$f || exit 1; done
+	for f in $$(find docs/examples/ -name *.py); do printf "\n[TEST] $$f ...\n"; python3 $$f || exit 1; done
 
 regression-test-all:
 	pytest ./tests/bench/

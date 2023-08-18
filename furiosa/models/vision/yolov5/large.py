@@ -4,13 +4,14 @@ Attributes:
     CLASSES (List[str]): a list of class names
 """
 import pathlib
-from typing import List
+from typing import List, Union
 
 import numpy as np
 import yaml
 
-from ...types import Format, Metadata, Publication
-from .core import YOLOv5Base, YOLOv5PostProcessor, YOLOv5PreProcessor
+from ..._utils import validate_postprocessor_type
+from ...types import Metadata, Platform, Publication
+from .core import YOLOv5Base
 
 with open(pathlib.Path(__file__).parent / "datasets/yolov5l/cfg.yaml", "r") as f:
     configuration = yaml.safe_load(f)
@@ -23,25 +24,18 @@ __all__ = ['CLASSES', 'YOLOv5l']
 class YOLOv5l(YOLOv5Base):
     """YOLOv5 Large model"""
 
-    classes = CLASSES
+    classes: List[str] = CLASSES
 
-    @staticmethod
-    def get_artifact_name():
-        return "yolov5l"
-
-    @classmethod
-    def load(cls, use_native: bool = False):
-        if use_native:
-            raise NotImplementedError("No native implementation for YOLOv5")
-        return cls(
+    def __init__(self, *, postprocessor_type: Union[str, Platform] = Platform.RUST):
+        postprocessor_type = Platform(postprocessor_type)
+        validate_postprocessor_type(postprocessor_type, self.postprocessor_map.keys())
+        super().__init__(
             name="YOLOv5Large",
-            format=Format.ONNX,
-            family="YOLOv5",
-            version="v5",
             metadata=Metadata(
                 description="YOLOv5 large model",
                 publication=Publication(url="https://github.com/ultralytics/yolov5"),
             ),
-            preprocessor=YOLOv5PreProcessor(),
-            postprocessor=YOLOv5PostProcessor(_ANCHORS, CLASSES),
+            postprocessor=self.postprocessor_map[postprocessor_type](_ANCHORS, CLASSES),
         )
+
+        self._artifact_name = "yolov5l"
