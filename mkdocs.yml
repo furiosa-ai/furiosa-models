@@ -20,6 +20,7 @@ repo_url: https://github.com/furiosa-ai/furiosa-models
 nav:
 - Overview: index.md
 - getting_started.md
+- user_guide.ipynb
 - model_object.md
 - command_tool.md
 - Models:
@@ -50,6 +51,8 @@ markdown_extensions:
 
 plugins:
 - search
+- mkdocs-jupyter:
+    ignore: ["examples/*.py"]
 - mkdocstrings:
     default_handler: python
     handlers:
