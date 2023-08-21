@@ -1583,15 +1583,9 @@ print(dir(vision))</div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">ModuleNotFoundError</span>                       Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In[1], line 1</span>
-<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span> <span class="ansi-bold" style="color: rgb(0,0,255)">furiosa</span><span class="ansi-bold" style="color: rgb(0,0,255)">.</span><span class="ansi-bold" style="color: rgb(0,0,255)">models</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span> vision
-<span class="ansi-green-intense-fg ansi-bold">      4</span> <span style="color: rgb(0,135,0)">print</span>(<span style="color: rgb(0,135,0)">dir</span>(vision))
-
-<span class="ansi-red-fg">ModuleNotFoundError</span>: No module named 'furiosa'</pre>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>['EfficientNetB0', 'EfficientNetV2s', 'ResNet50', 'SSDMobileNet', 'SSDResNet34', 'YOLOv5l', 'YOLOv5m']
+</pre>
 </div>
 </div>
 </div>
@@ -1630,7 +1624,17 @@ Cell <span class="ansi-green-fg">In[1], line 1</span>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>/usr/bin/sh: 1: furiosa-models: not found
+<pre>+-----------------+------------------------------+----------------------+-------------------------+
+|   Model name    |      Model description       |      Task type       | Available postprocesses |
++-----------------+------------------------------+----------------------+-------------------------+
+|    ResNet50     |   MLCommons ResNet50 model   | Image Classification |         Python          |
+|  SSDMobileNet   | MLCommons MobileNet v1 model |   Object Detection   |      Python, Rust       |
+|   SSDResNet34   | MLCommons SSD ResNet34 model |   Object Detection   |      Python, Rust       |
+|     YOLOv5l     |      YOLOv5 Large model      |   Object Detection   |          Rust           |
+|     YOLOv5m     |     YOLOv5 Medium model      |   Object Detection   |          Rust           |
+| EfficientNetB0  |    EfficientNet B0 model     | Image Classification |         Python          |
+| EfficientNetV2s |    EfficientNetV2-s model    | Image Classification |         Python          |
++-----------------+------------------------------+----------------------+-------------------------+
 </pre>
 </div>
 </div>
