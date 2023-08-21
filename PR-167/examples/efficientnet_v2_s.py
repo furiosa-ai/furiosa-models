@@ -1,10 +1,10 @@
 from furiosa.models.vision import EfficientNetV2s
-from furiosa.runtime import session
+from furiosa.runtime.sync import create_runner
 
 image = "tests/assets/cat.jpg"
 
 effnetv2s = EfficientNetV2s()
-with session.create(effnetv2s.model_source()) as sess:
+with create_runner(effnetv2s.model_source()) as runner:
     inputs, _ = effnetv2s.preprocess(image)
-    outputs = sess.run(inputs)
+    outputs = runner.run(inputs)
     effnetv2s.postprocess(outputs)

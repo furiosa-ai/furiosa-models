@@ -16,7 +16,7 @@
         <link rel="prev" href="..">
       
       
-        <link rel="next" href="../model_object/">
+        <link rel="next" href="../user_guide/">
       
       <link rel="icon" href="../assets/favicon.png">
       <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.1.21">
@@ -118,32 +118,6 @@
     
       
     
-    
-      <div class="md-header__option">
-        <div class="md-select">
-          
-          <button class="md-header__button md-icon" aria-label="Select language">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
-          </button>
-          <div class="md-select__inner">
-            <ul class="md-select__list">
-              
-                <li class="md-select__item">
-                  <a href="./" hreflang="en" class="md-select__link">
-                    English
-                  </a>
-                </li>
-              
-                <li class="md-select__item">
-                  <a href="../ko/getting_started/" hreflang="ko" class="md-select__link">
-                    한국어
-                  </a>
-                </li>
-              
-            </ul>
-          </div>
-        </div>
-      </div>
     
     
       <label class="md-header__button md-icon" for="__search">
@@ -331,6 +305,21 @@
   
   
     <li class="md-nav__item">
+      <a href="../user_guide/" class="md-nav__link">
+        Furiosa Model Zoo User Guide
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../model_object/" class="md-nav__link">
         Model object
       </a>
@@ -368,17 +357,17 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
       
       
       
-        <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
           Models
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_5">
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_6">
           <span class="md-nav__icon md-icon"></span>
           Models
         </label>
@@ -638,14 +627,14 @@ So, only when you have any dependency issue, you need to install the following p
 </ul>
 </div>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span> <span class="nn">furiosa.models.vision</span> <span class="kn">import</span> <span class="n">SSDMobileNet</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span> <span class="nn">furiosa.runtime</span> <span class="kn">import</span> <span class="n">session</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span> <span class="nn">furiosa.runtime.sync</span> <span class="kn">import</span> <span class="n">create_runner</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">image</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tests/assets/cat.jpg&quot;</span><span class="p">]</span>
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
 <a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="n">mobilenet</span> <span class="o">=</span> <span class="n">SSDMobileNet</span><span class="p">()</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">mobilenet</span><span class="o">.</span><span class="n">model_source</span><span class="p">())</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="k">with</span> <span class="n">create_runner</span><span class="p">(</span><span class="n">mobilenet</span><span class="o">.</span><span class="n">model_source</span><span class="p">())</span> <span class="k">as</span> <span class="n">runner</span><span class="p">:</span>
 <a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">inputs</span><span class="p">,</span> <span class="n">contexts</span> <span class="o">=</span> <span class="n">mobilenet</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">outputs</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">outputs</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
 <a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="n">mobilenet</span><span class="o">.</span><span class="n">postprocess</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">contexts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </code></pre></div>
 <p>This example does:</p>
