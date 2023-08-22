@@ -4,8 +4,8 @@ ONNXRUNTIME_VERSION := 1.15.1-?
 TOOLCHAIN_VERSION := 0.10.0-?
 LIBHAL_VERSION := 0.11.0-?
 
-.PHONY: check-docker-tag toolchain lint test unit_tests examples regression-test-all \
-regression-test-resnet50 regression-test-ssd-mobilenet \
+.PHONY: check-docker-tag toolchain lint test unit_tests notebook_tests examples \
+regression-test-all regression-test-resnet50 regression-test-ssd-mobilenet \
 regression-test-ssd-resnet34 regression-test-yolov5 doc docker-build docker-push \
 regression-test-efficientnet-b0 regression-test-efficientnet-v2-s
 
@@ -32,6 +32,9 @@ test:
 
 unit_tests:
 	pytest ./tests/unit/ -s
+
+notebook_tests:
+	pytest --nbmake ./docs
 
 examples:
 	for f in $$(find docs/examples/ -name *.py); do printf "\n[TEST] $$f ...\n"; python3 $$f || exit 1; done
