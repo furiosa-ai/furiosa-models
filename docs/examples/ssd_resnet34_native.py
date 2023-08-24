@@ -1,5 +1,5 @@
-from furiosa.models.vision import SSDResNet34
 from furiosa.models.types import Platform
+from furiosa.models.vision import SSDResNet34
 from furiosa.runtime.sync import create_runner
 
 resnet34 = SSDResNet34(postprocessor_type=Platform.RUST)

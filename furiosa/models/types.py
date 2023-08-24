@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import datetime
 from enum import Enum
 from functools import cached_property
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Literal
+from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple
 
 import numpy.typing as npt
 from pydantic import BaseModel, ConfigDict, Field, computed_field, field_serializer
@@ -121,13 +121,11 @@ class Model(ABC, BaseModel):
     postprocessor: PostProcessor = Field(..., repr=False, exclude=True)
 
     def preprocess(self, *args, **kwargs) -> Tuple[Sequence[npt.ArrayLike], Sequence[Context]]:
-        """preprocess input tensors
-        """
+        """preprocess input tensors"""
         return self.preprocessor(*args, **kwargs)
 
     def postprocess(self, *args, **kwargs):
-        """postprocess output tensors
-        """
+        """postprocess output tensors"""
         return self.postprocessor(*args, **kwargs)
 
     @computed_field(repr=False)
@@ -156,8 +154,7 @@ class Model(ABC, BaseModel):
         return resolve_model_source(self._artifact_name, num_pe=num_pe)
 
     def resolve_all(self):
-        """resolve all non-cached properties(origin, tensor_name_to_range, model_sources)
-        """
+        """resolve all non-cached properties(origin, tensor_name_to_range, model_sources)"""
         _ = self.origin, self.tensor_name_to_range
         for num_pe in (1, 2):
             _ = self.model_source(num_pe=num_pe)

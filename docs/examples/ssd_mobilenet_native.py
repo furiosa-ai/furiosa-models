@@ -1,5 +1,5 @@
-from furiosa.models.vision import SSDMobileNet
 from furiosa.models.types import Platform
+from furiosa.models.vision import SSDMobileNet
 from furiosa.runtime.sync import create_runner
 
 image = ["tests/assets/cat.jpg"]
