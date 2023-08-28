@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../assets/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.3">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.5">
     
     
       
@@ -265,16 +265,120 @@
   
   
   
+    
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
     <li class="md-nav__item">
-      <a href="../../user_guide/" class="md-nav__link">
+      <a href="../../tutorials/navigate_models/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Furiosa Model Zoo User Guide
+    Navigate models
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/collect_calibration_ranges/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Collect calibration ranges
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/quantize_and_compile_model/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quantize and compiling Models
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/serving_with_furiosa_serving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Serving with furiosa-serving
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -304,11 +408,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../command_tool/" class="md-nav__link">
+      <a href="../../command_line_tool/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Command Tool
+    Command Line Tool
   </span>
   
 
@@ -556,10 +660,10 @@
       
         <li class="md-nav__item">
   <a href="#furiosa.models.vision.yolov5.core.YOLOv5PreProcessor.__call__" class="md-nav__link">
-    furiosa.models.vision.yolov5.core.YOLOv5PreProcessor.__call__
+    __call__
   </a>
   
-    <nav class="md-nav" aria-label="furiosa.models.vision.yolov5.core.YOLOv5PreProcessor.__call__">
+    <nav class="md-nav" aria-label="__call__">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -743,10 +847,10 @@
       
         <li class="md-nav__item">
   <a href="#furiosa.models.vision.yolov5.core.YOLOv5PreProcessor.__call__" class="md-nav__link">
-    furiosa.models.vision.yolov5.core.YOLOv5PreProcessor.__call__
+    __call__
   </a>
   
-    <nav class="md-nav" aria-label="furiosa.models.vision.yolov5.core.YOLOv5PreProcessor.__call__">
+    <nav class="md-nav" aria-label="__call__">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -875,6 +979,7 @@ You can find examples at <a href="#YOLOv5m_Usage">YOLOv5m Usage</a>.</p>
 <div class="doc doc-object doc-function">
 
 
+
 <a id="furiosa.models.vision.yolov5.core.YOLOv5PreProcessor.__call__"></a>
   <div class="doc doc-contents first">
   
@@ -925,40 +1030,19 @@ precise understanding of the techniques used. Defaults to False.</p>
         </tr>
     </tbody>
   </table>
-
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code><span title="typing.Tuple">Tuple</span>[<span title="numpy.ndarray">ndarray</span>, <span title="typing.List">List</span>[<span title="typing.Dict">Dict</span>[str, <span title="typing.Any">Any</span>]]]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>a pre-processed image, scales and padded sizes(width,height) per images.
-The first element is a stacked numpy array containing a batch of images.
-To learn more about the outputs of preprocess (i.e., model inputs),
-please refer to <a href="../yolov5l/#inputs">YOLOv5l Inputs</a> or
-<a href="./#inputs">YOLOv5m Inputs</a>.</p>
-<p>The second element is a list of dict objects about the original images.
-Each dict object has the following keys. 'scale' key of the returned dict has a
-rescaled ratio per width(=target/width) and height(=target/height), and the 'pad'
-key has padded width and height pixels. Specially, the last dictionary element of
-returning tuple will be passed to postprocessing as a parameter to calculate
-predicted coordinates on normalized coordinates back to an input image coordinator.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+      <p>Returns:
+    a pre-processed image, scales and padded sizes(width,height) per images.
+        The first element is a stacked numpy array containing a batch of images.
+        To learn more about the outputs of preprocess (i.e., model inputs),
+        please refer to <a href="../yolov5l/#inputs">YOLOv5l Inputs</a> or
+        <a href="./#inputs">YOLOv5m Inputs</a>.</p>
+<div class="codehilite"><pre><span></span><code>    The second element is a list of dict objects about the original images.
+    Each dict object has the following keys. &#39;scale&#39; key of the returned dict has a
+    rescaled ratio per width(=target/width) and height(=target/height), and the &#39;pad&#39;
+    key has padded width and height pixels. Specially, the last dictionary element of
+    returning tuple will be passed to postprocessing as a parameter to calculate
+    predicted coordinates on normalized coordinates back to an input image coordinator.
+</code></pre></div>
 
   </div>
 
@@ -967,6 +1051,7 @@ predicted coordinates on normalized coordinates back to an input image coordinat
 
 
 <div class="doc doc-object doc-function">
+
 
 
 <a id="furiosa.models.vision.yolov5.core.YOLOv5PostProcessor.__call__"></a>
@@ -1081,6 +1166,7 @@ The details of <code>ObjectDetectionResult</code> can be found below.</p>
   <div class="doc doc-object doc-class">
 
 
+
 <a id="furiosa.models.vision.postprocess.LtrbBoundingBox"></a>
   <div class="doc doc-contents first">
 
@@ -1128,6 +1214,7 @@ The details of <code>ObjectDetectionResult</code> can be found below.</p>
 </div>
 
 <div class="doc doc-object doc-class">
+
 
 
 <a id="furiosa.models.vision.postprocess.ObjectDetectionResult"></a>

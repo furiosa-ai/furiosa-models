@@ -16,11 +16,11 @@
         <link rel="prev" href="..">
       
       
-        <link rel="next" href="../user_guide/">
+        <link rel="next" href="../tutorials/navigate_models/">
       
       
       <link rel="icon" href="../assets/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.3">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.5">
     
     
       
@@ -326,16 +326,120 @@
   
   
   
+    
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
     <li class="md-nav__item">
-      <a href="../user_guide/" class="md-nav__link">
+      <a href="../tutorials/navigate_models/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Furiosa Model Zoo User Guide
+    Navigate models
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/collect_calibration_ranges/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Collect calibration ranges
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/quantize_and_compile_model/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quantize and compiling Models
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/serving_with_furiosa_serving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Serving with furiosa-serving
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -365,11 +469,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../command_tool/" class="md-nav__link">
+      <a href="../command_line_tool/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Command Tool
+    Command Line Tool
   </span>
   
 
@@ -704,11 +808,17 @@ So, only when you have any dependency issue, you need to install the following p
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip<span class="w"> </span>setuptools<span class="w"> </span>wheel
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;furiosa-models&#39;</span>
 </code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Older versions of wheel may reject the native-build wheels of furiosa-models.
+Please make sure of installing &amp; upgrading Python packaging tools before
+installing furiosa-models.</p>
+</div>
 <details>
 <summary>Building from Source Code (click to see)</summary>
 <p>Or you can build from the source code as following:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git clone https://github.com/furiosa-ai/furiosa-models
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>pip install .
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>pip install ./furiosa-models
 </code></pre></div>
 </details>
 <h2 id="quick-example-and-guides">Quick example and Guides</h2>
@@ -736,7 +846,7 @@ So, only when you have any dependency issue, you need to install the following p
 <p>This example does:</p>
 <ol>
 <li>Load the <a href="../models/ssd_mobilenet/">SSDMobileNet</a> model</li>
-<li>Create a <code>session</code>, which is the main class of Furiosa Runtime, that can load an ONNX/tflite model onto NPU and run inferences.</li>
+<li>Create a <code>Runner</code>, which is one of the main classes of Furiosa Runtime, that can load an ONNX/tflite model onto NPU and run inferences.</li>
 <li>Run an inference with pre/post process functions.</li>
 </ol>
 <p>A <code>Model</code> instance is a Python object, including model artifacts, metadata, and its pre/postprocessors.
@@ -745,8 +855,12 @@ You can learn more about <code>Model</code> object at <a href="../model_object/"
 <a href="https://furiosa-ai.github.io/furiosa-models/#available_models">Available Models</a>.
 Each model page includes the details of the model, input and output tensors, and pre/post processings,
 and API reference.</p>
-<p>If you want to learn more about <code>furiosa.runtime.session</code> in Furiosa Runtime, please refer to
-<a href="https://furiosa-ai.github.io/docs/latest/en/software/tutorials.html">Furiosa SDK - Tutorial and Code Examples</a>.</p>
+<p>If you want to learn more about <code>Runner</code> in Furiosa Runtime, please refer to below links.</p>
+<ul>
+<li><a href="https://furiosa-ai.github.io/docs/latest/en/api/python/furiosa.runtime.html">Furiosa SDK - furiosa.runtime API Reference</a></li>
+<li><a href="https://furiosa-ai.github.io/docs/latest/en/api/python/furiosa.runtime.html#furiosa.runtime.sync.Runtime">Furiosa SDK - furiosa.runtime.sync.create_runner Reference</a></li>
+<li><a href="https://furiosa-ai.github.io/docs/latest/en/software/tutorials.html">Furiosa SDK - Tutorial and Code Examples</a>.</li>
+</ul>
 
 
 
