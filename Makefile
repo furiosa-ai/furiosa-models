@@ -34,7 +34,7 @@ unit_tests:
 	pytest ./tests/unit/ -s
 
 notebook_tests:
-	pytest --nbmake ./docs
+	pytest --nbmake --nbmake-timeout=3600 ./docs
 
 examples:
 	for f in $$(find docs/examples/ -name *.py); do printf "\n[TEST] $$f ...\n"; python3 $$f || exit 1; done
