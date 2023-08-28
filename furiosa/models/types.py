@@ -121,11 +121,14 @@ class Model(ABC, BaseModel):
     postprocessor: PostProcessor = Field(..., repr=False, exclude=True)
 
     def preprocess(self, *args, **kwargs) -> Tuple[Sequence[npt.ArrayLike], Sequence[Context]]:
-        """preprocess input tensors"""
+        """Preprocess input tensors. Input of this function varies from model to model
+
+        Returns:
+            A tuple that contains list of preprocessed input tensors and contexts"""
         return self.preprocessor(*args, **kwargs)
 
     def postprocess(self, *args, **kwargs):
-        """postprocess output tensors"""
+        """Postprocess output tensors"""
         return self.postprocessor(*args, **kwargs)
 
     @computed_field(repr=False)
@@ -140,7 +143,7 @@ class Model(ABC, BaseModel):
         return yaml.full_load(calib_yaml)
 
     def model_source(self, num_pe: Literal[1, 2] = 2) -> bytes:
-        """the executable binary for furiosa runtime and NPU. It can be
+        """Returns an executable binary for furiosa runtime and NPU. It can be
             directly fed to `furiosa.runtime.create_runner`. If model binary is not compiled yet,
             it will be quantized & compiled automatically if possible
 
@@ -154,7 +157,7 @@ class Model(ABC, BaseModel):
         return resolve_model_source(self._artifact_name, num_pe=num_pe)
 
     def resolve_all(self):
-        """resolve all non-cached properties(origin, tensor_name_to_range, model_sources)"""
+        """Resolve all non-cached properties(origin, tensor_name_to_range, model_sources)"""
         _ = self.origin, self.tensor_name_to_range
         for num_pe in (1, 2):
             _ = self.model_source(num_pe=num_pe)

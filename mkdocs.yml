@@ -20,9 +20,13 @@ repo_url: https://github.com/furiosa-ai/furiosa-models
 nav:
 - Overview: index.md
 - getting_started.md
-- user_guide.ipynb
+- Tutorials:
+  - tutorials/navigate_models.ipynb
+  - tutorials/collect_calibration_ranges.ipynb
+  - tutorials/quantize_and_compile_model.ipynb
+  - tutorials/serving_with_furiosa_serving.ipynb
 - model_object.md
-- command_tool.md
+- command_line_tool.md
 - Models:
     - models/resnet50_v1.5.md
     - models/efficientnet_b0.md

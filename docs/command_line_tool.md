@@ -1,4 +1,4 @@
-# Command Tool
+# Command Line Tool
 We provide a simple command line tool called `furiosa-models` to allow users to
 evaluate or run quickly one of models with FuriosaAI NPU.
 

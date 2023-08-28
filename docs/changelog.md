@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.10.0 - 2023-08-28]
+
+### New Features
+- Provide 1pe artifacts too #158
+
+### Improvements
+- Resolve artifact binaries lazily #155
+- Added `ruff` linter #160
+- Automatically build documentation on comment #162
+- Upgrade `pydantic` library version to `2.0.0` #166
+- Added `model.resolve_all()` to resolve all lazily loaded fields at once #166
+- Added local artifact binary cache #166
+
+## Removed
+- Removed unused `timm` dependency #149
+- **Breaking:** Now uses default Python initializer instead of `model.load()` #166
+- **Breaking:** `model.enf` field has been removed #166
+- **Breaking:** `model.source`, `model.calib_yaml` fields have been renamed #166
+
 ## [0.9.1 - 2023-05-26]
 
 ## [0.9.0 - 2023-05-12]

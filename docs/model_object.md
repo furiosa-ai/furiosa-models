@@ -23,11 +23,11 @@ ENF format is [FuriosaAI Compiler](https://furiosa-ai.github.io/docs/latest/en/s
 Once you have the ENF file, you can reuse it to omit the compilation process that take up to minutes.
 In addition, a `Model` object has various metadata. The followings are all attributes belonging to a single `Model` object.
 
-### `furiosa.models.types.Model`
 ::: furiosa.models.types.Model
     options:
-        show_source: true
-        show_symbol_type_toc: true
+        show_root_heading: true
+        heading_level: 4
+        show_source: false
 
 
 ## Inferencing with Session API
