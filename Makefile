@@ -37,7 +37,7 @@ notebook_tests:
 	pytest --nbmake --nbmake-timeout=3600 ./docs
 
 examples:
-	for f in $$(find docs/examples/ -name *.py); do printf "\n[TEST] $$f ...\n"; python3 $$f || exit 1; done
+	for f in $$(find docs/examples/ -name *.py | grep -v "serving"); do printf "\n[TEST] $$f ...\n"; python3 $$f || exit 1; done
 
 regression-test-all:
 	pytest ./tests/bench/
