@@ -64,8 +64,20 @@ Documentation = "https://furiosa-ai.github.io/furiosa-models/latest/"
 [tool.flit.module]
 name = "furiosa.models"
 
-[tool.flit.external-data]
-directory = "furiosa/models/data"
+[tool.flit.sdist]
+exclude = [
+    '.dvc',
+    '.dvcignore',
+    '.github',
+    '.gitignore',
+    'Makefile',
+    'ci-constraints.txt',
+    'docker',
+    'docs',
+    'mkdocs.yml',
+    'tekton',
+    'tests',
+]
 
 [tool.pytest.ini_options]
 addopts = "--benchmark-autosave"
