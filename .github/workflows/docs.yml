@@ -82,7 +82,7 @@ jobs:
           cd ./furiosa-models
           export GIT_HASH=$(git rev-parse --short HEAD)
           export ISSUE_URL=$(echo $ISSUE | cut -d'/' -f-5)
-          export DOCS_PATH=$(echo $BODY | head -n 1 | cut -d'/' -f3)
+          export DOCS_PATH=$(echo $BODY | head -n 1 | cut -d'/' -f3 | xargs)  # use xargs to trim ws/newline chars
           echo "Git short hash: $GIT_HASH"
           echo "Issue URL base: $ISSUE_URL"
           if [ ! $(echo "$DOCS_PATH" | grep -P "v([0-9]+\.){2}[0-9]+") ]; then
