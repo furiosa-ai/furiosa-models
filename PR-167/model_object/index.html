@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../assets/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.5">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.6">
     
     
       
@@ -28,10 +28,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.0e669242.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.35e1ed30.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.85d0ee34.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.356b1318.min.css">
       
       
 
@@ -268,6 +268,9 @@
     
     
     
+    
+    
+      
       
     
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
@@ -275,10 +278,10 @@
         
         
         
-        
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -306,27 +309,7 @@
         
   
   <span class="md-ellipsis">
-    Navigate models
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tutorials/collect_calibration_ranges/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Collect calibration ranges
+    Navigating Models from FuriosaAI Model Zoo
   </span>
   
 
@@ -366,7 +349,7 @@
         
   
   <span class="md-ellipsis">
-    Serving with furiosa-serving
+    Serving Example with furiosa-serving
   </span>
   
 
@@ -496,11 +479,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#inferencing-with-session-api" class="md-nav__link">
-    Inferencing with Session API
+  <a href="#inferencing-with-runner-api" class="md-nav__link">
+    Inferencing with Runner API
   </a>
   
-    <nav class="md-nav" aria-label="Inferencing with Session API">
+    <nav class="md-nav" aria-label="Inferencing with Runner API">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -512,6 +495,13 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    See Also
+  </a>
   
 </li>
       
@@ -550,6 +540,9 @@
     
     
     
+    
+    
+      
       
     
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
@@ -557,10 +550,10 @@
         
         
         
-        
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -870,11 +863,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#inferencing-with-session-api" class="md-nav__link">
-    Inferencing with Session API
+  <a href="#inferencing-with-runner-api" class="md-nav__link">
+    Inferencing with Runner API
   </a>
   
-    <nav class="md-nav" aria-label="Inferencing with Session API">
+    <nav class="md-nav" aria-label="Inferencing with Runner API">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -886,6 +879,13 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    See Also
+  </a>
   
 </li>
       
@@ -908,14 +908,14 @@
 
 
 <h1 id="model-object">Model object</h1>
-<p>In <code>furiosa-models</code> project, <code>Model</code> is the first class object, and it represents a neural network model.
-This document explains what <a class="autorefs autorefs-internal" href="#furiosa.models.types.Model"><code>Model</code></a> object offers and their usages.</p>
+<p>In the <code>furiosa-models</code> project, the <code>Model</code> is the primary class object, representing a neural network model. This document elucidates the offerings and uses of the <a class="autorefs autorefs-internal" href="#furiosa.models.types.Model"><code>Model</code></a> object.</p>
 <h2 id="loading-a-pre-trained-model">Loading a pre-trained model</h2>
-<p>To load a pre-trained neural-network model, you need to call the <code>Model</code> object.
-Since the sizes of pre-trained model weights vary from tens to hundreds megabytes,
-the model images are not included in Python package. First time the model object is called, a pre-trained model will be
-fetched over the network. It takes some time (usually few seconds) depending on models and network conditions.
-Once the model images are fetched, they will be cached on a local disk.</p>
+<p>To load a pre-trained neural network model, you need to invoke the <code>Model</code> object.
+As the sizes of pre-trained model weights can range from tens to hundreds of megabytes,
+the model images are not included in the Python package. The first time the model object is called,
+a pre-trained model will be fetched over the network. This process takes some time,
+typically a few seconds, depending on the models and network conditions.
+Once the model images are fetched, they will be cached on your local disk.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:1"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Load module</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -929,10 +929,11 @@ Once the model images are fetched, they will be cached on a local disk.</p>
 </div>
 <p><a name="accessing_artifacts_and_metadata"></a></p>
 <h2 id="accessing-artifacts-and-metadata">Accessing artifacts and metadata</h2>
-<p>A <code>Model</code> object includes model artifacts, such as ONNX, tflite, mapping from a tensor name to the tensor's min and max, and ENF.</p>
-<p>ENF format is <a href="https://furiosa-ai.github.io/docs/latest/en/software/compiler.html">FuriosaAI Compiler</a> specific format.
-Once you have the ENF file, you can reuse it to omit the compilation process that take up to minutes.
-In addition, a <code>Model</code> object has various metadata. The followings are all attributes belonging to a single <code>Model</code> object.</p>
+<p>A Model object encompasses model artifacts, such as ONNX, TFLite, mapping from a tensor name to the tensor's min and max, and ENF.</p>
+<p>The ENF format is specific to the FuriosaAI Compiler.
+Once you have the ENF file, you can reuse it to skip the compilation process, which can take up to several minutes.
+You can acquire the ENF binary from the model_source() method.
+In addition, a Model object contains various metadata attributes.</p>
 
 
 <div class="doc doc-object doc-class">
@@ -1203,7 +1204,7 @@ with or without quantization and proper compiler configuration</p>
     <tbody>
         <tr>
           <td>
-                <code><span title="typing.Tuple">Tuple</span>[<span title="typing.Sequence">Sequence</span>[numpy.<span title="numpy.ArrayLike">ArrayLike</span>], <span title="typing.Sequence">Sequence</span>[<span title="furiosa.models.types.Context">Context</span>]]</code>
+                <code><span title="typing.Tuple">Tuple</span>[<span title="typing.Sequence">Sequence</span>[<span title="numpy.ArrayLike">ArrayLike</span>], <span title="typing.Sequence">Sequence</span>[<span title="furiosa.models.types.Context">Context</span>]]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1244,8 +1245,8 @@ with or without quantization and proper compiler configuration</p>
 
   </div>
 
-</div><h2 id="inferencing-with-session-api">Inferencing with Session API</h2>
-<p>To create a session, pass the <code>enf</code> field of the model object to the furiosa.runtime.session.create() function. Passing the pre-compiled <code>enf</code> allows you to perform inference directly without the compilation process. Alternatively, you can also manually quantize and compile the original f32 model with the provided calibration range.</p>
+</div><h2 id="inferencing-with-runner-api">Inferencing with Runner API</h2>
+<p>To create a Runner, pass the ENF binary obtained from the <code>model_source()</code> method of the model object to the <code>furiosa.runtime.sync.create_runner</code> function. If you prefer an asynchronous Runner, you can use the <code>furiosa.runtime.create_runner</code> function instead. Passing the pre-compiled ENF binary allows you to perform inference directly without the compilation process. Alternatively, you can also manually quantize and compile the original f32 model with the provided calibration range.</p>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>If you want to learn more about the installation of furiosa-sdk and how to use it, please follow the followings:</p>
@@ -1255,13 +1256,14 @@ with or without quantization and proper compiler configuration</p>
 <li><a href="https://furiosa-ai.github.io/docs/latest/en/software/tutorials.html">Furiosa SDK - Tutorial and Code Examples</a></li>
 </ul>
 </div>
-<p>Passing <code>Model.origin</code> to <code>session.create()</code> allows users to start from source models in ONNX or tflite and customize models to their specific use-cases. This customization includes options such as specifying batch sizes and compiler configurations for optimization purposes. For additional information on Model.origin, please refer to <a href="#accessing_artifacts_and_metadata">Accessing artifacts and metadata</a>.</p>
-<p>To utilize f32 source models, it is necessary to perform calibration and quantization.
-Pre-calibrated data is readily available in Furiosa-models, facilitating direct access to the quantization process.
-For manual quantization of the model, you can install the <code>furiosa-quantizer</code> package, which can be found at this  <a href="https://furiosa-ai.github.io/docs/latest/en/software/python-sdk.html#quantizer">package link</a>.
-The tensor_name_to_range field of the model class represents this pre-calibrated data.
-After quantization, the output will be in the form of FuriosaAI's IR which can then be passed to the session.
-At this stage, the compiler configuration can be specified.</p>
+<p>Passing <code>Model.origin</code> to <code>create_runner()</code> allows users to start from source models in ONNX or tflite and customize models to their specific use-cases. This customization includes options such as specifying batch sizes and compiler configurations for optimization purposes. For additional information on Model.origin, please refer to <a href="#accessing_artifacts_and_metadata">Accessing artifacts and metadata</a>.</p>
+<p>To work with f32 source models, calibration and quantization are essential steps.
+You can access pre-calibrated data directly from furiosa-models, simplifying the quantization process.
+If you prefer manual quantization of the model, you can install the <code>furiosa-quantizer</code> package, available at this <a href="https://furiosa-ai.github.io/docs/latest/en/software/python-sdk.html#quantizer">package link</a>.
+The <code>tensor_name_to_range</code> field within the model class contains this pre-calibrated data.</p>
+<p>Upon quantization, the output will be in FuriosaAI's Intermediate Representation (IR) format, which can then be passed to the Runner. At this stage, you have the option to specify the compiler configuration.</p>
+<p>After quantization, the output will be in the form of FuriosaAI's Intermediate Representation (IR) which
+can then be passed to the session. At this stage, the compiler configuration can be specified.</p>
 <p><a name="Examples"></a></p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
@@ -1305,9 +1307,15 @@ At this stage, the compiler configuration can be specified.</p>
 <a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="n">quantized_onnx</span> <span class="o">=</span> <span class="n">quantize</span><span class="p">(</span><span class="n">onnx_model</span><span class="p">,</span> <span class="n">tensor_name_to_range</span><span class="p">)</span>
 <a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>
 <a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="k">with</span> <span class="n">create_runner</span><span class="p">(</span><span class="n">quantized_onnx</span><span class="p">,</span> <span class="n">compiler_config</span><span class="o">=</span><span class="n">compiler_config</span><span class="p">)</span> <span class="k">as</span> <span class="n">runner</span><span class="p">:</span>
-<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>    <span class="n">inputs</span><span class="p">,</span> <span class="n">contexts</span> <span class="o">=</span> <span class="n">mobilenet</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">with_scaling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>    <span class="n">outputs</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
-<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>    <span class="n">mobilenet</span><span class="o">.</span><span class="n">postprocess</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">contexts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>    <span class="c1"># Models in the Model Zoo have built-in optimizations that, by default,</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>    <span class="c1"># bypass normalization, quantization, and type conversion. If you compile</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>    <span class="c1"># and utilize these models without employing these optimizations, it&#39;s</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>    <span class="c1"># necessary to set up preprocessing steps to incorporate normalization and</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>    <span class="c1"># type casting. To accomplish this, you should introduce an extra parameter,</span>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>    <span class="c1"># `with_scaling=True`.</span>
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>    <span class="n">inputs</span><span class="p">,</span> <span class="n">contexts</span> <span class="o">=</span> <span class="n">mobilenet</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">with_scaling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>    <span class="n">outputs</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>    <span class="n">mobilenet</span><span class="o">.</span><span class="n">postprocess</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">contexts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </code></pre></div>
 </div>
 </div>
@@ -1358,7 +1366,7 @@ You can find more details of each model page.</p>
 </code></pre></div>
 </div>
 </div>
-<h1 id="see-also">See Also</h1>
+<h2 id="see-also">See Also</h2>
 <ul>
 <li><a href="https://furiosa-ai.github.io/docs/latest/en/">Furiosa SDK Documentation</a></li>
 </ul>
@@ -1399,10 +1407,11 @@ You can find more details of each model page.</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.78eede0e.min.js"></script>
+      <script src="../assets/javascripts/bundle.aecac24b.min.js"></script>
       
     
   </body>
