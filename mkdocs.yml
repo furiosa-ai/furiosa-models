@@ -22,7 +22,6 @@ nav:
 - getting_started.md
 - Tutorials:
   - tutorials/navigate_models.ipynb
-  - tutorials/collect_calibration_ranges.ipynb
   - tutorials/quantize_and_compile_model.ipynb
   - tutorials/serving_with_furiosa_serving.md
 - model_object.md

@@ -1,14 +1,16 @@
 # Model object
 
-In `furiosa-models` project, `Model` is the first class object, and it represents a neural network model.
-This document explains what [`Model`][furiosa.models.types.Model] object offers and their usages.
+In the `furiosa-models` project, the `Model` is the primary class object, representing a neural network model. This document elucidates the offerings and uses of the [`Model`][furiosa.models.types.Model] object.
+
 
 ## Loading a pre-trained model
-To load a pre-trained neural-network model, you need to call the `Model` object.
-Since the sizes of pre-trained model weights vary from tens to hundreds megabytes,
-the model images are not included in Python package. First time the model object is called, a pre-trained model will be
-fetched over the network. It takes some time (usually few seconds) depending on models and network conditions.
-Once the model images are fetched, they will be cached on a local disk.
+
+To load a pre-trained neural network model, you need to invoke the `Model` object.
+As the sizes of pre-trained model weights can range from tens to hundreds of megabytes,
+the model images are not included in the Python package. The first time the model object is called,
+a pre-trained model will be fetched over the network. This process takes some time,
+typically a few seconds, depending on the models and network conditions.
+Once the model images are fetched, they will be cached on your local disk.
 
 === "Load module"
     ```python
@@ -16,12 +18,15 @@ Once the model images are fetched, they will be cached on a local disk.
     ```
 
 <a name="accessing_artifacts_and_metadata"></a>
-## Accessing artifacts and metadata
-A `Model` object includes model artifacts, such as ONNX, tflite, mapping from a tensor name to the tensor's min and max, and ENF.
 
-ENF format is [FuriosaAI Compiler](https://furiosa-ai.github.io/docs/latest/en/software/compiler.html) specific format.
-Once you have the ENF file, you can reuse it to omit the compilation process that take up to minutes.
-In addition, a `Model` object has various metadata. The followings are all attributes belonging to a single `Model` object.
+## Accessing artifacts and metadata
+
+A Model object encompasses model artifacts, such as ONNX, TFLite, mapping from a tensor name to the tensor's min and max, and ENF.
+
+The ENF format is specific to the FuriosaAI Compiler.
+Once you have the ENF file, you can reuse it to skip the compilation process, which can take up to several minutes.
+You can acquire the ENF binary from the model_source() method.
+In addition, a Model object contains various metadata attributes.
 
 ::: furiosa.models.types.Model
     options:
@@ -30,9 +35,10 @@ In addition, a `Model` object has various metadata. The followings are all attri
         show_source: false
 
 
-## Inferencing with Session API
+## Inferencing with Runner API
 
-To create a session, pass the `enf` field of the model object to the furiosa.runtime.session.create() function. Passing the pre-compiled `enf` allows you to perform inference directly without the compilation process. Alternatively, you can also manually quantize and compile the original f32 model with the provided calibration range.
+To create a Runner, pass the ENF binary obtained from the `model_source()` method of the model object to the `furiosa.runtime.sync.create_runner` function. If you prefer an asynchronous Runner, you can use the `furiosa.runtime.create_runner` function instead. Passing the pre-compiled ENF binary allows you to perform inference directly without the compilation process. Alternatively, you can also manually quantize and compile the original f32 model with the provided calibration range.
+
 
 !!!Info
     If you want to learn more about the installation of furiosa-sdk and how to use it, please follow the followings:
@@ -41,14 +47,17 @@ To create a session, pass the `enf` field of the model object to the furiosa.run
     * [Python SDK Installation and User Guide](https://furiosa-ai.github.io/docs/latest/en/software/python-sdk.html)
     * [Furiosa SDK - Tutorial and Code Examples](https://furiosa-ai.github.io/docs/latest/en/software/tutorials.html)
 
-Passing `Model.origin` to `session.create()` allows users to start from source models in ONNX or tflite and customize models to their specific use-cases. This customization includes options such as specifying batch sizes and compiler configurations for optimization purposes. For additional information on Model.origin, please refer to [Accessing artifacts and metadata](#accessing_artifacts_and_metadata).
+Passing `Model.origin` to `create_runner()` allows users to start from source models in ONNX or tflite and customize models to their specific use-cases. This customization includes options such as specifying batch sizes and compiler configurations for optimization purposes. For additional information on Model.origin, please refer to [Accessing artifacts and metadata](#accessing_artifacts_and_metadata).
 
-To utilize f32 source models, it is necessary to perform calibration and quantization.
-Pre-calibrated data is readily available in Furiosa-models, facilitating direct access to the quantization process.
-For manual quantization of the model, you can install the `furiosa-quantizer` package, which can be found at this  [package link](https://furiosa-ai.github.io/docs/latest/en/software/python-sdk.html#quantizer).
-The tensor_name_to_range field of the model class represents this pre-calibrated data.
-After quantization, the output will be in the form of FuriosaAI's IR which can then be passed to the session.
-At this stage, the compiler configuration can be specified.
+To work with f32 source models, calibration and quantization are essential steps.
+You can access pre-calibrated data directly from furiosa-models, simplifying the quantization process.
+If you prefer manual quantization of the model, you can install the `furiosa-quantizer` package, available at this [package link](https://furiosa-ai.github.io/docs/latest/en/software/python-sdk.html#quantizer).
+The `tensor_name_to_range` field within the model class contains this pre-calibrated data.
+
+Upon quantization, the output will be in FuriosaAI's Intermediate Representation (IR) format, which can then be passed to the Runner. At this stage, you have the option to specify the compiler configuration.
+
+After quantization, the output will be in the form of FuriosaAI's Intermediate Representation (IR) which
+can then be passed to the session. At this stage, the compiler configuration can be specified.
 
 
 <a name="Examples"></a>
@@ -67,6 +76,7 @@ At this stage, the compiler configuration can be specified.
 
 
 ### Pre/Postprocessing
+
 There are gaps between model input/outputs and user applications' desired input and output data.
 In general, inputs and outputs of a neural network model are tensors. In applications,
 user sample data are images in standard formats like PNG or JPEG, and
@@ -105,7 +115,6 @@ In sum, typical steps of a single inference is as the following, as also shown a
         --8<-- "docs/examples/ssd_mobilenet_native.py"
         ```
 
+## See Also
 
-
-# See Also
 * [Furiosa SDK Documentation](https://furiosa-ai.github.io/docs/latest/en/)

@@ -13,7 +13,7 @@ furiosa-models [-h] {list, desc, bench} ...
 
 `furiosa-models` command has three subcommands: `list`, `desc`, and `bench`.
 
-## Subcommand: list
+## Subcommand: `list`
 
 `list` subcommand prints out the list of models with attributes.
 You will be able to figure out what models are available.
@@ -35,7 +35,7 @@ $ furiosa-models list
 +-----------------+------------------------------+----------------------+-------------------------+
 ```
 
-## Subcommand: bench
+## Subcommand: `bench`
 
 `bench` subcommand runs a specific model with a given path where the input sample data are located.
 It will print out the performance benchmark results like QPS.
@@ -72,7 +72,7 @@ QPS: 790.88645
 Avg. elapsed time / sample: 1.26440 ms
 ```
 
-## Subcommand: desc
+## Subcommand: `desc`
 
 `desc` subcommand shows the details of a specific model.
 
