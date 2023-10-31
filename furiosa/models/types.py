@@ -35,6 +35,7 @@ class ModelTaskType(str, Enum):
 
     OBJECT_DETECTION = "OBJECT_DETECTION"
     IMAGE_CLASSIFICATION = "IMAGE_CLASSIFICATION"
+    POSE_ESTIMATION = "POSE_ESTIMATION"
 
 
 class Format(str, Enum):
@@ -183,3 +184,10 @@ class ImageClassificationModel(Model, ABC):
 
     def __init__(self, *args, **kwargs):
         super().__init__(task_type=ModelTaskType.IMAGE_CLASSIFICATION, *args, **kwargs)
+
+
+class PoseEstimationModel(Model, ABC):
+    """Pose Estimation Model Base Class"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(task_type=ModelTaskType.POSE_ESTIMATION, *args, **kwargs)

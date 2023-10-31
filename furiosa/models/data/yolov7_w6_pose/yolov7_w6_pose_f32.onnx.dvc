@@ -1,0 +1,5 @@
+outs:
+- md5: c3277e8e56a8e111d4e66ae40a584179
+  size: 320776306
+  hash: md5
+  path: yolov7_w6_pose_f32.onnx
