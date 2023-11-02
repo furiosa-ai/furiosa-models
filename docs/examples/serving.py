@@ -40,6 +40,6 @@ async def infer(image: UploadFile = File(...)) -> Dict[str, str]:
     return {"result": response}
 
 
+# Run the server if current Python script is called directly
 if __name__ == "__main__":
-    # Run the server if current Python script is called directly
     uvicorn.run(app, host="0.0.0.0", port=8000)
