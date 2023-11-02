@@ -20,15 +20,15 @@
       
       
       <link rel="icon" href="../../assets/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.6">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.7">
     
     
       
-        <title>Quantize and compiling Models - Furiosa Models</title>
+        <title>Quantize and Compile Models - Furiosa Models</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.35e1ed30.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.4b4a2bd9.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.356b1318.min.css">
@@ -79,7 +79,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#quantize-and-compiling-models" class="md-skip">
+        <a href="#quantize-and-compile-models" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Quantize and compiling Models
+              Quantize and Compile Models
             
           </span>
         </div>
@@ -340,7 +340,7 @@
         
   
   <span class="md-ellipsis">
-    Quantize and compiling Models
+    Quantize and Compile Models
   </span>
   
 
@@ -361,7 +361,7 @@
         
   
   <span class="md-ellipsis">
-    Serving Example with furiosa-serving
+    Serving Example with Furiosa Serving
   </span>
   
 
@@ -952,7 +952,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
     if (!diagrams.length) {
       return;
     }
-    const mermaid = (await import("https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.5.0/mermaid.esm.min.mjs")).default;
+    const mermaid = (await import("https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.0/mermaid.esm.min.mjs")).default;
     const parser = new DOMParser();
 
     mermaid.initialize({
@@ -1102,12 +1102,17 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="quantize-and-compiling-models">Quantize and compiling Models<a class="anchor-link" href="#quantize-and-compiling-models">¶</a></h1><p>Related fields:</p>
+<h1 id="quantize-and-compile-models">Quantize and Compile Models<a class="anchor-link" href="#quantize-and-compile-models">¶</a></h1><p>Furiosa Model Zoo provides pre-compiled binaries that can be used directly with the NPU. However, we also offer the original model files and related metadata to allow for the application of different compiler options and calibration methods. In this document, we will explore the usage of the following two fields within the Model object:</p>
 <ul>
-<li>tensor_name_to_range</li>
-<li>origin</li>
+<li><code>tensor_name_to_range</code></li>
+<li><code>origin</code></li>
 </ul>
-<p>See the Model's input/output summary</p>
+<p>For learn more about quantization and performance optimization, you can refer to the relevant SDK's documentation pages.</p>
+<ul>
+<li><a href="https://furiosa-ai.github.io/docs/latest/en/software/quantization.html">Furiosa SDK - Quantization</a>.</li>
+<li><a href="https://furiosa-ai.github.io/docs/latest/en/software/performance.html#optimizing-quantize-operator">Furiosa SDK - Model Optimization - Quantize</a>.</li>
+</ul>
+<p>Now, we will run ResNet50 model without any further optimizations.</p>
 </div>
 </div>
 </div>
@@ -1135,30 +1140,54 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="kn">from</span> <span class="nn">furiosa.runtime.sync</span> <span class="kn">import</span> <span class="n">create_runner</span>
 
 <span class="kn">import</span> <span class="nn">onnx</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">perf_counter</span>
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">vision</span><span class="o">.</span><span class="n">ResNet50</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"First field of calibration ranges:"</span><span class="p">,</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">tensor_name_to_range</span><span class="o">.</span><span class="n">items</span><span class="p">())))</span>
-
 <span class="n">f32_onnx_model</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">load_from_string</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">origin</span><span class="p">)</span>
 <span class="n">quantized_onnx</span> <span class="o">=</span> <span class="n">quantize</span><span class="p">(</span><span class="n">f32_onnx_model</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">tensor_name_to_range</span><span class="p">)</span>
 
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Example field of calibration ranges:"</span><span class="p">,</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">tensor_name_to_range</span><span class="o">.</span><span class="n">items</span><span class="p">())))</span>
+
 <span class="k">with</span> <span class="n">create_runner</span><span class="p">(</span><span class="n">quantized_onnx</span><span class="p">)</span> <span class="k">as</span> <span class="n">runner</span><span class="p">:</span>
     <span class="n">runner</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">print_summary</span><span class="p">()</span>
+    <span class="n">input_tensor_desc</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">inputs</span><span class="p">()</span>
+    <span class="n">fake_input</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">desc</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">desc</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">numpy</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">desc</span> <span class="ow">in</span> <span class="n">input_tensor_desc</span>
+    <span class="p">]</span>
+    <span class="n">starting_time</span> <span class="o">=</span> <span class="n">perf_counter</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+        <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">fake_input</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Average inference time:"</span><span class="p">,</span> <span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">starting_time</span><span class="p">,</span> <span class="s2">"ms"</span><span class="p">)</span>
 </pre></div>
 <div class="clipboard-copy-txt" id="cell-1">from furiosa.models import vision
 from furiosa.quantizer import quantize
 from furiosa.runtime.sync import create_runner
 
 import onnx
+import numpy as np
+
+from time import perf_counter
 
 model = vision.ResNet50()
-print("First field of calibration ranges:", next(iter(model.tensor_name_to_range.items())))
-
 f32_onnx_model = onnx.load_from_string(model.origin)
 quantized_onnx = quantize(f32_onnx_model, model.tensor_name_to_range)
 
+print("Example field of calibration ranges:", next(iter(model.tensor_name_to_range.items())))
+
 with create_runner(quantized_onnx) as runner:
-    runner.model.print_summary()</div>
+    runner.model.print_summary()
+    input_tensor_desc = runner.model.inputs()
+    fake_input = [
+        np.asarray(np.random.randint(256, size=desc.shape), dtype=desc.dtype.numpy)
+        for desc in input_tensor_desc
+    ]
+    starting_time = perf_counter()
+    for _ in range(1000):
+        runner.run(fake_input)
+    print("Average inference time:", perf_counter() - starting_time, "ms")</div>
 </div>
 </div>
 </div>
@@ -1178,25 +1207,12 @@ libfuriosa_hal.so --- v0.11.0, built @ 43c901f
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>First field of calibration ranges: ('input_tensor:0', (-123.5584560111165, 150.34208860248327))
-2023-08-28T01:28:05.078547Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: FuriosaRT (v0.10.0, rev: ac1a04a8d, built at: 2023-08-08T12:15:46Z) bootstrapping ...
-2023-08-28T01:28:05.084541Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: Found furiosa-compiler (v0.10.0, rev: f8f05c8, built at: 2023-08-08T11:58:09Z)
-2023-08-28T01:28:05.084554Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: Found libhal (type: warboy, v0.11.0, rev: 43c901f built at: 2023-08-08T12:07:35Z)
-2023-08-28T01:28:05.084557Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Runtime-0] detected 1 NPU device(s):
-2023-08-28T01:28:05.094238Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: - [0] npu:2:0-1 (warboy-b0-2pe, 128dpes, firmware: 1.7.0, f7b0f28)
-2023-08-28T01:28:05.094462Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Runtime-0] started
-2023-08-28T01:28:09.761370Z <span class="ansi-green-fg"> INFO</span> furiosa::runtime: Saving the compilation log into /root/.local/state/furiosa/logs/compiler-20230828102809-v88fdx.log
-2023-08-28T01:28:09.761655Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Runtime-0] created Sess-08a8e56d using npu:2:0-1
-2023-08-28T01:28:09.773352Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Sess-08a8e56d] compiling the model (target: warboy-b0-2pe, 128dpes, size: 102.2 MB)
-2023-08-28T01:28:12.780705Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Sess-08a8e56d] the model compile is successful (took 3 secs)
-2023-08-28T01:28:13.227285Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Runtime-0] created 1 NPU threads on npu:2:0-1 (DRAM: 180.0 kiB/16.0 GiB, SRAM: 31.4 MiB/128.0 MiB)
+<pre>Example field of calibration ranges: ('input_tensor:0', (-123.5584560111165, 150.34208860248327))
 Inputs:
 {0: TensorDesc(shape=(1, 3, 224, 224), dtype=FLOAT32, format=NCHW, size=602112, len=150528)}
 Outputs:
 {0: TensorDesc(shape=(1,), dtype=INT64, format=?, size=8, len=1)}
-2023-08-28T01:28:13.413781Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Sess-08a8e56d] terminated
-2023-08-28T01:28:13.417749Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::npu::raw: NPU (npu:2:0-1) has been closed
-2023-08-28T01:28:13.419580Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Runtime-0] stopped
+Average inference time: 5.456097726011649 ms
 </pre>
 </div>
 </div>
@@ -1210,7 +1226,9 @@ Outputs:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Run inferences with scaling</p>
+<p>According to
+<a href="https://furiosa-ai.github.io/docs/latest/ko/software/performance.html#quantize">performance tuning guide</a>, we can remove input tensors' quantize operator to optimize the model.</p>
+<p>Please note that input tensors' data type has been changed from float32 to unsigned int 8.</p>
 </div>
 </div>
 </div>
@@ -1224,109 +1242,6 @@ Outputs:
 <div class="CodeMirror cm-s-jupyter">
 <div class="zeroclipboard-container">
 <clipboard-copy for="cell-2">
-<div>
-<span class="notice" hidden="">Copied!</span>
-<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
-<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
-<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
-</svg>
-</div>
-</clipboard-copy>
-</div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">perf_counter</span>
-
-
-<span class="n">quantized_onnx</span> <span class="o">=</span> <span class="n">quantize</span><span class="p">(</span><span class="n">f32_onnx_model</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">tensor_name_to_range</span><span class="p">)</span>
-
-<span class="k">with</span> <span class="n">create_runner</span><span class="p">(</span><span class="n">quantized_onnx</span><span class="p">)</span> <span class="k">as</span> <span class="n">runner</span><span class="p">:</span>
-    <span class="n">input_tensor_desc</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">inputs</span><span class="p">()</span>
-    <span class="n">runner</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">print_summary</span><span class="p">()</span>
-    <span class="n">fake_input</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">desc</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">desc</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">numpy</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">desc</span> <span class="ow">in</span> <span class="n">input_tensor_desc</span>
-    <span class="p">]</span>
-    <span class="n">starting_time</span> <span class="o">=</span> <span class="n">perf_counter</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
-        <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">fake_input</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"Average inference time:"</span><span class="p">,</span> <span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">starting_time</span><span class="p">,</span> <span class="s2">"ms"</span><span class="p">)</span>
-</pre></div>
-<div class="clipboard-copy-txt" id="cell-2">import numpy as np
-from time import perf_counter
-
-
-quantized_onnx = quantize(f32_onnx_model, model.tensor_name_to_range)
-
-with create_runner(quantized_onnx) as runner:
-    input_tensor_desc = runner.model.inputs()
-    runner.model.print_summary()
-    fake_input = [
-        np.asarray(np.random.randint(256, size=desc.shape), dtype=desc.dtype.numpy)
-        for desc in input_tensor_desc
-    ]
-    starting_time = perf_counter()
-    for _ in range(1000):
-        runner.run(fake_input)
-    print("Average inference time:", perf_counter() - starting_time, "ms")</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>2023-08-28T01:28:13.806497Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: FuriosaRT (v0.10.0, rev: ac1a04a8d, built at: 2023-08-08T12:15:46Z) bootstrapping ...
-2023-08-28T01:28:13.811804Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: Found furiosa-compiler (v0.10.0, rev: f8f05c8, built at: 2023-08-08T11:58:09Z)
-2023-08-28T01:28:13.811809Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: Found libhal (type: warboy, v0.11.0, rev: 43c901f built at: 2023-08-08T12:07:35Z)
-2023-08-28T01:28:13.811811Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Runtime-1] detected 1 NPU device(s):
-2023-08-28T01:28:13.823402Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: - [0] npu:2:0-1 (warboy-b0-2pe, 128dpes, firmware: 1.7.0, f7b0f28)
-2023-08-28T01:28:13.823534Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Runtime-1] started
-2023-08-28T01:28:17.728906Z <span class="ansi-green-fg"> INFO</span> furiosa::runtime: Saving the compilation log into /root/.local/state/furiosa/logs/compiler-20230828102817-okpycl.log
-2023-08-28T01:28:17.729397Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Runtime-1] created Sess-541713a4 using npu:2:0-1
-2023-08-28T01:28:17.743437Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Sess-541713a4] compiling the model (target: warboy-b0-2pe, 128dpes, size: 102.2 MB)
-2023-08-28T01:28:20.754124Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Sess-541713a4] the model compile is successful (took 3 secs)
-2023-08-28T01:28:21.203223Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Runtime-1] created 1 NPU threads on npu:2:0-1 (DRAM: 180.0 kiB/16.0 GiB, SRAM: 31.4 MiB/128.0 MiB)
-Inputs:
-{0: TensorDesc(shape=(1, 3, 224, 224), dtype=FLOAT32, format=NCHW, size=602112, len=150528)}
-Outputs:
-{0: TensorDesc(shape=(1,), dtype=INT64, format=?, size=8, len=1)}
-Average inference time: 5.614574640989304 ms
-2023-08-28T01:28:27.071158Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Sess-541713a4] terminated
-2023-08-28T01:28:27.080271Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::npu::raw: NPU (npu:2:0-1) has been closed
-2023-08-28T01:28:27.085561Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Runtime-1] stopped
-</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Run inferences without scaling (and quantize).</p>
-<p>See <a href="https://furiosa-ai.github.io/docs/latest/ko/software/performance.html#quantize">performance tuning guide</a> for more details.</p>
-<p>Please note that input data type has been changed</p>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="CodeMirror cm-s-jupyter">
-<div class="zeroclipboard-container">
-<clipboard-copy for="cell-3">
 <div>
 <span class="notice" hidden="">Copied!</span>
 <svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
@@ -1358,7 +1273,7 @@ Average inference time: 5.614574640989304 ms
         <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">fake_input</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">"Average inference time:"</span><span class="p">,</span> <span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">starting_time</span><span class="p">,</span> <span class="s2">"ms"</span><span class="p">)</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-3">from copy import deepcopy
+<div class="clipboard-copy-txt" id="cell-2">from copy import deepcopy
 from furiosa.quantizer import ModelEditor, get_pure_input_names, TensorType
 
 
@@ -1390,122 +1305,11 @@ with create_runner(quantized_onnx_wo_input_quantize) as runner:
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>2023-08-28T01:28:27.838330Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: FuriosaRT (v0.10.0, rev: ac1a04a8d, built at: 2023-08-08T12:15:46Z) bootstrapping ...
-2023-08-28T01:28:27.844387Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: Found furiosa-compiler (v0.10.0, rev: f8f05c8, built at: 2023-08-08T11:58:09Z)
-2023-08-28T01:28:27.844399Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: Found libhal (type: warboy, v0.11.0, rev: 43c901f built at: 2023-08-08T12:07:35Z)
-2023-08-28T01:28:27.844403Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Runtime-2] detected 1 NPU device(s):
-2023-08-28T01:28:27.854235Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: - [0] npu:2:0-1 (warboy-b0-2pe, 128dpes, firmware: 1.7.0, f7b0f28)
-2023-08-28T01:28:27.854453Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Runtime-2] started
-2023-08-28T01:28:32.712311Z <span class="ansi-green-fg"> INFO</span> furiosa::runtime: Saving the compilation log into /root/.local/state/furiosa/logs/compiler-20230828102832-nwtxhl.log
-2023-08-28T01:28:32.712548Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Runtime-2] created Sess-78e2493d using npu:2:0-1
-2023-08-28T01:28:32.733493Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Sess-78e2493d] compiling the model (target: warboy-b0-2pe, 128dpes, size: 102.2 MB)
-2023-08-28T01:28:35.824911Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Sess-78e2493d] the model compile is successful (took 3 secs)
-2023-08-28T01:28:36.227750Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Runtime-2] created 1 NPU threads on npu:2:0-1 (DRAM: 180.0 kiB/16.0 GiB, SRAM: 31.4 MiB/128.0 MiB)
-Inputs:
+<pre>Inputs:
 {0: TensorDesc(shape=(1, 3, 224, 224), dtype=UINT8, format=NCHW, size=150528, len=150528)}
 Outputs:
 {0: TensorDesc(shape=(1,), dtype=INT64, format=?, size=8, len=1)}
-Average inference time: 2.5746346139349043 ms
-2023-08-28T01:28:39.026687Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Sess-78e2493d] terminated
-2023-08-28T01:28:39.036203Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::npu::raw: NPU (npu:2:0-1) has been closed
-2023-08-28T01:28:39.041580Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Runtime-2] stopped
-</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>You can compile &amp; use only 1pe</p>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="CodeMirror cm-s-jupyter">
-<div class="zeroclipboard-container">
-<clipboard-copy for="cell-4">
-<div>
-<span class="notice" hidden="">Copied!</span>
-<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
-<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
-<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
-</svg>
-</div>
-</clipboard-copy>
-</div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span> <span class="nn">furiosa.runtime.sync</span> <span class="kn">import</span> <span class="n">Runtime</span>
-
-
-<span class="k">with</span> <span class="n">Runtime</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="s2">"warboy(1)*1"</span><span class="p">)</span> <span class="k">as</span> <span class="n">runtime</span><span class="p">:</span>
-    <span class="k">with</span> <span class="n">runtime</span><span class="o">.</span><span class="n">create_runner</span><span class="p">(</span><span class="n">quantized_onnx_wo_input_quantize</span><span class="p">)</span> <span class="k">as</span> <span class="n">runner</span><span class="p">:</span>
-        <span class="n">input_tensor_desc</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">inputs</span><span class="p">()</span>
-        <span class="n">runner</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">print_summary</span><span class="p">()</span>
-        <span class="n">fake_input</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">desc</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">desc</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">numpy</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">desc</span> <span class="ow">in</span> <span class="n">input_tensor_desc</span>
-        <span class="p">]</span>
-        <span class="n">starting_time</span> <span class="o">=</span> <span class="n">perf_counter</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
-            <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">fake_input</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">"Average inference time:"</span><span class="p">,</span> <span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">starting_time</span><span class="p">,</span> <span class="s2">"ms"</span><span class="p">)</span>
-</pre></div>
-<div class="clipboard-copy-txt" id="cell-4">from furiosa.runtime.sync import Runtime
-
-
-with Runtime(device="warboy(1)*1") as runtime:
-    with runtime.create_runner(quantized_onnx_wo_input_quantize) as runner:
-        input_tensor_desc = runner.model.inputs()
-        runner.model.print_summary()
-        fake_input = [
-            np.random.randint(256, size=desc.shape, dtype=desc.dtype.numpy)
-            for desc in input_tensor_desc
-        ]
-        starting_time = perf_counter()
-        for _ in range(1000):
-            runner.run(fake_input)
-        print("Average inference time:", perf_counter() - starting_time, "ms")</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>2023-08-28T01:28:39.079503Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: FuriosaRT (v0.10.0, rev: ac1a04a8d, built at: 2023-08-08T12:15:46Z) bootstrapping ...
-2023-08-28T01:28:39.084505Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: Found furiosa-compiler (v0.10.0, rev: f8f05c8, built at: 2023-08-08T11:58:09Z)
-2023-08-28T01:28:39.084523Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: Found libhal (type: warboy, v0.11.0, rev: 43c901f built at: 2023-08-08T12:07:35Z)
-2023-08-28T01:28:39.084529Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Runtime-3] detected 1 NPU device(s):
-2023-08-28T01:28:39.094433Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: - [0] npu:2:0 (warboy-b0, 64dpes, firmware: 1.7.0, f7b0f28)
-2023-08-28T01:28:39.094599Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Runtime-3] started
-2023-08-28T01:28:44.681264Z <span class="ansi-green-fg"> INFO</span> furiosa::runtime: Saving the compilation log into /root/.local/state/furiosa/logs/compiler-20230828102844-v2bdzh.log
-2023-08-28T01:28:44.681540Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Runtime-3] created Sess-660528cf using npu:2:0
-2023-08-28T01:28:44.693511Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Sess-660528cf] compiling the model (target: warboy-b0, 64dpes, size: 102.2 MB)
-2023-08-28T01:28:47.133498Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Sess-660528cf] the model compile is successful (took 2 secs)
-2023-08-28T01:28:47.336202Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Runtime-3] created 1 NPU threads on npu:2:0 (DRAM: 14.0 MiB/16.0 GiB, SRAM: 16.0 MiB/64.0 MiB)
-Inputs:
-{0: TensorDesc(shape=(1, 3, 224, 224), dtype=UINT8, format=NCHW, size=150528, len=150528)}
-Outputs:
-{0: TensorDesc(shape=(1,), dtype=INT64, format=?, size=8, len=1)}
-Average inference time: 2.743666300084442 ms
-2023-08-28T01:28:50.269460Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Sess-660528cf] terminated
-2023-08-28T01:28:50.279019Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::npu::raw: NPU (npu:2:0) has been closed
-2023-08-28T01:28:50.284263Z <span class="ansi-green-fg"> INFO</span> furiosa_rt_core::driver::event_driven::coord: [Runtime-3] stopped
+Average inference time: 2.715405730996281 ms
 </pre>
 </div>
 </div>

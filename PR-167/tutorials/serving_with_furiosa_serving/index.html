@@ -20,15 +20,15 @@
       
       
       <link rel="icon" href="../../assets/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.6">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.7">
     
     
       
-        <title>Serving Example with furiosa-serving - Furiosa Models</title>
+        <title>Serving Example with Furiosa Serving - Furiosa Models</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.35e1ed30.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.4b4a2bd9.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.356b1318.min.css">
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Serving Example with furiosa-serving
+              Serving Example with Furiosa Serving
             
           </span>
         </div>
@@ -331,7 +331,7 @@
         
   
   <span class="md-ellipsis">
-    Quantize and compiling Models
+    Quantize and Compile Models
   </span>
   
 
@@ -356,15 +356,73 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Serving Example with Furiosa Serving
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
-    Serving Example with furiosa-serving
+    Serving Example with Furiosa Serving
   </span>
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    Getting Started
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-initialization" class="md-nav__link">
+    Model Initialization
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-inference" class="md-nav__link">
+    Model Inference
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-the-server" class="md-nav__link">
+    Running the Server
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -679,6 +737,42 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    Getting Started
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-initialization" class="md-nav__link">
+    Model Initialization
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-inference" class="md-nav__link">
+    Model Inference
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-the-server" class="md-nav__link">
+    Running the Server
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -695,7 +789,13 @@
   
 
 
-<h1 id="serving-example-with-furiosa-serving">Serving Example with furiosa-serving</h1>
+<h1 id="serving-example-with-furiosa-serving">Serving Example with Furiosa Serving</h1>
+<p>Furiosa Serving is a lightweight library based on <a href="https://fastapi.tiangolo.com/">FastAPI</a> that allows you to run a model server on a Furiosa NPU.</p>
+<p>For more information about Furiosa Serving, you can visit the <a href="https://pypi.org/project/furiosa-serving/">package link</a>.</p>
+<h2 id="getting-started">Getting Started</h2>
+<p>To get started with Furiosa Serving, you'll need to install the <a href="https://pypi.org/project/furiosa-serving/">furiosa-serving library</a>, create a ServeAPI (which is a <code>FastAPI</code> wrapper), and set up your model for serving.
+In this example, we'll walk you through the steps to create a simple ResNet50 server.</p>
+<p>First, you'll need to import the necessary modules and initialize a FastAPI app:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">NamedTemporaryFile</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
@@ -709,38 +809,99 @@
 <a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="n">serve</span> <span class="o">=</span> <span class="n">ServeAPI</span><span class="p">()</span>
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="n">app</span><span class="p">:</span> <span class="n">FastAPI</span> <span class="o">=</span> <span class="n">serve</span><span class="o">.</span><span class="n">app</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="n">resnet50</span> <span class="o">=</span> <span class="n">vision</span><span class="o">.</span><span class="n">ResNet50</span><span class="p">()</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="c1"># ServeModel does not support in-memory model binary for now,</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="c1"># so we write model into temp file and pass its path</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="n">model_file</span> <span class="o">=</span> <span class="n">NamedTemporaryFile</span><span class="p">()</span>
-<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="n">model_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">resnet50</span><span class="o">.</span><span class="n">model_source</span><span class="p">())</span>
-<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="n">model_file_path</span> <span class="o">=</span> <span class="n">model_file</span><span class="o">.</span><span class="n">name</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>
-<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="n">model</span><span class="p">:</span> <span class="n">ServeModel</span> <span class="o">=</span> <span class="n">synchronous</span><span class="p">(</span><span class="n">serve</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="s2">&quot;furiosart&quot;</span><span class="p">))(</span><span class="s1">&#39;ResNet50&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">model_file_path</span><span class="p">)</span>
-<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>
-<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>
-<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="nd">@model</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/infer&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="k">async</span> <span class="k">def</span> <span class="nf">infer</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">UploadFile</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="o">...</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>    <span class="c1"># Model Zoo&#39;s preprocesses do not consider in-memory image file for now</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>    <span class="c1"># (note that it&#39;s different from in-memory tensor)</span>
-<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>    <span class="c1"># so we write in-memory image into temp file and pass its path</span>
-<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>    <span class="n">image_file_path</span> <span class="o">=</span> <span class="n">NamedTemporaryFile</span><span class="p">()</span>
-<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>    <span class="n">image_file_path</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="k">await</span> <span class="n">image</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>
-<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>    <span class="n">tensors</span><span class="p">,</span> <span class="n">_ctx</span> <span class="o">=</span> <span class="n">resnet50</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">image_file_path</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>
-<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>    <span class="c1"># Infer from ServeModel</span>
-<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>    <span class="n">result</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">tensors</span><span class="p">)</span>
-<a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>
-<a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>    <span class="n">response</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">resnet50</span><span class="o">.</span><span class="n">postprocess</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-<a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>
-<a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">response</span><span class="p">}</span>
-<a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>
-<a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a>
-<a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-<a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a>    <span class="c1"># Run the server if current Python script is called directly</span>
-<a id="__codelineno-0-45" name="__codelineno-0-45" href="#__codelineno-0-45"></a>    <span class="n">uvicorn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="model-initialization">Model Initialization</h2>
+<p>Next, you can initialize a vision model, such as ResNet50, for serving:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">resnet50</span> <span class="o">=</span> <span class="n">vision</span><span class="o">.</span><span class="n">ResNet50</span><span class="p">()</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">model_file</span> <span class="o">=</span> <span class="n">NamedTemporaryFile</span><span class="p">()</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">model_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">resnet50</span><span class="o">.</span><span class="n">model_source</span><span class="p">())</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">model_file_path</span> <span class="o">=</span> <span class="n">model_file</span><span class="o">.</span><span class="n">name</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">model</span><span class="p">:</span> <span class="n">ServeModel</span> <span class="o">=</span> <span class="n">synchronous</span><span class="p">(</span><span class="n">serve</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="s2">&quot;furiosart&quot;</span><span class="p">))(</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="s1">&#39;ResNet50&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">model_file_path</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">)</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>ServeModel does not support in-memory model binaries for now. Instead, you can write the model into a temporary file and pass its path like example.</p>
+</div>
+<h2 id="model-inference">Model Inference</h2>
+<p>Now that you have your FastAPI app and model set up, you can define an endpoint for model inference. In this example, we create an endpoint that accepts an image file and performs inference using ResNet50:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nd">@model</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/infer&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">async</span> <span class="k">def</span> <span class="nf">infer</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">UploadFile</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="o">...</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="c1"># Model Zoo&#39;s preprocesses do not consider in-memory image file for now,</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="c1"># so we write in-memory image into a temporary file and pass its path</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">image_file_path</span> <span class="o">=</span> <span class="n">NamedTemporaryFile</span><span class="p">()</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">image_file_path</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="k">await</span> <span class="n">image</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">tensors</span><span class="p">,</span> <span class="n">_ctx</span> <span class="o">=</span> <span class="n">resnet50</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">image_file_path</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="c1"># Infer from ServeModel</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>    <span class="n">result</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">tensors</span><span class="p">)</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>    <span class="n">response</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">resnet50</span><span class="o">.</span><span class="n">postprocess</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">response</span><span class="p">}</span>
+</code></pre></div>
+<h2 id="running-the-server">Running the Server</h2>
+<p>Finally, you can run the FastAPI server using <a href="https://www.uvicorn.org/">uvicorn</a>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Run the server if the current Python script is called directly</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="n">uvicorn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">)</span>
+</code></pre></div>
+<p>Alternatively, you can run <a href="https://www.uvicorn.org/">uvicorn</a> server via internal app variable from ServeAPI instance like <a href="https://fastapi.tiangolo.com/tutorial/first-steps/#first-steps">normal FastAPI application</a>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>uvicorn<span class="w"> </span>main:app<span class="w"> </span><span class="c1"># or uvicorn main:serve.app</span>
+</code></pre></div>
+<p>This example demonstrates the basic setup of a FastAPI server with Furiosa Serving for model inference. You can extend this example to add more functionality to your server as needed.</p>
+<p>For more information and advanced usage of Furiosa Serving, please refer to the <a href="https://pypi.org/project/furiosa-serving/">Furiosa Serving documentation</a>.</p>
+<p>You can find the full code example here.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">NamedTemporaryFile</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">File</span><span class="p">,</span> <span class="n">UploadFile</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="kn">import</span> <span class="nn">uvicorn</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="kn">from</span> <span class="nn">furiosa.common.thread</span> <span class="kn">import</span> <span class="n">synchronous</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="kn">from</span> <span class="nn">furiosa.models</span> <span class="kn">import</span> <span class="n">vision</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="kn">from</span> <span class="nn">furiosa.serving</span> <span class="kn">import</span> <span class="n">ServeAPI</span><span class="p">,</span> <span class="n">ServeModel</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="n">serve</span> <span class="o">=</span> <span class="n">ServeAPI</span><span class="p">()</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="n">app</span><span class="p">:</span> <span class="n">FastAPI</span> <span class="o">=</span> <span class="n">serve</span><span class="o">.</span><span class="n">app</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="n">resnet50</span> <span class="o">=</span> <span class="n">vision</span><span class="o">.</span><span class="n">ResNet50</span><span class="p">()</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="c1"># ServeModel does not support in-memory model binary for now,</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="c1"># so we write model into temp file and pass its path</span>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="n">model_file</span> <span class="o">=</span> <span class="n">NamedTemporaryFile</span><span class="p">()</span>
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="n">model_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">resnet50</span><span class="o">.</span><span class="n">model_source</span><span class="p">())</span>
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="n">model_file_path</span> <span class="o">=</span> <span class="n">model_file</span><span class="o">.</span><span class="n">name</span>
+<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a>
+<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="n">model</span><span class="p">:</span> <span class="n">ServeModel</span> <span class="o">=</span> <span class="n">synchronous</span><span class="p">(</span><span class="n">serve</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="s2">&quot;furiosart&quot;</span><span class="p">))(</span>
+<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a>    <span class="s1">&#39;ResNet50&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">model_file_path</span>
+<a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a><span class="p">)</span>
+<a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a>
+<a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a>
+<a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a><span class="nd">@model</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/infer&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a><span class="k">async</span> <span class="k">def</span> <span class="nf">infer</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">UploadFile</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="o">...</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a>    <span class="c1"># Model Zoo&#39;s preprocesses do not consider in-memory image file for now</span>
+<a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a>    <span class="c1"># (note that it&#39;s different from in-memory tensor)</span>
+<a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a>    <span class="c1"># so we write in-memory image into temp file and pass its path</span>
+<a id="__codelineno-5-32" name="__codelineno-5-32" href="#__codelineno-5-32"></a>    <span class="n">image_file_path</span> <span class="o">=</span> <span class="n">NamedTemporaryFile</span><span class="p">()</span>
+<a id="__codelineno-5-33" name="__codelineno-5-33" href="#__codelineno-5-33"></a>    <span class="n">image_file_path</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="k">await</span> <span class="n">image</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+<a id="__codelineno-5-34" name="__codelineno-5-34" href="#__codelineno-5-34"></a>
+<a id="__codelineno-5-35" name="__codelineno-5-35" href="#__codelineno-5-35"></a>    <span class="n">tensors</span><span class="p">,</span> <span class="n">_ctx</span> <span class="o">=</span> <span class="n">resnet50</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">image_file_path</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<a id="__codelineno-5-36" name="__codelineno-5-36" href="#__codelineno-5-36"></a>
+<a id="__codelineno-5-37" name="__codelineno-5-37" href="#__codelineno-5-37"></a>    <span class="c1"># Infer from ServeModel</span>
+<a id="__codelineno-5-38" name="__codelineno-5-38" href="#__codelineno-5-38"></a>    <span class="n">result</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">tensors</span><span class="p">)</span>
+<a id="__codelineno-5-39" name="__codelineno-5-39" href="#__codelineno-5-39"></a>
+<a id="__codelineno-5-40" name="__codelineno-5-40" href="#__codelineno-5-40"></a>    <span class="n">response</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">resnet50</span><span class="o">.</span><span class="n">postprocess</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<a id="__codelineno-5-41" name="__codelineno-5-41" href="#__codelineno-5-41"></a>
+<a id="__codelineno-5-42" name="__codelineno-5-42" href="#__codelineno-5-42"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">response</span><span class="p">}</span>
+<a id="__codelineno-5-43" name="__codelineno-5-43" href="#__codelineno-5-43"></a>
+<a id="__codelineno-5-44" name="__codelineno-5-44" href="#__codelineno-5-44"></a>
+<a id="__codelineno-5-45" name="__codelineno-5-45" href="#__codelineno-5-45"></a><span class="c1"># Run the server if current Python script is called directly</span>
+<a id="__codelineno-5-46" name="__codelineno-5-46" href="#__codelineno-5-46"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<a id="__codelineno-5-47" name="__codelineno-5-47" href="#__codelineno-5-47"></a>    <span class="n">uvicorn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">)</span>
 </code></pre></div>
 
 

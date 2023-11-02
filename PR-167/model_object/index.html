@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../assets/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.6">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.7">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.35e1ed30.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.4b4a2bd9.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.356b1318.min.css">
@@ -329,7 +329,7 @@
         
   
   <span class="md-ellipsis">
-    Quantize and compiling Models
+    Quantize and Compile Models
   </span>
   
 
@@ -349,7 +349,7 @@
         
   
   <span class="md-ellipsis">
-    Serving Example with furiosa-serving
+    Serving Example with Furiosa Serving
   </span>
   
 
@@ -930,10 +930,15 @@ Once the model images are fetched, they will be cached on your local disk.</p>
 <p><a name="accessing_artifacts_and_metadata"></a></p>
 <h2 id="accessing-artifacts-and-metadata">Accessing artifacts and metadata</h2>
 <p>A Model object encompasses model artifacts, such as ONNX, TFLite, mapping from a tensor name to the tensor's min and max, and ENF.</p>
-<p>The ENF format is specific to the FuriosaAI Compiler.
+<p>ENF is the serialization format of a compiled binary used in Furiosa SDK.
 Once you have the ENF file, you can reuse it to skip the compilation process, which can take up to several minutes.
 You can acquire the ENF binary from the model_source() method.
 In addition, a Model object contains various metadata attributes.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>If you want to learn more about the ENF please visit
+<a href="https://furiosa-ai.github.io/docs/latest/en/software/compiler.html#using-enf-files">Furiosa SDK - Compiler - Using ENF files</a></p>
+</div>
 
 
 <div class="doc doc-object doc-class">
@@ -1246,7 +1251,7 @@ with or without quantization and proper compiler configuration</p>
   </div>
 
 </div><h2 id="inferencing-with-runner-api">Inferencing with Runner API</h2>
-<p>To create a Runner, pass the ENF binary obtained from the <code>model_source()</code> method of the model object to the <code>furiosa.runtime.sync.create_runner</code> function. If you prefer an asynchronous Runner, you can use the <code>furiosa.runtime.create_runner</code> function instead. Passing the pre-compiled ENF binary allows you to perform inference directly without the compilation process. Alternatively, you can also manually quantize and compile the original f32 model with the provided calibration range.</p>
+<p>To create a Runner, you need to pass the ENF binary obtained from the <code>model_source()</code> method of the model object to the <code>furiosa.runtime.sync.create_runner</code> function. If you prefer an asynchronous Runner, you can use the <code>furiosa.runtime.create_runner</code> function instead. Passing the pre-compiled ENF binary allows you to perform inference directly without the compilation process. Alternatively, you can also manually quantize and compile the original f32 model with the provided calibration range.</p>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>If you want to learn more about the installation of furiosa-sdk and how to use it, please follow the followings:</p>
@@ -1259,7 +1264,7 @@ with or without quantization and proper compiler configuration</p>
 <p>Passing <code>Model.origin</code> to <code>create_runner()</code> allows users to start from source models in ONNX or tflite and customize models to their specific use-cases. This customization includes options such as specifying batch sizes and compiler configurations for optimization purposes. For additional information on Model.origin, please refer to <a href="#accessing_artifacts_and_metadata">Accessing artifacts and metadata</a>.</p>
 <p>To work with f32 source models, calibration and quantization are essential steps.
 You can access pre-calibrated data directly from furiosa-models, simplifying the quantization process.
-If you prefer manual quantization of the model, you can install the <code>furiosa-quantizer</code> package, available at this <a href="https://furiosa-ai.github.io/docs/latest/en/software/python-sdk.html#quantizer">package link</a>.
+If you prefer a manual quantization step for a model, you can install the <code>furiosa-quantizer</code> package, available at this <a href="https://furiosa-ai.github.io/docs/latest/en/software/python-sdk.html#quantizer">package link</a>.
 The <code>tensor_name_to_range</code> field within the model class contains this pre-calibrated data.</p>
 <p>Upon quantization, the output will be in FuriosaAI's Intermediate Representation (IR) format, which can then be passed to the Runner. At this stage, you have the option to specify the compiler configuration.</p>
 <p>After quantization, the output will be in the form of FuriosaAI's Intermediate Representation (IR) which

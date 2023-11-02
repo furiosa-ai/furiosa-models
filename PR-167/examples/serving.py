@@ -19,7 +19,9 @@ model_file = NamedTemporaryFile()
 model_file.write(resnet50.model_source())
 model_file_path = model_file.name
 
-model: ServeModel = synchronous(serve.model("furiosart"))('ResNet50', location=model_file_path)
+model: ServeModel = synchronous(serve.model("furiosart"))(
+    'ResNet50', location=model_file_path
+)
 
 
 @model.post("/infer")
@@ -40,6 +42,6 @@ async def infer(image: UploadFile = File(...)) -> Dict[str, str]:
     return {"result": response}
 
 
+# Run the server if current Python script is called directly
 if __name__ == "__main__":
-    # Run the server if current Python script is called directly
     uvicorn.run(app, host="0.0.0.0", port=8000)
