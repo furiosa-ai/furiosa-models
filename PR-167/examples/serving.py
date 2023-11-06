@@ -19,9 +19,7 @@ model_file = NamedTemporaryFile()
 model_file.write(resnet50.model_source())
 model_file_path = model_file.name
 
-model: ServeModel = synchronous(serve.model("furiosart"))(
-    'ResNet50', location=model_file_path
-)
+model: ServeModel = synchronous(serve.model("furiosart"))('ResNet50', location=model_file_path)
 
 
 @model.post("/infer")
