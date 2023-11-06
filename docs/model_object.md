@@ -1,4 +1,4 @@
-# Model object
+# Model Object
 
 In the `furiosa-models` project, the `Model` is the primary class object, representing a neural network model. This document elucidates the offerings and uses of the [`Model`][furiosa.models.types.Model] object.
 

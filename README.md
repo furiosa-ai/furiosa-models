@@ -20,9 +20,9 @@ You can also find the latest online documents,
 including programming guides, API references, and examples from the followings:
 
 * [Furiosa Models - Latest Documentation](https://furiosa-ai.github.io/furiosa-models/latest/)
-* [Model object](https://furiosa-ai.github.io/furiosa-models/v0.10.0/model_object/)
+* [Model Object](https://furiosa-ai.github.io/furiosa-models/v0.10.0/model_object/)
 * [Model List](https://furiosa-ai.github.io/furiosa-models/v0.10.0/#model_list)
-* [Command Tool](https://furiosa-ai.github.io/furiosa-models/v0.10.0/command_line_tool/)
+* [Command Line Tool](https://furiosa-ai.github.io/furiosa-models/v0.10.0/command_line_tool/)
 * [Furiosa SDK - Tutorial and Code Examples](https://furiosa-ai.github.io/docs/v0.10.0/en/software/tutorials.html)
 
 
