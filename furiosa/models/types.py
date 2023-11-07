@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import datetime
 from enum import Enum
 from functools import cached_property
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple
 
 import numpy.typing as npt
 from pydantic import BaseModel, ConfigDict, Field, computed_field, field_serializer
@@ -103,14 +103,6 @@ class Model(ABC, BaseModel):
         tensor_name_to_range: the calibration ranges of each tensor in origin
         preprocessor: a preprocessor to preprocess input tensors
         postprocessor: a postprocessor to postprocess output tensors
-
-    Methods:
-        preprocess: preprocess input tensors
-        postprocess: postprocess output tensors
-        model_source(num_pe=[1|2]): the executable binary for furiosa runtime and NPU. It can be
-            directly fed to `furiosa.runtime.create_runner`. If model binary is not compiled yet,
-            it will be quantized & compiled automatically if possible
-        resolve_all: resolve all non-cached properties(origin, tensor_name_to_range, model_sources)
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -129,9 +121,14 @@ class Model(ABC, BaseModel):
     postprocessor: PostProcessor = Field(..., repr=False, exclude=True)
 
     def preprocess(self, *args, **kwargs) -> Tuple[Sequence[npt.ArrayLike], Sequence[Context]]:
+        """Preprocess input tensors. Input of this function varies from model to model
+
+        Returns:
+            A tuple that contains list of preprocessed input tensors and contexts"""
         return self.preprocessor(*args, **kwargs)
 
     def postprocess(self, *args, **kwargs):
+        """Postprocess output tensors"""
         return self.postprocessor(*args, **kwargs)
 
     @computed_field(repr=False)
@@ -145,7 +142,14 @@ class Model(ABC, BaseModel):
         calib_yaml = resolve_source(self._artifact_name, EXT_CALIB_YAML)
         return yaml.full_load(calib_yaml)
 
-    def model_source(self, num_pe: int = 2) -> bytes:
+    def model_source(self, num_pe: Literal[1, 2] = 2) -> bytes:
+        """Returns an executable binary for furiosa runtime and NPU. It can be
+            directly fed to `furiosa.runtime.create_runner`. If model binary is not compiled yet,
+            it will be quantized & compiled automatically if possible
+
+        Args:
+            num_pe: number of PE to be used.
+        """
         if num_pe not in (1, 2):
             raise ValueError(f"Invalid num_pe: {num_pe}")
 
@@ -153,6 +157,7 @@ class Model(ABC, BaseModel):
         return resolve_model_source(self._artifact_name, num_pe=num_pe)
 
     def resolve_all(self):
+        """Resolve all non-cached properties(origin, tensor_name_to_range, model_sources)"""
         _ = self.origin, self.tensor_name_to_range
         for num_pe in (1, 2):
             _ = self.model_source(num_pe=num_pe)

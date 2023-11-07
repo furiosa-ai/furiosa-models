@@ -27,7 +27,7 @@ dependencies = [
     "furiosa-common == 0.10.*",
     "furiosa-tools == 0.10.*",
     "furiosa-runtime == 0.10.*",
-    "furiosa-native-postprocess == 0.9.0_dev0",
+    "furiosa-native-postprocess == 0.9.0",
 
     "opencv-python-headless",
     "torch",
@@ -47,6 +47,7 @@ test = [
     "pytest",
     "pytest-benchmark == 4.0.0",
     "pytest-asyncio ~= 0.17.2",
+    "nbmake",
     "pycocotools ~= 2.0.4",
 ]
 dvc = ["dvc[s3]"]

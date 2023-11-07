@@ -75,8 +75,8 @@ You can find examples at [SSDResNet34 Usage](#SSDResNet34_Usage).
 This class provides another version of the postprocessing implementation
 which is highly optimized for NPU. The implementation leverages the NPU IO architecture and runtime.
 
-To use this implementation, when this model is loaded, the parameter `use_native=True`
-should be passed to `load()` or `load_aync()`. The following is an example:
+To use this implementation, when this model is called, the parameter `postprocessor_type=Platform.RUST`
+should be passed. The following is an example:
 
 !!! Example
     ```python

@@ -1,4 +1,4 @@
-# Developer's guide
+# Developer's Guide
 
 This documentation is for developers who want to contribute to Furiosa Models.
 

@@ -23,12 +23,18 @@ pip install --upgrade pip setuptools wheel
 pip install 'furiosa-models'
 ```
 
+!!!Info
+    Older versions of wheel may reject the native-build wheels of furiosa-models.
+    Please make sure of installing & upgrading Python packaging tools before
+    installing furiosa-models.
+
+
 ??? "Building from Source Code (click to see)"
     Or you can build from the source code as following:
 
     ```
     git clone https://github.com/furiosa-ai/furiosa-models
-    pip install .
+    pip install ./furiosa-models
     ```
 
 ## Quick example and Guides
@@ -49,7 +55,7 @@ You can simply load a model and run through furiosa-sdk as the following:
 This example does:
 
 1. Load the [SSDMobileNet](models/ssd_mobilenet.md) model
-2. Create a `session`, which is the main class of Furiosa Runtime, that can load an ONNX/tflite model onto NPU and run inferences.
+2. Create a `Runner`, which is one of the main classes of Furiosa Runtime, that can load an ONNX/tflite model onto NPU and run inferences.
 3. Run an inference with pre/post process functions.
 
 A `Model` instance is a Python object, including model artifacts, metadata, and its pre/postprocessors.
@@ -60,5 +66,8 @@ Also, you can find all available models at
 Each model page includes the details of the model, input and output tensors, and pre/post processings,
 and API reference.
 
-If you want to learn more about `furiosa.runtime.session` in Furiosa Runtime, please refer to
-[Furiosa SDK - Tutorial and Code Examples](https://furiosa-ai.github.io/docs/latest/en/software/tutorials.html).
+If you want to learn more about `Runner` in Furiosa Runtime, please refer to below links.
+
+- [Furiosa SDK - furiosa.runtime API Reference](https://furiosa-ai.github.io/docs/latest/en/api/python/furiosa.runtime.html)
+- [Furiosa SDK - furiosa.runtime.sync.create_runner Reference](https://furiosa-ai.github.io/docs/latest/en/api/python/furiosa.runtime.html#furiosa.runtime.sync.Runtime)
+- [Furiosa SDK - Tutorial and Code Examples](https://furiosa-ai.github.io/docs/latest/en/software/tutorials.html).

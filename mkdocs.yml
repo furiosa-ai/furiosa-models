@@ -3,9 +3,16 @@ site_description: DNN Models optimized for FuriosaAI NPU
 site_url: https://furiosa-ai.github.io/furiosa-models
 
 theme:
+  logo: assets/logo.png
+  favicon: assets/favicon.png
   name: "material"
   features:
     - navigation.sections
+  palette:
+      primary: custom
+      accent: custom
+extra_css:
+  - stylesheets/extra.css
 
 repo_name: furiosa-ai/furiosa-models
 repo_url: https://github.com/furiosa-ai/furiosa-models
@@ -13,8 +20,12 @@ repo_url: https://github.com/furiosa-ai/furiosa-models
 nav:
 - Overview: index.md
 - getting_started.md
+- Tutorials:
+  - tutorials/navigate_models.ipynb
+  - tutorials/quantize_and_compile_model.ipynb
+  - tutorials/serving_with_furiosa_serving.md
 - model_object.md
-- command_tool.md
+- command_line_tool.md
 - Models:
     - models/resnet50_v1.5.md
     - models/efficientnet_b0.md
@@ -43,6 +54,8 @@ markdown_extensions:
 
 plugins:
 - search
+- mkdocs-jupyter:
+    ignore: ["examples/*.py"]
 - mkdocstrings:
     default_handler: python
     handlers:

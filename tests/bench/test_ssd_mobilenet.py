@@ -7,7 +7,7 @@ from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 import tqdm
 
-from furiosa.models.types import Model
+from furiosa.models.types import Model, Platform
 from furiosa.models.vision import SSDMobileNet
 from furiosa.runtime.sync import create_runner
 
@@ -75,7 +75,7 @@ def test_mlcommons_ssd_mobilenet_accuracy(benchmark):
 
 
 def test_mlcommons_ssd_mobilenet_with_native_rust_pp_accuracy(benchmark):
-    model = SSDMobileNet(postprocessor_type="Rust")
+    model = SSDMobileNet(postprocessor_type=Platform.RUST)
 
     image_directory, coco = load_coco_from_env_variable()
     image_src_iter = iter(tqdm.tqdm(coco.dataset["images"]))
