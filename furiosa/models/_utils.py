@@ -28,10 +28,12 @@ module_logger = logging.getLogger(__name__)
 
 
 def get_version_info() -> Optional[str]:
-    from furiosa.tools.compiler.api import VersionInfo
+    try:
+        from furiosa.native_runtime import __git_short_hash__, __version__
 
-    version_info = VersionInfo()
-    return f"{version_info.version}_{version_info.git_hash}"
+        return f"{__version__}_{__git_short_hash__}"
+    except ImportError:
+        return None
 
 
 def find_dvc_cache_directory(path: Path) -> Optional[Path]:
