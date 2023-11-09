@@ -36,7 +36,7 @@ def get_version_info() -> str:
         ).stdout
     except FileNotFoundError:
         raise RuntimeError("furiosa-compiler is not installed")
-    pattern = r"frontend:\n- version: (.+?)\n- revision: (.+?)\b"
+    pattern = r"backend:\n- version: (.+?)\n- revision: (.+?)\b"
     match = re.search(pattern, compiler_info)
     if match:
         version = match.group(1)

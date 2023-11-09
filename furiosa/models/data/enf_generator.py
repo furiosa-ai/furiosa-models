@@ -18,7 +18,7 @@ COMPILER_CONFIG = {"lower_tabulated_dequantize": True}
 compiler_info = sp.run(
     ['furiosa-compiler', '--version'], capture_output=True, text=True, check=True
 ).stdout
-pattern = r"frontend:\n- version: (.+?)\n- revision: (.+?)\b"
+pattern = r"backend:\n- version: (.+?)\n- revision: (.+?)\b"
 match = re.search(pattern, compiler_info)
 if match:
     version = match.group(1)
@@ -86,6 +86,7 @@ def quantize_and_compile_model(arg: Tuple[int, Path, int]):
             shlex.split(cmd),
             env={"NPU_COMPILER_CONFIG_PATH": compiler_config_path},
             check=True,
+            stderr=sp.DEVNULL,
         )
 
         # Manually remove compiler config file (as we use mkstemp)
