@@ -1,6 +1,8 @@
 import logging
 import os
 from pathlib import Path
+import re
+import subprocess
 from typing import TYPE_CHECKING, Collection, Optional, Tuple, Union
 
 if TYPE_CHECKING:
@@ -27,13 +29,21 @@ DVC_PUBLIC_HTTP_ENDPOINT = (
 module_logger = logging.getLogger(__name__)
 
 
-def get_version_info() -> Optional[str]:
+def get_version_info() -> str:
     try:
-        from furiosa.native_runtime import __git_short_hash__, __version__
-
-        return f"{__version__}_{__git_short_hash__}"
-    except ImportError:
-        return None
+        compiler_info = subprocess.run(
+            ['furiosa-compiler', '--version'], capture_output=True, text=True, check=True
+        ).stdout
+    except FileNotFoundError:
+        raise RuntimeError("furiosa-compiler is not installed")
+    pattern = r"frontend:\n- version: (.+?)\n- revision: (.+?)\b"
+    match = re.search(pattern, compiler_info)
+    if match:
+        version = match.group(1)
+        git_hash = match.group(2)
+        return f"{version}_{git_hash}"
+    else:
+        raise RuntimeError("Cannot parse furiosa-compiler version info")
 
 
 def find_dvc_cache_directory(path: Path) -> Optional[Path]:
@@ -45,6 +55,9 @@ def find_dvc_cache_directory(path: Path) -> Optional[Path]:
 
 
 def parse_dvc_file(file_path: Path) -> Tuple[str, str, int]:
+    dvc_path = Path(f"{file_path}.dvc")
+    if not dvc_path.exists():
+        raise FileNotFoundError(f"{dvc_path} not found, are you in development mode?")
     info_dict = yaml.safe_load(open(f"{file_path}.dvc").read())["outs"][0]
     md5sum = info_dict["md5"]
     return md5sum[:2], md5sum[2:], info_dict["size"]
@@ -113,18 +126,11 @@ class ArtifactResolver:
         return data
 
 
-def resolve_artifact(src_name: str, full_path: Path) -> bytes:
-    try:
-        return ArtifactResolver(full_path).read()
-    except Exception as e:
-        raise errors.ArtifactNotFound(f"{src_name}:{full_path}") from e
-
-
 def resolve_source(src_name: str, extension: str) -> bytes:
     full_path = next((DATA_DIRECTORY_BASE / src_name).glob(f'*.{extension}.dvc'))
     # Remove `.dvc` suffix
     full_path = full_path.with_suffix('')
-    return resolve_artifact(src_name, full_path)
+    return ArtifactResolver(full_path).read()
 
 
 def resolve_model_source(src_name: str, num_pe: int = 2) -> bytes:
@@ -150,7 +156,7 @@ def resolve_model_source(src_name: str, num_pe: int = 2) -> bytes:
             editor.convert_input_type(input_name, TensorType.UINT8)
         return quantize(onnx_model, calib_range)
     file_name = f'{src_name}_warboy_{num_pe}pe.enf'
-    return resolve_artifact(src_name, generated_path_base / file_name)
+    return ArtifactResolver(generated_path_base / file_name).read()
 
 
 def validate_postprocessor_type(
