@@ -48,7 +48,7 @@ You can refer to `postprocess()` function to learn how to decode boxes, classes,
 
 `furiosa.models.vision.YOLOv7w6Pose` class provides `preprocess` and `postprocess` methods.
 `preprocess` method converts input images to input tensors, and `postprocess` method converts
-model output tensors to a list of `PoseEstimationResult``.
+model output tensors to a list of `PoseEstimationResult`.
 You can find examples at [YOLOv7w6Pose Usage](#YOLOv7w6Pose_Usage).
 
 ### `furiosa.models.vision.YOLOv7w6Pose.preprocess`

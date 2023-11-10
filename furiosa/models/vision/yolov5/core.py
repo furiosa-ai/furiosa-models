@@ -114,6 +114,7 @@ class YOLOv5PreProcessor(PreProcessor):
             with_scaling: Whether to apply model-specific techniques that involve scaling the
                 model's input and converting its data type to float32. Refer to the code to gain a
                 precise understanding of the techniques used. Defaults to False.
+
         Returns:
             a pre-processed image, scales and padded sizes(width,height) per images.
                 The first element is a stacked numpy array containing a batch of images.
