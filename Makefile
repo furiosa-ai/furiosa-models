@@ -1,7 +1,7 @@
 SHELL=/bin/bash -o pipefail
 
 ONNXRUNTIME_VERSION := 1.15.1-?
-TOOLCHAIN_VERSION := 0.10.0-?
+TOOLCHAIN_VERSION := 0.10.2-?
 LIBHAL_VERSION := 0.11.0-?
 
 .PHONY: check-docker-tag toolchain lint test unit_tests notebook_tests examples \
@@ -18,8 +18,6 @@ toolchain:
 	apt-get update
 	apt-get install -y --allow-downgrades libonnxruntime=$(ONNXRUNTIME_VERSION)
 	apt-get install -y --allow-downgrades furiosa-compiler=$(TOOLCHAIN_VERSION)
-	# TODO: remove me when possible
-	apt-get install -y --allow-downgrades furiosa-libcompiler=$(TOOLCHAIN_VERSION)
 	apt-get install -y --allow-downgrades furiosa-libhal-warboy=$(LIBHAL_VERSION)
 
 lint:
