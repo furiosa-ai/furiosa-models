@@ -140,15 +140,15 @@ class YOLOv7w6PosePostProcessor(PythonPostProcessor):
         )
         return np.concatenate((y_det, y_kpt), axis=1).reshape(shape).transpose(0, 1, 3, 4, 2)
 
-    def __call__(self, feats_batched, preproc_params):
+    def __call__(self, feats_batched, contexts):
         assert len(feats_batched), "feats_batched must not be empty"
 
         boxes_batched = []
         batch_size = feats_batched[0].shape[0]
-        assert batch_size == len(preproc_params)
+        assert batch_size == len(contexts)
 
         for i in range(batch_size):
-            scale, (padw, padh) = preproc_params[i]["scale"], preproc_params[i]["pad"]
+            scale, (padw, padh) = contexts[i]["scale"], contexts[i]["pad"]
             if isinstance(scale, (tuple, list)):
                 assert len(scale) == 2 and scale[0] == scale[1]
                 scale = scale[0]

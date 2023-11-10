@@ -101,12 +101,12 @@ class YOLOv7w6PosePreProcessor(PreProcessor):
             with_scaling: Whether to apply model-specific techniques that involve scaling the
                 model's input and converting its data type to float32. Refer to the code to gain a
                 precise understanding of the techniques used. Defaults to False.
+
         Returns:
             a pre-processed image, scales and padded sizes(width,height) per images.
                 The first element is a stacked numpy array containing a batch of images.
                 To learn more about the outputs of preprocess (i.e., model inputs),
-                please refer to [YOLOv5l Inputs](yolov5l.md#inputs) or
-                [YOLOv5m Inputs](yolov5m.md#inputs).
+                please refer to [YOLOv7w6Pose Inputs](yolov7_w6_pose.md#inputs).
 
                 The second element is a list of dict objects about the original images.
                 Each dict object has the following keys. 'scale' key of the returned dict has a
