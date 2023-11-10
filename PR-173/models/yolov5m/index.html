@@ -1036,19 +1036,40 @@ precise understanding of the techniques used. Defaults to False.</p>
         </tr>
     </tbody>
   </table>
-      <p>Returns:
-    a pre-processed image, scales and padded sizes(width,height) per images.
-        The first element is a stacked numpy array containing a batch of images.
-        To learn more about the outputs of preprocess (i.e., model inputs),
-        please refer to <a href="../yolov5l/#inputs">YOLOv5l Inputs</a> or
-        <a href="./#inputs">YOLOv5m Inputs</a>.</p>
-<div class="codehilite"><pre><span></span><code>    The second element is a list of dict objects about the original images.
-    Each dict object has the following keys. &#39;scale&#39; key of the returned dict has a
-    rescaled ratio per width(=target/width) and height(=target/height), and the &#39;pad&#39;
-    key has padded width and height pixels. Specially, the last dictionary element of
-    returning tuple will be passed to postprocessing as a parameter to calculate
-    predicted coordinates on normalized coordinates back to an input image coordinator.
-</code></pre></div>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="typing.Tuple">Tuple</span>[<span title="numpy.ndarray">ndarray</span>, <span title="typing.List">List</span>[<span title="typing.Dict">Dict</span>[str, <span title="typing.Any">Any</span>]]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>a pre-processed image, scales and padded sizes(width,height) per images.
+The first element is a stacked numpy array containing a batch of images.
+To learn more about the outputs of preprocess (i.e., model inputs),
+please refer to <a href="../yolov5l/#inputs">YOLOv5l Inputs</a> or
+<a href="./#inputs">YOLOv5m Inputs</a>.</p>
+<p>The second element is a list of dict objects about the original images.
+Each dict object has the following keys. 'scale' key of the returned dict has a
+rescaled ratio per width(=target/width) and height(=target/height), and the 'pad'
+key has padded width and height pixels. Specially, the last dictionary element of
+returning tuple will be passed to postprocessing as a parameter to calculate
+predicted coordinates on normalized coordinates back to an input image coordinator.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
 
   </div>
 
