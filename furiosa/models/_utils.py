@@ -29,7 +29,7 @@ DVC_PUBLIC_HTTP_ENDPOINT = (
 module_logger = logging.getLogger(__name__)
 
 
-def get_version_info() -> str:
+def get_ir_version() -> str:
     try:
         compiler_info = subprocess.run(
             ['furiosa-compiler', '--version'], capture_output=True, text=True, check=True
@@ -73,7 +73,7 @@ def get_from_url(path: str, uri: Path, is_legacy_path: bool = False) -> bytes:
                 return get_from_url(f"files/md5/{path}", uri, True)
             raise errors.NotFoundInDVCRemote(uri, path)
         data = resp.content
-        caching_path = CACHE_DIRECTORY_BASE / get_version_info() / (uri.name)
+        caching_path = CACHE_DIRECTORY_BASE / get_ir_version() / (uri.name)
         module_logger.debug(f"caching to {caching_path}")
         caching_path.parent.mkdir(parents=True, exist_ok=True)
         with open(caching_path, mode="wb") as f:
@@ -94,7 +94,7 @@ class ArtifactResolver:
 
     def _read(self, directory: str, filename: str) -> bytes:
         # Try to find local cached file
-        local_cache_path = CACHE_DIRECTORY_BASE / get_version_info() / (self.uri.name)
+        local_cache_path = CACHE_DIRECTORY_BASE / get_ir_version() / (self.uri.name)
         if local_cache_path.exists():
             module_logger.debug(f"Local cache exists: {local_cache_path}")
             with open(local_cache_path, mode="rb") as f:
@@ -134,7 +134,7 @@ def resolve_source(src_name: str, extension: str) -> bytes:
 
 
 def resolve_model_source(src_name: str, num_pe: int = 2) -> bytes:
-    version_info = get_version_info()
+    version_info = get_ir_version()
     if version_info is None:
         raise errors.VersionInfoNotFound()
     generated_path_base = DATA_DIRECTORY_BASE / f"generated/{version_info}"
