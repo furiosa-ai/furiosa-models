@@ -14,7 +14,7 @@ from ...types import (
     Publication,
 )
 from ..preprocess import read_image_opencv_if_needed
-from .postprocess import YOLOv7w6PosePostProcessor
+from .postprocess import PoseEstimationResult, YOLOv7w6PosePostProcessor
 
 _INPUT_SIZE = (640, 384)
 
@@ -146,8 +146,14 @@ class YOLOv7w6Pose(PoseEstimationModel):
     }
 
     @staticmethod
-    def visualize(image, results):
-        """This visualize function is an example of how to visualize the output of the model."""
+    def visualize(image: np.ndarray, results: List[PoseEstimationResult]):
+        """This visualize function is an example of how to visualize the output of the model.
+        It draws a skeleton of the human body on the input image in in-place manner.
+
+        Args:
+            image: an input image
+            results: a list of PoseEstimationResult objects
+        """
 
         keypoints = [
             "nose",

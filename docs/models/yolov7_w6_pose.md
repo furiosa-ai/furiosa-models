@@ -3,6 +3,11 @@
 YOLOv7w6 Pose Estimation Model.
 You can find more details at [https://github.com/WongKinYiu/yolov7#pose-estimation](https://github.com/WongKinYiu/yolov7#pose-estimation).
 
+<a name="YOLOv7w6Pose_Exmaple"></a>
+<div align="center">
+    <img src="../../images/yolov7_w6_pose_demo.jpg" title="YOLOv7w6Pose Example" width="640" />
+</div>
+
 ## Overall
 
 * Framework: PyTorch
@@ -114,3 +119,17 @@ See the source code for more details.
 ::: furiosa.models.vision.yolov7_w6_pose.postprocess.PoseEstimationResult
     options:
         show_source: true
+
+---
+
+Furthermore, for convenience, the YOLOv7w6Pose model includes an example visualize function. The [image](#YOLOv7w6Pose_Exmaple) at the top of this document was generated using this utility function. The code used is as follows:
+
+## <a name="YOLOv7w6Pose_Visualize"></a>
+!!!Usage
+    ```python
+    --8<-- "docs/examples/yolov7_w6_pose_visualize.py"
+    ```
+
+### `furiosa.models.vision.YOLOv7w6Pose.visualize`
+
+::: furiosa.models.vision.yolov7_w6_pose.YOLOv7w6Pose.visualize

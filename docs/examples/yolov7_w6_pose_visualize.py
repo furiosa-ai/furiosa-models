@@ -10,7 +10,9 @@ cwd = Path(__file__).parent
 yolo_pose = YOLOv7w6Pose()
 
 with create_runner(yolo_pose.model_source()) as runner:
-    image = cv2.imread("tests/assets/yolov5-test.jpg")
+    image = cv2.imread("tests/assets/pose_demo.jpg")
     inputs, contexts = yolo_pose.preprocess([image])
     output = runner.run(np.expand_dims(inputs[0], axis=0))
-    yolo_pose.postprocess(output, contexts=contexts)
+    results = yolo_pose.postprocess(output, contexts=contexts)
+    yolo_pose.visualize(image, results[0])
+    cv2.imwrite("./pose_result.jpg", image)
