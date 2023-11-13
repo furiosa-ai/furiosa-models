@@ -34,9 +34,6 @@ spec:
       script: |
         #!/usr/bin/env bash
         set -e
-
-        # FIXME: Remove me when TLS problem is solved (https://github.com/furiosa-ai/furiosa-sdk-private/issues/719)
-        export LD_PRELOAD=$(find $(python -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')/torch/lib/ -name "libgomp*"):$LD_PRELOAD
         make unit_tests
         make notebook_tests
 
@@ -86,9 +83,6 @@ spec:
       script: |
         #!/usr/bin/env bash
         set -e
-
-        # FIXME: Remove me when TLS problem is solved (https://github.com/furiosa-ai/furiosa-sdk-private/issues/719)
-        export LD_PRELOAD=$(find $(python -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')/torch/lib/ -name "libgomp*"):$LD_PRELOAD
         make examples
 
       resources:
