@@ -30,4 +30,5 @@ tkn hub install task github-set-status --namespace $NAMESPACE \
     || tkn hub reinstall task github-set-status --namespace $NAMESPACE
 
 # Apply all files in cwd
-kubectl apply --namespace $NAMESPACE --filename .
+kubectl apply --namespace $NAMESPACE --filename furiosa-models-regression-test
+kubectl apply --namespace $NAMESPACE --filename furiosa-models-ci
