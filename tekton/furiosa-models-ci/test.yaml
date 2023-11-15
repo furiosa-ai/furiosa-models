@@ -20,69 +20,25 @@ spec:
       mountPath: /root/.cache/pip
     - name: furiosa-models-compiler-cache
       mountPath: /root/.cache/furiosa
-  resources:
-    inputs:
-      - name: image
-        type: image
   steps:
     - name: unittests-and-document-notebook-test
       env:
         - name: "PIP_EXTRA_INDEX_URL"
-          value: "https://internal-pypi.furiosa.dev/simple"
-      image: $(resources.inputs.image.url)
+          value: "https://pypi.corp.furiosa.ai/simple"
+      image: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:base
       workingDir: /workspace/source
       script: |
         #!/usr/bin/env bash
         set -e
+
+        # Install toolchain
+        apt update && make toolchain
+
+        # Install furiosa-models package
+        pip install --constraint ci-constraints.txt .[test,full]
+
         make unit_tests
         make notebook_tests
-
-      resources:
-        requests:
-          memory: 16Gi
-          cpu: 8
-          alpha.furiosa.ai/npu: 1
-        limits:
-          memory: 16Gi
-          cpu: 8
-          alpha.furiosa.ai/npu: 1
----
-apiVersion: tekton.dev/v1beta1
-kind: Task
-metadata:
-  name: test-examples
-  namespace: ci-furiosa-models
-spec:
-  workspaces:
-    - name: source
-    - name: furiosa-apt-credential
-      mountPath: /etc/apt/auth.conf.d
-      readOnly: true
-    - name: aws-credential
-      mountPath: /root/.aws
-    - name: internal-pypi-secret
-      mountPath: /root/.netrc
-      readOnly: true
-    - name: furiosa-models-dvc-cache
-      mountPath: /dvc-cache
-    - name: furiosa-models-pip-cache
-      mountPath: /root/.cache/pip
-    - name: furiosa-models-compiler-cache
-      mountPath: /root/.cache/furiosa
-  resources:
-    inputs:
-      - name: image
-        type: image
-  steps:
-    - name: run
-      env:
-        - name: "PIP_EXTRA_INDEX_URL"
-          value: "https://internal-pypi.furiosa.dev/simple"
-      image: $(resources.inputs.image.url)
-      workingDir: /workspace/source
-      script: |
-        #!/usr/bin/env bash
-        set -e
         make examples
 
       resources:

@@ -21,10 +21,6 @@ spec:
       description: Number of commits in the change + 1
       default: "1"
 
-  resources:
-    - name: image
-      type: image
-
   workspaces:
     - name: source
       description: Workspace where the git repo is prepared for testing
@@ -91,31 +87,6 @@ spec:
     runAfter:
       - clone
 
-  - name: build-and-push
-    taskRef:
-      name: build-and-push
-    workspaces:
-      - name: source
-        workspace: source
-      - name: furiosa-apt-credential
-        workspace: furiosa-apt-credential
-      - name: internal-pypi-secret
-        workspace: internal-pypi-secret
-        subPath: .netrc
-    params:
-    - name: DOCKERFILE
-      value: "Dockerfile"
-    - name: logs
-      value: "https://grafana.office.furiosa.in/d/logs/kubernetes-pod-logs?orgId=1&var-pod=$(context.pipelineRun.name)-build-and-push"
-    - name: pod-resource-usage
-      value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-build-and-push-pod"
-    resources:
-      outputs:
-        - name: image
-          resource: image
-    runAfter:
-      - lint
-
   - name: unittests
     taskRef:
       name: unittests
@@ -140,43 +111,8 @@ spec:
       value: "https://grafana.office.furiosa.in/d/logs/kubernetes-pod-logs?orgId=1&var-pod=$(context.pipelineRun.name)-unittests-pod"
     - name: pod-resource-usage
       value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-unittests-pod"
-    resources:
-      inputs:
-        - name: image
-          resource: image
     runAfter:
-      - build-and-push
-
-  - name: test-examples
-    taskRef:
-      name: test-examples
-    workspaces:
-      - name: source
-        workspace: source
-      - name: furiosa-apt-credential
-        workspace: furiosa-apt-credential
-      - name: aws-credential
-        workspace: aws-credential
-      - name: internal-pypi-secret
-        workspace: internal-pypi-secret
-        subPath: .netrc
-      - name: furiosa-models-dvc-cache
-        workspace: furiosa-models-dvc-cache
-      - name: furiosa-models-pip-cache
-        workspace: furiosa-models-pip-cache
-      - name: furiosa-models-compiler-cache
-        workspace: furiosa-models-compiler-cache
-    params:
-      - name: logs
-        value: "https://grafana.office.furiosa.in/d/logs/kubernetes-pod-logs?orgId=1&var-pod=$(context.pipelineRun.name)-test-examples-pod"
-      - name: pod-resource-usage
-        value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-test-examples-pod"
-    resources:
-      inputs:
-        - name: image
-          resource: image
-    runAfter:
-      - build-and-push
+      - lint
 
   finally:
   - name: set-status-success

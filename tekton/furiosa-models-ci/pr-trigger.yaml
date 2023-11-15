@@ -64,20 +64,6 @@ spec:
               - key: "npu"
                 operator: "Exists"
                 effect: "NoSchedule"
-          - pipelineTaskName: test-examples
-            taskPodTemplate:
-              tolerations:
-              - key: "npu"
-                operator: "Exists"
-                effect: "NoSchedule"
-        resources:
-          - name: image
-            resourceSpec:
-              description: image for commit $(tt.params.gitShortRevision)"
-              type: image
-              params:
-                - name: url
-                  value: "asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:$(tt.params.gitShortRevision)"
         workspaces:
           - name: source
             volumeClaimTemplate:

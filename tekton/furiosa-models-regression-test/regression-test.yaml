@@ -1,34 +1,6 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: wait-for-image
-  namespace: ci-furiosa-models
-spec:
-  workspaces:
-    - name: aws-credential
-      mountPath: /root/.aws
-  resources:
-    inputs:
-      - name: image
-        type: image
-  steps:
-    - name: wait-for-image
-      image: "docker:23.0-cli"
-      env:
-      - name: IMAGE
-        value: $(resources.inputs.image.url)
-      script: |
-        echo "Wating for image: $IMAGE"
-        while :
-        do
-          docker manifest inspect $IMAGE > /dev/null \
-            && break
-          sleep 60s
-        done
----
-apiVersion: tekton.dev/v1beta1
-kind: Task
-metadata:
   name: regression-test-with-npu
   namespace: ci-furiosa-models
 spec:
@@ -65,25 +37,29 @@ spec:
       description: The corresponding pr number
     - name: modelName
       description: Name of the model to run the regression test
-  resources:
-    inputs:
-      - name: image
-        type: image
+
   steps:
     - name: regression-test-with-npu
       env:
         - name: "PIP_EXTRA_INDEX_URL"
-          value: "https://internal-pypi.furiosa.dev/simple"
+          value: "https://pypi.corp.furiosa.ai/simple"
         - name: "GH_TOKEN"
           valueFrom:
             secretKeyRef:
               name: $(params.GITHUB_TOKEN_SECRET_NAME)
               key: $(params.GITHUB_TOKEN_SECRET_KEY)
-      image: $(resources.inputs.image.url)
+      image: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:base
       workingDir: /workspace/source
       script: |
         #!/usr/bin/env bash
         set -ex
+
+        # Install toolchain
+        apt update && make toolchain
+
+        # Install furiosa-models package
+        pip install --constraint ci-constraints.txt .[test,full]
+
         git config --global --add safe.directory /workspace/source
         echo -n "## Pip freeze result for " > pip_freeze.txt
         echo $(params.modelName) >> pip_freeze.txt
