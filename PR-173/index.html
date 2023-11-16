@@ -809,7 +809,7 @@
 <p><code>furiosa-models</code> is an open model zoo project for FuriosaAI NPU.
 It provides a set of public pre-trained, pre-quantized models for learning and demo purposes or
 for developing your applications.</p>
-<p><code>furiosa-models</code> also includes pre-packaged post/processing utilities, compiler configurations optimized
+<p><code>furiosa-models</code> also includes pre-packaged post/processing utilities, and compiler configurations optimized
 for FuriosaAI NPU. However, all models are standard ONNX or tflite models,
 and they can run even on CPU and GPU as well.</p>
 <h2 id="releases">Releases</h2>
@@ -822,7 +822,7 @@ and they can run even on CPU and GPU as well.</p>
 <h2 id="online-documentation">Online Documentation</h2>
 <p>If you are new, you can start from <a href="https://furiosa-ai.github.io/furiosa-models/v0.10.0/getting_started/">Getting Started</a>.
 You can also find the latest online documents,
-including programming guides, API references, and examples from the followings:</p>
+including programming guides, API references, and examples from the following:</p>
 <ul>
 <li><a href="https://furiosa-ai.github.io/furiosa-models/latest/">Furiosa Models - Latest Documentation</a></li>
 <li><a href="https://furiosa-ai.github.io/furiosa-models/v0.10.0/model_object/">Model Object</a></li>
@@ -832,7 +832,7 @@ including programming guides, API references, and examples from the followings:<
 </ul>
 <h2 id="model-list"><a name="model_list"></a>Model List</h2>
 <p>The table summarizes all models available in <code>furiosa-models</code>. If you visit each model link,
-you can find details about loading a model, their input and output tensors, pre/post processings, and usage examples.</p>
+you can find details about loading a model, their input and output tensors, pre/post-processing, and usage examples.</p>
 <table>
 <thead>
 <tr>
@@ -877,17 +877,23 @@ you can find details about loading a model, their input and output tensors, pre/
 <td><a href="https://furiosa-ai.github.io/furiosa-models/v0.10.0/models/yolov5m/">YOLOv5M</a></td>
 <td>Object Detection</td>
 <td>21M</td>
-<td>mAP 0.272 (Bdd100k-val)*</td>
+<td>mAP 0.272 (Bdd100k-val) <sup><a href="#footnote_1">[1]</a></sup></td>
 </tr>
 <tr>
 <td><a href="https://furiosa-ai.github.io/furiosa-models/v0.10.0/models/yolov5l/">YOLOv5L</a></td>
 <td>Object Detection</td>
 <td>46M</td>
-<td>mAP 0.284 (Bdd100k-val)*</td>
+<td>mAP 0.284 (Bdd100k-val) <sup><a href="#footnote_1">[1]</a></sup></td>
+</tr>
+<tr>
+<td><a href="https://furiosa-ai.github.io/furiosa-models/PR-173/models/yolov7_w6_pose/">YOLOv7w6Pose</a></td>
+<td>Pose Estimation</td>
+<td>80M</td>
+<td>N/A</td>
 </tr>
 </tbody>
 </table>
-<p><em>*: The accuracy of the yolov5 f32 model trained with bdd100k-val dataset, is mAP 0.295 (for yolov5m) and mAP 0.316 (for yolov5l).</em></p>
+<p><em><a name="footnote_1">[1]</a>: The accuracy of the yolov5 f32 model trained with bdd100k-val dataset, is mAP 0.295 (for yolov5m) and mAP 0.316 (for yolov5l).</em></p>
 <h2 id="see-also">See Also</h2>
 <ul>
 <li><a href="https://furiosa-ai.github.io/furiosa-models/latest/">Furiosa Models - Latest Documentation</a></li>
