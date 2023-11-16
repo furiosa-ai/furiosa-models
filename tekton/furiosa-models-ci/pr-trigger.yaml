@@ -82,7 +82,7 @@ spec:
           - name: source
             volumeClaimTemplate:
               spec:
-                storageClassName: ceph-filesystem
+                storageClassName: cephfs-ci
                 accessModes:
                   - ReadWriteMany
                 resources:
