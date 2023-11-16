@@ -8,7 +8,7 @@ spec:
     - name: source
   steps:
     - name: lint
-      image: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:lint
+      image: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:base
       imagePullPolicy: Always
       workingDir: /workspace/source
       script: |

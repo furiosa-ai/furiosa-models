@@ -81,9 +81,9 @@ spec:
         workspace: source
     params:
     - name: logs
-      value: "https://grafana.office.furiosa.in/d/logs/kubernetes-pod-logs?orgId=1&var-pod=$(context.pipelineRun.name)-format"
+      value: "https://grafana.office.furiosa.in/d/logs/kubernetes-pod-logs?orgId=1&var-pod=$(context.pipelineRun.name)-lint-pod"
     - name: pod-resource-usage
-      value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-format-pod"
+      value: "https://grafana.office.furiosa.in/d/pod-resource-usage/k8s-pod-resource-dashboard?orgId=1&var-namespace=ci-furiosa-models&var-pod=$(context.pipelineRun.name)-lint-pod"
     runAfter:
       - clone
 

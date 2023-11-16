@@ -15,7 +15,7 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
     | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
     && apt update && apt install gh -y
 
-RUN pip3 install --upgrade pip wheel setuptools Cython dvc[s3]
+RUN pip3 install --upgrade pip wheel setuptools Cython dvc[s3] black[jupyter] isort ruff
 
 RUN echo "deb [arch=amd64] https://archive.corp.furiosa.ai/ubuntu/ focal restricted" \
     > /etc/apt/sources.list.d/furiosa.list && \
