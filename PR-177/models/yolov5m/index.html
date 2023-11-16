@@ -1,0 +1,1294 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="DNN Models optimized for FuriosaAI NPU">
+      
+      
+      
+        <link rel="canonical" href="https://furiosa-ai.github.io/furiosa-models/models/yolov5m/">
+      
+      
+        <link rel="prev" href="../ssd_resnet34/">
+      
+      
+        <link rel="next" href="../yolov5l/">
+      
+      
+      <link rel="icon" href="../../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.8">
+    
+    
+      
+        <title>YOLOv5m - Furiosa Models</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.4b4a2bd9.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.356b1318.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#yolov5m" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Furiosa Models" class="md-header__button md-logo" aria-label="Furiosa Models" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Furiosa Models
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              YOLOv5m
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/furiosa-ai/furiosa-models" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    furiosa-ai/furiosa-models
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Furiosa Models" class="md-nav__button md-logo" aria-label="Furiosa Models" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    Furiosa Models
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/furiosa-ai/furiosa-models" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    furiosa-ai/furiosa-models
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting_started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/navigate_models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Navigating Models from FuriosaAI Model Zoo
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/quantize_and_compile_model/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quantize and Compile Models
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/serving_with_furiosa_serving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Serving Example with Furiosa Serving
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../model_object/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Model Object
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../command_line_tool/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Command Line Tool
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Models
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Models
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resnet50_v1.5/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ResNet50 v1.5
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../efficientnet_b0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EfficientNetB0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../efficientnet_v2_s/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EfficientNetV2-S
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ssd_mobilenet/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SSD MobileNet v1
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ssd_resnet34/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SSD ResNet34
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    YOLOv5m
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    YOLOv5m
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overall" class="md-nav__link">
+    Overall
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inputs" class="md-nav__link">
+    Inputs
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outputs" class="md-nav__link">
+    Outputs
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prepostprocessing" class="md-nav__link">
+    Pre/Postprocessing
+  </a>
+  
+    <nav class="md-nav" aria-label="Pre/Postprocessing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#furiosamodelsvisionyolov5mpreprocess" class="md-nav__link">
+    furiosa.models.vision.YOLOv5m.preprocess
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#furiosa.models.vision.yolov5.core.YOLOv5PreProcessor.__call__" class="md-nav__link">
+    __call__
+  </a>
+  
+    <nav class="md-nav" aria-label="__call__">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#furiosamodelsvisionyolov5mpostprocess" class="md-nav__link">
+    furiosa.models.vision.YOLOv5m.postprocess
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../yolov5l/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    YOLOv5L
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developers_guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Developer's guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/furiosa-ai/furiosa-models/blob/main/LICENSE" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Apache License 2.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overall" class="md-nav__link">
+    Overall
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inputs" class="md-nav__link">
+    Inputs
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outputs" class="md-nav__link">
+    Outputs
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prepostprocessing" class="md-nav__link">
+    Pre/Postprocessing
+  </a>
+  
+    <nav class="md-nav" aria-label="Pre/Postprocessing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#furiosamodelsvisionyolov5mpreprocess" class="md-nav__link">
+    furiosa.models.vision.YOLOv5m.preprocess
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#furiosa.models.vision.yolov5.core.YOLOv5PreProcessor.__call__" class="md-nav__link">
+    __call__
+  </a>
+  
+    <nav class="md-nav" aria-label="__call__">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#furiosamodelsvisionyolov5mpostprocess" class="md-nav__link">
+    furiosa.models.vision.YOLOv5m.postprocess
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="yolov5m">YOLOv5m</h1>
+<p>YOLOv5 is the one of the most popular object detection models.
+You can find more details at <a href="https://github.com/ultralytics/yolov5">https://github.com/ultralytics/yolov5</a>.</p>
+<div align="center">
+    <img src="../../images/yolov5m_demo.jpg" title="YOLOv5m Example" width="640" />
+</div>
+
+<h2 id="overall">Overall</h2>
+<ul>
+<li>Framework: PyTorch</li>
+<li>Model format: ONNX</li>
+<li>Model task: Object Detection</li>
+<li>Source: <a href="https://github.com/ultralytics/yolov5">https://github.com/ultralytics/yolov5</a>.</li>
+</ul>
+<h2 id="_1"><a name="YOLOv5m_Usage"></a></h2>
+<div class="admonition usage">
+<p class="admonition-title">Usage</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span> <span class="nn">cv2</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">from</span> <span class="nn">furiosa.models.vision</span> <span class="kn">import</span> <span class="n">YOLOv5m</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="kn">from</span> <span class="nn">furiosa.runtime.sync</span> <span class="kn">import</span> <span class="n">create_runner</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">yolov5m</span> <span class="o">=</span> <span class="n">YOLOv5m</span><span class="p">()</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="k">with</span> <span class="n">create_runner</span><span class="p">(</span><span class="n">yolov5m</span><span class="o">.</span><span class="n">model_source</span><span class="p">())</span> <span class="k">as</span> <span class="n">runner</span><span class="p">:</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&quot;tests/assets/yolov5-test.jpg&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">inputs</span><span class="p">,</span> <span class="n">contexts</span> <span class="o">=</span> <span class="n">yolov5m</span><span class="o">.</span><span class="n">preprocess</span><span class="p">([</span><span class="n">image</span><span class="p">])</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">output</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">yolov5m</span><span class="o">.</span><span class="n">postprocess</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">contexts</span><span class="o">=</span><span class="n">contexts</span><span class="p">)</span>
+</code></pre></div>
+</div>
+<h2 id="inputs">Inputs</h2>
+<p>The input is a 3-channel image of 640, 640 (height, width).</p>
+<ul>
+<li>Data Type: <code>numpy.uint8</code></li>
+<li>Tensor Shape: <code>[1, 640, 640, 3]</code></li>
+<li>Memory Format: NHWC, where<ul>
+<li>N - batch size</li>
+<li>H - image height</li>
+<li>W - image width</li>
+<li>C - number of channels</li>
+</ul>
+</li>
+<li>Color Order: RGB</li>
+<li>Optimal Batch Size (minimum: 1): &lt;= 4</li>
+</ul>
+<h2 id="outputs">Outputs</h2>
+<p>The outputs are 3 <code>numpy.float32</code> tensors in various shapes as the following. 
+You can refer to <code>postprocess()</code> function to learn how to decode boxes, classes, and confidence scores.</p>
+<table>
+<thead>
+<tr>
+<th>Tensor</th>
+<th>Shape</th>
+<th>Data Type</th>
+<th>Data Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>(1, 45, 80, 80)</td>
+<td>float32</td>
+<td>NCHW</td>
+<td></td>
+</tr>
+<tr>
+<td>1</td>
+<td>(1, 45, 40, 40)</td>
+<td>float32</td>
+<td>NCHW</td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td>(1, 45, 20, 20)</td>
+<td>float32</td>
+<td>NCHW</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="prepostprocessing">Pre/Postprocessing</h2>
+<p><code>furiosa.models.vision.YOLOv5m</code> class provides <code>preprocess</code> and <code>postprocess</code> methods.
+<code>preprocess</code> method converts input images to input tensors, and <code>postprocess</code> method converts 
+model output tensors to a list of bounding boxes, scores and labels. 
+You can find examples at <a href="#YOLOv5m_Usage">YOLOv5m Usage</a>.</p>
+<h3 id="furiosamodelsvisionyolov5mpreprocess"><code>furiosa.models.vision.YOLOv5m.preprocess</code></h3>
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<a id="furiosa.models.vision.yolov5.core.YOLOv5PreProcessor.__call__"></a>
+  <div class="doc doc-contents first">
+  
+      <p>Preprocess input images to a batch of input tensors</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>images</code></td>
+          <td>
+                <code><span title="typing.Sequence">Sequence</span>[<span title="typing.Union">Union</span>[str, <span title="numpy.ndarray">ndarray</span>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Color images have (NHWC: Batch, Height, Width, Channel) dimensions.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>with_scaling</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to apply model-specific techniques that involve scaling the
+model's input and converting its data type to float32. Refer to the code to gain a
+precise understanding of the techniques used. Defaults to False.</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <p>Returns:
+    a pre-processed image, scales and padded sizes(width,height) per images.
+        The first element is a stacked numpy array containing a batch of images.
+        To learn more about the outputs of preprocess (i.e., model inputs),
+        please refer to <a href="../yolov5l/#inputs">YOLOv5l Inputs</a> or
+        <a href="./#inputs">YOLOv5m Inputs</a>.</p>
+<div class="codehilite"><pre><span></span><code>    The second element is a list of dict objects about the original images.
+    Each dict object has the following keys. &#39;scale&#39; key of the returned dict has a
+    rescaled ratio per width(=target/width) and height(=target/height), and the &#39;pad&#39;
+    key has padded width and height pixels. Specially, the last dictionary element of
+    returning tuple will be passed to postprocessing as a parameter to calculate
+    predicted coordinates on normalized coordinates back to an input image coordinator.
+</code></pre></div>
+
+  </div>
+
+</div><h3 id="furiosamodelsvisionyolov5mpostprocess"><code>furiosa.models.vision.YOLOv5m.postprocess</code></h3>
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<a id="furiosa.models.vision.yolov5.core.YOLOv5PostProcessor.__call__"></a>
+  <div class="doc doc-contents first">
+  
+      <p>Convert the outputs of this model to a list of bounding boxes, scores and labels</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>model_outputs</code></td>
+          <td>
+                <code><span title="typing.Sequence">Sequence</span>[<span title="numpy.ndarray">ndarray</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>P3/8, P4/16, P5/32 features from yolov5l model.
+To learn more about the outputs of preprocess (i.e., model inputs),
+please refer to <a href="../yolov5l/#outputs">YOLOv5l Outputs</a> or
+<a href="./#outputs">YOLOv5m Outputs</a>.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>contexts</code></td>
+          <td>
+                <code><span title="typing.Sequence">Sequence</span>[<span title="typing.Dict">Dict</span>[str, <span title="typing.Any">Any</span>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A configuration for each image generated by the preprocessor.
+For example, it could be the reduction ratio of the image, the actual image width
+and height.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>conf_thres</code></td>
+          <td>
+                <code>float</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Confidence score threshold. The default to 0.25</p>
+            </div>
+          </td>
+          <td>
+                <code>0.25</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>iou_thres</code></td>
+          <td>
+                <code>float</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>IoU threshold value for the NMS processing. The default to 0.45.</p>
+            </div>
+          </td>
+          <td>
+                <code>0.45</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="typing.List">List</span>[<span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="furiosa.models.vision.postprocess.ObjectDetectionResult" href="#furiosa.models.vision.postprocess.ObjectDetectionResult">ObjectDetectionResult</a>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Detected Bounding Box and its score and label represented as <code>ObjectDetectionResult</code>.
+The details of <code>ObjectDetectionResult</code> can be found below.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+<details class="definition-of-objectdetectionresult-and-ltrbboundingbox" open>
+  <summary>Definition of ObjectDetectionResult and LtrbBoundingBox</summary>
+  <div class="doc doc-object doc-class">
+
+
+
+<a id="furiosa.models.vision.postprocess.LtrbBoundingBox"></a>
+  <div class="doc doc-contents first">
+
+
+            <details class="quote">
+              <summary>Source code in <code>furiosa/models/vision/postprocess.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-29">29</a></span>
+<span class="normal"><a href="#__codelineno-0-30">30</a></span>
+<span class="normal"><a href="#__codelineno-0-31">31</a></span>
+<span class="normal"><a href="#__codelineno-0-32">32</a></span>
+<span class="normal"><a href="#__codelineno-0-33">33</a></span>
+<span class="normal"><a href="#__codelineno-0-34">34</a></span>
+<span class="normal"><a href="#__codelineno-0-35">35</a></span>
+<span class="normal"><a href="#__codelineno-0-36">36</a></span>
+<span class="normal"><a href="#__codelineno-0-37">37</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="nd">@dataclass</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="k">class</span> <span class="nc">LtrbBoundingBox</span><span class="p">:</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a>    <span class="n">left</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32"></a>    <span class="n">top</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-0-33" name="__codelineno-0-33"></a>    <span class="n">right</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-0-34" name="__codelineno-0-34"></a>    <span class="n">bottom</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-0-35" name="__codelineno-0-35"></a>
+<a id="__codelineno-0-36" name="__codelineno-0-36"></a>    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<a id="__codelineno-0-37" name="__codelineno-0-37"></a>        <span class="k">return</span> <span class="nb">iter</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bottom</span><span class="p">])</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<a id="furiosa.models.vision.postprocess.ObjectDetectionResult"></a>
+  <div class="doc doc-contents first">
+
+
+            <details class="quote">
+              <summary>Source code in <code>furiosa/models/vision/postprocess.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-86">86</a></span>
+<span class="normal"><a href="#__codelineno-0-87">87</a></span>
+<span class="normal"><a href="#__codelineno-0-88">88</a></span>
+<span class="normal"><a href="#__codelineno-0-89">89</a></span>
+<span class="normal"><a href="#__codelineno-0-90">90</a></span>
+<span class="normal"><a href="#__codelineno-0-91">91</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-86" name="__codelineno-0-86"></a><span class="nd">@dataclass</span>
+<a id="__codelineno-0-87" name="__codelineno-0-87"></a><span class="k">class</span> <span class="nc">ObjectDetectionResult</span><span class="p">:</span>
+<a id="__codelineno-0-88" name="__codelineno-0-88"></a>    <span class="n">boundingbox</span><span class="p">:</span> <span class="n">LtrbBoundingBox</span>
+<a id="__codelineno-0-89" name="__codelineno-0-89"></a>    <span class="n">score</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-0-90" name="__codelineno-0-90"></a>    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span>
+<a id="__codelineno-0-91" name="__codelineno-0-91"></a>    <span class="n">index</span><span class="p">:</span> <span class="nb">int</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+</details>
+  </div>
+
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.sections"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.81fa17fe.min.js"></script>
+      
+    
+  </body>
+</html>
