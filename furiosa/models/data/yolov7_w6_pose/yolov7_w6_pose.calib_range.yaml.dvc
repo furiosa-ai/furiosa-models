@@ -1,0 +1,5 @@
+outs:
+- md5: 214cb0a9af566f5bab9485a067a8af47
+  size: 21649
+  hash: md5
+  path: yolov7_w6_pose.calib_range.yaml

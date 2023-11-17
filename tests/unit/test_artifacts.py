@@ -11,6 +11,7 @@ from furiosa.models.vision import (
     SSDResNet34,
     YOLOv5l,
     YOLOv5m,
+    YOLOv7w6Pose,
 )
 
 
@@ -67,4 +68,11 @@ def test_efficientnet_v2_s():
     sanity_check_for_dvc_file(
         EfficientNetV2s(),
         next((DATA_DIRECTORY_BASE / "efficientnet_v2_s").glob("*.onnx.dvc")),
+    )
+
+
+def test_yolov7w6_pose():
+    sanity_check_for_dvc_file(
+        YOLOv7w6Pose(),
+        next((DATA_DIRECTORY_BASE / "yolov7_w6_pose").glob("*.onnx.dvc")),
     )

@@ -8,6 +8,7 @@ __all__ = [
     "YOLOv5m",
     "EfficientNetB0",
     "EfficientNetV2s",
+    "YOLOv7w6Pose",
 ]
 
 _class_modules = {
@@ -18,6 +19,7 @@ _class_modules = {
     "YOLOv5m": ".yolov5",
     "EfficientNetB0": ".efficientnet_b0",
     "EfficientNetV2s": ".efficientnet_v2_s",
+    "YOLOv7w6Pose": ".yolov7_w6_pose",
 }
 
 
