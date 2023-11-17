@@ -81,7 +81,10 @@ def quantize_and_compile_model(arg: Tuple[int, Path, int]):
 
         # Compile and write to file
         target_npu = "warboy" if num_pe == 1 else "warboy-2pe"
-        cmd = f'furiosa-compiler --target-npu {target_npu} --output {enf_path} {quantized_onnx_file.name}'
+        cmd = (
+            f'furiosa-compiler --target-npu {target_npu} --output {enf_path} '
+            f'{quantized_onnx_file.name}'
+        )
         sp.run(
             shlex.split(cmd),
             env={"NPU_COMPILER_CONFIG_PATH": compiler_config_path},

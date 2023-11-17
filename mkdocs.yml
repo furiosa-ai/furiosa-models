@@ -35,7 +35,7 @@ nav:
     - models/yolov5m.md
     - models/yolov5l.md
 - Changelog: changelog.md
-- Developer's guide: developers-guide.md
+- Developer's guide: developers_guide.md
 - Apache License 2.0: 'https://github.com/furiosa-ai/furiosa-models/blob/main/LICENSE'
 
 markdown_extensions:

@@ -2,6 +2,15 @@
 
 This documentation is for developers who want to contribute to Furiosa Models.
 
+## Prepare the Docker image for the CI
+
+The CI for this project depends on an (external) Docker image:
+
+`asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:base`
+
+You can create the Docker image by running `make docker-build`,
+push the image to the Docker registry by running `make docker-push`.
+
 ## Release guide
 
 ### Preparing for Release
@@ -16,7 +25,7 @@ This documentation is for developers who want to contribute to Furiosa Models.
 Before releasing the new version, ensure that the following tasks are completed:
 
 - [ ] Update the code in the release branch to the appropriate version.
-- [ ] Generate a rendered documentation for the new release.
+- [ ] Generate a rendered documentation using `/release-doc/v1.2.3` command for the new release.
 - [ ] Write a changelog that describes the changes made in the new release.
 - [ ] Test the building of wheels by `flit build` to ensure the release is functional.
 

@@ -4,15 +4,10 @@ ONNXRUNTIME_VERSION := 1.15.1-?
 TOOLCHAIN_VERSION := 0.10.2-?
 LIBHAL_VERSION := 0.11.0-?
 
-.PHONY: check-docker-tag toolchain lint test unit_tests notebook_tests examples \
+.PHONY: toolchain lint test unit_tests notebook_tests examples \
 regression-test-all regression-test-resnet50 regression-test-ssd-mobilenet \
 regression-test-ssd-resnet34 regression-test-yolov5 doc docker-build docker-push \
 regression-test-efficientnet-b0 regression-test-efficientnet-v2-s
-
-check-docker-tag:
-ifndef DOCKER_TAG
-	$(error "DOCKER_TAG is not set")
-endif
 
 toolchain:
 	apt-get update
@@ -62,8 +57,8 @@ regression-test-efficientnet-v2-s:
 doc:
 	mkdocs build
 
-docker-build: check-docker-tag
-	DOCKER_BUILDKIT=1 docker build -t asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:${DOCKER_TAG}  --secret id=.netrc,src=/root/.netrc --secret id=furiosa.conf,src=/etc/apt/auth.conf.d/furiosa.conf -f docker/Dockerfile ./docker/
+docker-build:
+	DOCKER_BUILDKIT=1 docker build -t asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:base ./docker
 
 docker-push:
-	docker push asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:${DOCKER_TAG}
+	docker push asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:base

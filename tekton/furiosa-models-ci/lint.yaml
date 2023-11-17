@@ -8,19 +8,19 @@ spec:
     - name: source
   steps:
     - name: lint
-      image: python:3.9-bullseye
+      image: asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:base
+      imagePullPolicy: Always
       workingDir: /workspace/source
       script: |
         #!/usr/bin/env bash
         set -e
 
-        pip3 install --upgrade black[jupyter] isort ruff
         make lint
 
       resources:
         requests:
           memory: 4Gi
-          cpu: 1
+          cpu: 4
         limits:
           memory: 4Gi
-          cpu: 1
+          cpu: 4

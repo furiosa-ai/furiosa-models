@@ -96,14 +96,6 @@ spec:
                         operator: In
                         values:
                         - npu
-        resources:
-          - name: image
-            resourceSpec:
-              description: image for commit $(tt.params.gitShortRevision)"
-              type: image
-              params:
-                - name: url
-                  value: "asia-northeast3-docker.pkg.dev/next-gen-infra/furiosa-ai/furiosa-models:$(tt.params.gitShortRevision)"
         workspaces:
           - name: source
             volumeClaimTemplate:
@@ -173,10 +165,6 @@ spec:
     - name: modelName
       description: Name of the model to run the regression test
 
-  resources:
-    - name: image
-      type: image
-
   workspaces:
     - name: source
       description: Workspace where the git repo is prepared for testing
@@ -231,17 +219,6 @@ spec:
     - name: depth
       value: $(params.gitCloneDepth)
 
-  - name: wait-for-image
-    taskRef:
-      name: wait-for-image
-    workspaces:
-      - name: aws-credential
-        workspace: aws-credential
-    resources:
-      inputs:
-        - name: image
-          resource: image
-
   - name: regression-test-with-npu
     taskRef:
       name: regression-test-with-npu
@@ -273,12 +250,8 @@ spec:
         workspace: furiosa-models-compiler-cache
       - name: furiosa-models-dataset
         workspace: furiosa-models-dataset
-    resources:
-      inputs:
-        - name: image
-          resource: image
     runAfter:
-      - wait-for-image
+      - clone
 
   finally:
   - name: set-status-success
