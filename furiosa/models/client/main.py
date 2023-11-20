@@ -137,6 +137,9 @@ def main():
         if verbose:
             logging.root.setLevel(logging.DEBUG)
         input_paths = resolve_input_paths(Path(_input_paths))
+        if len(input_paths) == 0:
+            logger.warning(f"No input files found in '{_input_paths}'")
+            sys.exit(1)
         logger.debug(f"Collected input paths: {input_paths}")
         model_cls = get_model_or_exit(model_name)
         api.run_inferences(model_cls, input_paths, postprocess)
