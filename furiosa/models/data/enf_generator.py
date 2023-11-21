@@ -85,6 +85,7 @@ def quantize_and_compile_model(arg: Tuple[int, Path, int]):
             f'furiosa-compiler --target-npu {target_npu} --output {enf_path} '
             f'{quantized_onnx_file.name}'
         )
+        print(f"  [{index}] {model_short_name} compile start")
         sp.run(
             shlex.split(cmd),
             env={"NPU_COMPILER_CONFIG_PATH": compiler_config_path},
