@@ -397,30 +397,64 @@ class SSDResNet34NativePostProcessor(RustPostProcessor):
     def __init__(self):
         self._native = native.ssd_resnet34.RustPostProcessor()
 
-    def __call__(self, model_outputs: Sequence[numpy.ndarray], contexts: Sequence[Dict[str, Any]]):
-        raw_results = self._native.eval(
-            [np.squeeze(s, axis=0) for s in model_outputs[6:]],
-            [np.squeeze(s, axis=0) for s in model_outputs[:6]],
-        )
+    def __call__(
+        self, model_outputs: Sequence[numpy.ndarray], contexts: Sequence[Dict[str, Any]]
+    ) -> List[List[ObjectDetectionResult]]:
+        """Convert the outputs of this model to a list of bounding boxes, scores and labels
 
-        results = []
-        width = contexts['width']
-        height = contexts['height']
-        for value in raw_results:
-            left = value.left * width
-            right = value.right * width
-            top = value.top * height
-            bottom = value.bottom * height
-            results.append(
-                ObjectDetectionResult(
-                    index=value.class_id,
-                    label=CLASSES[value.class_id],
-                    score=value.score,
-                    boundingbox=LtrbBoundingBox(left=left, top=top, right=right, bottom=bottom),
-                )
+        Args:
+            model_outputs: the outputs of the model. To learn more about the output of model,
+                please refer to [Outputs](ssd_resnet34.md#outputs).
+            contexts: context coming from `preprocess()`
+
+        Returns:
+            Detected Bounding Box and its score and label represented as
+                `ObjectDetectionResult`.
+                To learn more about `ObjectDetectionResult`, 'Definition of ObjectDetectionResult'
+                can be found below.
+
+        Definition of ObjectDetectionResult and LtrbBoundingBox:
+            ::: furiosa.models.vision.postprocess.LtrbBoundingBox
+                options:
+                    show_source: true
+            ::: furiosa.models.vision.postprocess.ObjectDetectionResult
+                options:
+                    show_source: true
+        """
+        if len(model_outputs) == 0:
+            return [[]]
+        batch_size = model_outputs[0].shape[0]
+        assert batch_size == len(
+            contexts
+        ), "batch size of model_outputs and len(contexts) must be same"
+
+        all_results = []
+
+        for i, context in enumerate(contexts):
+            raw_results = self._native.eval(
+                [s[i, :] for s in model_outputs[6:]],
+                [s[i, :] for s in model_outputs[:6]],
             )
 
-        return results
+            results = []
+            width = context['width']
+            height = context['height']
+            for value in raw_results:
+                left = value.left * width
+                right = value.right * width
+                top = value.top * height
+                bottom = value.bottom * height
+                results.append(
+                    ObjectDetectionResult(
+                        index=value.class_id,
+                        label=CLASSES[value.class_id],
+                        score=value.score,
+                        boundingbox=LtrbBoundingBox(left=left, top=top, right=right, bottom=bottom),
+                    )
+                )
+            all_results.append(results)
+
+        return all_results
 
 
 class SSDResNet34(ObjectDetectionModel):
