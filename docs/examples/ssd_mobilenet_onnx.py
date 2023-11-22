@@ -23,4 +23,4 @@ with create_runner(quantized_onnx, compiler_config=compiler_config) as runner:
     # `with_scaling=True`.
     inputs, contexts = mobilenet.preprocess(image, with_scaling=True)
     outputs = runner.run(inputs)
-    mobilenet.postprocess(outputs, contexts[0])
+    mobilenet.postprocess(outputs, contexts)

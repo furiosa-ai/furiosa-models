@@ -93,7 +93,8 @@ def test_mlcommons_ssd_mobilenet_with_native_rust_pp_accuracy(benchmark):
     def workload(image_id, image):
         image, contexts = model.preprocess([image])
         outputs = runner.run(image)
-        result = model.postprocess(outputs, contexts[0])
+        batch_result = model.postprocess(outputs, contexts)
+        result = np.squeeze(batch_result, axis=0)  # squeeze the batch axis
 
         for res in result:
             detection = {
