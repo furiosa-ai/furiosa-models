@@ -7,4 +7,4 @@ mobilenet = SSDMobileNet()
 with create_runner(mobilenet.model_source()) as runner:
     inputs, contexts = mobilenet.preprocess(image)
     outputs = runner.run(inputs)
-    mobilenet.postprocess(outputs, contexts[0])
+    mobilenet.postprocess(outputs, contexts)
