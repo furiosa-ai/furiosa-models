@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.10.1 - TBU]
+
+### New Features
+- Addedd YOLOv7w6 Pose Estimation Model #173
+
+### Improvements
+- Detailed explanation about `with_scaling` argument #171
+- Added Jupyter Notebook examples #167
+- Use new furiosa-compiler CLI #174
+- Use IR version instead of compiler version when probing ENF files #174
+
+### Removed
+- furiosa-libcompiler APT package dependency #174
+
+### Bug fixes
+
 ## [0.10.0 - 2023-08-28]
 
 ### New Features
@@ -39,7 +55,7 @@
 - Remove Cpp postprocessor implementations #102
 - Change packaging tool from setuptools-rust to flit #109
 
-## Removed
+### Removed
 - Truncated models and corresponding postprocesses #144
 - **Breaking:** drop support of directly passing Model to session.create() #144
 
