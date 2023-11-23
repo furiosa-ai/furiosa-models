@@ -53,7 +53,7 @@ dvc = ["dvc[s3]"]
 full = ["dvc[s3]", "onnx", "furiosa-quantizer == 0.10.*"]
 
 [project.scripts]
-furiosa-models = "furiosa.models.client.main:main"
+furiosa-models = "furiosa.models.client.main:app"
 
 [project.urls]
 Home = "https://furiosa.ai"
