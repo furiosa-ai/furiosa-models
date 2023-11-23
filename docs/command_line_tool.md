@@ -50,6 +50,7 @@ The `list` subcommand prints out the list of available models with their attribu
 It helps users to identify the models available for use.
 
 ### Help Message
+
 ```text
 $ furiosa-models list --help
 
@@ -65,6 +66,7 @@ Options:
 ```
 
 ### Example
+
 ```
 $ furiosa-models list
 
@@ -87,6 +89,7 @@ $ furiosa-models list
 The `desc` subcommand provides detailed information about a specific model.
 
 ### Help Message
+
 ```text
 $ furiosa-models desc --help
 
@@ -101,8 +104,8 @@ Options:
   --help  Show this message and exit.
 ```
 
-
 ### Example
+
 ```
 $ furiosa-models desc ResNet50
 
@@ -123,7 +126,11 @@ available postprocess versions: Python
 The `bench` subcommand runs a specific model with input data and prints out performance benchmark results
 such as queries per second (QPS) and average latency.
 
+For detailed information on device specification for `--device` argument, please refer to the
+[device specification documentation](https://furiosa-ai.github.io/docs/latest/en/api/python/furiosa.runtime.html#device-specification)
+
 ### Help Message
+
 ```text
 $ furiosa-models bench --help
 
@@ -137,10 +144,12 @@ Arguments:
 
 Options:
   --postprocess TEXT  Specifies a postprocess implementation
+  --device TEXT       Specifies a device to run the model (ex. 'warboy(2)*1')
   --help              Show this message and exit.
 ```
 
 ### Example
+
 ```
 $ furiosa-models bench ResNet50 ./
 
@@ -188,6 +197,9 @@ enabling users to perform inference on input data through HTTP requests.
     ```
     The `furiosa-serving` leverages `FastAPI` and `uvicorn` under the hood.
 
+For detailed information on device specification for `--device` argument, please refer to the
+[device specification documentation](https://furiosa-ai.github.io/docs/latest/en/api/python/furiosa.runtime.html#device-specification)
+
 ### Help Message
 
 ```text
@@ -204,11 +216,11 @@ Options:
   --postprocess TEXT  Specifies a postprocess implementation
   --host TEXT         Specifies a host address  [default: 0.0.0.0]
   --port INTEGER      Specifies a port number  [default: 8000]
+  --device TEXT       Specifies a device to run the model (ex. 'warboy(2)*1')
   --help              Show this message and exit.
 ```
 
 ### Example
-
 
 Start a server for the YOLOv5m model with Rust postprocessing on port 1234:
 ```

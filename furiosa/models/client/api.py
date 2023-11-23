@@ -1,8 +1,12 @@
+from functools import reduce
 from time import perf_counter
 from typing import Any, Callable, List, Optional, Sequence, Type
 
 from tqdm import tqdm
 
+from furiosa import device
+from furiosa.common.thread import asynchronous
+from furiosa.device import furiosa_native_device_sync as device_sync
 from furiosa.runtime.sync import create_runner
 
 from .. import vision
@@ -75,12 +79,83 @@ def get_model(model_name: str) -> Optional[Type[Model]]:
     return None
 
 
+def get_device_mode(device_str: str) -> device.DeviceMode:
+    """Get device type for given device type string
+
+    Args:
+        device_type: Device type string
+
+    Returns:
+        Device type
+    """
+    device_config = device.DeviceConfig.from_str(device_str)
+    device_list = device_sync.find_device_files(device_config)
+    if not device_list:
+        raise ValueError(f"No device found for {device_str}")
+    assert reduce(
+        lambda x, y: x == y, map(lambda x: x.mode(), device_list)
+    ), "All devices must have same device type"
+    return device_list[0].mode()
+
+
+def device_file_to_pe_count(device_mode: device.DeviceMode) -> int:
+    """Get number of PEs for given device mode
+
+    Args:
+        device_mode: DeviceMode
+
+    Returns:
+        Number of PEs
+    """
+    if device_mode == device.DeviceMode.Single:
+        return 1
+    elif device_mode == device.DeviceMode.Fusion:
+        return 2
+    else:
+        raise ValueError(f"Unsupported device mode: {device_mode}")
+
+
+def get_pe_count_from_device_str(device_str: Optional[str]) -> int:
+    """Get number of PEs for given device string
+
+    Args:
+        device_str: Device string
+
+    Returns:
+        Number of PEs
+    """
+    if device_str:
+        device_mode = get_device_mode(device_str)
+        return device_file_to_pe_count(device_mode)
+    else:
+        return 2
+
+
 def decorate_with_bar(string: str) -> str:
+    """Decorate given string with bar
+
+    Args:
+        string: String to decorate
+
+    Returns:
+        Decorated string
+    """
+
     bar = "----------------------------------------------------------------------"
     return "\n".join([bar, string, bar])
 
 
 def time_with_proper_suffix(t: float, digits: int = 5) -> str:
+    """Returns time with proper suffix
+
+    Args:
+        t: Time in seconds
+        digits: Number of digits after decimal point
+
+    Returns:
+        Time with proper suffix
+    """
+
     units = iter(["sec", "ms", "us", "ns"])
     while t < 1:
         t *= 1_000
@@ -91,6 +166,19 @@ def time_with_proper_suffix(t: float, digits: int = 5) -> str:
 def decorate_result(
     total_time: float, queries: int, header: str = "", digits: int = 5, newline: bool = True
 ) -> str:
+    """Decorate benchmark result
+
+    Args:
+        total_time: Total elapsed time
+        queries: Number of queries
+        header: Header string
+        digits: Number of digits after decimal point
+        newline: Whether to add newline at the end
+
+    Returns:
+        Decorated benchmark result
+    """
+
     result = []
     result.append(decorate_with_bar(header))
     result.append(f"Total elapsed time: {time_with_proper_suffix(total_time, digits)}")
@@ -103,14 +191,30 @@ def decorate_result(
     return "\n".join(result)
 
 
-def run_inferences(model_cls: Type[Model], input_paths: Sequence[str], postprocess: Optional[str]):
+def run_inferences(
+    model_cls: Type[Model],
+    input_paths: Sequence[str],
+    postprocess: Optional[str],
+    device_str: Optional[str],
+):
+    """Run inferences on given model
+
+    Args:
+        model_cls: Model class
+        input_paths: Input paths
+        postprocess: Postprocess implementation
+        device_str: Device string
+    """
+
     warning = """WARN: the benchmark results may depend on the number of input samples,
 sizes of the images, and a machine where this benchmark is running."""
+    num_pe = get_pe_count_from_device_str(device_str)
     model = model_cls(postprocessor_type=postprocess) if postprocess else model_cls()
     queries = len(input_paths)
-    print(f"Running {queries} input samples ...")
+    print(f"Run benchmark on {queries} input samples ...")
+
     print(decorate_with_bar(warning))
-    with create_runner(model.model_source()) as runner:
+    with create_runner(model.model_source(num_pe=num_pe), device=device_str) as runner:
         model_inputs, model_outputs = [], []
         initial_time = perf_counter()
         for input_path in tqdm(input_paths, desc="Preprocess"):
@@ -137,7 +241,20 @@ def serve_model(
     postprocess: Optional[str],
     host: str,
     port: int,
+    device_str: Optional[str],
 ) -> Any:
+    """Serve model
+
+    Args:
+        model_cls: Model class
+        postprocess: Postprocess implementation
+        host: Host address
+        port: Port number
+        device_str: Device string
+    """
+
+    num_pe = get_pe_count_from_device_str(device_str)
+
     try:
         from fastapi import FastAPI, File, UploadFile
 
@@ -159,11 +276,11 @@ def serve_model(
     # ServeModel does not support in-memory model binary for now,
     # so we write model into temp file and pass its path
     model_file = NamedTemporaryFile()
-    model_file.write(model.model_source())
+    model_file.write(model.model_source(num_pe=num_pe))
     model_file_path = model_file.name
 
     serve_model: ServeModel = synchronous(serve.model("furiosart"))(
-        model.name, location=model_file_path
+        model.name, location=model_file_path, npu_device=device_str
     )
 
     @serve_model.post("/infer")
@@ -174,7 +291,7 @@ def serve_model(
         image_file_path = NamedTemporaryFile()
         image_file_path.write(await image.read())
 
-        tensors, ctx = model.preprocess(image_file_path.name)
+        tensors, ctx = await asynchronous(model.preprocess)(image_file_path.name)
 
         # Infer from ServeModel
         result: List[np.ndarray] = await serve_model.predict(tensors)
