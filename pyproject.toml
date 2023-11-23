@@ -61,7 +61,7 @@ full = [
 ]
 
 [project.scripts]
-furiosa-models = "furiosa.models.client.main:app"
+furiosa-models = "furiosa.models.cli.main:app"
 
 [project.urls]
 Home = "https://furiosa.ai"
