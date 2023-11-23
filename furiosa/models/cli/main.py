@@ -17,7 +17,9 @@ EXAMPLE: str = """Examples:\n\n\n
 # Describe SSDResNet34 model\n
 `furiosa-models desc SSDResNet34`\n\n\n
 # Run SSDResNet34 for images in `./input` directory\n
-`furiosa-models bench ssd-resnet34 ./input/`
+`furiosa-models bench ssd-resnet34 ./input/`\n\n\n
+# Run YOLOv7w6Pose REST API server for `0.0.0.0:8080`\n
+`furiosa-models serve yolov7w6pose --host 0.0.0.0 --port 8080`
 """
 
 app = typer.Typer(
@@ -104,6 +106,9 @@ def benchmark_model(
     postprocess: Optional[str] = typer.Option(
         None, "--postprocess", help="Specifies a postprocess implementation"
     ),
+    device_str: Optional[str] = typer.Option(
+        None, "--devices", help="Specifies devices to run the model (ex. 'warboy(2)*1')"
+    ),
 ):
     input_paths = resolve_input_paths(Path(input_path))
     if len(input_paths) == 0:
@@ -111,7 +116,23 @@ def benchmark_model(
         raise typer.Exit(code=1)
     typer.echo(f"Collected input paths: {input_paths}")
     model_cls = get_model_or_exit(model)
-    api.run_inferences(model_cls, input_paths, postprocess)
+    api.run_inferences(model_cls, input_paths, postprocess, device_str)
+
+
+@app.command("serve", help="Open a REST API server for a model")
+def serve_model(
+    model: str,
+    postprocess: Optional[str] = typer.Option(
+        None, "--postprocess", help="Specifies a postprocess implementation"
+    ),
+    host: str = typer.Option("0.0.0.0", "--host", help="Specifies a host address"),
+    port: int = typer.Option(8000, "--port", help="Specifies a port number"),
+    device_str: Optional[str] = typer.Option(
+        None, "--devices", help="Specifies devices to run the model (ex. 'warboy(2)*1')"
+    ),
+):
+    model_cls = get_model_or_exit(model)
+    api.serve_model(model_cls, postprocess=postprocess, host=host, port=port, device_str=device_str)
 
 
 if __name__ == "__main__":

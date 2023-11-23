@@ -25,6 +25,7 @@ requires-python = "~=3.8"
 dynamic = ["version"]
 dependencies = [
     "furiosa-common == 0.10.*",
+    "furiosa-device == 0.10.*",
     "furiosa-runtime == 0.10.*",
     "furiosa-native-postprocess == 0.9.0",
 
@@ -40,6 +41,7 @@ dependencies = [
 [project.optional-dependencies]
 test = [
     "onnx",
+    "furiosa-serving == 0.10.*",
     "furiosa-quantizer == 0.10.*",
 
     "nbmake",
@@ -50,10 +52,16 @@ test = [
     "torchvision",
 ]
 dvc = ["dvc[s3]"]
-full = ["dvc[s3]", "onnx", "furiosa-quantizer == 0.10.*"]
+serving = ["furiosa-serving == 0.10.*"]
+full = [
+    "dvc[s3]",
+    "onnx",
+    "furiosa-serving == 0.10.*",
+    "furiosa-quantizer == 0.10.*",
+]
 
 [project.scripts]
-furiosa-models = "furiosa.models.client.main:app"
+furiosa-models = "furiosa.models.cli.main:app"
 
 [project.urls]
 Home = "https://furiosa.ai"
