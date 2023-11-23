@@ -17,7 +17,9 @@ EXAMPLE: str = """Examples:\n\n\n
 # Describe SSDResNet34 model\n
 `furiosa-models desc SSDResNet34`\n\n\n
 # Run SSDResNet34 for images in `./input` directory\n
-`furiosa-models bench ssd-resnet34 ./input/`
+`furiosa-models bench ssd-resnet34 ./input/`\n\n\n
+# Run YOLOv7w6Pose REST API server for `0.0.0.0:8080`\n
+`furiosa-models serve yolov7w6pose --host 0.0.0.0 --port 8080`
 """
 
 app = typer.Typer(

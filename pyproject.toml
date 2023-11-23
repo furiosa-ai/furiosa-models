@@ -40,6 +40,7 @@ dependencies = [
 [project.optional-dependencies]
 test = [
     "onnx",
+    "furiosa-serving == 0.10.*",
     "furiosa-quantizer == 0.10.*",
 
     "nbmake",
@@ -50,7 +51,12 @@ test = [
     "torchvision",
 ]
 dvc = ["dvc[s3]"]
-full = ["dvc[s3]", "onnx", "furiosa-quantizer == 0.10.*"]
+full = [
+    "dvc[s3]",
+    "onnx",
+    "furiosa-serving == 0.10.*",
+    "furiosa-quantizer == 0.10.*",
+]
 
 [project.scripts]
 furiosa-models = "furiosa.models.client.main:app"

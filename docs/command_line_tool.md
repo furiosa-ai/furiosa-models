@@ -24,6 +24,7 @@ Commands:
   bench  Run benchmark on a model
   desc   Describe a model
   list   List available models
+  serve  Open a REST API server for a model
 
 Examples:
   # List available models
@@ -37,6 +38,9 @@ Examples:
 
   # Run SSDResNet34 for images in `./input` directory
   `furiosa-models bench ssd-resnet34 ./input/`
+
+  # Run YOLOv7w6Pose REST API server for `0.0.0.0:8080`
+  `furiosa-models serve yolov7w6pose --host 0.0.0.0 --port 8080`
 ```
 
 
@@ -45,7 +49,7 @@ Examples:
 The `list` subcommand prints out the list of available models with their attributes.
 It helps users to identify the models available for use.
 
-*Help Message*
+### Help Message
 ```text
 $ furiosa-models list --help
 
@@ -60,7 +64,7 @@ Options:
   --help  Show this message and exit.
 ```
 
-*Example*
+### Example
 ```
 $ furiosa-models list
 
@@ -82,7 +86,7 @@ $ furiosa-models list
 
 The `desc` subcommand provides detailed information about a specific model.
 
-*Help Message*
+### Help Message
 ```text
 $ furiosa-models desc --help
 
@@ -98,7 +102,7 @@ Options:
 ```
 
 
-*Example*
+### Example
 ```
 $ furiosa-models desc ResNet50
 
@@ -119,7 +123,7 @@ available postprocess versions: Python
 The `bench` subcommand runs a specific model with input data and prints out performance benchmark results
 such as queries per second (QPS) and average latency.
 
-*Help Message*
+### Help Message
 ```text
 $ furiosa-models bench --help
 
@@ -136,7 +140,7 @@ Options:
   --help              Show this message and exit.
 ```
 
-*Example*
+### Example
 ```
 $ furiosa-models bench ResNet50 ./
 
@@ -170,3 +174,57 @@ Avg. elapsed time / sample: 1.26440 ms
 
 The benchmark results include information about preprocessing, inference,
 postprocessing, and overall performance metrics.
+
+## Subcommand: `serve`
+
+The `serve` command in furiosa-models allows you to deploy a machine learning model as a REST API server,
+enabling users to perform inference on input data through HTTP requests.
+
+!!! note
+    The serve command requires the `furiosa-serving` library.
+    Please make sure to install it before using this command.
+    ```shell
+    pip install furiosa-sdk[serving]
+    ```
+    The `furiosa-serving` leverages `FastAPI` and `uvicorn` under the hood.
+
+### Help Message
+
+```text
+$ furiosa-models serve --help
+
+Usage: furiosa-models serve [OPTIONS] MODEL
+
+  Open a REST API server for a model
+
+Arguments:
+  MODEL  [required]
+
+Options:
+  --postprocess TEXT  Specifies a postprocess implementation
+  --host TEXT         Specifies a host address  [default: 0.0.0.0]
+  --port INTEGER      Specifies a port number  [default: 8000]
+  --help              Show this message and exit.
+```
+
+### Example
+
+
+Start a server for the YOLOv5m model with Rust postprocessing on port 1234:
+```
+furiosa-models serve yolov5m --postprocess rust --port 1234
+```
+
+Once the server is running, perform inference with a sample curl command:
+```
+$ curl -X 'POST' \
+  'http://0.0.0.0:1234/infer' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: multipart/form-data' \
+  -F 'image=@./tests/assets/yolov5-test.jpg;type=image/jpeg'
+```
+
+Response example
+```json
+{"result": [[{"boundingbox": {"left": 3682.03, "top": 2128.83, "right": 3922.49, "bottom": 2363.04}, "score": 0.89, "label": "traffic sign", "index": 9}, {"boundingbox": {"left": 821.35, "top": 2012.27, "right": 1061.16, "bottom": 2392.25}, "score": 0.85, "label": "car", "index": 2}, ...]]}
+```
