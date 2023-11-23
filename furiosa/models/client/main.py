@@ -9,7 +9,7 @@ import yaml
 
 from . import api
 from .. import __version__ as models_version
-from ..types import ImageClassificationModel, Model, ObjectDetectionModel
+from ..types import ImageClassificationModel, Model, ObjectDetectionModel, PoseEstimationModel
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +44,7 @@ def parse_args() -> argparse.Namespace:
 
     list_parser = subparsers.add_parser("list", help="Lists available models")
     list_parser.add_argument(
-        "-t", "--type", type=str, help="Limits the task type (ex. classify, detect)"
+        "-t", "--type", type=str, help="Limits the task type (ex. classify, detect, pose)"
     )
 
     desc_parser = subparsers.add_parser("desc", help="Prints out a description of a model")
@@ -92,6 +92,8 @@ def get_filter(filter_type: Optional[str]) -> Callable[..., bool]:
         return lambda x: issubclass(x, ObjectDetectionModel)
     elif "classif" in filter_type.lower():
         return lambda x: issubclass(x, ImageClassificationModel)
+    elif "pose" in filter_type.lower():
+        return lambda x: issubclass(x, PoseEstimationModel)
     else:
         logger.warning(f"Unknown type filter '{filter_type}', showing all models...")
         return lambda _: True
@@ -137,6 +139,9 @@ def main():
         if verbose:
             logging.root.setLevel(logging.DEBUG)
         input_paths = resolve_input_paths(Path(_input_paths))
+        if len(input_paths) == 0:
+            logger.warning(f"No input files found in '{_input_paths}'")
+            sys.exit(1)
         logger.debug(f"Collected input paths: {input_paths}")
         model_cls = get_model_or_exit(model_name)
         api.run_inferences(model_cls, input_paths, postprocess)

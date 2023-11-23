@@ -6,7 +6,7 @@ from tqdm import tqdm
 from furiosa.runtime.sync import create_runner
 
 from .. import vision
-from ..types import Model, PythonPostProcessor
+from ..types import Model
 
 
 def normalize(text: str) -> str:
@@ -110,10 +110,6 @@ sizes of the images, and a machine where this benchmark is running."""
         model = model_cls(postprocessor_type=postprocess)
     else:
         model = model_cls()
-    # FIXME: For native postprocess implementations, only YOLO can handle multiple contexts
-    single_context = not isinstance(model.postprocessor, PythonPostProcessor) and not isinstance(
-        model, (vision.YOLOv5m, vision.YOLOv5l)
-    )
     queries = len(input_paths)
     print(f"Running {queries} input samples ...")
     print(decorate_with_bar(warning))
@@ -123,12 +119,12 @@ sizes of the images, and a machine where this benchmark is running."""
         for input_path in tqdm(input_paths, desc="Preprocess"):
             model_inputs.append(model.preprocess(input_path))
         after_preprocess = perf_counter()
-        for model_input in tqdm(model_inputs, desc="Inference"):
-            model_outputs.append([runner.run(model_input[0]), model_input[1]])
+        for contexted_model_input in tqdm(model_inputs, desc="Inference"):
+            model_input, context = contexted_model_input
+            model_outputs.append([runner.run(model_input), context])
         after_npu = perf_counter()
         for contexted_model_output in tqdm(model_outputs, desc="Postprocess"):
             model_output, context = contexted_model_output
-            context = context[0] if context is not None and single_context else context
             model.postprocess(model_output, context)
         all_done = perf_counter()
 

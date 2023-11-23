@@ -16,13 +16,13 @@ This model has been used since MLCommons v0.5.
         ```python
         --8<-- "docs/examples/ssd_mobilenet.py"
         ```
-     
+
     === "Native Postprocessor"
         ```python
         --8<-- "docs/examples/ssd_mobilenet_native.py"
         ```
 
-## Inputs 
+## Inputs
 The input is a 3-channel image of 300x300 (height, width).
 
 * Data Type: `numpy.float32`
@@ -56,15 +56,15 @@ You can refer to `postprocess()` function to learn how to decode boxes, classes,
 
 ## Pre/Postprocessing
 `furiosa.models.vision.SSDMobileNet` class provides `preprocess` and `postprocess` methods.
-`preprocess` method converts input images to input tensors, and `postprocess` method converts 
-model output tensors to a list of bounding boxes, scores and labels. 
+`preprocess` method converts input images to input tensors, and `postprocess` method converts
+model output tensors to a list of bounding boxes, scores and labels.
 You can find examples at [SSDMobileNet Usage](#SSDMobileNet_Usage).
- 
+
 ### `furiosa.models.vision.SSDMobileNet.preprocess`
 ::: furiosa.models.vision.ssd_mobilenet.SSDMobileNetPreProcessor.__call__
     options:
         show_source: false
-    
+
 ### `furiosa.models.vision.SSDMobileNet.postprocess`
 ::: furiosa.models.vision.ssd_mobilenet.SSDMobileNetPythonPostProcessor.__call__
     options:
