@@ -1,66 +1,28 @@
-import argparse
-import logging
 from pathlib import Path
-import sys
 from typing import Callable, List, Optional, Type
 
 from tabulate import tabulate
+import typer
 import yaml
 
 from . import api
 from .. import __version__ as models_version
 from ..types import ImageClassificationModel, Model, ObjectDetectionModel, PoseEstimationModel
 
-logger = logging.getLogger(__name__)
-
-EXAMPLE: str = """example:
-    # List available models
-    furiosa-models list
-
-    # List Object Detection models
-    furiosa-models list -t detect
-
-    # Describe SSDResNet34 model
-    furiosa-models desc SSDResNet34
-
-    # Run SSDResNet34 for images in `./input` directory
-    furiosa-models bench ssd-resnet34 ./input/
+EXAMPLE: str = """Examples:\n\n\n
+# List available models\n
+`furiosa-models list`\n\n\n
+# List Object Detection models\n
+`furiosa-models list -t detect`\n\n\n
+# Describe SSDResNet34 model\n
+`furiosa-models desc SSDResNet34`\n\n\n
+# Run SSDResNet34 for images in `./input` directory\n
+`furiosa-models bench ssd-resnet34 ./input/`
 """
 
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description=f"FuriosaAI Model Zoo CLI --- v{models_version}",
-        prog="furiosa-models",
-        epilog=EXAMPLE,
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        conflict_handler="resolve",
-    )
-
-    subparsers = parser.add_subparsers(
-        dest="command",
-        required=True,
-    )
-
-    list_parser = subparsers.add_parser("list", help="Lists available models")
-    list_parser.add_argument(
-        "-t", "--type", type=str, help="Limits the task type (ex. classify, detect, pose)"
-    )
-
-    desc_parser = subparsers.add_parser("desc", help="Prints out a description of a model")
-    desc_parser.add_argument("model", type=str, help="Model name (ignore case)")
-
-    inference_parser = subparsers.add_parser(
-        "bench", help="Benchmark a given model by running inferences"
-    )
-    inference_parser.add_argument("-v", "--verbose", action="store_true", help="Set verbose")
-    inference_parser.add_argument(
-        "-post", "--postprocess", type=str, help="Specifies a postprocess implementation"
-    )
-    inference_parser.add_argument("model", type=str, help="Model name (ignore case)")
-    inference_parser.add_argument("input", type=str, help="Input path (file or directory)")
-
-    return parser.parse_args()
+app = typer.Typer(
+    help=f"FuriosaAI Model Zoo CLI --- v{models_version}", epilog=EXAMPLE, add_completion=False
+)
 
 
 def get_model_list(table: List[List[str]]):
@@ -73,7 +35,7 @@ def resolve_input_paths(input_path: Path) -> List[str]:
     if input_path.is_file():
         return [str(input_path)]
     elif input_path.is_dir():
-        # Directory may containing image files
+        # Directory may contain image files
         image_extensions = {".jpg", ".jpeg", ".png"}
         return [
             str(p.resolve())
@@ -81,8 +43,8 @@ def resolve_input_paths(input_path: Path) -> List[str]:
             if p.suffix.lower() in image_extensions
         ]
     else:
-        logger.warning(f"Invalid input path '{str(input_path)}'")
-        sys.exit(1)
+        typer.echo(f"Invalid input path '{str(input_path)}'")
+        raise typer.Exit(1)
 
 
 def get_filter(filter_type: Optional[str]) -> Callable[..., bool]:
@@ -95,15 +57,15 @@ def get_filter(filter_type: Optional[str]) -> Callable[..., bool]:
     elif "pose" in filter_type.lower():
         return lambda x: issubclass(x, PoseEstimationModel)
     else:
-        logger.warning(f"Unknown type filter '{filter_type}', showing all models...")
+        typer.echo(f"Unknown type filter '{filter_type}', showing all models...")
         return lambda _: True
 
 
 def get_model_or_exit(model_name: str) -> Model:
     model = api.get_model(model_name)
     if model is None:
-        logger.warning(f"Model name '{model_name}' not found")
-        sys.exit(1)
+        typer.echo(f"Model name '{model_name}' not found")
+        raise typer.Exit(1)
     return model
 
 
@@ -120,28 +82,37 @@ def describe_model(model_cls: Type[Model]) -> str:
     return ''.join(output)
 
 
-def main():
-    args = parse_args()
-    command: str = args.command
+@app.command("list", help="List available models")
+def list_models(
+    filter_type: Optional[str] = typer.Argument(
+        None, help="Limits the task type (ex. classify, detect, pose)"
+    )
+):
+    typer.echo(get_model_list(api.get_model_list(filter_func=get_filter(filter_type))))
 
-    if command == "list":
-        filter_type: str = args.type
-        print(get_model_list(api.get_model_list(filter_func=get_filter(filter_type))))
-    elif command == "desc":
-        model_name: str = args.model
-        model_cls = get_model_or_exit(model_name)
-        print(describe_model(model_cls))
-    elif command == "bench":
-        model_name: str = args.model
-        verbose: bool = args.verbose
-        _input_paths: str = args.input
-        postprocess: Optional[str] = args.postprocess
-        if verbose:
-            logging.root.setLevel(logging.DEBUG)
-        input_paths = resolve_input_paths(Path(_input_paths))
-        if len(input_paths) == 0:
-            logger.warning(f"No input files found in '{_input_paths}'")
-            sys.exit(1)
-        logger.debug(f"Collected input paths: {input_paths}")
-        model_cls = get_model_or_exit(model_name)
-        api.run_inferences(model_cls, input_paths, postprocess)
+
+@app.command("desc", help="Describe a model")
+def describe_model_cmd(model_name: str):
+    model_cls = get_model_or_exit(model_name)
+    typer.echo(describe_model(model_cls))
+
+
+@app.command("bench", help="Run benchmark on a model")
+def benchmark_model(
+    model: str,
+    input_path: Path,
+    postprocess: Optional[str] = typer.Option(
+        None, "--postprocess", help="Specifies a postprocess implementation"
+    ),
+):
+    input_paths = resolve_input_paths(Path(input_path))
+    if len(input_paths) == 0:
+        typer.echo(f"No input files found in '{input_path}'")
+        raise typer.Exit(code=1)
+    typer.echo(f"Collected input paths: {input_paths}")
+    model_cls = get_model_or_exit(model)
+    api.run_inferences(model_cls, input_paths, postprocess)
+
+
+if __name__ == "__main__":
+    app()
