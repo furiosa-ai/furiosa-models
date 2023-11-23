@@ -1,5 +1,5 @@
 from time import perf_counter
-from typing import Callable, List, Optional, Sequence, Type
+from typing import Any, Callable, List, Optional, Sequence, Type
 
 from tqdm import tqdm
 
@@ -106,10 +106,7 @@ def decorate_result(
 def run_inferences(model_cls: Type[Model], input_paths: Sequence[str], postprocess: Optional[str]):
     warning = """WARN: the benchmark results may depend on the number of input samples,
 sizes of the images, and a machine where this benchmark is running."""
-    if postprocess:
-        model = model_cls(postprocessor_type=postprocess)
-    else:
-        model = model_cls()
+    model = model_cls(postprocessor_type=postprocess) if postprocess else model_cls()
     queries = len(input_paths)
     print(f"Running {queries} input samples ...")
     print(decorate_with_bar(warning))
@@ -133,3 +130,55 @@ sizes of the images, and a machine where this benchmark is running."""
     )
     print(decorate_result(all_done - after_preprocess, queries, "Inference -> Postprocess"))
     print(decorate_result(after_npu - after_preprocess, queries, "Inference", newline=False))
+
+
+def serve_model(
+    model_cls: Type[Model],
+    postprocess: Optional[str],
+    host: str,
+    port: int,
+) -> Any:
+    try:
+        from fastapi import FastAPI, File, UploadFile
+
+        from furiosa.serving import ServeAPI, ServeModel
+    except ImportError:
+        raise ImportError("Please install `furiosa-serving` to use this command")
+
+    from tempfile import NamedTemporaryFile
+
+    import numpy as np
+    import uvicorn
+
+    from furiosa.common.thread import synchronous
+
+    serve = ServeAPI()
+    app: FastAPI = serve.app
+    model = model_cls(postprocessor_type=postprocess) if postprocess else model_cls()
+
+    # ServeModel does not support in-memory model binary for now,
+    # so we write model into temp file and pass its path
+    model_file = NamedTemporaryFile()
+    model_file.write(model.model_source())
+    model_file_path = model_file.name
+
+    serve_model: ServeModel = synchronous(serve.model("furiosart"))(
+        model.name, location=model_file_path
+    )
+
+    @serve_model.post("/infer")
+    async def infer(image: UploadFile = File(...)):
+        # Model Zoo's preprocesses do not consider in-memory image file for now
+        # (note that it's different from in-memory tensor)
+        # so we write in-memory image into temp file and pass its path
+        image_file_path = NamedTemporaryFile()
+        image_file_path.write(await image.read())
+
+        tensors, ctx = model.preprocess(image_file_path.name)
+
+        # Infer from ServeModel
+        result: List[np.ndarray] = await serve_model.predict(tensors)
+
+        return {"result": model.postprocess(result, ctx)}
+
+    return uvicorn.run(app, host=host, port=port)

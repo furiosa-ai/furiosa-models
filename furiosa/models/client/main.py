@@ -114,5 +114,18 @@ def benchmark_model(
     api.run_inferences(model_cls, input_paths, postprocess)
 
 
+@app.command("serve", help="Open a REST API server for a model")
+def serve_model(
+    model: str,
+    postprocess: Optional[str] = typer.Option(
+        None, "--postprocess", help="Specifies a postprocess implementation"
+    ),
+    host: str = typer.Option("0.0.0.0", "--host", help="Specifies a host address"),
+    port: int = typer.Option(8000, "--port", help="Specifies a port number"),
+):
+    model_cls = get_model_or_exit(model)
+    api.serve_model(model_cls, postprocess=postprocess, host=host, port=port)
+
+
 if __name__ == "__main__":
     app()
