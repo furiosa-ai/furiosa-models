@@ -107,7 +107,7 @@ def benchmark_model(
         None, "--postprocess", help="Specifies a postprocess implementation"
     ),
     device_str: Optional[str] = typer.Option(
-        None, "--device", help="Specifies a device to run the model (ex. 'warboy(2)*1')"
+        None, "--devices", help="Specifies devices to run the model (ex. 'warboy(2)*1')"
     ),
 ):
     input_paths = resolve_input_paths(Path(input_path))
@@ -128,7 +128,7 @@ def serve_model(
     host: str = typer.Option("0.0.0.0", "--host", help="Specifies a host address"),
     port: int = typer.Option(8000, "--port", help="Specifies a port number"),
     device_str: Optional[str] = typer.Option(
-        None, "--device", help="Specifies a device to run the model (ex. 'warboy(2)*1')"
+        None, "--devices", help="Specifies devices to run the model (ex. 'warboy(2)*1')"
     ),
 ):
     model_cls = get_model_or_exit(model)

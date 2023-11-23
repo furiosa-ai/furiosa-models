@@ -126,7 +126,7 @@ available postprocess versions: Python
 The `bench` subcommand runs a specific model with input data and prints out performance benchmark results
 such as queries per second (QPS) and average latency.
 
-For detailed information on device specification for `--device` argument, please refer to the
+For detailed information on device specification for `--devices` argument, please refer to the
 [device specification documentation](https://furiosa-ai.github.io/docs/latest/en/api/python/furiosa.runtime.html#device-specification)
 
 ### Help Message
@@ -144,7 +144,7 @@ Arguments:
 
 Options:
   --postprocess TEXT  Specifies a postprocess implementation
-  --device TEXT       Specifies a device to run the model (ex. 'warboy(2)*1')
+  --devices TEXT      Specifies devices to run the model (ex. 'warboy(2)*1')
   --help              Show this message and exit.
 ```
 
@@ -197,7 +197,7 @@ enabling users to perform inference on input data through HTTP requests.
     ```
     The `furiosa-serving` leverages `FastAPI` and `uvicorn` under the hood.
 
-For detailed information on device specification for `--device` argument, please refer to the
+For detailed information on device specification for `--devices` argument, please refer to the
 [device specification documentation](https://furiosa-ai.github.io/docs/latest/en/api/python/furiosa.runtime.html#device-specification)
 
 ### Help Message
@@ -216,7 +216,7 @@ Options:
   --postprocess TEXT  Specifies a postprocess implementation
   --host TEXT         Specifies a host address  [default: 0.0.0.0]
   --port INTEGER      Specifies a port number  [default: 8000]
-  --device TEXT       Specifies a device to run the model (ex. 'warboy(2)*1')
+  --devices TEXT      Specifies devices to run the model (ex. 'warboy(2)*1')
   --help              Show this message and exit.
 ```
 
