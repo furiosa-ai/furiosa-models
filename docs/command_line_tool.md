@@ -1,49 +1,145 @@
 # Command Line Tool
-We provide a simple command line tool called `furiosa-models` to allow users to
-evaluate or run quickly one of models with FuriosaAI NPU.
+
+`furiosa-models` is a command line tool provided by FuriosaAI to allow users to
+evaluate or quickly run models with FuriosaAI NPU.
 
 ## Installing
-To install `furiosa-models` command, please refer to [Installing](getting_started.md#installing).
-Then, `furiosa-models` command will be available.
+
+To install `furiosa-models` command, please refer to the [installation guide](getting_started.md#installing).
+Once installed, the `furiosa-models` command will be available.
 
 ## Synopsis
-```
-furiosa-models [-h] {list, desc, bench} ...
+
+```text
+$ furiosa-models --help
+
+Usage: furiosa-models [OPTIONS] COMMAND [ARGS]...
+
+  FuriosaAI Model Zoo CLI --- v0.10.0
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  bench  Run benchmark on a model
+  desc   Describe a model
+  list   List available models
+
+Examples:
+  # List available models
+  `furiosa-models list`
+
+  # List Object Detection models
+  `furiosa-models list -t detect`
+
+  # Describe SSDResNet34 model
+  `furiosa-models desc SSDResNet34`
+
+  # Run SSDResNet34 for images in `./input` directory
+  `furiosa-models bench ssd-resnet34 ./input/`
 ```
 
-`furiosa-models` command has three subcommands: `list`, `desc`, and `bench`.
 
 ## Subcommand: `list`
 
-`list` subcommand prints out the list of models with attributes.
-You will be able to figure out what models are available.
+The `list` subcommand prints out the list of available models with their attributes.
+It helps users to identify the models available for use.
+
+*Help Message*
+```text
+$ furiosa-models list --help
+
+Usage: furiosa-models list [OPTIONS] [FILTER_TYPE]
+
+  List available models
+
+Arguments:
+  [FILTER_TYPE]  Limits the task type (ex. classify, detect, pose)
+
+Options:
+  --help  Show this message and exit.
+```
 
 *Example*
 ```
 $ furiosa-models list
 
-+-----------------+------------------------------+----------------------+-------------------------+
-|   Model name    |      Model description       |      Task type       | Available postprocesses |
-+-----------------+------------------------------+----------------------+-------------------------+
-|    ResNet50     |   MLCommons ResNet50 model   | Image Classification |         Python          |
-|  SSDMobileNet   | MLCommons MobileNet v1 model |   Object Detection   |      Python, Rust       |
-|   SSDResNet34   | MLCommons SSD ResNet34 model |   Object Detection   |      Python, Rust       |
-|     YOLOv5l     |      YOLOv5 Large model      |   Object Detection   |         Python          |
-|     YOLOv5m     |     YOLOv5 Medium model      |   Object Detection   |         Python          |
-| EfficientNetB0  |    EfficientNet B0 model     | Image Classification |         Python          |
-| EfficientNetV2s |    EfficientNetV2-s model    | Image Classification |         Python          |
-+-----------------+------------------------------+----------------------+-------------------------+
++-----------------+---------------------------------+----------------------+-------------------------+
+|   Model name    |        Model description        |      Task type       | Available postprocesses |
++-----------------+---------------------------------+----------------------+-------------------------+
+|    ResNet50     |    MLCommons ResNet50 model     | Image Classification |         Python          |
+|  SSDMobileNet   |  MLCommons MobileNet v1 model   |   Object Detection   |      Python, Rust       |
+|   SSDResNet34   |  MLCommons SSD ResNet34 model   |   Object Detection   |      Python, Rust       |
+|     YOLOv5l     |       YOLOv5 Large model        |   Object Detection   |          Rust           |
+|     YOLOv5m     |       YOLOv5 Medium model       |   Object Detection   |          Rust           |
+| EfficientNetB0  |      EfficientNet B0 model      | Image Classification |         Python          |
+| EfficientNetV2s |     EfficientNetV2-s model      | Image Classification |         Python          |
+|  YOLOv7w6Pose   | YOLOv7 w6 Pose Estimation model |   Pose Estimation    |         Python          |
++-----------------+---------------------------------+----------------------+-------------------------+
+```
+
+## Subcommand: `desc`
+
+The `desc` subcommand provides detailed information about a specific model.
+
+*Help Message*
+```text
+$ furiosa-models desc --help
+
+Usage: furiosa-models desc [OPTIONS] MODEL_NAME
+
+  Describe a model
+
+Arguments:
+  MODEL_NAME  [required]
+
+Options:
+  --help  Show this message and exit.
+```
+
+
+*Example*
+```
+$ furiosa-models desc ResNet50
+
+name: ResNet50
+format: ONNX
+family: ResNet
+version: v1.5
+metadata:
+  description: ResNet50 v1.5 int8 ImageNet-1K
+  publication:
+    url: https://arxiv.org/abs/1512.03385.pdf
+task type: Image Classification
+available postprocess versions: Python
 ```
 
 ## Subcommand: `bench`
 
-`bench` subcommand runs a specific model with a given path where the input sample data are located.
-It will print out the performance benchmark results like QPS.
+The `bench` subcommand runs a specific model with input data and prints out performance benchmark results
+such as queries per second (QPS) and average latency.
+
+*Help Message*
+```text
+$ furiosa-models bench --help
+
+Usage: furiosa-models bench [OPTIONS] MODEL INPUT_PATH
+
+  Run benchmark on a model
+
+Arguments:
+  MODEL       [required]
+  INPUT_PATH  [required]
+
+Options:
+  --postprocess TEXT  Specifies a postprocess implementation
+  --help              Show this message and exit.
+```
 
 *Example*
 ```
-$ furiosa-models bench ResNet50 .
-libfuriosa_hal.so --- v0.11.0, built @ 43c901f
+$ furiosa-models bench ResNet50 ./
+
 Running 4 input samples ...
 ----------------------------------------------------------------------
 WARN: the benchmark results may depend on the number of input samples,
@@ -72,25 +168,5 @@ QPS: 790.88645
 Avg. elapsed time / sample: 1.26440 ms
 ```
 
-## Subcommand: `desc`
-
-`desc` subcommand shows the details of a specific model.
-
-*Example*
-```
-$ furiosa-models desc ResNet50
-family: ResNet
-format: onnx
-metadata:
-  description: ResNet50 v1.5 int8 ImageNet-1K
-  publication:
-    authors: null
-    date: null
-    publisher: null
-    title: null
-    url: https://arxiv.org/abs/1512.03385.pdf
-name: ResNet50
-version: v1.5
-task type: Image Classification
-available postprocess versions: Python
-```
+The benchmark results include information about preprocessing, inference,
+postprocessing, and overall performance metrics.

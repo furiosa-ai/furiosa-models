@@ -9,7 +9,7 @@ from . import api
 from .. import __version__ as models_version
 from ..types import ImageClassificationModel, Model, ObjectDetectionModel, PoseEstimationModel
 
-EXAMPLE: str = """examples:\n\n\n
+EXAMPLE: str = """Examples:\n\n\n
 # List available models\n
 `furiosa-models list`\n\n\n
 # List Object Detection models\n
@@ -82,7 +82,7 @@ def describe_model(model_cls: Type[Model]) -> str:
     return ''.join(output)
 
 
-@app.command("list")
+@app.command("list", help="List available models")
 def list_models(
     filter_type: Optional[str] = typer.Argument(
         None, help="Limits the task type (ex. classify, detect, pose)"
@@ -91,13 +91,13 @@ def list_models(
     typer.echo(get_model_list(api.get_model_list(filter_func=get_filter(filter_type))))
 
 
-@app.command("desc")
+@app.command("desc", help="Describe a model")
 def describe_model_cmd(model_name: str):
     model_cls = get_model_or_exit(model_name)
     typer.echo(describe_model(model_cls))
 
 
-@app.command("bench")
+@app.command("bench", help="Run benchmark on a model")
 def benchmark_model(
     model: str,
     input_path: Path,
