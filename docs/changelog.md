@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.10.1 - TBU]
+## [0.10.1 - 2023-11-25]
 
 ### New Features
 - Added YOLOv7w6 Pose Estimation Model #173
