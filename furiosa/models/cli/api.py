@@ -1,4 +1,5 @@
 from functools import reduce
+import os
 from time import perf_counter
 from typing import Any, Callable, List, Optional, Sequence, Type
 
@@ -124,6 +125,9 @@ def get_pe_count_from_device_str(device_str: Optional[str]) -> int:
     Returns:
         Number of PEs
     """
+    device_str = device_str or os.environ.get(
+        "FURIOSA_DEVICES", os.environ.get("NPU_DEVNAME", None)
+    )
     if device_str:
         device_mode = get_device_mode(device_str)
         return device_file_to_pe_count(device_mode)
