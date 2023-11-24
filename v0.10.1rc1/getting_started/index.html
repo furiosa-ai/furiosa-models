@@ -308,6 +308,39 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Installing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#apt-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      APT Dependencies
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installing-the-furiosa-models-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installing the furiosa-models package
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extra-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extra packages
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -776,6 +809,39 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Installing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#apt-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      APT Dependencies
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installing-the-furiosa-models-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installing the furiosa-models package
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extra-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extra packages
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -809,36 +875,51 @@
 <p>This documentation explains how to install furiosa-models, how to use available models in furiosa-models, and
 how to explore the documents.</p>
 <h2 id="prerequisites">Prerequisites</h2>
-<p><code>furiosa-models</code> can be installed on various Linux distributions, but it has been tested on the followings:</p>
+<p><code>furiosa-models</code> is compatible with various Linux distributions, and it has been tested on the following:</p>
 <ul>
 <li>CentOS 7 or higher</li>
 <li>Debian bullseye or higher</li>
 <li>Ubuntu 20.04 or higher</li>
 </ul>
-<p>The following packages should be installed, but the followings are installed by default in most systems.
-So, only when you have any dependency issue, you need to install the following packages:</p>
+<p>Ensure that the following packages are installed. In most systems, these are installed by default.
+However, if you encounter any dependency issues, manually install the following:</p>
 <ul>
 <li>libstdc++6</li>
 <li>libgomp</li>
 </ul>
 <h2 id="installing">Installing</h2>
+<h3 id="apt-dependencies">APT Dependencies</h3>
+<p>To install the APT dependencies, you need to set up authentication through <a href="https://iam.furiosa.ai">FuriosaAI IAM</a>.
+After authentication, install the following packages:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>furiosa-libhal-warboy<span class="w"> </span>furiosa-compiler
+</code></pre></div>
+<h3 id="installing-the-furiosa-models-package">Installing the <code>furiosa-models</code> package</h3>
 <p>You can quickly install Furiosa Models by using <code>pip</code> as following:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip<span class="w"> </span>setuptools<span class="w"> </span>wheel
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;furiosa-models&#39;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip<span class="w"> </span>setuptools<span class="w"> </span>wheel
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;furiosa-models&#39;</span>
 </code></pre></div>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
-<p>Older versions of wheel may reject the native-build wheels of furiosa-models.
+<p>Older versions of wheel may reject the native-build wheels of <code>furiosa-models</code>.
 Please make sure of installing &amp; upgrading Python packaging tools before
-installing furiosa-models.</p>
+installing <code>furiosa-models</code>.</p>
 </div>
 <details>
 <summary>Building from Source Code (click to see)</summary>
 <p>Or you can build from the source code as following:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git clone https://github.com/furiosa-ai/furiosa-models
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>pip install ./furiosa-models
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>git clone https://github.com/furiosa-ai/furiosa-models
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>pip install ./furiosa-models
 </code></pre></div>
 </details>
+<h3 id="extra-packages">Extra packages</h3>
+<p>To enable the use of the <code>furiosa models serve</code> command, you need to install the <code>furiosa-serving</code> Python package.
+You can achieve this by specifying the serving extra package when installing <code>furiosa-models</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;furiosa-models[serving]&#39;</span>
+</code></pre></div>
+<p>If you require additional packages related to compilation, you can install the full extra package, which includes all relevant dependencies.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;furiosa-models[full]&#39;</span>
+</code></pre></div>
+<p>These commands ensure that you have the necessary packages for serving models with furiosa-serving or any other compiling-related functionalities provided by the full extra package.</p>
 <h2 id="quick-example-and-guides">Quick example and Guides</h2>
 <p>You can simply load a model and run through furiosa-sdk as the following:</p>
 <div class="admonition info">
@@ -850,16 +931,16 @@ installing furiosa-models.</p>
 <li><a href="https://furiosa-ai.github.io/docs/latest/en/software/tutorials.html">Furiosa SDK - Tutorial and Code Examples</a></li>
 </ul>
 </div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span> <span class="nn">furiosa.models.vision</span> <span class="kn">import</span> <span class="n">SSDMobileNet</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span> <span class="nn">furiosa.runtime.sync</span> <span class="kn">import</span> <span class="n">create_runner</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">image</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tests/assets/cat.jpg&quot;</span><span class="p">]</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="n">mobilenet</span> <span class="o">=</span> <span class="n">SSDMobileNet</span><span class="p">()</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="k">with</span> <span class="n">create_runner</span><span class="p">(</span><span class="n">mobilenet</span><span class="o">.</span><span class="n">model_source</span><span class="p">())</span> <span class="k">as</span> <span class="n">runner</span><span class="p">:</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">inputs</span><span class="p">,</span> <span class="n">contexts</span> <span class="o">=</span> <span class="n">mobilenet</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">outputs</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="n">mobilenet</span><span class="o">.</span><span class="n">postprocess</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">contexts</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span> <span class="nn">furiosa.models.vision</span> <span class="kn">import</span> <span class="n">SSDMobileNet</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">from</span> <span class="nn">furiosa.runtime.sync</span> <span class="kn">import</span> <span class="n">create_runner</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">image</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tests/assets/cat.jpg&quot;</span><span class="p">]</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="n">mobilenet</span> <span class="o">=</span> <span class="n">SSDMobileNet</span><span class="p">()</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="k">with</span> <span class="n">create_runner</span><span class="p">(</span><span class="n">mobilenet</span><span class="o">.</span><span class="n">model_source</span><span class="p">())</span> <span class="k">as</span> <span class="n">runner</span><span class="p">:</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    <span class="n">inputs</span><span class="p">,</span> <span class="n">contexts</span> <span class="o">=</span> <span class="n">mobilenet</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    <span class="n">outputs</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    <span class="n">mobilenet</span><span class="o">.</span><span class="n">postprocess</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">contexts</span><span class="p">)</span>
 </code></pre></div>
 <p>This example does:</p>
 <ol>
