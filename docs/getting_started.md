@@ -57,13 +57,13 @@ To enable the use of the `furiosa models serve` command, you need to install the
 You can achieve this by specifying the serving extra package when installing `furiosa-models`.
 
 ```shell
-pip install 'furiosa-models[serving]`
+pip install 'furiosa-models[serving]'
 ```
 
 If you require additional packages related to compilation, you can install the full extra package, which includes all relevant dependencies.
 
 ```shell
-pip install 'furiosa-models[full]`
+pip install 'furiosa-models[full]'
 ```
 
 These commands ensure that you have the necessary packages for serving models with furiosa-serving or any other compiling-related functionalities provided by the full extra package.
