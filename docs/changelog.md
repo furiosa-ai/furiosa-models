@@ -1,15 +1,18 @@
 # Changelog
 
-## [0.10.1 - TBU]
+## [0.10.1 - 2023-11-25]
 
 ### New Features
-- Addedd YOLOv7w6 Pose Estimation Model #173
+- Added YOLOv7w6 Pose Estimation Model #173
+- Added `serve` subcommand to open REST server #182
 
 ### Improvements
 - Detailed explanation about `with_scaling` argument #171
 - Added Jupyter Notebook examples #167
 - Use new furiosa-compiler CLI #174
 - Use IR version instead of compiler version when probing ENF files #174
+- Unify postprocess signatures #180
+- Use Typer CLI library instead of argparse #181
 
 ### Removed
 - furiosa-libcompiler APT package dependency #174
