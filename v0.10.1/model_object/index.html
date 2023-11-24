@@ -1,0 +1,1483 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="DNN Models optimized for FuriosaAI NPU">
+      
+      
+      
+        <link rel="canonical" href="https://furiosa-ai.github.io/furiosa-models/model_object/">
+      
+      
+        <link rel="prev" href="../tutorials/serving_with_furiosa_serving/">
+      
+      
+        <link rel="next" href="../command_line_tool/">
+      
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.12">
+    
+    
+      
+        <title>Model Object - Furiosa Models</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.fad675c6.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.356b1318.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#model-object" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Furiosa Models" class="md-header__button md-logo" aria-label="Furiosa Models" data-md-component="logo">
+      
+  <img src="../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Furiosa Models
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Model Object
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/furiosa-ai/furiosa-models" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    furiosa-ai/furiosa-models
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Furiosa Models" class="md-nav__button md-logo" aria-label="Furiosa Models" data-md-component="logo">
+      
+  <img src="../assets/logo.png" alt="logo">
+
+    </a>
+    Furiosa Models
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/furiosa-ai/furiosa-models" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    furiosa-ai/furiosa-models
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/navigate_models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Navigating Models from FuriosaAI Model Zoo
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/quantize_and_compile_model/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quantize and Compile Models
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/serving_with_furiosa_serving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Serving Example with Furiosa Serving
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Model Object
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Model Object
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#loading-a-pre-trained-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Loading a pre-trained model
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#accessing-artifacts-and-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      Accessing artifacts and metadata
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Accessing artifacts and metadata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#furiosa.models.types.Model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#furiosa.models.types.Model.model_source" class="md-nav__link">
+    <span class="md-ellipsis">
+      model_source()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#furiosa.models.types.Model.postprocess" class="md-nav__link">
+    <span class="md-ellipsis">
+      postprocess()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#furiosa.models.types.Model.preprocess" class="md-nav__link">
+    <span class="md-ellipsis">
+      preprocess()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#furiosa.models.types.Model.resolve_all" class="md-nav__link">
+    <span class="md-ellipsis">
+      resolve_all()
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inferencing-with-runner-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inferencing with Runner API
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Inferencing with Runner API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prepostprocessing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pre/Postprocessing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      See Also
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../command_line_tool/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Command Line Tool
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Models
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Models
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/resnet50_v1.5/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ResNet50 v1.5
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/efficientnet_b0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EfficientNetB0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/efficientnet_v2_s/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EfficientNetV2-S
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/ssd_mobilenet/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SSD MobileNet v1
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/ssd_resnet34/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SSD ResNet34
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/yolov5m/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    YOLOv5m
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/yolov5l/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    YOLOv5L
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/yolov7_w6_pose/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    YOLOv7w6Pose
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developers_guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Developer's guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/furiosa-ai/furiosa-models/blob/main/LICENSE" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Apache License 2.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#loading-a-pre-trained-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Loading a pre-trained model
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#accessing-artifacts-and-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      Accessing artifacts and metadata
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Accessing artifacts and metadata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#furiosa.models.types.Model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#furiosa.models.types.Model.model_source" class="md-nav__link">
+    <span class="md-ellipsis">
+      model_source()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#furiosa.models.types.Model.postprocess" class="md-nav__link">
+    <span class="md-ellipsis">
+      postprocess()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#furiosa.models.types.Model.preprocess" class="md-nav__link">
+    <span class="md-ellipsis">
+      preprocess()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#furiosa.models.types.Model.resolve_all" class="md-nav__link">
+    <span class="md-ellipsis">
+      resolve_all()
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inferencing-with-runner-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inferencing with Runner API
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Inferencing with Runner API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prepostprocessing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pre/Postprocessing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      See Also
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="model-object">Model Object</h1>
+<p>In the <code>furiosa-models</code> project, the <code>Model</code> is the primary class object, representing a neural network model. This document elucidates the offerings and uses of the <a class="autorefs autorefs-internal" href="#furiosa.models.types.Model"><code>Model</code></a> object.</p>
+<h2 id="loading-a-pre-trained-model">Loading a pre-trained model</h2>
+<p>To load a pre-trained neural network model, you need to invoke the <code>Model</code> object.
+As the sizes of pre-trained model weights can range from tens to hundreds of megabytes,
+the model images are not included in the Python package. The first time the model object is called,
+a pre-trained model will be fetched over the network. This process takes some time,
+typically a few seconds, depending on the models and network conditions.
+Once the model images are fetched, they will be cached on your local disk.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:1"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Load module</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">furiosa.models.types</span> <span class="kn">import</span> <span class="n">Model</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span> <span class="nn">furiosa.models.vision</span> <span class="kn">import</span> <span class="n">ResNet50</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">model</span><span class="p">:</span> <span class="n">Model</span> <span class="o">=</span> <span class="n">ResNet50</span><span class="p">()</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<p><a name="accessing_artifacts_and_metadata"></a></p>
+<h2 id="accessing-artifacts-and-metadata">Accessing artifacts and metadata</h2>
+<p>A Model object encompasses model artifacts, such as ONNX, TFLite, mapping from a tensor name to the tensor's min and max, and ENF.</p>
+<p>ENF is the serialization format of a compiled binary used in Furiosa SDK.
+Once you have the ENF file, you can reuse it to skip the compilation process, which can take up to several minutes.
+You can acquire the ENF binary from the model_source() method.
+In addition, a Model object contains various metadata attributes.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>If you want to learn more about the ENF please visit
+<a href="https://furiosa-ai.github.io/docs/latest/en/software/compiler.html#using-enf-files">Furiosa SDK - Compiler - Using ENF files</a></p>
+</div>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+
+<h4 id="furiosa.models.types.Model" class="doc doc-heading">
+          <code>furiosa.models.types.Model</code>
+
+
+</h4>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>Represent the artifacts and metadata of a neural network model</p>
+
+
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>name</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>a name of this model</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>task_type</code></td>
+          <td>
+                <code><span title="furiosa.models.types.ModelTaskType">ModelTaskType</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>the task type of this model</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>format</code></td>
+          <td>
+                <code><span title="furiosa.models.types.Format">Format</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>the binary format type of model origin; e.g., ONNX, tflite</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>family</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>the model family</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>the model version</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>metadata</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[<span title="furiosa.models.types.Metadata">Metadata</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>the model metadata</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>tags</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[<span title="furiosa.models.types.Tags">Tags</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>the model tags</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>origin</code></td>
+          <td>
+                <code>bytes</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>an origin f32 binary in ONNX or tflite. It can be used for compiling this model
+with or without quantization and proper compiler configuration</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>tensor_name_to_range</code></td>
+          <td>
+                <code><span title="typing.Dict">Dict</span>[str, <span title="typing.List">List</span>[float]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>the calibration ranges of each tensor in origin</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>preprocessor</code></td>
+          <td>
+                <code><span title="furiosa.models.types.PreProcessor">PreProcessor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>a preprocessor to preprocess input tensors</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code>postprocessor</code></td>
+          <td>
+                <code><span title="furiosa.models.types.PostProcessor">PostProcessor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>a postprocessor to postprocess output tensors</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h5 id="furiosa.models.types.Model.model_source" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">model_source</span><span class="p">(</span><span class="n">num_pe</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></code>
+
+</h5>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns an executable binary for furiosa runtime and NPU. It can be
+    directly fed to <code>furiosa.runtime.create_runner</code>. If model binary is not compiled yet,
+    it will be quantized &amp; compiled automatically if possible</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>num_pe</code></td>
+          <td>
+                <code><span title="typing.Literal">Literal</span>[1, 2]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>number of PE to be used.</p>
+            </div>
+          </td>
+          <td>
+                <code>2</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h5 id="furiosa.models.types.Model.postprocess" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">postprocess</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+</h5>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Postprocess output tensors</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h5 id="furiosa.models.types.Model.preprocess" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">preprocess</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+</h5>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Preprocess input tensors. Input of this function varies from model to model</p>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="typing.Tuple">Tuple</span>[<span title="typing.Sequence">Sequence</span>[<span title="numpy.ArrayLike">ArrayLike</span>], <span title="typing.Sequence">Sequence</span>[<span title="furiosa.models.types.Context">Context</span>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A tuple that contains list of preprocessed input tensors and contexts</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h5 id="furiosa.models.types.Model.resolve_all" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">resolve_all</span><span class="p">()</span></code>
+
+</h5>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Resolve all non-cached properties(origin, tensor_name_to_range, model_sources)</p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div><h2 id="inferencing-with-runner-api">Inferencing with Runner API</h2>
+<p>To create a Runner, you need to pass the ENF binary obtained from the <code>model_source()</code> method of the model object to the <code>furiosa.runtime.sync.create_runner</code> function. If you prefer an asynchronous Runner, you can use the <code>furiosa.runtime.create_runner</code> function instead. Passing the pre-compiled ENF binary allows you to perform inference directly without the compilation process. Alternatively, you can also manually quantize and compile the original f32 model with the provided calibration range.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>If you want to learn more about the installation of furiosa-sdk and how to use it, please follow the followings:</p>
+<ul>
+<li><a href="https://furiosa-ai.github.io/docs/latest/en/software/installation.html">Driver, Firmware, and Runtime Installation</a></li>
+<li><a href="https://furiosa-ai.github.io/docs/latest/en/software/python-sdk.html">Python SDK Installation and User Guide</a></li>
+<li><a href="https://furiosa-ai.github.io/docs/latest/en/software/tutorials.html">Furiosa SDK - Tutorial and Code Examples</a></li>
+</ul>
+</div>
+<p>Passing <code>Model.origin</code> to <code>create_runner()</code> allows users to start from source models in ONNX or tflite and customize models to their specific use-cases. This customization includes options such as specifying batch sizes and compiler configurations for optimization purposes. For additional information on Model.origin, please refer to <a href="#accessing_artifacts_and_metadata">Accessing artifacts and metadata</a>.</p>
+<p>To work with f32 source models, calibration and quantization are essential steps.
+You can access pre-calibrated data directly from furiosa-models, simplifying the quantization process.
+If you prefer a manual quantization step for a model, you can install the <code>furiosa-quantizer</code> package, available at this <a href="https://furiosa-ai.github.io/docs/latest/en/software/python-sdk.html#quantizer">package link</a>.
+The <code>tensor_name_to_range</code> field within the model class contains this pre-calibrated data.</p>
+<p>Upon quantization, the output will be in FuriosaAI's Intermediate Representation (IR) format, which can then be passed to the Runner. At this stage, you have the option to specify the compiler configuration.</p>
+<p>After quantization, the output will be in the form of FuriosaAI's Intermediate Representation (IR) which
+can then be passed to the session. At this stage, the compiler configuration can be specified.</p>
+<p><a name="Examples"></a></p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Using pre-compiled ENF binary</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">furiosa.models.vision</span> <span class="kn">import</span> <span class="n">SSDMobileNet</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span> <span class="nn">furiosa.runtime.sync</span> <span class="kn">import</span> <span class="n">create_runner</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">image</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tests/assets/cat.jpg&quot;</span><span class="p">]</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">mobilenet</span> <span class="o">=</span> <span class="n">SSDMobileNet</span><span class="p">()</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="k">with</span> <span class="n">create_runner</span><span class="p">(</span><span class="n">mobilenet</span><span class="o">.</span><span class="n">model_source</span><span class="p">())</span> <span class="k">as</span> <span class="n">runner</span><span class="p">:</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">inputs</span><span class="p">,</span> <span class="n">contexts</span> <span class="o">=</span> <span class="n">mobilenet</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">outputs</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="n">mobilenet</span><span class="o">.</span><span class="n">postprocess</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">contexts</span><span class="p">)</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:1"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">From ONNX</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span> <span class="nn">furiosa.models.vision</span> <span class="kn">import</span> <span class="n">SSDMobileNet</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span> <span class="nn">furiosa.quantizer</span> <span class="kn">import</span> <span class="n">quantize</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kn">from</span> <span class="nn">furiosa.runtime.sync</span> <span class="kn">import</span> <span class="n">create_runner</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="n">compiler_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;lower_tabulated_dequantize&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="n">image</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tests/assets/cat.jpg&quot;</span><span class="p">]</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="n">mobilenet</span> <span class="o">=</span> <span class="n">SSDMobileNet</span><span class="p">()</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="n">onnx_model</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">=</span> <span class="n">mobilenet</span><span class="o">.</span><span class="n">origin</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="n">tensor_name_to_range</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">mobilenet</span><span class="o">.</span><span class="n">tensor_name_to_range</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="c1"># See https://furiosa-ai.github.io/docs/latest/en/api/python/furiosa.quantizer.html#furiosa.quantizer.quantize</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="c1"># for more details</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="n">quantized_onnx</span> <span class="o">=</span> <span class="n">quantize</span><span class="p">(</span><span class="n">onnx_model</span><span class="p">,</span> <span class="n">tensor_name_to_range</span><span class="p">)</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="k">with</span> <span class="n">create_runner</span><span class="p">(</span><span class="n">quantized_onnx</span><span class="p">,</span> <span class="n">compiler_config</span><span class="o">=</span><span class="n">compiler_config</span><span class="p">)</span> <span class="k">as</span> <span class="n">runner</span><span class="p">:</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>    <span class="c1"># Models in the Model Zoo have built-in optimizations that, by default,</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>    <span class="c1"># bypass normalization, quantization, and type conversion. If you compile</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>    <span class="c1"># and utilize these models without employing these optimizations, it&#39;s</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>    <span class="c1"># necessary to set up preprocessing steps to incorporate normalization and</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>    <span class="c1"># type casting. To accomplish this, you should introduce an extra parameter,</span>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>    <span class="c1"># `with_scaling=True`.</span>
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>    <span class="n">inputs</span><span class="p">,</span> <span class="n">contexts</span> <span class="o">=</span> <span class="n">mobilenet</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">with_scaling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>    <span class="n">outputs</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>    <span class="n">mobilenet</span><span class="o">.</span><span class="n">postprocess</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">contexts</span><span class="p">)</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+</div>
+<h3 id="prepostprocessing">Pre/Postprocessing</h3>
+<p>There are gaps between model input/outputs and user applications' desired input and output data.
+In general, inputs and outputs of a neural network model are tensors. In applications,
+user sample data are images in standard formats like PNG or JPEG, and
+users also need to convert the output tensors to struct data for user applications.</p>
+<p>A <code>Model</code> object also provides both <code>preprocess()</code> and <code>postprocess()</code> methods.
+They are utilities to convert easily user inputs to the model's input tensors and output tensors
+to struct data which can be easily accessible by applications.
+If using pre-built pre/postprocessing methods, users can quickly start using <code>furiosa-models</code>.</p>
+<p>In sum, typical steps of a single inference is as the following, as also shown at <a href="#Examples">examples</a>.</p>
+<ol>
+<li>Call <code>preprocess()</code> with user inputs (e.g., image files)</li>
+<li>Pass an output of <code>preprocess()</code> to <code>Session.run()</code></li>
+<li>Pass the output of the model to <code>postprocess()</code></li>
+</ol>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Default postprocessing implementations are in Python.
+However, some models have the native postprocessing implemented in Rust and C++ and
+optimized for FuriosaAI Warboy and Intel/AMD CPUs.
+Python implementations can run on CPU and GPU as well, whereas
+the native postprocessor implementations works with only FuriosaAI NPU.
+Native implementations are designed to leverage FuriosaAI NPU's characteristics even for post-processing
+and maximize the latency and throughput by using modern CPU architecture,
+such as CPU cache, SIMD instructions and CPU pipelining.
+According to our benchmark, the native implementations show at most 70% lower latency.</p>
+<p>To use native post processor, please pass <code>postprocessor_type=Platform.RUST</code> to <code>Model()</code>.</p>
+<p>The following is an example to use native post processor for <a href="../models/ssd_mobilenet/">SSDMobileNet</a>.
+You can find more details of each model page.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span> <span class="nn">furiosa.models.types</span> <span class="kn">import</span> <span class="n">Platform</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span> <span class="nn">furiosa.models.vision</span> <span class="kn">import</span> <span class="n">SSDMobileNet</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kn">from</span> <span class="nn">furiosa.runtime.sync</span> <span class="kn">import</span> <span class="n">create_runner</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">image</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tests/assets/cat.jpg&quot;</span><span class="p">]</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="n">mobilenet</span> <span class="o">=</span> <span class="n">SSDMobileNet</span><span class="p">(</span><span class="n">postprocessor_type</span><span class="o">=</span><span class="n">Platform</span><span class="o">.</span><span class="n">RUST</span><span class="p">)</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="k">with</span> <span class="n">create_runner</span><span class="p">(</span><span class="n">mobilenet</span><span class="o">.</span><span class="n">model_source</span><span class="p">())</span> <span class="k">as</span> <span class="n">runner</span><span class="p">:</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    <span class="n">inputs</span><span class="p">,</span> <span class="n">contexts</span> <span class="o">=</span> <span class="n">mobilenet</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    <span class="n">outputs</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    <span class="n">mobilenet</span><span class="o">.</span><span class="n">postprocess</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">contexts</span><span class="p">)</span>
+</code></pre></div>
+</div>
+</div>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="https://furiosa-ai.github.io/docs/latest/en/">Furiosa SDK Documentation</a></li>
+</ul>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.6c14ae12.min.js"></script>
+      
+    
+  </body>
+</html>
