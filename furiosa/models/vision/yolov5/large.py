@@ -24,18 +24,24 @@ __all__ = ['CLASSES', 'YOLOv5l']
 class YOLOv5l(YOLOv5Base):
     """YOLOv5 Large model"""
 
-    classes: List[str] = CLASSES
-
-    def __init__(self, *, postprocessor_type: Union[str, Platform] = Platform.RUST):
+    def __init__(
+        self,
+        *,
+        postprocessor_type: Union[str, Platform] = Platform.RUST,
+        classes: List[str] = CLASSES,
+        anchors: np.array = _ANCHORS,
+    ):
         postprocessor_type = Platform(postprocessor_type)
         validate_postprocessor_type(postprocessor_type, self.postprocessor_map.keys())
+        self.classes = classes
+        self.anchors = anchors
         super().__init__(
             name="YOLOv5Large",
             metadata=Metadata(
                 description="YOLOv5 large model",
                 publication=Publication(url="https://github.com/ultralytics/yolov5"),
             ),
-            postprocessor=self.postprocessor_map[postprocessor_type](_ANCHORS, CLASSES),
+            postprocessor=self.postprocessor_map[postprocessor_type](anchors, classes),
         )
 
         self._artifact_name = "yolov5l"
