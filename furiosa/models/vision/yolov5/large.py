@@ -33,8 +33,6 @@ class YOLOv5l(YOLOv5Base):
     ):
         postprocessor_type = Platform(postprocessor_type)
         validate_postprocessor_type(postprocessor_type, self.postprocessor_map.keys())
-        self.classes = classes
-        self.anchors = anchors
         super().__init__(
             name="YOLOv5Large",
             metadata=Metadata(
