@@ -16,6 +16,7 @@ from ...types import (
 )
 from ...vision.postprocess import LtrbBoundingBox, ObjectDetectionResult
 from ..preprocess import read_image_opencv_if_needed
+from .postprocess import YOLOv5PythonPostProcessor
 
 _INPUT_SIZE = (640, 640)
 _STRIDES = [8, 16, 32]
@@ -153,12 +154,17 @@ class YOLOv5PreProcessor(PreProcessor):
         return np.stack(batched_image, axis=0), batched_proc_params
 
 
-class YOLOv5PostProcessor(RustPostProcessor):
+def sigmoid(x: np.ndarray) -> np.ndarray:
+    # pylint: disable=invalid-name
+    return 1 / (1 + np.exp(-x))
+
+
+class YOLOv5NativePostProcessor(RustPostProcessor):
     def __init__(self, anchors: npt.ArrayLike, class_names: Sequence[str]):
         """
-        native (RustProcessor): A native postprocessor. It has several information to decode: (xyxy,
-            confidence threshold, anchor_grid, stride, number of classes).
-        class_names (Sequence[str]): A list of class names.
+        Args:
+            anchors (npt.ArrayLike): A list of anchors.
+            class_names (Sequence[str]): A list of class names.
         """
         self.anchors = anchors
         self.class_names = class_names
@@ -171,6 +177,7 @@ class YOLOv5PostProcessor(RustPostProcessor):
         contexts: Sequence[Dict[str, Any]],
         conf_thres: float = 0.25,
         iou_thres: float = 0.45,
+        with_sigmoid: bool = False,
     ) -> List[List[ObjectDetectionResult]]:
         """Convert the outputs of this model to a list of bounding boxes, scores and labels
 
@@ -184,6 +191,8 @@ class YOLOv5PostProcessor(RustPostProcessor):
                 and height.
             conf_thres: Confidence score threshold. The default to 0.25
             iou_thres: IoU threshold value for the NMS processing. The default to 0.45.
+            with_sigmoid: Whether to apply sigmoid function to the model outputs. The default to
+                False.
 
         Returns:
             Detected Bounding Box and its score and label represented as `ObjectDetectionResult`.
@@ -202,6 +211,9 @@ class YOLOv5PostProcessor(RustPostProcessor):
             _reshape_output(f, self.anchor_per_layer_count, len(self.class_names))
             for f in model_outputs
         ]
+
+        if with_sigmoid:
+            model_outputs = sigmoid(model_outputs)
 
         batched_boxes = self.native.eval(model_outputs, conf_thres, iou_thres)
 
@@ -233,7 +245,8 @@ class YOLOv5PostProcessor(RustPostProcessor):
 
 class YOLOv5Base(ObjectDetectionModel, ABC):
     postprocessor_map: ClassVar[Dict[Platform, Type[PostProcessor]]] = {
-        Platform.RUST: YOLOv5PostProcessor,
+        Platform.PYTHON: YOLOv5PythonPostProcessor,
+        Platform.RUST: YOLOv5NativePostProcessor,
     }
 
     def __init__(self, *args, **kwargs):
