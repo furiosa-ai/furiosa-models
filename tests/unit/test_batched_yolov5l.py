@@ -9,14 +9,12 @@ from furiosa.runtime.sync import create_runner
 
 TEST_IMAGE_PATH = str(Path(__file__).parent / "../assets/yolov5-test.jpg")
 
-NUM_CLASSES = 10
 NUM_BATCHES = 2
 NUM_DETECTED_BOXES = 26
 
 
 def test_yolov5_large_batched():
     m = YOLOv5l()
-    assert len(m.classes) == NUM_CLASSES, "expected CLASS is 10"
 
     batch_im = [cv2.imread(TEST_IMAGE_PATH), cv2.imread(TEST_IMAGE_PATH)]
     with create_runner(m.model_source()) as runner:

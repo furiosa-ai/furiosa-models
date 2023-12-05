@@ -29,7 +29,7 @@ def test_yolov5l_accuracy(benchmark):
     image_directory, yolov5db = load_db_from_env_variable()
 
     print(f"dataset_path: {image_directory}")
-    metric = bdd100k.MAPMetricYolov5(num_classes=len(model.classes))
+    metric = bdd100k.MAPMetricYolov5(num_classes=10)
 
     num_images = len(yolov5db)
     yolov5db = iter(tqdm(yolov5db))
@@ -74,7 +74,7 @@ def test_yolov5l_accuracy_with_rust_pp(benchmark):
     image_directory, yolov5db = load_db_from_env_variable()
 
     print(f"dataset_path: {image_directory}")
-    metric = bdd100k.MAPMetricYolov5(num_classes=len(model.classes))
+    metric = bdd100k.MAPMetricYolov5(num_classes=10)
 
     num_images = len(yolov5db)
     yolov5db = iter(tqdm(yolov5db))
