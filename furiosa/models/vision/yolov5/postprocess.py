@@ -3,6 +3,7 @@ from typing import Any, Dict, Sequence
 import numpy as np
 
 from ...types import PythonPostProcessor
+from ..postprocess import LtrbBoundingBox, ObjectDetectionResult
 
 
 def _reshape_output(feat: np.ndarray, anchor_per_layer_count: int, num_classes: int):
@@ -127,12 +128,32 @@ class YOLOv5PythonPostProcessor(PythonPostProcessor):
         outputs = np.concatenate(outputs, axis=1)
         model_outputs = non_max_suppression(outputs, conf_thres, iou_thres)
 
-        for i, prediction in enumerate(model_outputs):
-            ratio, dwdh = contexts[i]["scale"], contexts[i]["pad"]
-            prediction[:, [0, 2]] = (1 / ratio) * (prediction[:, [0, 2]] - dwdh[0])
-            prediction[:, [1, 3]] = (1 / ratio) * (prediction[:, [1, 3]] - dwdh[1])
+        batched_detected_boxes = []
+        for boxes, preproc_params in zip(model_outputs, contexts):
+            scale = preproc_params['scale']
+            padw, padh = preproc_params['pad']
+            detected_boxes = []
+            # rescale boxes
 
-        return model_outputs
+            for box in boxes:
+                left, top, right, bottom, score, class_id = box
+                class_id = int(class_id)
+                detected_boxes.append(
+                    ObjectDetectionResult(
+                        index=class_id,
+                        label=self.class_names[class_id],
+                        score=score,
+                        boundingbox=LtrbBoundingBox(
+                            left=(left - padw) / scale,
+                            top=(top - padh) / scale,
+                            right=(right - padw) / scale,
+                            bottom=(bottom - padh) / scale,
+                        ),
+                    )
+                )
+            batched_detected_boxes.append(detected_boxes)
+
+        return batched_detected_boxes
 
     def init_grid(self):
         grid = [np.zeros(1)] * self.num_layers
