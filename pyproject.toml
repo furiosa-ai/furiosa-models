@@ -27,7 +27,7 @@ dependencies = [
     "furiosa-common == 0.10.*",
     "furiosa-device == 0.10.*",
     "furiosa-runtime == 0.10.*",
-    "furiosa-native-postprocess == 0.9.0",
+    "furiosa-native-postprocess == 0.9.0.dev1",
 
     "PyYAML",
     "numpy",
