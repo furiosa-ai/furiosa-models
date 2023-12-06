@@ -10,7 +10,7 @@ from furiosa.runtime.sync import create_runner
 
 from .test_acc_util import bdd100k
 
-EXPECTED_MAP = 0.2716221365849332
+EXPECTED_MAP = 0.2800460618769073
 EXPECTED_MAP_RUST = 0.2716221365849332
 
 
