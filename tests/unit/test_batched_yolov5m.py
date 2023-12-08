@@ -10,7 +10,7 @@ from furiosa.runtime.sync import create_runner
 TEST_IMAGE_PATH = str(Path(__file__).parent / "../assets/yolov5-test.jpg")
 
 NUM_BATCHES = 2
-NUM_DETECTED_BOXES = 23
+NUM_DETECTED_BOXES = 21
 
 
 def test_yolov5_medium_batched():

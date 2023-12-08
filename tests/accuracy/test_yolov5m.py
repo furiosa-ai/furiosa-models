@@ -1,18 +1,16 @@
+import asyncio
+import itertools
 import os
 from pathlib import Path
 from typing import Tuple
 
-import numpy as np
+import pytest
 import tqdm
 
 from furiosa.models.vision import YOLOv5m
 from furiosa.runtime import create_runner
 
 from ..bench.test_acc_util import bdd100k
-
-import itertools
-import asyncio
-import pytest
 
 EXPECTED_MAP = 0.27511157733118163
 EXPECTED_MAP_RUST = 0.275242573009379
@@ -61,11 +59,13 @@ async def test_yolov5m_accuracy():
             worklist = []
             bxtargets = []
             clstargets = []
-            for (im, boxes_target, classes_target) in itertools.islice(yolov5db, iters):
+            for im, boxes_target, classes_target in itertools.islice(yolov5db, iters):
                 bxtargets.append(boxes_target)
                 clstargets.append(classes_target)
                 worklist.append(workload(im))
-            for det_out, boxes_target, classes_target in zip(await asyncio.gather(*worklist), bxtargets, clstargets):
+            for det_out, boxes_target, classes_target in zip(
+                await asyncio.gather(*worklist), bxtargets, clstargets
+            ):
                 metric(
                     boxes_pred=det_out[:, :4],
                     scores_pred=det_out[:, 4],
@@ -114,11 +114,13 @@ async def test_yolov5m_with_native_rust_pp_accuracy():
             worklist = []
             bxtargets = []
             clstargets = []
-            for (im, boxes_target, classes_target) in itertools.islice(yolov5db, iters):
+            for im, boxes_target, classes_target in itertools.islice(yolov5db, iters):
                 bxtargets.append(boxes_target)
                 clstargets.append(classes_target)
                 worklist.append(workload(im))
-            for det_out, boxes_target, classes_target in zip(await asyncio.gather(*worklist), bxtargets, clstargets):
+            for det_out, boxes_target, classes_target in zip(
+                await asyncio.gather(*worklist), bxtargets, clstargets
+            ):
                 metric(
                     boxes_pred=det_out[:, :4],
                     scores_pred=det_out[:, 4],
