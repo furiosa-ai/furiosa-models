@@ -215,7 +215,7 @@ class YOLOv5NativePostProcessor(RustPostProcessor):
         if with_sigmoid:
             model_outputs = sigmoid(model_outputs)
 
-        batched_boxes = self.native.eval(model_outputs, conf_thres, iou_thres)
+        batched_boxes = self.native.eval(model_outputs, conf_thres, iou_thres, None, None)
 
         batched_detected_boxes = []
         for boxes, preproc_params in zip(batched_boxes, contexts):

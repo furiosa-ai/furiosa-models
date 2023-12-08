@@ -10,8 +10,8 @@ from furiosa.runtime.sync import create_runner
 
 from .test_acc_util import bdd100k
 
-EXPECTED_MAP = 0.2800460618769073
-EXPECTED_MAP_RUST = 0.2744020622713625
+EXPECTED_MAP = 0.27511157733118163
+EXPECTED_MAP_RUST = 0.275242573009379
 
 
 def load_db_from_env_variable() -> Tuple[Path, bdd100k.Yolov5Dataset]:

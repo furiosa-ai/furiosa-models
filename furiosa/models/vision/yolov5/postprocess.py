@@ -1,6 +1,8 @@
 from typing import Any, Dict, Sequence
 
 import numpy as np
+import torch
+import torchvision
 
 from ...types import PythonPostProcessor
 from ..postprocess import LtrbBoundingBox, ObjectDetectionResult
@@ -196,6 +198,7 @@ def non_max_suppression(
     prediction: np.ndarray,
     conf_thres: float,
     iou_thres: float,
+    agnostic: bool = False,
 ):
     # pylint: disable=invalid-name,too-many-locals
 
@@ -204,8 +207,9 @@ def non_max_suppression(
     assert 0 <= conf_thres <= 1, conf_thres
     assert 0 <= iou_thres <= 1, iou_thres
 
-    _max_wh = 7680  # (pixels) maximum box width and height
+    max_wh = 7680  # (pixels) maximum box width and height
     max_nms = 30000
+    max_det: int = 300
 
     output = [np.empty((0, 6))] * batch_size
     for xi, x in enumerate(prediction):
@@ -213,9 +217,11 @@ def non_max_suppression(
         if not x.shape[0]:
             continue
 
+        # Compute conf
         x[:, 5:] *= x[:, 4:5]  # conf = obj_conf * cls_conf
 
-        box = xywh2xyxy(x[:, :4])
+        # Box/Mask
+        box = xywh2xyxy(x[:, :4])  # center_x, center_y, width, height) to (x1, y1, x2, y2)
 
         i, j = np.where(x[:, 5:] > conf_thres)
         x = np.concatenate(
@@ -227,14 +233,20 @@ def non_max_suppression(
             axis=1,
         )
 
-        n = x.shape[0]
-        if not n:
+        # Check shape
+        n = x.shape[0]  # number of boxes
+        if not n:  # no boxes
             continue
+        x = x[np.argsort(x[:, 4])[::-1][:max_nms]]  # sort by confidence and remove excess boxes
 
-        if n > max_nms:
-            x = x[np.argsort(x[:, 4])[::-1][:max_nms]]
+        # NMS
+        classes = x[:, 5:6] * (0 if agnostic else max_wh)  # classes
+        boxes, scores = x[:, :4] + classes, x[:, 4]  # boxes (offset by class), scores
 
-        i = _nms(x[:, :5])
+        i = torchvision.ops.nms(
+            torch.from_numpy(boxes), torch.from_numpy(scores), iou_thres
+        ).numpy()
+        i = i[:max_det]  # limit detections
 
         output[xi] = x[i]
 
