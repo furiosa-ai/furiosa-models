@@ -145,3 +145,7 @@ cython_debug/
 
 # Benchmarks
 .benchmarks/
+
+# Test data (including symbolic links to it)
+/tests/data
+/tests/data/

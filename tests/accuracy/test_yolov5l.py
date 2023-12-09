@@ -4,18 +4,19 @@ import os
 from pathlib import Path
 from typing import Tuple
 
+import pytest
 import tqdm
 
-from furiosa.models.vision import YOLOv5m
+from furiosa.models.vision import YOLOv5l
 from furiosa.runtime import create_runner
 
 from ..bench.test_acc_util import bdd100k
 
-EXPECTED_MAP = 0.27702783413351617
-EXPECTED_MAP_RUST = 0.27694419071298354
+EXPECTED_MAP = 0.2894519996558422
+EXPECTED_MAP_RUST = 0.28954249654112013
 
 CONF_THRES = 0.001
-IOU_THRES = 0.45
+IOU_THRES = 0.6
 
 
 def load_db_from_env_variable() -> Tuple[Path, bdd100k.Yolov5Dataset]:
@@ -27,8 +28,9 @@ def load_db_from_env_variable() -> Tuple[Path, bdd100k.Yolov5Dataset]:
     return databaset_path, db
 
 
-async def test_yolov5m_accuracy():
-    model: YOLOv5m = YOLOv5m(postprocessor_type="Python")
+@pytest.mark.asyncio
+async def test_yolov5l_accuracy():
+    model: YOLOv5l = YOLOv5l(postprocessor_type="Python")
 
     image_directory, yolov5db = load_db_from_env_variable()
 
@@ -53,7 +55,7 @@ async def test_yolov5m_accuracy():
         steps = 10
         assert num_images % steps == 0, "cannot divide by step"
         iters = num_images // steps
-        for _ in tqdm.tqdm(range(steps), desc="yolov5m accuracy w/ python pp"):
+        for _ in tqdm.tqdm(range(steps), desc="yolov5l accuracy w/ python pp"):
             worklist = []
             bxtargets = []
             clstargets = []
@@ -73,16 +75,16 @@ async def test_yolov5m_accuracy():
                 )
 
     result = metric.compute()
-    print("YOLOv5Medium mAP:", result['map'])
-    print("YOLOv5Medium mAP50:", result['map50'])
-    print("YOLOv5Medium ap_class:", result['ap_class'])
-    print("YOLOv5Medium ap50_class:", result['ap50_class'])
-
+    print("YOLOv5Large mAP:", result['map'])
+    print("YOLOv5Large mAP50:", result['map50'])
+    print("YOLOv5Large ap_class:", result['ap_class'])
+    print("YOLOv5Large ap50_class:", result['ap50_class'])
     assert result['map'] == EXPECTED_MAP, "Accuracy check w/ python failed"
 
 
-async def test_yolov5m_with_native_rust_pp_accuracy():
-    model: YOLOv5m = YOLOv5m(postprocessor_type="Rust")
+@pytest.mark.asyncio
+async def test_yolov5l_with_native_rust_pp_accuracy():
+    model: YOLOv5l = YOLOv5l(postprocessor_type="Rust")
 
     image_directory, yolov5db = load_db_from_env_variable()
 
@@ -107,7 +109,7 @@ async def test_yolov5m_with_native_rust_pp_accuracy():
         steps = 10
         assert num_images % steps == 0, "cannot divide by step"
         iters = num_images // steps
-        for _ in tqdm.tqdm(range(steps), desc="yolov5m accuracy w/ rust pp"):
+        for _ in tqdm.tqdm(range(steps), desc="yolov5l accuracy w/ rust pp"):
             worklist = []
             bxtargets = []
             clstargets = []
@@ -127,9 +129,8 @@ async def test_yolov5m_with_native_rust_pp_accuracy():
                 )
 
     result = metric.compute()
-    print("YOLOv5Medium mAP:", result['map'])
-    print("YOLOv5Medium mAP50:", result['map50'])
-    print("YOLOv5Medium ap_class:", result['ap_class'])
-    print("YOLOv5Medium ap50_class:", result['ap50_class'])
-
+    print("YOLOv5Large mAP:", result['map'])
+    print("YOLOv5Large mAP50:", result['map50'])
+    print("YOLOv5Large ap_class:", result['ap_class'])
+    print("YOLOv5Large ap50_class:", result['ap50_class'])
     assert result['map'] == EXPECTED_MAP_RUST, "Accuracy check w/ rust failed"
