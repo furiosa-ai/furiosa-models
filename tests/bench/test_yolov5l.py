@@ -11,7 +11,10 @@ from furiosa.runtime.sync import create_runner
 from .test_acc_util import bdd100k
 
 EXPECTED_MAP = 0.2894519996558422
-EXPECTED_MAP_RUST = 0.28954249654112013
+EXPECTED_MAP_RUST = 0.2895171558198357
+
+CONF_THRES = 0.001
+IOU_THRES = 0.45
 
 
 def load_db_from_env_variable() -> Tuple[Path, bdd100k.Yolov5Dataset]:
@@ -46,7 +49,7 @@ def test_yolov5l_accuracy(benchmark):
         )  # single-batch
         batch_feat = runner.run(np.expand_dims(batch_pre_img[0], axis=0))
         detected_boxes = model.postprocess(
-            batch_feat, batch_preproc_param, conf_thres=0.001, iou_thres=0.6
+            batch_feat, batch_preproc_param, conf_thres=CONF_THRES, iou_thres=IOU_THRES
         )
         det_out = bdd100k.to_numpy(detected_boxes[0])
         metric(
@@ -91,7 +94,7 @@ def test_yolov5l_accuracy_with_rust_pp(benchmark):
         )  # single-batch
         batch_feat = runner.run(np.expand_dims(batch_pre_img[0], axis=0))
         detected_boxes = model.postprocess(
-            batch_feat, batch_preproc_param, conf_thres=0.001, iou_thres=0.6
+            batch_feat, batch_preproc_param, conf_thres=CONF_THRES, iou_thres=IOU_THRES
         )
         det_out = bdd100k.to_numpy(detected_boxes[0])
         metric(

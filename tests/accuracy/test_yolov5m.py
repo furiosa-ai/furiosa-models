@@ -12,7 +12,7 @@ from furiosa.runtime import create_runner
 from ..bench.test_acc_util import bdd100k
 
 EXPECTED_MAP = 0.27702783413351617
-EXPECTED_MAP_RUST = 0.27694419071298354
+EXPECTED_MAP_RUST = 0.2769884679629229
 
 CONF_THRES = 0.001
 IOU_THRES = 0.45

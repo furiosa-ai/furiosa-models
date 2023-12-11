@@ -169,7 +169,7 @@ class YOLOv5NativePostProcessor(RustPostProcessor):
         self.anchors = anchors
         self.class_names = class_names
         self.anchor_per_layer_count = anchors.shape[1]
-        self.native = native.yolov5.RustPostProcessor(anchors, _STRIDES)
+        self.native = native.yolo.RustPostProcessor(anchors, _STRIDES)
 
     def __call__(
         self,
@@ -225,16 +225,18 @@ class YOLOv5NativePostProcessor(RustPostProcessor):
             # rescale boxes
 
             for box in boxes:
+                left, top, right, bottom, score, class_id = box
+                class_id = int(class_id)
                 detected_boxes.append(
                     ObjectDetectionResult(
-                        index=box.class_id,
-                        label=self.class_names[box.class_id],
-                        score=box.score,
+                        index=class_id,
+                        label=self.class_names[class_id],
+                        score=score,
                         boundingbox=LtrbBoundingBox(
-                            left=(box.left - padw) / scale,
-                            top=(box.top - padh) / scale,
-                            right=(box.right - padw) / scale,
-                            bottom=(box.bottom - padh) / scale,
+                            left=(left - padw) / scale,
+                            top=(top - padh) / scale,
+                            right=(right - padw) / scale,
+                            bottom=(bottom - padh) / scale,
                         ),
                     )
                 )
