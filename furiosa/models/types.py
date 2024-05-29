@@ -47,14 +47,14 @@ class Format(str, Enum):
 
 class PreProcessor(ABC):
     @abstractmethod
-    def __call__(self, inputs: Any) -> Tuple[Sequence[npt.ArrayLike], Sequence[Context]]:
-        ...
+    def __call__(self, inputs: Any) -> Tuple[Sequence[npt.ArrayLike], Sequence[Context]]: ...
 
 
 class PostProcessor(ABC):
     @abstractmethod
-    def __call__(self, model_outputs: Sequence[npt.ArrayLike], contexts: Sequence[Context]) -> Any:
-        ...
+    def __call__(
+        self, model_outputs: Sequence[npt.ArrayLike], contexts: Sequence[Context]
+    ) -> Any: ...
 
 
 class RustPostProcessor(PostProcessor):

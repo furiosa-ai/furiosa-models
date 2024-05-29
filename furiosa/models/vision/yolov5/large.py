@@ -3,6 +3,7 @@
 Attributes:
     CLASSES (List[str]): a list of class names
 """
+
 import pathlib
 from typing import List, Union
 
