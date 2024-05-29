@@ -36,7 +36,10 @@ dependencies = [
     "requests",
     "tabulate",
     "torch",
+    "torchvision",
     "typer",
+    # https://github.com/open-telemetry/opentelemetry-python/issues/2717
+    "protobuf ~= 3.20",
 ]
 
 [project.optional-dependencies]

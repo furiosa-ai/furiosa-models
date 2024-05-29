@@ -1,4 +1,4 @@
-from typing import Any, Dict, Sequence
+from typing import Any, Dict, List, Sequence
 
 import numpy as np
 import torch
@@ -38,7 +38,7 @@ class YOLOv5PythonPostProcessor(PythonPostProcessor):
         conf_thres: float = 0.25,
         iou_thres: float = 0.45,
         with_sigmoid: bool = False,
-    ):
+    ) -> List[List[ObjectDetectionResult]]:
         """Convert the outputs of this model to a list of bounding boxes, scores and labels
 
         Args:
@@ -108,7 +108,7 @@ class YOLOv5PythonPostProcessor(PythonPostProcessor):
                     ObjectDetectionResult(
                         index=class_id,
                         label=self.class_names[class_id],
-                        score=score,
+                        score=score.item(),
                         boundingbox=LtrbBoundingBox(
                             left=(left - padw) / scale,
                             top=(top - padh) / scale,

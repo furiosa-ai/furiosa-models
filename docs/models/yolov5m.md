@@ -54,7 +54,13 @@ You can find examples at [YOLOv5m Usage](#YOLOv5m_Usage).
         show_source: false
 
 ### `furiosa.models.vision.YOLOv5m.postprocess`
-::: furiosa.models.vision.yolov5.core.YOLOv5PythonPostProcessor.__call__
+::: furiosa.models.vision.yolov5.core.YOLOv5NativePostProcessor.__call__
     options:
         show_source: false
 
+### Python Postprocessor
+
+This class offers two types of postprocessing implementations: Python and Rust.
+
+To use the Python postprocessing implementation, pass the parameter
+`postprocessor_type=Platform.PYTHON` when calling the model.

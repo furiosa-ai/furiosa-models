@@ -231,7 +231,7 @@ class YOLOv5NativePostProcessor(RustPostProcessor):
                     ObjectDetectionResult(
                         index=class_id,
                         label=self.class_names[class_id],
-                        score=score,
+                        score=score.item(),
                         boundingbox=LtrbBoundingBox(
                             left=(left - padw) / scale,
                             top=(top - padh) / scale,

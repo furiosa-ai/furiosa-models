@@ -271,9 +271,9 @@ class SSDMobileNetPythonPostProcessor(PythonPostProcessor):
                 bb_list = box.tolist()
                 predicted_result.append(
                     ObjectDetectionResult(
-                        index=label,
+                        index=label.item(),
                         label=CLASSES[label],
-                        score=score,
+                        score=score.item(),
                         boundingbox=LtrbBoundingBox(
                             left=bb_list[0], top=bb_list[1], right=bb_list[2], bottom=bb_list[3]
                         ),

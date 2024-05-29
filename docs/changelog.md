@@ -1,15 +1,31 @@
 # Changelog
 
-## [0.10.1 - TBU]
+## [0.10.2 - 2024-05-29]
 
 ### New Features
-- Addedd YOLOv7w6 Pose Estimation Model #173
+
+### Improvements
+- Added YOLOv5 Python postprocess #185
+- Added parameter in YOLO postprocess to perform sigmoid or not #185
+
+### Removed
+
+### Bug fixes
+- Add missing `requests` dependency #187
+
+## [0.10.1 - 2023-11-25]
+
+### New Features
+- Added YOLOv7w6 Pose Estimation Model #173
+- Added `serve` subcommand to open REST server #182
 
 ### Improvements
 - Detailed explanation about `with_scaling` argument #171
 - Added Jupyter Notebook examples #167
 - Use new furiosa-compiler CLI #174
 - Use IR version instead of compiler version when probing ENF files #174
+- Unify postprocess signatures #180
+- Use Typer CLI library instead of argparse #181
 
 ### Removed
 - furiosa-libcompiler APT package dependency #174
