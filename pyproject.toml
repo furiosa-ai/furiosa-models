@@ -33,6 +33,7 @@ dependencies = [
     "numpy",
     "opencv-python-headless",
     "pydantic ~= 2.0",
+    "requests",
     "tabulate",
     "torch",
     "typer",
