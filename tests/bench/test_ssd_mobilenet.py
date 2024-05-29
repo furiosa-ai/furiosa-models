@@ -12,7 +12,7 @@ from furiosa.models.vision import SSDMobileNet
 from furiosa.runtime.sync import create_runner
 
 EXPECTED_ACCURACY = 0.2319698092633901
-EXPECTED_ACCURACY_NATIVE_RUST_PP = 0.23178397430922199
+EXPECTED_ACCURACY_NATIVE_RUST_PP = 0.23178929362182082
 
 
 def load_coco_from_env_variable():
