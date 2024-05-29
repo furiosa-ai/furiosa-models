@@ -17,15 +17,15 @@ and they can run even on CPU and GPU as well.
 * [v0.8.0](https://furiosa-ai.github.io/furiosa-models/v0.8.0/changelog/) - 2022-11-10
 
 ## Online Documentation
-If you are new, you can start from [Getting Started](https://furiosa-ai.github.io/furiosa-models/latest/getting_started/).
+If you are new, you can start from [Getting Started](https://furiosa-ai.github.io/furiosa-models/v0.10.2/getting_started/).
 You can also find the latest online documents,
 including programming guides, API references, and examples from the following:
 
 * [Furiosa Models - Latest Documentation](https://furiosa-ai.github.io/furiosa-models/latest/)
-* [Model Object](https://furiosa-ai.github.io/furiosa-models/latest/model_object/)
-* [Model List](https://furiosa-ai.github.io/furiosa-models/latest/#model_list)
-* [Command Line Tool](https://furiosa-ai.github.io/furiosa-models/latest/command_line_tool/)
-* [Furiosa SDK - Tutorial and Code Examples](https://furiosa-ai.github.io/docs/latest/en/software/tutorials.html)
+* [Model Object](https://furiosa-ai.github.io/furiosa-models/v0.10.2/model_object/)
+* [Model List](https://furiosa-ai.github.io/furiosa-models/v0.10.2/#model_list)
+* [Command Line Tool](https://furiosa-ai.github.io/furiosa-models/v0.10.2/command_line_tool/)
+* [Furiosa SDK - Tutorial and Code Examples](https://furiosa-ai.github.io/docs/v0.10.2/en/software/tutorials.html)
 
 
 ## <a name="model_list"></a>Model List
@@ -34,14 +34,14 @@ you can find details about loading a model, their input and output tensors, pre/
 
 | Model                                                                                             | Task                 | Size | Accuracy                  |
 | ------------------------------------------------------------------------------------------------- | -------------------- | ---- | ------------------------- |
-| [ResNet50](https://furiosa-ai.github.io/furiosa-models/latest/models/resnet50_v1.5/)             | Image Classification | 25M  | 75.618% (ImageNet1K-val)  |
-| [EfficientNetB0](https://furiosa-ai.github.io/furiosa-models/latest/models/efficientnet_b0/)     | Image Classification | 6.4M | 72.44% (ImageNet1K-val)   |
-| [EfficientNetV2-S](https://furiosa-ai.github.io/furiosa-models/latest/models/efficientnet_v2_s/) | Image Classification | 26M  | 83.532% (ImageNet1K-val)  |
-| [SSDMobileNet](https://furiosa-ai.github.io/furiosa-models/latest/models/ssd_mobilenet/)         | Object Detection     | 7.2M | mAP 0.232 (COCO 2017-val) |
-| [SSDResNet34](https://furiosa-ai.github.io/furiosa-models/latest/models/ssd_resnet34/)           | Object Detection     | 20M  | mAP 0.220 (COCO 2017-val) |
-| [YOLOv5M](https://furiosa-ai.github.io/furiosa-models/latest/models/yolov5m/)                    | Object Detection     | 21M  | mAP 0.272 (Bdd100k-val) <sup>[[1]](#footnote_1)</sup> |
-| [YOLOv5L](https://furiosa-ai.github.io/furiosa-models/latest/models/yolov5l/)                    | Object Detection     | 46M  | mAP 0.284 (Bdd100k-val) <sup>[[1]](#footnote_1)</sup> |
-| [YOLOv7w6Pose](https://furiosa-ai.github.io/furiosa-models/latest/models/yolov7_w6_pose/)        | Pose Estimation      | 80M  | N/A                       |
+| [ResNet50](https://furiosa-ai.github.io/furiosa-models/v0.10.2/models/resnet50_v1.5/)             | Image Classification | 25M  | 75.618% (ImageNet1K-val)  |
+| [EfficientNetB0](https://furiosa-ai.github.io/furiosa-models/v0.10.2/models/efficientnet_b0/)     | Image Classification | 6.4M | 72.44% (ImageNet1K-val)   |
+| [EfficientNetV2-S](https://furiosa-ai.github.io/furiosa-models/v0.10.2/models/efficientnet_v2_s/) | Image Classification | 26M  | 83.532% (ImageNet1K-val)  |
+| [SSDMobileNet](https://furiosa-ai.github.io/furiosa-models/v0.10.2/models/ssd_mobilenet/)         | Object Detection     | 7.2M | mAP 0.232 (COCO 2017-val) |
+| [SSDResNet34](https://furiosa-ai.github.io/furiosa-models/v0.10.2/models/ssd_resnet34/)           | Object Detection     | 20M  | mAP 0.220 (COCO 2017-val) |
+| [YOLOv5M](https://furiosa-ai.github.io/furiosa-models/v0.10.2/models/yolov5m/)                    | Object Detection     | 21M  | mAP 0.272 (Bdd100k-val) <sup>[[1]](#footnote_1)</sup> |
+| [YOLOv5L](https://furiosa-ai.github.io/furiosa-models/v0.10.2/models/yolov5l/)                    | Object Detection     | 46M  | mAP 0.284 (Bdd100k-val) <sup>[[1]](#footnote_1)</sup> |
+| [YOLOv7w6Pose](https://furiosa-ai.github.io/furiosa-models/v0.10.2/models/yolov7_w6_pose/)        | Pose Estimation      | 80M  | N/A                       |
 
 _<a name="footnote_1">[1]</a>: The accuracy of the yolov5 f32 model trained with bdd100k-val dataset, is mAP 0.295 (for yolov5m) and mAP 0.316 (for yolov5l)._
 
