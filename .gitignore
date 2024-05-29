@@ -142,3 +142,10 @@ cython_debug/
 # IDE
 .idea
 .vscode
+
+# Benchmarks
+.benchmarks/
+
+# Test data (including symbolic links to it)
+/tests/data
+/tests/data/

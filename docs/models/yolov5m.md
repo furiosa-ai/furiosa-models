@@ -33,7 +33,7 @@ The input is a 3-channel image of 640, 640 (height, width).
 * Optimal Batch Size (minimum: 1): <= 4
 
 ## Outputs
-The outputs are 3 `numpy.float32` tensors in various shapes as the following. 
+The outputs are 3 `numpy.float32` tensors in various shapes as the following.
 You can refer to `postprocess()` function to learn how to decode boxes, classes, and confidence scores.
 
 | Tensor | Shape             | Data Type | Data Type | Description |
@@ -44,17 +44,17 @@ You can refer to `postprocess()` function to learn how to decode boxes, classes,
 
 ## Pre/Postprocessing
 `furiosa.models.vision.YOLOv5m` class provides `preprocess` and `postprocess` methods.
-`preprocess` method converts input images to input tensors, and `postprocess` method converts 
-model output tensors to a list of bounding boxes, scores and labels. 
+`preprocess` method converts input images to input tensors, and `postprocess` method converts
+model output tensors to a list of bounding boxes, scores and labels.
 You can find examples at [YOLOv5m Usage](#YOLOv5m_Usage).
- 
+
 ### `furiosa.models.vision.YOLOv5m.preprocess`
 ::: furiosa.models.vision.yolov5.core.YOLOv5PreProcessor.__call__
     options:
         show_source: false
-    
+
 ### `furiosa.models.vision.YOLOv5m.postprocess`
-::: furiosa.models.vision.yolov5.core.YOLOv5PostProcessor.__call__
+::: furiosa.models.vision.yolov5.core.YOLOv5PythonPostProcessor.__call__
     options:
         show_source: false
 

@@ -3,6 +3,7 @@
 Attributes:
     CLASSES (List[str]): a list of class names
 """
+
 import pathlib
 from typing import List, Union
 
@@ -24,9 +25,13 @@ __all__ = ['CLASSES', 'YOLOv5m']
 class YOLOv5m(YOLOv5Base):
     """YOLOv5 Medium model"""
 
-    classes: List[str] = CLASSES
-
-    def __init__(self, *, postprocessor_type: Union[str, Platform] = Platform.RUST):
+    def __init__(
+        self,
+        *,
+        postprocessor_type: Union[str, Platform] = Platform.RUST,
+        classes: List[str] = CLASSES,
+        anchors: np.array = _ANCHORS,
+    ):
         postprocessor_type = Platform(postprocessor_type)
         validate_postprocessor_type(postprocessor_type, self.postprocessor_map.keys())
         super().__init__(
@@ -35,7 +40,7 @@ class YOLOv5m(YOLOv5Base):
                 description="YOLOv5 medium model",
                 publication=Publication(url="https://github.com/ultralytics/yolov5"),
             ),
-            postprocessor=self.postprocessor_map[postprocessor_type](_ANCHORS, CLASSES),
+            postprocessor=self.postprocessor_map[postprocessor_type](anchors, classes),
         )
 
         self._artifact_name = "yolov5m"
